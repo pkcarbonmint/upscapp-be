@@ -1,0 +1,28 @@
+FROM python:3.10-slim-bullseye
+
+RUN apt-get update && \
+    apt-get install -y gcc libpq-dev && \
+    apt update && \
+    apt install -y libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0 libffi-dev libjpeg-dev libopenjp2-7-dev && \
+    apt clean && \
+    rm -rf /var/cache/apt/*
+
+ENV PYTHONDONTWRITEBYTECODE=1 \ 
+    PYTHONUNBUFFERED=1 \
+    PYTHONIOENCODING=utf-8
+
+COPY requirements/ /tmp/requirements
+
+RUN pip install -U pip && \
+    pip install --no-cache-dir -r /tmp/requirements/dev.txt
+
+COPY . /code
+ENV PATH "$PATH:/code/scripts"
+
+RUN useradd -m -d /code -s /bin/bash app \
+    && chown -R app:app /code/* && chmod +x /code/scripts/*
+
+WORKDIR /code
+USER app
+RUN ["./scripts/migrate"]
+CMD ["./scripts/start-dev.sh"]

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+        }
+
+        .section {
+            page-break-after: always;
+        }
+
+        .section-content {
+            break-inside: avoid;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section">
+        {% include 'intro.html' %}
+    </div>
+    <div class="section">
+        {% include 'summary.html' %}
+    </div>
+    <div class="section">
+        {% include 'performers.html' %}
+    </div>
+    <div class="section">
+        {% include 'paper_perf.html' %}
+    </div>
+    <div class="section">
+        {% include 'test_perf.html' %}
+    </div>
+    <div class="section">
+        {% include 'test_ratio.html' %}
+    </div>
+    <div class="section">
+        {% include 'paperwise.html' %}
+    </div>
+    <div class="section">
+        {% include 'subjwise.html' %}
+    </div>
+</body>
+
+</html>

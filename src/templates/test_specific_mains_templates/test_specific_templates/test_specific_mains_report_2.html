@@ -1,0 +1,430 @@
+<html>
+
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        body {
+            /* width: 695px;
+                height: 842px; */
+            /* margin-left: 30px; */
+            margin-left: -30px;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: 'Open Sans';
+
+        }
+
+        .title-sum {
+            text-align: start;
+            margin-top: 10px;
+
+            display: inline-flex;
+        }
+
+        .title-data-sum span {
+            font-family: 'Montserrat';
+            color: black;
+            font-weight: 550;
+            font-size: 25px;
+            margin-left: 10px;
+        }
+
+        .title-data-sum p {
+            font-family: 'Open Sans';
+            font-size: 15px;
+            font-weight: 200;
+            color: #5F6D7E;
+            margin-left: 10px;
+
+        }
+
+        .tests-list {
+            display: flex;
+            justify-content: space-between;
+            /* Adjust spacing between items */
+            align-items: center;
+            /* Align items vertically */
+            margin: 20px;
+            background-color: #F2F4FA;
+            padding: 20px;
+            border-radius: 10px
+        }
+
+        .test-item {
+            display: inline-block;
+            text-align: center;
+            font-family: 'Open Sans';
+
+        }
+
+        .tests-score {
+            margin: 20px;
+            border: lightblue 1px solid;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .score-head {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            margin-top: -10px;
+        }
+
+        .score-head img {
+            background-color: #F2F4FA;
+            border-radius: 100px;
+            margin-right: 10px;
+            margin-top: -10px;
+        }
+
+        .score-body {
+            display: inline-flex;
+
+            /* align-items: center; */
+            justify-content: space-between;
+            padding-bottom: 10px;
+        }
+
+        .score-perc {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .score-perc img {
+            height: 50px;
+            width: 50px;
+            margin-right: 10px;
+        }
+
+        .rank-perc {
+            display: inline-flex;
+            /* justify-content: space-between; */
+            margin-top: 20px;
+            /* align-items: center; */
+        }
+
+        .rank,
+        .perc {
+            display: inline-flex;
+            align-items: center;
+            padding-left: 20px;
+            padding-right: 10px;
+            border-radius: 10px;
+
+            /* margin:30px; */
+        }
+
+        .rank {
+            background-color: #faeaba;
+            margin-right: 20px;
+        }
+
+        .perc {
+            background-color: #fad6ce;
+        }
+
+        .tests-qs-ans,
+        .time-taken {
+            margin: 20px;
+            border: lightblue 1px solid;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .qns-det {
+            display: inline-flex;
+            /* align-items: center; */
+            justify-content: space-between;
+            padding-bottom: 10px;
+
+        }
+
+        .time-arr {
+            display: inline-flex;
+            padding-top: -20px;
+            justify-content: space-between;
+            /* align-items: center; */
+        }
+
+        .time-bar {
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        /* .rank img, .perc img {   
+                    margin-right: 10px;
+                } */
+    </style>
+</head>
+
+<body>
+
+    <div id="header">
+        <div class="header-content">
+            <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <div class="text-content">
+                <div>
+                    <p style="display: inline-flex;">La Excellence</p>
+                </div>
+                <div class="laex-link">
+                    <img src="{{ link }}" alt="Link Icon">
+                    <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                            href="https://www.laex.in/">laex.in</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="line">
+            <img src="{{ headerline }}" alt="Header Line">
+        </div>
+    </div>
+
+    <div id="footer">
+        <div class="footer-left">
+            Performance Analysis Test Specific
+        </div>
+    </div>
+    <div class="title-sum">
+        <div>
+            <img style="margin-right: 5px; height: 40px;width: 40px;" src="{{ ts_summary }}" />
+        </div>
+
+        <div class="title-data-sum">
+            <span>Summary</span>
+            <p>Based on yours & others performance in this test alone.</p>
+        </div>
+    </div>
+    <div class="tests-score">
+        <div class="score-head">
+            <img style="height: 30px;width: 30px;" src="{{cup}}" />
+            <p style="font-size: 21px;margin-top: -0.5px;">Your Score</p>
+        </div>
+
+        <div class="score-body">
+            <div class="score-perc">
+                <img style="height: 120px; width: 120px; margin-left: 5px;" src="{{piechart.fig}}" />
+                <div style="display: inline-block; margin-left: 5px;">
+                    <p style="color: #5773d9; font-size: 20px; margin-left: 10px;">{{piechart.perc}}%</p>
+                    <p style="margin-right: 7px; margin-top: -3px;">Percentage</p>
+                </div>
+            </div>
+            <div class="rank-perc">
+                <div class="rank">
+                    <img style="height: 30px; width: 25px; margin-right: 20px;" src="{{rank}}" />
+                    <div>
+                        <p>Rank</p>
+                        <p style="margin-top: -5px;margin-left: 5px;">
+                            {{test_result_resp.rank}}/{{test_result_resp.test.attempts_count}}</p>
+                    </div>
+                </div>
+                <div class="perc">
+                    <img style="height: 25px; width: 25px;" src="{{perctile}}" />
+                    <div style="margin-left: 20px;">
+                        <p>Percentile</p>
+                        <p style="margin-top: -5px;margin-left: 15px;">{{(test_result_resp.percentile*100) | round(2)}}%
+                        </p>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <img style="height: 90px; width:1100px; margin-left: -310px; margin-top: -10px;" src="{{ta_scores.fig}}" />
+        </div>
+        <div style="display: flex; align-items: center; margin-left: 90px;">
+            <div
+                style="width: 12px; height: 12px; background: rgb(168, 160, 160); border-radius: 2px; margin-right: 5px;">
+            </div>
+            <span style="margin-right: 40px; font-size: 12px; color: black;">Average</span>
+
+            <div
+                style="width: 12px; height: 12px; background: rgb(145, 145, 248); border-radius: 2px; margin-right: 5px;">
+            </div>
+            <span style="margin-right: 40px; font-size: 12px; color: black;">Your Score</span>
+
+            <div
+                style="width: 12px; height: 12px; background: rgb(209, 238, 248); border-radius: 2px; margin-right: 5px;">
+            </div>
+            <span style="font-size: 12px; color: black;">Topper</span>
+        </div>
+        <!-- <div style="display: flex; align-items: center;  margin-left: 90px; margin-top: -5px;">
+            <p style="border: 1px solid white;background:#D8DEF5;border-radius: 1px;padding: 5px;  "></p><span
+                style="margin-left: 5px; margin-right: 80px; font-size: 12px;color: rgb(145, 145, 248)">Your
+                Score</span>
+            <p style="border: 1px solid white;background: #D8DEF5;;border-radius: 1px;padding: 5px; "></p><span
+                style="margin-left: 5px;margin-right: 80px; font-size: 12px;color: rgb(168, 160, 160);">Average</span>
+            <p style="border: 1px solid white;background: #D8DEF5;border-radius: 1px;padding: 5px; "></p><span
+                style="margin-left: 5px;  font-size: 12px;color: rgb(209, 238, 248);">Topper</span>
+        </div> -->
+    </div>
+    <div class="tests-qs-ans">
+        <div class="qns-det">
+            <div style="display: inline-flex; align-items: center;">
+                <img src="{{q_icon}}" />
+                <p style="font-size: 20px; margin-left: 3px;">Questions Attempted</p>
+            </div>
+            <p>{{ts_qs_ans.attempted}}/{{ts_qs_ans.tot_qs}}</p>
+        </div>
+        <div>
+            <img style="height: 100px; width:1000px; margin-left: -230px;margin-top: -10px;" src="{{ts_qs_ans.fig}}" />
+        </div>
+        <div style="display: flex; align-items: center;  margin-left: 75px; margin-top: -20px;">
+            <p style="border: 1px solid white;background: #9EBE5D;border-radius: 1px;padding: 5px;  "></p><span
+                style="margin-left: 5px; margin-right: 80px; font-size: 12px;color: grey;">Attempted</span>
+            <p style="border: 1px solid white;background: #E75D24;border-radius: 1px;padding: 5px; "></p><span
+                style="margin-left: 5px;margin-right: 80px; font-size: 12px;color: grey;">Unattempted</span>
+        </div>
+    </div>
+    <div class="tests-qs-ans">
+        <div style="display: inline-flex; align-items: center;">
+            <img src="{{comp_icon}}" />
+            <p style="font-size: 20px; margin-left: 3px;">Comprehensive Feedback</p>
+        </div>
+        <table style="margin-left: 8px;">
+            <tr>
+                <td>
+                    <div class="cell-content">
+                        <span>Intro</span>
+                        <span>{{feedback.Intro}}/5</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="cell-content">
+                        <span>Content</span>
+                        <span>{{feedback.Content}}/5</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="cell-content">
+                        <span>Conclusion</span>
+                        <span>{{feedback.Conclusion}}/5</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="cell-content">
+                        <span>Clarity</span>
+                        <span>{{feedback.Clarity}}/5</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <p style="font-size: 12px;">Overall Feedback</p>
+        {% if feedback.FeedBack %}
+        <p style="font-size: 11px;">{{feedback.FeedBack}}</p>
+        {%else%}
+        <p>N/A</p>
+        {%endif%}
+    </div>
+</body>
+
+</html>

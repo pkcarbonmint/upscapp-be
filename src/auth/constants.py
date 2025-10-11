@@ -1,0 +1,10 @@
+class ErrorCode:
+    INVALID_AUTH_SCHEME = "Invalid authorization scheme."
+    AUTHENTICATION_REQUIRED = "Authentication required."
+    AUTHENTICATION_FAILED = "Authentication failed."
+    AUTHORIZATION_FAILED = "Authorization failed. User has no access."
+    INVALID_TOKEN = "Invalid token."
+    INVALID_CREDENTIALS = "Invalid credentials."
+    REFRESH_TOKEN_NOT_VALID = "Refresh token is not valid."
+    USER_INVALID = "User is not active."
+    REFRESH_TOKEN_REQUIRED = "Refresh token is required either in the body or cookie."

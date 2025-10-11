@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% block content %}
+
+<div>{{ data }}</div>
+<h2>Actions for you!</h2>
+
+<div>
+  {% for action in actions %}
+  <div>{{ action }}</div>
+  {% endfor %}
+</div>
+
+{% endblock content %}

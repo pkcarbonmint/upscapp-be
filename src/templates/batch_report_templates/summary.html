@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Batch Summary</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        .agg-header {
+            text-align: center;
+        }
+
+        .agg-header h3 {
+            margin-top: 10px;
+            font-family: 'Montserrat';
+            color: #36393E;
+            font-weight: 300;
+        }
+
+        .agg-header h4 {
+            font-family: 'Open Sans';
+            font-weight: 200;
+            color: #5F6D7E;
+            margin-bottom: 50px;
+
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 10px;
+        }
+
+
+        .title-section {
+            margin-top: 2rem;
+        }
+
+        .summary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 5px;
+            padding: 5px
+        }
+
+        .summary-box {
+            flex: 1 1 22%;
+            padding: 1rem;
+            border-radius: 10px;
+            color: #333;
+            text-align: center;
+            font-weight: bold;
+            margin: 5px;
+            padding: 5px
+        }
+
+        .yellow-bg {
+            background: #FFF9DB;
+        }
+
+        .blue-bg {
+            background: #E6ECFF;
+        }
+
+        .green-bg {
+            background: #E6F4EA;
+        }
+
+        .orange-bg {
+            background: #FFECE6;
+        }
+
+        .section-box {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .performance-scores {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .performance-scores div {
+            flex: 1 1 18%;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .score-label {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .top-performers {
+            margin-top: 1rem;
+        }
+
+        .top-performers ol {
+            padding-left: 1.2rem;
+        }
+
+
+
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #888;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <div class="header-content">
+            <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <div class="text-content">
+                <div>
+                    <p style="display: inline-flex;">La Excellence</p>
+                </div>
+                <div class="laex-link">
+                    <img src="{{ link }}" alt="Link Icon">
+                    <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                            href="https://www.laex.in/">laex.in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="line">
+            <img src="{{ headerline }}" alt="Header Line">
+        </div>
+    </div>
+    <div id="footer">
+        <div class="footer-left">
+            Performance Analysis Aggregate
+        </div>
+    </div>
+    <div style="display: inline-flex; margin-left: -20px;">
+        <img style="margin-right: 30px;" src="{{ blackpaper }}" />
+        <div>
+            <p style="font-size: 25px; margin-top: -3px; margin-bottom: -10px; font-family: 'Open Sans'; ">Batch Summary
+            </p>
+            <p style="font-size: 15px; font-weight: 200; margin-bottom: 20px;">Snapshot of batch performance including
+                participation, average scores, and top performers across tests.</p>
+        </div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-box yellow-bg">
+            <img src="{{ yellowman }}" alt="Student Icon"
+                style="width: 20px; vertical-align: middle; margin-right: 6px;">
+            {{ summary.enrolled_count }}<br>
+            <small>Student Enrolled</small>
+        </div>
+        <div class="summary-box blue-bg">
+            <img src="{{ bluebook }}" alt="Test Icon" style="width: 20px; vertical-align: middle; margin-right: 6px;">
+            {{ summary.batch_attempt_tests_count }}<br>
+            <small>Tests Conducted</small>
+        </div>
+        <div class="summary-box green-bg">
+            <img src="{{ greenbooks }}" alt="Evaluated Icon"
+                style="width: 20px; vertical-align: middle; margin-right: 6px;">
+            {{ summary.test_eval_count }}<br>
+            <small>Tests Evaluated</small>
+        </div>
+        <div class="summary-box orange-bg">
+            <img src="{{ q }}" alt="Questions Icon" style="width: 20px; vertical-align: middle; margin-right: 6px;">
+            {{ "{:.2f}".format(summary.test_q_count).rstrip('0').rstrip('.') }}<br>
+
+            <small>Avg. Ques/test</small>
+        </div>
+    </div>
+
+
+    <div class="section-box">
+        <div class="section-title">
+            <img src="{{ cup }}" alt="Overall Performance Icon"
+                style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+            Overall Performance
+        </div>
+        <div class="performance-scores">
+            <div>
+                {{ "%.2f"|format(summary.mean_score) if summary.mean_score is not none else "N/A" }}
+                <span class="score-label">Mean Score</span>
+            </div>
+            <div>
+                {{ "%.2f"|format(summary.median) if summary.median is not none else "N/A" }}
+                <span class="score-label">Median Score</span>
+            </div>
+            <div>
+                {{ "%.2f"|format(summary.mode) if summary.mode is not none else "N/A" }}
+                <span class="score-label">Mode Score</span>
+            </div>
+            <div>
+                {% if summary.max_score is not none %}
+                {{ "%.2f"|format(summary.max_score) }}/{{ "%.2f"|format(summary.avg_max_marks) }}
+                {% else %}
+                N/A
+                {% endif %}
+                <span class="score-label">Max Score</span>
+            </div>
+            <div>
+                {% if summary.min_score is not none %}
+                {{ "%.2f"|format(summary.min_score) }}/{{ "%.2f"|format(summary.avg_max_marks) }}
+                {% else %}
+                N/A
+                {% endif %}
+                <span class="score-label">Min Score</span>
+            </div>
+        </div>
+
+        <div class="top-performers">
+            <strong>Top Performers</strong>
+            <ol>
+                {% for performer in top_performers %}
+                <li>{{ performer.student_name }}</li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+
+    <!-- <div class="section-box">
+        <div class="section-title">🧮 Test Engagement Metric</div>
+        <div class="summary-box green-bg" style="width: fit-content;">
+            {{ participation_rate }}<br><small>Overall Participation Rate</small>
+        </div>
+        <div class="engagement-grid">
+            <div class="engagement-box yellow-bg">{{ low_participation }}<br><small>Students with 0–10%
+                    Participation</small></div>
+            <div class="engagement-box orange-bg">{{ mid_participation }}<br><small>Students with 10–50%
+                    Participation</small></div>
+            <div class="engagement-box" style="background-color: #E0F8FF;">{{ high_participation }}<br><small>Students
+                    with 50–80% Participation</small></div>
+            <div class="engagement-box blue-bg">{{ full_participation }}<br><small>Students with 80–100%
+                    Participation</small></div>
+        </div>
+    </div> -->
+
+    <!-- <div class="footer">
+        Performance Analysis Aggregate &nbsp;&nbsp;&nbsp;&nbsp; Page 2 of 7
+    </div> -->
+
+</body>
+
+</html>

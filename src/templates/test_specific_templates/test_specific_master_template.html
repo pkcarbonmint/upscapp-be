@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+        }
+
+        .section {
+            page-break-after: always;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section">
+        {% include 'test_specific_report_1.html' %}
+    </div>
+    <div class="section">
+        {% include 'test_specific_report_2.html' %}
+    </div>
+    <div class="section">
+        {% include 'test_specific_report_3.html' %}
+    </div>
+    <div class="section">
+        {% include 'test_specific_report_4.html' %}
+    </div>
+    {% if test_sp_technique %}
+    <div class="section">
+        {% include 'test_specific_report_5.html' %}
+    </div>
+    {% endif %}
+    <div class="section">
+        {% include 'test_specific_report_6.html' %}
+    </div>
+    <div class="section">
+        {% include 'test_specific_report_7.html' %}
+    </div>
+    <div class="section">
+        {% include 'test_specific_report_8.html' %}
+    </div>
+</body>
+
+</html>

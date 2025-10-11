@@ -1,0 +1,320 @@
+<html>
+
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5in;
+        }
+
+        body {
+            font-family: 'Open Sans';
+            font-size: 10px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .title {
+            font-size: 15px;
+            font-family: 'Open Sans';
+            color: rgb(78, 77, 77);
+            font-weight: 600;
+            padding: 10px;
+        }
+
+        .title p {
+            font-size: 17px;
+            text-align: center;
+            font-family: 'Open Sans';
+            color: rgb(60, 60, 60);
+            font-weight: 700;
+            padding: 5px;
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            word-wrap: break-word;
+
+        }
+
+        th {
+            padding: 10px;
+            font-size: 12px;
+            font-family: 'Open Sans';
+            color: rgb(78, 77, 77);
+            font-weight: 400;
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+            word-break: break-word;
+            /* Break long words if necessary */
+            white-space: normal;
+        }
+
+        td {
+            width: 10%;
+            font-size: 13px;
+            color: rgb(47, 46, 46);
+            padding: 10px;
+            text-align: left;
+            font-weight: 500;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div class="title">
+            <p>Walk-in Form</p>
+        </div>
+        <div style=" border: 1px solid lightgray; border-radius: 10px; margin-bottom: 5px;padding: 2px;">
+            <div class="title">Walk-in Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>Walk-in ID</th>
+                        <th>Date of Walk-in</th>
+                        <th>Time</th>
+                        <th>Branch</th>
+                        <th>Offering Category</th>
+                        <th>Interested Offering</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.id if walkin.id else 'N/A' }}</td>
+                        <td>{{ walkin_date if walkin_date else 'N/A' }}</td>
+                        <td>{{ walkin_time if walkin_time else 'N/A' }}</td>
+                        <td>{{ walkin.questionnaire.joining_branch if walkin.questionnaire.joining_branch else 'N/A' }}
+                        </td>
+                        <td>{{ interested_offering_category.replace('_', ' ').title() }}</td>
+                        <td>{{ walkin.profile_details.interested_offering if walkin.profile_details.interested_offering
+                            else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;padding: 2px;">
+            <div class="title">Profile Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Mobile Number</th>
+                        <th>Email Id</th>
+                        <th>Reservation Category</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.profile_details.name if walkin.profile_details.name else 'N/A' }}</td>
+                        <td>{{ walkin.profile_details.gender if walkin.profile_details.gender else 'N/A' }}</td>
+                        <td>{{ walkin.profile_details.birth_date if walkin.profile_details.birth_date else 'N/A' }}</td>
+                        <td>{{ walkin.profile_details.phone_number if walkin.profile_details.phone_number else 'N/A' }}
+                        </td>
+                        <td>{{ walkin.profile_details.email if walkin.profile_details.email else 'N/A' }}</td>
+                        <td>{{ walkin.profile_details.reservation_category if
+                            walkin.profile_details.reservation_category else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;padding: 2px;">
+            <div class="title">Address Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>Apartment/Suite/House no.</th>
+                        <th>Street</th>
+                        <th>City/Town/Village</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th>Zip Code</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.address_details.h_no if walkin.address_details.h_no else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.street if walkin.address_details.street else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.city if walkin.address_details.city else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.district if walkin.address_details.district else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.state if walkin.address_details.state else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.zipcode if walkin.address_details.zipcode else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;padding: 2px;">
+            <div class="title">Parent Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Relation</th>
+                        <th>Mobile Number</th>
+                        <!-- <th>Company Name</th> -->
+                        <th>Occupation</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.parent_details.name if walkin.parent_details.name else 'N/A' }}</td>
+                        <td>{{ walkin.parent_details.relation if walkin.parent_details.relation else 'N/A' }}</td>
+                        <td>{{ walkin.parent_details.phone_number if walkin.parent_details.phone_number else 'N/A' }}
+                        </td>
+                        <!-- <td>{{ walkin.parent_details.company if walkin.parent_details.company else 'N/A' }}</td> -->
+                        <td>{{ walkin.parent_details.occupation if walkin.parent_details.occupation else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div
+            style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;page-break-inside: avoid;padding: 2px;">
+            <div class="title">Education Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>Qualification</th>
+                        <!-- <th>Integrated IAS Course</th> -->
+                        <th>Specialisation</th>
+                        <th>College</th>
+                        <th>University</th>
+
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.education_details.qualification if walkin.education_details.qualification else
+                            'N/A' }}</td>
+                        <!-- <td>{{ walkin.education_details.is_ias_integrated_course if
+                            walkin.education_details.is_ias_integrated_course else 'N/A'
+                            }}</td> -->
+                        <td>{{ walkin.education_details.specialisation if walkin.education_details.specialisation else
+                            'N/A' }}</td>
+                        <td>{{ walkin.education_details.college if walkin.education_details.college else 'N/A' }}</td>
+                        <td>{{ walkin.education_details.university if walkin.education_details.university else 'N/A' }}
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <th>Year of completion</th>
+                        <th>City/Town/Village</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th>Zip Code</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.education_details.grad_year if walkin.education_details.grad_year else 'N/A' }}
+                        </td>
+                        <td>{{ walkin.education_details.city if walkin.education_details.city else 'N/A' }}</td>
+                        <td>{{ walkin.education_details.district if walkin.education_details.district else 'N/A' }}</td>
+                        <td>{{ walkin.education_details.state if walkin.education_details.state else 'N/A' }}</td>
+                        <td>{{ walkin.education_details.zip_code if walkin.education_details.zip_code else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- <div
+            style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;page-break-inside: avoid;padding: 2px;">
+            <div class="title">UPSC Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>No. of attempts</th>
+                        <th>Highest Level</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.upsc_details.attempts_count if walkin.upsc_details.attempts_count else 'N/A' }}
+                        </td>
+                        <td>{{ walkin.upsc_details.highest_level if walkin.upsc_details.highest_level else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div> -->
+        <!-- <div
+            style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;page-break-inside: avoid;padding: 2px;">
+            <div class="title">Employee Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Employee Type</th>
+                    </tr>
+                    <tr>
+                        <td>{{walkin.employment_details.company if walkin.employment_details.company else 'N/A' }}</td>
+                        <td>{{walkin.employment_details.employment_type if walkin.employment_details.employment_type
+                            else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div> -->
+        <div
+            style=" border: 1px solid lightgray; border-radius: 10px; margin-bottom: 5px;padding: 2px;page-break-inside: avoid; break-inside: avoid;">
+            <div class="title">Questionnaire</div>
+            <div>
+                <table>
+                    <tr>
+                        <!-- <th>Preferred city for joining?</th> -->
+                        <th>Preferred branch for joining?</th>
+                        <!-- <th>Preferred offering for selection?</th> -->
+                    </tr>
+                    <tr>
+                        <!-- <td>{{ walkin.questionnaire.joining_city if walkin.questionnaire.joining_city else 'N/A' }}</td> -->
+                        <td>{{ walkin.questionnaire.joining_branch if walkin.questionnaire.joining_branch else 'N/A' }}
+                        </td>
+                        <!-- <td>{{ walkin.questionnaire.joining_product if walkin.questionnaire.joining_product else 'N/A'
+                            }}</td> -->
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <!-- <th>Would you like to opt for an optional program?</th> -->
+                        <th>Optional</th>
+                        <th>When is your preferred joining date?</th>
+                        <th>How did you hear about La Excellence?</th>
+                    </tr>
+                    <tr>
+                        <!-- <td>{{ walkin.questionnaire.is_optional_program if walkin.questionnaire.is_optional_program else
+                            'N/A' }}</td> -->
+                        <td>{{walkin.questionnaire.optional if walkin.questionnaire.optional else 'N/A' }}</td>
+                        {% set dt = walkin.questionnaire.tentative_joining_date %}
+                        <td>
+                            {% if dt %}
+                            {{ datetime.strptime(dt, '%Y-%m-%d').strftime('%b %Y') }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ walkin.questionnaire.source_of_knowledge if walkin.questionnaire.source_of_knowledge else
+                            'N/A' }}</td>
+                    </tr>
+
+                </table>
+                <table>
+                    <tr>
+                        <th>What is your reason for choosing La Excellence?</th>
+                    </tr>
+                    <tr>
+                        <td>{{walkin.questionnaire.reason_for_choosing if walkin.questionnaire.reason_for_choosing else
+                            'N/A'}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div>
+            <div class="title">Feedback</div>
+            <div style="
+                border: 2px solid grey; 
+                border-radius: 10px; 
+                height: 200px; 
+                width: 100%; /* Make it take full available width */
+                max-width: 100%; /* Prevent it from exceeding the page */
+                padding: 10px; 
+                box-sizing: border-box; 
+                margin: 0 auto; /* Center it horizontally if smaller than page */
+            ">
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

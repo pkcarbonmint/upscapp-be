@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Batch Performance Report</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        .agg-header {
+            text-align: center;
+        }
+
+        .agg-header h3 {
+            margin-top: 10px;
+            font-family: 'Montserrat';
+            color: #36393E;
+            font-weight: 300;
+        }
+
+        .agg-header h4 {
+            font-family: 'Open Sans';
+            font-weight: 200;
+            color: #5F6D7E;
+            margin-bottom: 50px;
+
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 2rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid #2D63F6;
+            padding-bottom: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-left a {
+            color: #2D63F6;
+            font-size: 0.9rem;
+        }
+
+        .report-title {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .report-title h2 {
+            font-weight: bold;
+        }
+
+        .report-title p {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .section {
+            margin-bottom: 10px
+        }
+
+        .section img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .batch-info-wrapper {
+            page-break-inside: avoid;
+            margin-bottom: 10px;
+        }
+
+        .tags {
+            margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            /* gap between tags */
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 10px;
+            background: #eee;
+            margin: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-row {
+            margin: 10px 0;
+        }
+
+        .highlight {
+            color: #2D63F6;
+            font-weight: bold;
+        }
+
+        .green-text {
+            color: #67A942;
+        }
+
+        .icon-text {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: 10px;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            font-size: 12px;
+            color: #888;
+            text-align: right;
+        }
+
+        .user-details img.user-image {
+            /* position: absolute; */
+            margin-top: -8px;
+            margin-left: -50px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .user-details img.bckgrd-image {
+            width: 40px;
+            height: 40px;
+        }
+
+        .user-info {
+            display: inline-flex;
+            font-family: 'Open Sans';
+            margin-top: 15px;
+            margin-left: 30px;
+            /* Ensuring space for the overlay */
+        }
+
+        .user-info span {
+
+            justify-content: flex-end;
+            font-family: 'Open Sans';
+            font-weight: 200;
+            font-size: 18px;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="batch-info-wrapper">
+        <div id="header">
+            <div class="header-content">
+                <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+                <div class="text-content">
+                    <div>
+                        <p style="display: inline-flex;">La Excellence</p>
+                    </div>
+                    <div class="laex-link">
+                        <img src="{{ link }}" alt="Link Icon">
+                        <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                                href="https://www.laex.in/">laex.in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="line">
+                <img src="{{ headerline }}" alt="Header Line">
+            </div>
+        </div>
+        <div id="footer">
+            <div class="footer-left">
+                Performance Analysis Aggregate
+            </div>
+        </div>
+        <div class="agg-header">
+            <h3>
+                BATCH PERFORMANCE REPORT
+            </h3>
+            <h4>
+                Aggregate Across Batch (Mains)
+            </h4>
+        </div>
+
+        <div class="user-details">
+            <img class="bckgrd-image" src="{{bckgrdimage}}" />
+            <img class="user-image" src="{{ offering.photo}}" />
+        </div>
+        <!-- <img src="{{ offering.photo }}" alt="Batch Image"> -->
+        <strong> {{ product.name }}</strong> / {{ product.code }} <small>(Batch/Product)</small><br><br>
+        {{ offering.name }} <small>(Offering)</small><br><br>
+        <span class="green-text">{{offering.offering_category}}</span> <small>(Offering category)</small>
+        <span class="highlight">{{offering.offering_sub_type}}</span> <small>(Product type)</small>
+
+
+        <span class="tag">{{exam_names| join(', ')}}</span>
+        <span class="tag">{{stage_names| join(', ')}}</span>
+        <span class="tag">{{paper_names| join(', ')}}</span>
+
+        <div class="info-row">
+            Subjects:
+            {% for subj in subject_names %}
+            <a class="highlight">{{ subj }}</a>{% if not loop.last %},{% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="info-row">
+            <span class="icon-text"><img style="width: 30px; height: 30px;" src="{{ place }}" alt="place"> {{
+                product.branch.name }}</span>
+            <span class="icon-text"><img style="width: 30px; height: 30px;" src="{{ yellowman }}" alt="man">{{
+                batch.students_enrolled }}/{{
+                batch.max_students if batch.max_students is not none else "N/A" }} Student Enrolled</span>
+        </div>
+
+        <!-- <div class="info-row">
+            In-Charge:
+            <div class="user-details">
+                <img class="bckgrd-image" src="{{bckgrdimage}}" />
+                <img class="user-image" src="{{ batch_incharge_photo}}" />
+            </div>
+            <span class="highlight">{{ batch_incharge_name }}</span>
+        </div> -->
+        <div class="user-details">
+            In-Charge:
+
+            <div class="user-info">
+                <img class="bckgrd-image" src="{{bckgrdimage}}" />
+                <img class="user-image" src="{{batch_incharge_photo}}" />
+                <span style="margin-top: 10px;">{{batch_incharge_name}}</span>
+                <!-- <p style="font-weight: 200; font-size: 14px; color: #5F6D7E; margin-left: 5px; margin-top: 5px;">
+                    S-{{user_id}}</p> -->
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

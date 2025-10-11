@@ -1,0 +1,310 @@
+<html>
+
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5in;
+        }
+
+        body {
+            font-family: 'Open Sans';
+            font-size: 10px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .title {
+            font-size: 15px;
+            font-family: 'Open Sans';
+            color: rgb(78, 77, 77);
+            font-weight: 600;
+            padding: 10px;
+        }
+
+        .title p {
+            font-size: 17px;
+            text-align: center;
+            font-family: 'Open Sans';
+            color: rgb(60, 60, 60);
+            font-weight: 700;
+            padding: 5px;
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            word-wrap: break-word;
+
+        }
+
+        th {
+            padding: 10px;
+            font-size: 12px;
+            font-family: 'Open Sans';
+            color: rgb(78, 77, 77);
+            font-weight: 400;
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+            word-break: break-word;
+            /* Break long words if necessary */
+            white-space: normal;
+        }
+
+        td {
+            width: 10%;
+            font-size: 13px;
+            color: rgb(47, 46, 46);
+            padding: 10px;
+            text-align: left;
+            font-weight: 500;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .container {
+            border-radius: 10px;
+            margin-bottom: 5px;
+            padding: 10px;
+        }
+
+        p,
+        ol {
+            font-size: 12px;
+            line-height: 1.8;
+            margin: 5px 0;
+            padding-left: 5px;
+            text-align: justify;
+        }
+
+        ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .terms {
+            font-size: 15px;
+            font-family: 'Open Sans';
+            color: rgb(78, 77, 77);
+            font-weight: 600;
+            padding: 10px;
+            margin-left: -5px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+        <div class="title">
+            <p>Quick Walk-in Form</p>
+        </div>
+        <div style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;padding: 2px;">
+            <div class="title">Profile Details</div>
+            <div>
+                <table>
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 10%;">
+                        <col style="width: 15%;">
+                        <col style="width: 20%;">
+                        <col style="width: 30%;">
+                    </colgroup>
+                    <tr>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Mobile Number</th>
+                        <th>Email Id</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.profile_details.name if walkin.profile_details.name else 'N/A' }}</td>
+                        <td>{{ walkin.profile_details.gender if walkin.profile_details.gender else 'N/A' }}</td>
+                        <td>{{ walkin.profile_details.birth_date if walkin.profile_details.birth_date else 'N/A' }}</td>
+                        <td>{{ walkin.profile_details.phone_number if walkin.profile_details.phone_number else 'N/A' }}
+                        </td>
+                        <td>{{ walkin.profile_details.email if walkin.profile_details.email else 'N/A' }}</td>
+                    </tr>
+                </table>
+                <table>
+                    <colgroup>
+                        <col style="width: 30%;">
+                        <col style="width: 30%;">
+                        <col style="width: 40%;">
+                    </colgroup>
+                    <tr>
+                        <th>Reservation Category</th>
+                        <th>Course Category</th>
+                        <th>Interested Course</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.profile_details.reservation_category if
+                            walkin.profile_details.reservation_category else 'N/A' }}</td>
+                        <td>{{walkin.profile_details.interested_offering_category.replace('_', ' ').title() if
+                            walkin.profile_details.interested_offering_category else 'N/A' }}</td>
+                        <td>{{walkin.profile_details.interested_offering if walkin.profile_details.interested_offering
+                            else
+                            'N/A' }}</td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <div
+            style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;page-break-inside: avoid;padding: 2px;">
+            <div class="title">Education Details</div>
+            <div>
+                <table>
+                    <colgroup>
+                        <col style="width: 30%;">
+                        <col style="width: 40%;">
+                        <col style="width: 30%;">
+                    </colgroup>
+                    <tr>
+                        <th>Qualification</th>
+                        <th>Specialisation</th>
+                        <th>Year of completion</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.education_details.qualification if walkin.education_details.qualification else
+                            'N/A' }}</td>
+                        <td>{{ walkin.education_details.specialisation if walkin.education_details.specialisation else
+                            'N/A' }}</td>
+                        <td>{{ walkin.education_details.grad_year if walkin.education_details.grad_year else 'N/A' }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;padding: 2px;">
+            <div class="title">Parent Details</div>
+            <div>
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Relation</th>
+                        <th>Mobile Number</th>
+                        <th>Occupation</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.parent_details.name if walkin.parent_details.name else 'N/A' }}</td>
+                        <td>{{ walkin.parent_details.relation if walkin.parent_details.relation else 'N/A' }}</td>
+                        <td>{{ walkin.parent_details.phone_number if walkin.parent_details.phone_number else 'N/A' }}
+                        </td>
+                        <td>{{ walkin.parent_details.occupation if walkin.parent_details.occupation else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;padding: 2px;">
+            <div class="title">Address Details</div>
+            <div>
+                <table>
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 15%;">
+                        <col style="width: 15%;">
+                        <col style="width: 20%;">
+                        <col style="width: 10%;">
+                    </colgroup>
+                    <tr>
+                        <th>Apartment/Suite/House no.</th>
+                        <th>Street</th>
+                        <th>City/Town/Village</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th>Zip Code</th>
+                    </tr>
+                    <tr>
+                        <td>{{ walkin.address_details.h_no if walkin.address_details.h_no else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.street if walkin.address_details.street else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.city if walkin.address_details.city else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.district if walkin.address_details.district else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.state if walkin.address_details.state else 'N/A' }}</td>
+                        <td>{{ walkin.address_details.zipcode if walkin.address_details.zipcode else 'N/A' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- <div style=" border: 1px solid lightgray;border-radius: 10px; margin-bottom: 5px;padding: 2px;"> -->
+
+        <div class="container">
+            <div class="terms">Terms & Conditions</div>
+            <p>Dear Student,</p>
+            <p>We welcome you to La Excellence. To maintain discipline and order in the institute, please take
+                two minutes of your time to read the following terms & conditions.</p>
+            <ol>
+                <li>The classes will be conducted 6 days a week, Sunday need not be a holiday.</li>
+                <li>Class Schedules are the prerogative of the Institute.</li>
+                <li>Extra classes can be conducted if necessary to complete the syllabus.</li>
+                <li>Keep your mobile switched off in the classroom.</li>
+                <li>Please maintain discipline in the Campus. Management has all authority to take action for any
+                    indiscipline.</li>
+                <li>Shift in batches/subjects will not be entertained under any circumstances.</li>
+                <li>Students are allowed to attend the classes only on the display of ID Card.</li>
+                <li>Use of mobile phones and audio players is not permitted.</li>
+                <li>Recording of classes by audio and video recorders is not permitted.</li>
+                <li>The institute reserves the right to cancel the admission of any student for misconduct.</li>
+                <li>Based on faculty and classroom availability, the institute reserves the right to
+                    introduce changes in the course, including extending class timings.</li>
+                <li>Fees must be cleared as per the due dates. If failed, the Institute is authorized to take action.
+                </li>
+                <li>Fees once paid will not be refunded under any circumstances.</li>
+                <li>Deviation from the fee is not entertained once fixed.</li>
+                <li>No transfers from Offline to Online.</li>
+                <li>Under any circumstances, transfers will not be processed.</li>
+                <li>I hereby understood the rules and conditions of La Excellence IAS and agree to abide by it.</li>
+                <!-- <div>
+                    <p>I:<span
+                            style="border-bottom: 1px solid black; display: inline-block; width: 70%; margin-top: 15px;"></span>
+                    </p>
+                    <p>So/Do: <span
+                            style="border-bottom: 1px solid black; display: inline-block; width: 70%; margin-top: 15px;"></span>
+                    </p>
+                    <p>R/o: <span
+                            style="border-bottom: 1px solid black; display: inline-block; width: 70%; margin-top: 15px;"></span>
+                    </p>
+                    <p>Agreed to Pay:<span
+                            style="border-bottom: 1px solid black; display: inline-block; width: 70%; margin-top: 15px;"></span>
+                    </p>
+                </div> -->
+            </ol>
+            <div style="margin-top: 15px;">
+                <table style="width: 80%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 100px;  text-align: left;">I</td>
+                        <td style="width: 5px;">:</td>
+                        <td style="border-bottom: 1px solid black; width: 80%;"></td>
+                    </tr>
+                    <tr>
+                        <td style=" text-align: left;">So/Do</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px solid black;"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">R/o</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px solid black;"></td>
+                    </tr>
+                    <tr>
+                        <td style=" text-align: left;">Agreed to Pay</td>
+                        <td>:</td>
+                        <td style="border-bottom: 1px solid black;"></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px;">Fee towards La Excellence IAS for Group-1 Course.</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

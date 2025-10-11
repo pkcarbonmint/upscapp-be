@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Batch Summary</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        .agg-header {
+            text-align: center;
+        }
+
+        .agg-header h3 {
+            margin-top: 10px;
+            font-family: 'Montserrat';
+            color: #36393E;
+            font-weight: 300;
+        }
+
+        .agg-header h4 {
+            font-family: 'Open Sans';
+            font-weight: 200;
+            color: #5F6D7E;
+            margin-bottom: 50px;
+
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <div class="header-content">
+            <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <div class="text-content">
+                <div>
+                    <p style="display: inline-flex;">La Excellence</p>
+                </div>
+                <div class="laex-link">
+                    <img src="{{ link }}" alt="Link Icon">
+                    <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                            href="https://www.laex.in/">laex.in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="line">
+            <img src="{{ headerline }}" alt="Header Line">
+        </div>
+    </div>
+    <div id="footer">
+        <div class="footer-left">
+            Performance Analysis Aggregate
+        </div>
+    </div>
+    <div style="display: inline-flex; margin-left: -20px;">
+        <img style="margin-right: 30px;" src="{{ perfcup }}" />
+        <div>
+            <p style="font-size: 25px; margin-top: -3px; margin-bottom: -10px; font-family: 'Open Sans'; ">Top
+                Performers
+            </p>
+            <p style="font-size: 15px; font-weight: 200; margin-bottom: 20px;">Snapshot of batch performance including
+                participation, average scores, and top performers across tests.</p>
+        </div>
+    </div>
+
+    <div>
+        <table style="margin-left: 20px;">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Student Name</th>
+                    <th>% Score</th>
+                    <th>Test Attempted</th>
+                    <th>Strongest Paper</th>
+                    <th>Score Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in top_perf_data %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.student_name }}</td>
+                    <td>{{ "%.2f"|format(item.percent_score) }}%</td>
+                    <td>{{ item.tests_attempted }}/{{item.tests_assigned}}</td>
+                    <td>{{ item.strongest_paper }}</td>
+                    <td>
+                        <div style="display: inline-flex; align-items: center;">
+                            {% for diff in item.score_diff_list %}
+                            {% if diff > 0 %}
+                            <img src="{{ pos_trend_icon }}" title="↑ +{{ diff }}" style="width: 10px;height: 10px;" />
+                            {% elif diff
+                            < 0 %} <img src="{{ neg_trend_icon }}" title="↓ {{ diff }}"
+                                style="width: 10px;height: 10px;" />
+                            {% else %}
+                            <img src="{{ pos_trend_icon }}" title="↑ +{{ diff }}" style="width: 10px;height: 10px;" />
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</body>
+
+</html>

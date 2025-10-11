@@ -1,0 +1,214 @@
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Open Sans';
+            font-size: 10px;
+        }
+
+        .title {
+            text-align: center;
+            margin-top: -10px;
+        }
+
+        .title p {
+            font-weight: 600;
+
+        }
+
+        .date {
+            font-weight: 600;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .addrs {
+            text-align: left;
+            font-size: 13px;
+        }
+
+        table,
+        tr {
+            border: 1px solid black;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        tr {
+            text-align: right;
+        }
+
+        .lighter {
+            font-weight: 400;
+            /* Lighter font weight */
+            font-style: italic;
+        }
+
+        .thanks {
+            float: left;
+
+        }
+
+        .footer {
+            margin-top: 5px;
+            text-align: center;
+            color: #5F6D7E;
+        }
+
+        .pay {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .info {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .payment p,
+        .thanks p,
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .footer p {
+            font-size: 11px;
+        }
+
+        .thanks p {
+            font-size: 12px;
+        }
+
+        hr {
+            margin: 5px 0;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+        <div class="title">
+            <img style="width: 40px; height: 40px;" src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <p>Payment Receipt</p>
+        </div>
+        <div class="date">
+            <p>Receipt Id: {{tx.id}}</p>
+            <p>Date: {{date}}</p>
+
+        </div>
+        <div class="addrs">
+            <p style="font-weight: 600;">Received From</p>
+            <p>{{username}}</p>
+            <p>Phone: {{ph_no}}</p>
+            <p>Email: {{email}}</p>
+
+        </div>
+        <div class="subs">
+            <p style="font-weight: 600;">Subscription Details</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p style="margin-bottom: 3px; font-size: 13px;">
+                                My Subscription <br>
+                                {{subscription.plan.name}}<span style="font-weight: 400;">(UPSC Prelims
+                                    Package)</span><br>
+                                <span class="lighter">Plan ID: {{subscription.plan.id}}</span><br>
+                                <span class="lighter">Subscription ID: {{subscription.id}}</span>
+                            </p>
+                        </th>
+
+                    </tr>
+
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <p style="margin-bottom: 3px;font-size: 13px;">
+                                Rate<br> Payment frequency <br>Discount coupon<br> Started on<br> Next payment date
+                            </p>
+                        </td>
+                        <td>
+                            <p style="font-weight: 600;margin-bottom: 3px;font-size: 13px;">
+                                Rs. {{ "%.2f"|format(subscription.plan.rate/100) }}/month <br> {{freq}} <br> {{disc}}
+                                <br>{{sub_at}}
+                                <br>{{next_pay_at}}
+                            </p>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+        <div class="payment">
+            <p style="font-weight: 600; font-size: 16px; margin-bottom: 5px; margin-top: 15px;"> Payment Details</p>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Base Amount( Rs.{{ "%.2f"|format(subscription.plan.rate/100) }}/month x
+                    {{subscription.plan.billing_frequency}}
+                    month)</p>
+                <p class="pay">Rs. {{ "%.2f"|format(subscription.subscription_amount/100) }}</p>
+
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Discount</p>
+                <p class="pay">{{disc_rate}}</p>
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Net payable *</p>
+                <p class="pay">Rs. {{ "%.2f"|format(subscription.subscription_amount/100) }}</p>
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Amount paid *</p>
+                <p class="pay">Rs. {{ "%.2f"|format(tx.amount/100) }}</p>
+
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Paid on</p>
+                <p class="pay">{{tx_at}}</p>
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Payment method</p>
+                <p class="pay">{{tx.payment_mode}}</p>
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Status</p>
+                <p class="pay">{{tx.pg_data.pay_response_code}}</p>
+            </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between;">
+                <p class="info">Reference</p>
+                <p class="pay">{{tx.pg_ref_id}}</p>
+            </div>
+            <hr>
+        </div>
+        <div class="Thanks">
+            <p>* Amount mentioned are inclusive of GST.</p>
+            <p>Thanks for the payment.</p>
+            <p> La Excellence</p>
+        </div>
+        <div class="footer">
+            <p>La Excellence Edu Services Private Limited 302, 3rd Floor, SYNo58-60, Guttala Madhapur, Serilingampally,
+                Hyderabad Rangareddy, Telangana, 500081, India</p>
+            <p>GSTN: 36AAFCL0280P1Z6</p>
+            <p>This is electronic receipt and does not require signature.</p>
+        </div>
+    </div>
+</body>
+
+</html>

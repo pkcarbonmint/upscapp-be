@@ -1,0 +1,217 @@
+<html>
+
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        body {
+            margin: 5px;
+            padding: 5px;
+            font-family: 'Open Sans';
+
+        }
+
+        .title-score {
+            text-align: start;
+            margin-top: 10px;
+            margin-left: -10px;
+            display: inline-flex;
+        }
+
+        .title-data-score span {
+            font-family: 'Montserrat';
+            color: black;
+            font-weight: 550;
+            font-size: 25px;
+            display: block;
+            margin-left: 10px;
+        }
+
+        .title-data-score p {
+            font-family: 'Open Sans';
+            font-size: 15px;
+            font-weight: 200;
+            color: #5F6D7E;
+            margin-left: 18px;
+            /* Indentation for the start of the paragraph */
+            text-indent: -10px;
+            /* Negative indent to align with left */
+            margin-top: 5px;
+        }
+
+
+        .score-graphs {
+            display: block;
+        }
+
+        /* .score-graphs img{
+        height: 500px;
+        width: 1000px;
+    } */
+    </style>
+
+</head>
+
+<body>
+
+    <div id="header">
+        <div class="header-content">
+            <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <div class="text-content">
+                <div>
+                    <p style="display: inline-flex;">La Excellence</p>
+                </div>
+                <div class="laex-link">
+                    <img src="{{ link }}" alt="Link Icon">
+                    <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                            href="https://www.laex.in/">laex.in</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="line">
+            <img src="{{ headerline }}" alt="Header Line">
+        </div>
+    </div>
+
+    <div id="footer">
+        <div class="footer-left">
+            Performance Analysis Test Specific
+        </div>
+    </div>
+    <div>
+
+        <!-- <div class="title-score">
+            <div>
+                <img style="margin-right: 20px; height: 40px;width: 40px;" src="{{ scoreicon }}" />
+            </div>
+
+            <div class="title-data-score">
+                <span>Score Benchmark</span>
+                <p>Analysis of your percentage marks for each subject, benchmarked against other's percentage marks for
+                    this test alone.</p>
+            </div>
+        </div> -->
+        <div style="display: inline-flex; margin-left: -20px;">
+            <img style="margin-right: 25px;" src="{{ scoreicon }}" />
+            <div>
+                <p style="font-size: 25px; margin-top: -3px; margin-bottom: -10px; font-family: 'Open Sans'; ">Score
+                    Benchmark</p>
+                <p style="font-size: 15px; font-weight: 200; margin-bottom: 20px;">Analysis of your percentage marks for
+                    each subject, benchmarked against other's percentage marks for
+                    this test alone</p>
+            </div>
+        </div>
+        <div class="score-graphs">
+            {% for item in score_bnmark %}
+            <img src="{{item}}" />
+            {% endfor %}
+        </div>
+
+    </div>
+
+</body>
+
+</html>

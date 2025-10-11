@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+        }
+
+        .section {
+            page-break-after: always;
+        }
+
+        .section-content {
+            break-inside: avoid;
+        }
+
+        .paper-section {
+            page-break-after: always;
+            page-break-before: always;
+            break-inside: avoid;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section">
+        {% include 'aggr_report_1.html' %}
+    </div>
+    <div class="section">
+        {% include 'aggr_report_2.html' %}
+    </div>
+    <div class="paper-section">
+        {% include 'aggr_report_paper_perf.html' %}
+    </div>
+    <div class="section">
+        {% include 'aggr_report_paper_trend.html' %}
+    </div>
+    <div class="section">
+        {% include 'aggr_report_sub_trend.html' %}
+    </div>
+    <div class="section">
+        {% include 'aggr_report_score_bnch.html' %}
+    </div>
+    <div class="section">
+        {% include 'aggr_report_test_ana.html' %}
+    </div>
+    <div class="section">
+        {% include 'aggr_report_paper_ana.html' %}
+    </div>
+    <div class="section">
+        {% include 'aggr_report_subj_ana.html' %}
+    </div>
+</body>
+
+</html>

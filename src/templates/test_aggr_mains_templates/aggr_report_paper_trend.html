@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        .page {
+            page-break-after: always;
+        }
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        /* CSS for the table */
+        body {
+            font-family: 'Open Sans';
+            margin: 10px;
+
+        }
+
+        .classification {
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            margin: 30px;
+            grid-gap: 1.5cm;
+        }
+
+        .classification div {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .classification p {
+            margin: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-left: 50px;
+            border: 1px lightblue;
+            /* Outer border */
+            border-radius: 2px;
+            margin-bottom: 30px;
+        }
+
+        th,
+        td {
+            /* border: 1px lightblue; Row borders */
+            border: none;
+            /* Remove column borders */
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: paleturquoise;
+            border-bottom: 1px solid lightblue;
+            /* Row border */
+            color: black;
+            height: 70px;
+            font-weight: 300;
+            font-family: 14px;
+        }
+
+        td {
+            background-color: lavender;
+            border-bottom: 1px solid lightblue;
+            /* Row border */
+        }
+
+        td.subject {
+            font-weight: 300;
+            font-size: 14px;
+        }
+
+        .low {
+            color: #FD2727;
+        }
+
+        .medium {
+            color: #FFBF00;
+        }
+
+        .high {
+            color: #9EBE5D;
+        }
+
+        .very-high {
+            color: #4E6918;
+        }
+
+        .trend-ch-lt {
+            display: flex;
+            align-items: center;
+        }
+
+        div.trend-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header">
+        <div class="header-content">
+            <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <div class="text-content">
+                <div>
+                    <p style="display: inline-flex;">La Excellence</p>
+                </div>
+                <div class="laex-link">
+                    <img src="{{ link }}" alt="Link Icon">
+                    <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                            href="https://www.laex.in/">laex.in</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="line">
+            <img src="{{ headerline }}" alt="Header Line">
+        </div>
+    </div>
+
+    <div id="footer">
+        <div class="footer-left">
+            Performance Analysis Aggregate
+        </div>
+    </div>
+    <div style="display: inline-flex; margin-left: -20px;">
+        <img style="margin-right: 10px;" src="{{ trend }}" />
+        <div>
+            <p style="font-size: 25px; margin-top: -3px; margin-bottom: -10px; font-family: 'Open Sans'; ">Paper-wise
+                Trend</p>
+            <p style="font-size: 15px; font-weight: 200; margin-bottom: 20px;">Analysis of your paper wise performance
+                trend over
+                test attempts in Mains - arranged chronologically.</p>
+        </div>
+    </div>
+    <div>
+        {% if agg_paper_trend %}
+        {% for trend in agg_paper_trend %}
+        <div class="trend-break">
+            <div style="border: 2px solid #5F6D7E; margin-left: -20px; margin-bottom: 10px;">
+                <div>
+                    {% if trend.subject == 'over_all' %}
+                    <p style="font-size: 20px; font-weight: 300; margin-left: 5px;">Over all</p>
+                    {% else %}
+                    <p style="font-size: 20px; font-weight: 300; margin-left: 5px;">{{ trend.subject }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div style="display: inline-flex; ">
+                        <div>
+                            <p style="font-weight: 300; font-size: 18px;margin: 5px;">{{ trend.latest }}%</p>
+                            <div class="trend-ch-lt">
+                                {% if trend.change > 0 %}
+                                <img style="margin-left: 5px;" src="{{ trendup }}" alt="Trend Up" />
+                                <p style="color: #9EBE5D; margin-left:10px;font-size: 15px;">{{ trend.change }}%</p>
+                                {% else %}
+                                <img style="margin-left: 5px;" src="{{ trenddown }}" alt="Trend Down" />
+                                <p style="color: #E75D24; margin-left:10px; font-size: 15px;">{{ trend.change }}%</p>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <img style="width: 450px; height: 400px; margin-top: -10px; margin-left: 15px; margin-right: -20px;"
+                            src="{{ trend.fig }}" alt="Subject Trend" />
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-left: 25px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test Title</th>
+                            <th>Test Attempt ID</th>
+                            <th>Test Attempt Date</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in trend.trend_test_data.performance_trend %}
+                        <tr>
+                            <td style="text-align: left;">{{ test.test_title }}</td>
+                            <td>{{ test.test_attempt_id }}</td>
+                            <td>{{ test.test_attempt_date_formatted }}</td>
+                            <td>{{ "%.2f"|format(test.percentage) }}</td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="text-align: center;">
+            <p> No papers available for trend analysis</p>
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>

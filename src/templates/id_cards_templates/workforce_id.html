@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student ID</title>
+    <style>
+        .card {
+            width: 210px;
+            height: 330px;
+            border-radius: 5px;
+            background-image: url('src/assets/workforce-id-bg.svg');
+            background-size: cover;
+            background-position: center;
+            padding: 15px 12px 25px;
+            border: 1px solid #b8c1ff;
+            /* lightHanBlue */
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-family: sans-serif;
+        }
+
+        .card-content {
+            flex-grow: 1;
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* optional: add padding-top if needed */
+        }
+
+        .logo {
+            width: 100%;
+            text-align: center;
+        }
+
+        .profile-wrapper {
+            margin-top: 40px;
+            border: 4px solid #9ebe5d;
+            /* refreshGreen */
+            border-radius: 49%;
+            overflow: hidden;
+            width: 38px;
+            height: 0px;
+            background-color: rgba(58, 91, 205, 0.25);
+            /* background-image: url('src/assets/profilebg.svg'); */
+        }
+
+        .profile-pic {
+            width: 40px;
+            /* margin-top: 5px; */
+            /* margin-top: -1px; */
+            /* margin-left: -5px; */
+            height: 40px;
+            border-radius: 50%;
+            /* object-fit: cover; */
+            background-image: url('src/assets/profilebg.svg');
+        }
+
+        .name {
+            margin-top: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2563eb;
+            /* vibrantBlue */
+            /* align-content: center; */
+            text-align: center;
+            padding: 0 4px;
+            /* Adds space from edges */
+            word-break: normal;
+            white-space: normal;
+            max-width: 100%;
+            min-width: 120px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            width: 100%;
+            gap: 4px;
+            font-size: 8px;
+            padding: 0 4px;
+            align-content: center;
+            margin-left: -50px;
+        }
+
+        .label {
+            color: gray;
+            font-weight: 400;
+        }
+
+        .value {
+            font-weight: 600;
+            color: black;
+        }
+
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 8px;
+            color: #404040;
+            width: 100%;
+
+            /* onyx */
+        }
+
+        .footer p {
+            /* margin: 0; */
+            padding-bottom: 2px;
+            display: inline;
+            white-space: nowrap;
+        }
+
+        .footer-links {
+            display: inline;
+            /* Make it inline so it stays in one line */
+            font-size: 6px;
+            white-space: nowrap;
+            /* Prevent wrapping */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <div class="logo">
+            <!-- Replace with actual logo if needed -->
+            <img src="{{laex_icon}}" alt="Logo" height="24">
+        </div>
+
+        <div class="profile-wrapper">
+            <img class="profile-pic" src="{{profile_pic or 'src/assets/profilebg.svg'}}" alt="Profile Picture">
+        </div>
+
+        <p class="name">{{ student.full_name }}</p>
+        <div class="card-content">
+            <div class="info-grid">
+                <div class="label">Work Force ID</div>
+                <div class="value">WF-{{ student.id }}</div>
+
+                {% if offering %}
+                <div class="label">Course</div>
+                <div class="value">{{ offering.name }}</div>
+                {% endif %}
+
+                {% if product %}
+                <div class="label">Batch</div>
+                <div class="value">{{product.name}} - {{product.code}}</div>
+                {% endif %}
+
+                <div class="label">Branch</div>
+                <div class="value">{{ branch_name or 'Online branch' }}</div>
+
+                <div class="label">Association</div>
+                <div class="value">{{ 'Internal' if not student.is_external else 'External' }}</div>
+
+                <div class="label">Phone No.</div>
+                <div class="value">{{ student.phone_number }}</div>
+            </div>
+        </div>
+        <div class="footer">
+            <p>La Excellence Edu Services Private Limited</p>
+            <div class="footer-links">
+                <span>www.laex.in</span>
+                <span class="dot">&#8226;</span>
+                <span>+91 9154242140</span>
+                <span class="dot">&#8226;</span>
+                <span>info@laex.in</span>
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>

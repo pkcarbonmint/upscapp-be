@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tax Invoice</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5in;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 0px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            page-break-before: auto;
+            break-before: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: dodgerblue;
+        }
+
+        .no-border {
+            border: none;
+        }
+
+        .totals td {
+            text-align: right;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+
+        .header {
+            flex: 1;
+        }
+
+        .invoice-box {
+            flex: 1;
+        }
+
+        .invoice-box,
+        .footer {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .invoice-box h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .invoice-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+            margin-bottom: 5px;
+        }
+
+        .invoice-details div {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .invoice-details div strong,
+        .invoice-details div span:first-child {
+            margin-left: 10px;
+        }
+
+        .invoice-summary-footer {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .space {
+            margin-bottom: 2.8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="text-align: center; height: 40px;">
+                <img src="{{ laex_icon }}" alt="Logo" height="40">
+            </div>
+            <h4>La Excellence Edu Services Private Limited</h4>
+            <p>
+                H.No: 302, 3rd Floor, SY No 58-60, Guttala<br>
+                Madhapur, Serilingampally, Rangareddi,<br>
+                Hyderabad, Telangana, India - 500081<br>
+                <!-- {% if gst_no %}
+                GSTN: {{ gst_no }}
+                {% else %}
+                GSTN: N/A
+                {% endif %} -->
+            </p>
+        </div>
+
+        <div class="invoice-box">
+            <h2 style="text-align: center; color:dodgerblue; margin-bottom: 20px;">TAX INVOICE</h2>
+            <div class="invoice-details">
+                <div class="space"><strong>Date:</strong> <span>{{ date }}</span></div>
+                <div class="space"><strong>Invoice #:</strong> <span>{{ invoice_number }}</span></div>
+                <div class="space"><strong>Student ID:</strong> <span>{{ student_id }}</span></div>
+                <div class="space"><strong>Admission IDs:</strong> <span>{{ admission_ids | join(",") }}</span></div>
+                <div class="space"><strong>Purchase IDs:</strong> <span>{{ pur_ids | join(",") }}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="4">Bill To</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if bill_to %}
+            <tr>
+                <td>
+                    {{ bill_to.name }}<br>
+
+                    {# Show h_no and optionally add comma if street exists #}
+                    {% if bill_to.h_no %}
+                    {{ bill_to.h_no }}{% if bill_to.street %}, {% endif %}
+                    {% endif %}
+
+                    {# Show street if exists, and end the line #}
+                    {% if bill_to.street %}
+                    {{ bill_to.street }}<br>
+                    {% else %}
+                    <br>
+                    {% endif %}
+
+                    {# Build city, district, state list and join by comma #}
+                    {% set parts = [bill_to.city, bill_to.district, bill_to.state] | select | list %}
+                    {{ parts | join(', ') }}<br>
+
+                    {# Show PIN code if available #}
+                    {% if bill_to.zipcode %}
+                    PIN {{ bill_to.zipcode }}
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% else %}
+            <tr>
+                <td>
+                    {{name}}<br>
+                    {{phone_no}}
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <table>
+        <thead>
+            <tr>
+                <th>Course Description</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+            {% for detail in details_list %}
+            <tr>
+                <td>
+                    Course: {{ detail["offering_data"]["offering_name"] }}, {{ detail["offering_data"]["off_type"]
+                    }}<br>
+                    Batch: {{ detail["offering_data"]["pro_name"] }} - {{ detail["offering_data"]["pro_code"] }}<br>
+                    {% if detail["offering_data"]["start"] %}
+                    Course Duration: {{ detail["offering_data"]["start"] }} to {{ detail["offering_data"]["end"] }}<br>
+                    {% elif detail["offering_data"]["duration"] %}
+                    Course Duration: {{ detail["offering_data"]["duration"] }} months<br>
+                    {% else %}
+                    Course Duration: N/A<br>
+                    {% endif %}
+                    {% if detail["offering_data"]["branch"] %}
+                    Branch: {{ detail["offering_data"]["branch"] }}<br>
+                    {% else %}
+                    Branch: N/A<br>
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <table style="margin-bottom: 20px;">
+        <thead>
+            <tr>
+                <th>Sl.</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>GST</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        {% for detail in details_list %}
+        <tbody>
+            <tr>
+                <td>{{ loop.index }}</td>
+
+                <td style="width: 50%;">
+                    <div>
+                        {% if detail["amount_data"]["inst_number"] == 0 %}
+                        Fee for {{ detail["amount_data"]["offering_name"] }} course
+                        {% else %}
+                        Fee for {{ detail["amount_data"]["offering_name"] }} course, Installment - {{
+                        detail["amount_data"]["inst_number"] }}
+                        {% endif %}
+                    </div>
+
+                    {% if detail["amount_data"].get("breakup_name") %}
+                    <div style="margin-left: 70px; margin-top: 4px;">
+                        1. {{ detail["amount_data"]["breakup_name"] }}
+                    </div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if detail["amount_data"].get("breakup_name") %}
+                    <div style="margin-top: 30px; font-size: 90%;">
+                        {{ indian_format(detail["amount_data"]["base_amt"] | int) }}
+                    </div>
+                    {% else %}
+                    <div>
+                        {{ indian_format(detail["amount_data"]["base_amt"] | int) }}
+                    </div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if detail["amount_data"].get("breakup_name") %}
+                    <div style="margin-top: 50px; font-size: 90%;">
+                        {% if detail["amount_data"]["gst_amt"] %}
+                        {{ indian_format(detail["amount_data"]["gst_amt"] | int)
+                        }} ({{detail["amount_data"]["gst_rate"]}}%)<br>
+                        <span style="font-size: 55%;">GSTN-{{detail["amount_data"]["gst_no"]}}</span>
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div>
+                        {% if detail["amount_data"]["gst_amt"] %}
+                        {{ indian_format(detail["amount_data"]["gst_amt"] | int)
+                        }} ({{detail["amount_data"]["gst_rate"]}}%)<br>
+                        <span style="font-size: 55%;">GSTN-{{detail["amount_data"]["gst_no"]}}</span>
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if detail["amount_data"].get("breakup_name") %}
+                    <div style="margin-top: 30px; font-size: 90%;">
+                        {{ indian_format(detail["amount_data"]["tot_amt"] | int) }}
+                    </div>
+                    {% else %}
+                    <div>
+                        {{ indian_format(detail["amount_data"]["tot_amt"] | int) }}
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+
+    </table>
+    <div class="invoice-summary-footer">
+        <div class="container">
+            <div class="header">
+
+            </div>
+            <div class="invoice-box">
+                <div class="invoice-details">
+                    <div class="space"><span>Price</span> <span>Rs. {{ indian_format(total_base_amt| int) }}</span>
+                    </div>
+
+                    <!-- {% if gst_rate %}
+                    <div class="space"><span>GST Rate</span> <span>{{ gst_rate }}%</span></div>
+                    {% else %}
+                    <div class="space"><span>GST Rate</span> <span>N/A</span></div>
+                    {% endif %} -->
+                    {% if total_gst_amt %}
+                    <div class="space"><span>GST</span> <span>Rs. {{ indian_format(total_gst_amt| int) }}</span></div>
+                    {% else %}
+                    <div class="space"><span>GST</span> <span>N/A</span></div>
+                    {% endif %}
+
+
+
+                    <div class="space"><strong>Total</strong> <span>Rs. {{ indian_format(total_price_amt| int) }}</span>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <div class="footer">
+            <p>This is an electronic invoice and does not need a signature.</p>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

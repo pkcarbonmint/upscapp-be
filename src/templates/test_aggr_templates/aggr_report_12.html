@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        /* CSS for the table */
+        body {
+            font-family: 'Open Sans';
+            /* margin: 20px; */
+            margin: 10;
+            /* Remove default body margin */
+            padding: 0;
+        }
+
+        .page {
+            page-break-after: always;
+        }
+
+        .classification {
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            margin: 30px;
+            grid-gap: 1.5cm;
+        }
+
+        .classification div {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .classification p {
+            margin: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-left: -30px;
+            border: 1px lightblue;
+            /* Outer border */
+            border-radius: 2px;
+        }
+
+        th,
+        td {
+            /* border: 1px lightblue; Row borders */
+            border: none;
+            /* Remove column borders */
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: paleturquoise;
+            border-bottom: 1px solid lightblue;
+            /* Row border */
+            color: black;
+            height: 70px;
+            font-weight: 300;
+            font-family: 14px;
+        }
+
+        td {
+            background-color: lavender;
+            border-bottom: 1px solid lightblue;
+            /* Row border */
+        }
+
+        td.subject {
+            font-weight: 300;
+            font-size: 14px;
+        }
+
+        .Low {
+            color: #FD2727;
+        }
+
+        .Medium {
+            color: #FFBF00;
+        }
+
+        .High {
+            color: #9EBE5D;
+        }
+
+        .Very-High {
+            color: #4E6918;
+        }
+
+
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header">
+        <div class="header-content">
+            <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <div class="text-content">
+                <div>
+                    <p style="display: inline-flex;">La Excellence</p>
+                </div>
+                <div class="laex-link">
+                    <img src="{{ link }}" alt="Link Icon">
+                    <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                            href="https://www.laex.in/">laex.in</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="line">
+            <img src="{{ headerline }}" alt="Header Line">
+        </div>
+    </div>
+
+    <div id="footer">
+        <div class="footer-left">
+            Performance Analysis Aggregate
+        </div>
+    </div>
+    <div style="display: inline-flex; margin-left: -20px;">
+        <img style="margin-right: 10px;" src="{{ subj_ana }}" />
+        <p style="font-size: 25px; margin-top: -3px; font-family: 450; ">Topic Wise Analysis</p>
+    </div>
+    {% if qb_topic_wise_resp %}
+    <div class="classification">
+        <div style="margin-left: -50px; ">
+            <p><span style="color: #4E6918; ">Very High</span>- excellent</p>
+            <p><span style="color: #9EBE5D ;">High</span>- keep it up</p>
+        </div>
+        <div style="margin-right: -120px;">
+            <p><span style="color: #FFBF00 ; ">Medium</span>- needs improvement</p>
+            <p><span style="color: #FD2727   ;">Low</span>- needs significant improvement</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Topic</th>
+                <th>Correctly answered</th>
+                <th>Incorrectly answered</th>
+                <th>Not attempted</th>
+                <th>Total Questions</th>
+                <th>Total Marks</th>
+                <th>Strength</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Python loop to generate table rows -->
+            {% for item in qb_topic_wise_resp %}
+            <tr>
+                <td style="font-weight: 400;">{{item.subject_name}}</td>
+            </tr>
+            {% for topic in item.topics %}
+            <tr>
+                <td class="subject">{{ topic.topic_name }}</td>
+                <td>{{ topic.correct }}</td>
+                <td>{{ topic.incorrect }}</td>
+                <td>{{ topic.tq_count - (topic.correct + topic.incorrect) }}</td>
+                <td>{{ topic.tq_count }}</td>
+                <td>{{ "%.2f"|format(topic.marks_acquired) }}</td>
+                <td class="{{ topic.score_category }}">{{ topic.score_category }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center;">
+        <p> No topics available for analysis</p>
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
