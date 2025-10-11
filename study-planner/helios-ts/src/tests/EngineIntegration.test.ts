@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateInitialPlan } from '../engine/Engine';
-import { StudentIntake, Archetype } from '../types/models';
+import { StudentIntake, Archetype, createStudentIntake } from '../types/models';
 import { ConfidenceLevel, TimeCommitment, SubjectApproach, StudyPacing } from '../types/Types';
 import { loadAllSubjects } from '../services/SubjectLoader';
 import dayjs from 'dayjs';
@@ -43,7 +43,7 @@ describe('Engine Integration Tests', () => {
       expect(allSubjects.length).toBeGreaterThan(0);
       
       // Create a realistic student intake
-      const studentIntake: StudentIntake = {
+      const studentIntake: StudentIntake = createStudentIntake({
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Weak' as ConfidenceLevel,
@@ -62,7 +62,7 @@ describe('Engine Integration Tests', () => {
         },
         target_year: '2026',
         start_date: '2024-01-01'
-      };
+      });
 
       // Generate the study plan
       const result = await generateInitialPlan(
@@ -135,7 +135,7 @@ describe('Engine Integration Tests', () => {
       const yearAfterNext = currentYear + 2;
 
       // Test with next year (should be comprehensive study)
-      const intakeNextYear: StudentIntake = {
+      const intakeNextYear: StudentIntake = createStudentIntake({
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -152,7 +152,7 @@ describe('Engine Integration Tests', () => {
         },
         target_year: nextYear.toString(),
         start_date: '2024-01-01'
-      };
+      });
 
       const resultNextYear = await generateInitialPlan(
         'test-user-next-year',
@@ -165,10 +165,10 @@ describe('Engine Integration Tests', () => {
       expect(resultNextYear.plan.timelineAnalysis?.targetYear).toBe(nextYear);
 
       // Test with year after next (should also be comprehensive study)
-      const intakeYearAfterNext: StudentIntake = {
+      const intakeYearAfterNext: StudentIntake = createStudentIntake({
         ...intakeNextYear,
         target_year: yearAfterNext.toString()
-      };
+      });
 
       const resultYearAfterNext = await generateInitialPlan(
         'test-user-year-after-next',
@@ -195,7 +195,7 @@ describe('Engine Integration Tests', () => {
         defaultPacing: 'Balanced' as StudyPacing
       };
 
-      const studentIntake: StudentIntake = {
+      const studentIntake: StudentIntake = createStudentIntake({
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -212,7 +212,7 @@ describe('Engine Integration Tests', () => {
         },
         target_year: '2026',
         start_date: '2024-01-01'
-      };
+      });
 
       const result = await generateInitialPlan(
         'test-user-part-time',
@@ -232,7 +232,7 @@ describe('Engine Integration Tests', () => {
     });
 
     it('should adjust study hours when they exceed archetype limits', async () => {
-      const studentIntake: StudentIntake = {
+      const studentIntake: StudentIntake = createStudentIntake({
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -249,7 +249,7 @@ describe('Engine Integration Tests', () => {
         },
         target_year: '2026',
         start_date: '2024-01-01'
-      };
+      });
 
       const result = await generateInitialPlan(
         'test-user-high-hours',
@@ -268,7 +268,7 @@ describe('Engine Integration Tests', () => {
     });
 
     it('should generate different cycle counts based on available time', async () => {
-      const shortTermIntake: StudentIntake = {
+      const shortTermIntake: StudentIntake = createStudentIntake({
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -285,12 +285,12 @@ describe('Engine Integration Tests', () => {
         },
         target_year: '2025', // Short term
         start_date: '2024-01-01'
-      };
+      });
 
-      const longTermIntake: StudentIntake = {
+      const longTermIntake: StudentIntake = createStudentIntake({
         ...shortTermIntake,
         target_year: '2027' // Long term
-      };
+      });
 
       const shortTermResult = await generateInitialPlan(
         'test-user-short-term',
@@ -320,7 +320,7 @@ describe('Engine Integration Tests', () => {
 
   describe('Error Handling', () => {
     it('should handle missing target year gracefully', async () => {
-      const intakeWithoutTargetYear: StudentIntake = {
+      const intakeWithoutTargetYear: StudentIntake = createStudentIntake({
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel
         },
@@ -336,7 +336,7 @@ describe('Engine Integration Tests', () => {
         },
         target_year: undefined,
         start_date: '2024-01-01'
-      };
+      });
 
       const result = await generateInitialPlan(
         'test-user-no-target-year',
@@ -351,7 +351,7 @@ describe('Engine Integration Tests', () => {
     });
 
     it('should handle empty subject confidence gracefully', async () => {
-      const intakeWithoutConfidence: StudentIntake = {
+      const intakeWithoutConfidence: StudentIntake = createStudentIntake({
         subject_confidence: {},
         study_strategy: {
           study_focus_combo: 'OneGSPlusOptional',
@@ -365,7 +365,7 @@ describe('Engine Integration Tests', () => {
         },
         target_year: '2026',
         start_date: '2024-01-01'
-      };
+      });
 
       const result = await generateInitialPlan(
         'test-user-no-confidence',

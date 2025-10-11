@@ -6,12 +6,12 @@ import {
   reviewPlan,
   validatePlan
 } from '../engine/Engine';
-import { StudentIntake, Archetype } from '../types/models';
+import { StudentIntake, Archetype, createStudentIntake } from '../types/models';
 import { ConfidenceLevel, TimeCommitment, SubjectApproach, StudyPacing } from '../types/Types';
 import { TopicConfidenceMap } from '../types/HourCalculationTypes';
 
 describe('Engine', () => {
-  const mockStudentIntake: StudentIntake = {
+  const mockStudentIntake: StudentIntake = createStudentIntake({
     subject_confidence: {
       'H01': 'Strong' as ConfidenceLevel,
       'G01': 'Moderate' as ConfidenceLevel,
@@ -29,7 +29,7 @@ describe('Engine', () => {
     },
     target_year: '2025',
     start_date: '2024-01-01'
-  };
+  });
 
   const mockArchetype: Archetype = {
     archetype: 'The Full-Time Professional',

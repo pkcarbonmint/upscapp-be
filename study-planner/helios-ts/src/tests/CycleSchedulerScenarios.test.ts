@@ -4,11 +4,11 @@ import { makeLogger } from '../services/Log';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
 import { loadAllSubjects } from '../services/SubjectLoader';
 import dayjs from 'dayjs';
-import { Block, DailyPlan, StudentIntake, StudyPlan, Task, WeeklyPlan } from '../types/models';
+import { Block, DailyPlan, StudentIntake, StudyPlan, Task, WeeklyPlan, createStudentIntake } from '../types/models';
 import { CycleType } from '../types/Types';
 
 function makeIntake(testCase: { startDate: Date, targetYear: number }) {
-	const intake: StudentIntake = {
+	const intake: StudentIntake = createStudentIntake({
 		start_date: testCase.startDate.toISOString().split('T')[0],
 		target_year: testCase.targetYear.toString(),
 		study_strategy: {
@@ -38,7 +38,7 @@ function makeIntake(testCase: { startDate: Date, targetYear: number }) {
 			'C': 'Moderate',
 			'S': 'Moderate'
 		}
-	}
+	})
 	return intake;
 }
 
@@ -137,7 +137,7 @@ describe('CycleSchedulerScenarios', () => {
 				'test-user-s1',
 				{} as any,
 				{} as any,
-				{
+				createStudentIntake({
 					start_date: testCase.startDate.toISOString().split('T')[0],
 					target_year: `${testCase.targetYear}`,
 					study_strategy: {
@@ -167,7 +167,7 @@ describe('CycleSchedulerScenarios', () => {
 						'C': 'Weak',
 						'S': 'Weak'
 					}
-				}
+				})
 			);
 
 			// Basic plan structure validation

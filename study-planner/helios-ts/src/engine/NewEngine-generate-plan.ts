@@ -1,6 +1,6 @@
 import { StudyPlan, Archetype, StudyCycle } from '../types/models';
 import { StudentIntake } from '../types/models';
-import { Logger, LogEntry, ConfidenceLevel, SubjectApproach } from '../types/Types';
+import { Logger, LogEntry, SubjectApproach } from '../types/Types';
 import { Config } from './engine-types';
 import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
@@ -84,8 +84,8 @@ export async function generateInitialPlan(
   // const baselineHourTable = buildBaselineHourTable(logger, subjData);
 
   // NEW: Use cycle scheduler to determine plan structure
-  const targetYear = parseInt(intake.target_year || '2026');
-  const prelimsExamDate = dayjs(`${targetYear}-05-28`).toDate(); // Default prelims date
+  const targetYear = intake.getTargetYear();
+  const prelimsExamDate = intake.getPrelimsExamDate();
   
   // Debug: Log the start_date being used
   const startDate = intake.start_date;
@@ -268,21 +268,13 @@ function buildConfidenceMap(logger: Logger, intake: StudentIntake, subjData: Sub
   
   const confidenceMap = new Map<string, number>();
   
-  // Map confidence levels to factors
-  const confidenceFactors: Record<ConfidenceLevel, number> = {
-    'VeryStrong': 0.7,
-    'Strong': 0.8,
-    'Moderate': 1.0,
-    'Weak': 1.2,
-    'VeryWeak': 1.3,
-    'NotStarted': 1.3
-  };
+  // Confidence factors are now handled by the intake calculator
   
   // For each subject in intake, map all its subtopics to the subject's confidence factor
   Object.entries(intake.subject_confidence)
     .map(([subjectCode, confidenceLevel]) => ({
       subjectCode,
-      stretchFactor: confidenceFactors[confidenceLevel],
+      stretchFactor: intake.getConfidenceFactor(confidenceLevel),
       subject: subjects.find(s => s.subjectCode === subjectCode)
     }))
     .filter(({ subject }) => subject !== undefined)
@@ -298,7 +290,7 @@ function buildConfidenceMap(logger: Logger, intake: StudentIntake, subjData: Sub
     );
   
   // For subjects not in intake, default to 'Moderate' confidence
-  const moderateFactor = confidenceFactors['Moderate'];
+  const moderateFactor = intake.getConfidenceFactor('Moderate');
   const subjectsNotInIntake = subjects.filter(subject => 
     !Object.keys(intake.subject_confidence).includes(subject.subjectCode)
   );
@@ -508,7 +500,7 @@ async function buildFinalPlan(
   const curatedResources = await aggregatePlanResources(logger, cycles);
   
   const plan: StudyPlan = {
-    targeted_year: parseInt(intake.target_year || '2026'),
+    targeted_year: intake.getTargetYear(),
     start_date: dayjs(intake.start_date || new Date()).toDate(),
     study_plan_id: `plan-${Date.now()}`,
     user_id: 'system-generated',

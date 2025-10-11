@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype } from '../types/models';
+import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
 
 describe('Resource Integration Tests', () => {
@@ -29,7 +30,7 @@ describe('Resource Integration Tests', () => {
     // - Start date: October 1, 2025  
     // - Target year: 2026
     // - Include subjects that have resources in study-materials.json
-    testIntake = {
+    testIntake = createStudentIntake({
       subject_confidence: {
         'P': 'Moderate',    // Polity - has resources
         'E': 'Moderate',    // Economy - has resources
@@ -49,7 +50,7 @@ describe('Resource Integration Tests', () => {
       },
       target_year: '2026',
       start_date: '2025-10-01'
-    };
+    });
   });
 
   it('should include curated resources in the generated plan', async () => {

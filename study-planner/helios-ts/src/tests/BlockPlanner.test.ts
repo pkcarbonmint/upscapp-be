@@ -3,7 +3,7 @@ import {
   planBlocks,
   planBlocksWithRebalancing
 } from '../engine/BlockPlanner';
-import { Archetype, StudentIntake } from '../types/models';
+import { Archetype, StudentIntake, createStudentIntake } from '../types/models';
 import { Subject } from '../types/Subjects';
 import { ConfidenceLevel, Logger } from '../types/Types';
 import { TopicConfidenceMap } from '../types/HourCalculationTypes';
@@ -67,7 +67,7 @@ describe('BlockPlanner', () => {
     }
   ];
 
-  const mockStudentIntake: StudentIntake = {
+  const mockStudentIntake: StudentIntake = createStudentIntake({
     subject_confidence: {
       'H01': 'Strong' as ConfidenceLevel,
       'G01': 'Moderate' as ConfidenceLevel,
@@ -85,7 +85,7 @@ describe('BlockPlanner', () => {
     },
     target_year: '2025',
     start_date: '2024-01-01'
-  };
+  });
 
   const mockArchetype: Archetype = {
     archetype: 'The Full-Time Professional',

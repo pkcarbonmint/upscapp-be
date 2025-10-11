@@ -23,8 +23,7 @@ export async function planFoundationCycle(
   const { logInfo: info, logDebug: debug } = logger;
   info('Engine', 'Planning Foundation cycle');
 
-  const targetYear = parseInt(intake.target_year || '2026');
-  const endDate = dayjs(`${targetYear - 1}-12-31`);
+  const endDate = dayjs(intake.getFoundationCycleEndDate());
 
   // If prep starts after December 31st of the year before target year, no foundation cycle
   if (startDate.isAfter(endDate)) {
@@ -34,16 +33,18 @@ export async function planFoundationCycle(
 
   const durationWeeks = Math.ceil(endDate.diff(startDate, 'day') / 7);
 
-  // Calculate total hours for foundation cycle (assuming 8 hours/day)
-  const totalHours = durationWeeks * 7 * 8;
+  // Calculate total hours for foundation cycle
+  const dailyHours = intake.getDailyStudyHours();
+  const totalHours = durationWeeks * 7 * dailyHours;
 
   // Use all subjects for foundation cycle (with default confidence levels)
   const gsSubjects = allSubjects.filter(s => s.category === 'Macro');
   const optionalSubjects = allSubjects.filter(s => s.category === 'Micro');
   
-  // Calculate hours based on subject approach - use 6:3 ratio for GS:Optional
-  const gsHours = Math.floor(totalHours * 0.67); // 6/9 = 0.67
-  const optionalHours = Math.floor(totalHours * 0.33); // 3/9 = 0.33
+  // Calculate hours based on subject approach
+  const ratio = intake.getGSOptionalRatio();
+  const gsHours = Math.floor(totalHours * ratio.gs);
+  const optionalHours = Math.floor(totalHours * ratio.optional);
 
   debug('Engine', `Foundation cycle: ${durationWeeks} weeks, ${totalHours} total hours (GS: ${gsHours}, Optional: ${optionalHours})`);
   // Apply confidence factors and create blocks

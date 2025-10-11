@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype, Block, StudyCycle } from '../types/models';
+import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
 import { loadAllSubjects } from '../services/SubjectLoader';
 import type { Subject } from '../types/Subjects';
@@ -26,7 +27,7 @@ describe('Proportional Time Allocation Verification', () => {
       specialFocus: ['GS']
     };
 
-    testIntake = {
+    testIntake = createStudentIntake({
       subject_confidence: {
         'H01': 'VeryStrong',  // History-Ancient
         'H02': 'VeryStrong',  // History-Medieval
@@ -58,7 +59,7 @@ describe('Proportional Time Allocation Verification', () => {
         catch_up_day_preference: 'Sunday'
       },
       subject_approach: 'SingleSubject'
-    };
+    });
 
     // Load subjects to get baseline_hours
     subjectsData = await loadAllSubjects();

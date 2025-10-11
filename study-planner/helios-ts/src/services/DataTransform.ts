@@ -1,4 +1,4 @@
-import { UIWizardData, StudentIntake, StudyStrategy } from '../types/models';
+import { UIWizardData, StudentIntake, StudyStrategy, createStudentIntake } from '../types/models';
 import { ConfidenceLevel, SubjectCode } from '../types/Types';
 
 /**
@@ -33,8 +33,8 @@ export function transformUIToStudentIntake(wizardData: UIWizardData): StudentInt
   const subjectConfidence = mapSubjectConfidence(assessment);
 
 
-  // Build StudentIntake
-  const intake: StudentIntake = {
+  // Build StudentIntake using createStudentIntake helper
+  const intake: StudentIntake = createStudentIntake({
     subject_confidence: subjectConfidence,
     study_strategy: studyStrategy,
     target_year: prep?.target_year,
@@ -70,7 +70,7 @@ export function transformUIToStudentIntake(wizardData: UIWizardData): StudentInt
       optional_syllabus_understanding: awareness.optional_syllabus_understanding,
       pyq_awareness_and_use: awareness.pyq_awareness_and_use
     } : undefined
-  };
+  });
 
   return intake;
 }

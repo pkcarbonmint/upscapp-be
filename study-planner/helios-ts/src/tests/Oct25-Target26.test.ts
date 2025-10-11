@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype } from '../types/models';
+import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
 import { loadAllSubjects } from '../services/SubjectLoader';
 import { ResourceService } from '../services/ResourceService';
@@ -50,7 +51,7 @@ describe('generateInitialPlan', () => {
     // - 2 subjects in parallel (GS + Optional)
     // - Medium confidence in all subjects
     // Using actual subject codes from the system
-    testIntake = {
+    testIntake = createStudentIntake({
       subject_confidence: {
         'H01': 'Moderate',  // History-Ancient
         'H02': 'Moderate',  // History-Medieval
@@ -73,7 +74,7 @@ describe('generateInitialPlan', () => {
       subject_approach: 'DualSubject',
       target_year: '2026',
       start_date: '2025-10-01'
-    };
+    });
   });
 
   it('should generate a valid study plan with correct structure', async () => {
@@ -1010,7 +1011,7 @@ describe('generateInitialPlan', () => {
       const plan = result.plan;
       
       // Create mock StudentIntake for testing
-      const mockStudentIntake = {
+      const mockStudentIntake = createStudentIntake({
         subject_confidence: {},
         study_strategy: {
           study_focus_combo: 'dual_focus' as any,
@@ -1050,7 +1051,7 @@ describe('generateInitialPlan', () => {
           programme_mentor_name: 'None',
           place_of_preparation: 'Home'
         }
-      };
+      });
 
       // Generate document with detailed resources
       const document = await DocumentService.generateDocument(null, plan, mockStudentIntake);

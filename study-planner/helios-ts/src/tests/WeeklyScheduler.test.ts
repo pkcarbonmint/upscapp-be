@@ -4,12 +4,12 @@ import {
   scheduleWeeksInAllCycles
 } from '../engine/WeeklyScheduler';
 import { Block, StudyCycle } from '../types/models';
-import { StudentIntake } from '../types/models';
+import { StudentIntake, createStudentIntake } from '../types/models';
 import { Logger } from '../types/Types';
 import { makeLogger } from '../services/Log';
 
 describe('WeeklyScheduler', () => {
-  const mockStudentIntake: StudentIntake = {
+  const mockStudentIntake: StudentIntake = createStudentIntake({
     subject_confidence: {
       'H01': 'Strong'
     },
@@ -25,7 +25,7 @@ describe('WeeklyScheduler', () => {
     },
     target_year: '2025',
     start_date: '2024-01-01'
-  };
+  });
 
   const mockArchetype = {
     archetype: 'The Full-Time Professional',

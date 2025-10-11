@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype } from '../types/models';
+import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
 import { loadAllSubjects } from '../services/SubjectLoader';
 import dayjs from 'dayjs';
@@ -54,7 +55,7 @@ describe('generateInitialPlan', () => {
     // - 2 subjects in parallel (GS + Optional)
     // - Medium confidence in all subjects
     // Using actual subject codes from the system
-    testIntake = {
+    testIntake = createStudentIntake({
       subject_confidence: {
         'H01': 'Moderate',  // History-Ancient
         'H02': 'Moderate',  // History-Medieval
@@ -77,7 +78,7 @@ describe('generateInitialPlan', () => {
       subject_approach: 'DualSubject',
       target_year: '2027',
       start_date: '2025-10-01'
-    };
+    });
   });
 
   it('should generate a valid study plan with correct structure', async () => {

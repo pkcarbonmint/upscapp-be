@@ -5,7 +5,7 @@ import {
   performMultiLevelSortWithTopicConfidence,
   filterBySeason
 } from '../engine/Sequencer';
-import { StudentIntake } from '../types/models';
+import { StudentIntake, createStudentIntake } from '../types/models';
 import { Subject } from '../types/Subjects';
 import { ConfidenceLevel, StudyPacing } from '../types/Types';
 import { TopicConfidenceMap } from '../types/HourCalculationTypes';
@@ -62,7 +62,7 @@ describe('Sequencer', () => {
     }
   ];
 
-  const mockStudentIntake: StudentIntake = {
+  const mockStudentIntake: StudentIntake = createStudentIntake({
     subject_confidence: {
       'H01': 'Strong' as ConfidenceLevel,
       'G01': 'Moderate' as ConfidenceLevel,
@@ -80,7 +80,7 @@ describe('Sequencer', () => {
     },
     target_year: '2026',
     start_date: '2024-01-01'
-  };
+  });
 
   describe('sequenceSubjectsWithTargetYear', () => {
     it('should sequence subjects correctly', async () => {

@@ -1,4 +1,4 @@
-import { Block, WeeklyPlan, DailyPlan, StudentIntake } from '../types/models';
+import { Block, WeeklyPlan, DailyPlan, StudentIntake, createStudentIntake } from '../types/models';
 import { CycleType } from '../types/Types';
 import { Subject, getTopicEstimatedHours } from '../types/Subjects';
 import { ResourceService } from '../services/ResourceService';
@@ -8,16 +8,7 @@ import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
 import assert from 'assert';
 
-const taskRatios: Record<CycleType, { study: number; practice: number; revision: number; test: number }> = {
-  'C1': { study: 1.0, practice: 0, revision: 0, test: 0 }, // NCERT Foundation - Study only
-  'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05 }, // Comprehensive Foundation - Balanced
-  'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0 }, // Mains Revision Pre-Prelims
-  'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1 }, // Prelims Revision
-  'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 }, // Prelims Rapid Revision
-  'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1 }, // Mains Revision
-  'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1 }, // Mains Rapid Revision
-  'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0 }, // Mains Foundation
-};
+// Task ratios are now handled by intake.getTaskTypeRatios(cycleType)
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 
 /**
@@ -164,7 +155,8 @@ export async function createBlocksForSubjects(
 
           // Recalculate actual hours based on constrained duration
           const actualWeeks = Math.ceil(blockEnd.diff(blockStart, 'day') / 7);
-          const constrainedHours = actualWeeks * 7 * 8; // 8 hours/day
+          const dailyHours = intake.getDailyStudyHours();
+          const constrainedHours = actualWeeks * 7 * dailyHours;
 
           // Re-trim subtopics to fit constrained hours
           const constrainedSubtopics = trimSubtopicsToFit(adjustedSubtopics, constrainedHours);
@@ -218,7 +210,7 @@ export async function createBlocksForSubjects(
       cycle_name: cycleName,
       subjects: [subject.subjectCode],
       duration_weeks: blockDurationWeeks,
-      weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, confidenceMap.get(subject.subjectCode) || 1.0)),
+      weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, confidenceMap.get(subject.subjectCode) || 1.0), intake),
       block_resources: blockResources,
       block_start_date: blockStartDate,
       block_end_date: blockEndDate,
@@ -391,10 +383,11 @@ export function adjustHoursForCycleConstraint(
   _subjects: Subject[],
   totalHours: number,
   cycleEndDate: string,
-  cycleStartDate: string
+  cycleStartDate: string,
+  dailyHours: number = 8
 ): number {
   const cycleDurationDays = dayjs(cycleEndDate).diff(dayjs(cycleStartDate), 'day');
-  const maxPossibleHours = cycleDurationDays * 8; // 8 hours/day
+  const maxPossibleHours = cycleDurationDays * dailyHours;
 
   if (totalHours > maxPossibleHours) {
     const reductionFactor = maxPossibleHours / totalHours;
@@ -453,10 +446,11 @@ async function createEnhancedWeeklyPlan(
   durationWeeks: number,
   cycleType: CycleType,
   subjectCode: string,
-  _topicHoursMap: Map<string, number>
+  _topicHoursMap: Map<string, number>,
+  intake: StudentIntake
 ): Promise<WeeklyPlan[]> {
   // Create config from cycle type ratios
-  const config = createConfigFromCycleType(cycleType);
+  const config = createConfigFromCycleType(cycleType, intake);
   
   // Convert topic hours to subject format for OneWeekPlan.ts
   const subject = SubjectLoader.getSubjectByCode(subjectCode);
@@ -466,7 +460,7 @@ async function createEnhancedWeeklyPlan(
   }
   
   // Create mock student intake for OneWeekPlan.ts
-  const mockStudentIntake = {
+  const mockStudentIntake = createStudentIntake({
     subject_confidence: { [subjectCode]: 'Moderate' as const },
     study_strategy: {
       study_focus_combo: 'GSPlusOptionalPlusCSAT' as const,
@@ -479,7 +473,7 @@ async function createEnhancedWeeklyPlan(
       catch_up_day_preference: 'Saturday'
     },
     start_date: new Date().toISOString().split('T')[0]
-  };
+  });
   
   // Create mock archetype
   const mockArchetype = {
@@ -525,15 +519,15 @@ async function createEnhancedWeeklyPlan(
 /**
  * Create config from cycle type with appropriate task ratios
  */
-function createConfigFromCycleType(cycleType: CycleType): Config {
+function createConfigFromCycleType(cycleType: CycleType, intake: StudentIntake): Config {
   
-  const ratio = taskRatios[cycleType] || taskRatios['C2'];
+  const ratio = intake.getTaskTypeRatios(cycleType);
   
   return {
     daily_hour_limits: {
-      regular_day: 8,
+      regular_day: intake.getDailyStudyHours(),
       catch_up_day: 0, // Catchup day should be empty - for student to catch up on missed work
-      test_day: 6
+      test_day: Math.max(6, Math.floor(intake.getDailyStudyHours() * 0.75)) // 75% of daily hours for test days
     },
     task_effort_split: ratio
   };
@@ -699,7 +693,8 @@ async function createSingleSubjectBlock(
   cycleType: CycleType,
   cycleOrder: number,
   cycleName: string,
-  cycleEndDate: string
+  cycleEndDate: string,
+  intake: StudentIntake
 ): Promise<Block> {
   
   // Get subtopics for this subject (from existing logic lines 32-43)
@@ -737,7 +732,8 @@ async function createSingleSubjectBlock(
     
     // Recalculate actual hours based on constrained duration
     const actualWeeks = Math.ceil(blockEnd.diff(blockStart, 'day') / 7);
-    const constrainedHours = actualWeeks * 7 * 8;
+    const dailyHours = intake.getDailyStudyHours();
+    const constrainedHours = actualWeeks * 7 * dailyHours;
     const constrainedSubtopics = trimSubtopicsToFit(adjustedSubtopics, constrainedHours);
     
     trimmedSubtopics.splice(0, trimmedSubtopics.length, ...constrainedSubtopics);
@@ -774,7 +770,7 @@ async function createSingleSubjectBlock(
       cycle_name: cycleName,
       subjects: [subject.subjectCode],
       duration_weeks: blockDurationWeeks,
-      weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, 1.0)),
+      weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, 1.0), intake),
       block_resources: blockResources,
       block_start_date: blockStart.format('YYYY-MM-DD'),
     block_end_date: blockEnd.format('YYYY-MM-DD'),

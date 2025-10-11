@@ -12,11 +12,12 @@ export function determineCycleSchedule(
   logger: Logger,
   startDate: Date,
   targetYear: number,
-  prelimsExamDate: Date // Usually around May 28 of target year
+  prelimsExamDate: Date, // Usually around May 28 of target year
+  intake?: any // StudentIntake - optional for backward compatibility
 ): ScenarioResult {
   const totalTimeAvailable = (prelimsExamDate.getTime() - startDate.getTime()) / (30.44 * 24 * 60 * 60 * 1000);
-  const scenario = determineScenario(totalTimeAvailable, startDate, targetYear);
-  const schedules = generateScheduleForScenario(scenario, startDate, targetYear);
+  const scenario = determineScenario(totalTimeAvailable, startDate, targetYear, intake);
+  const schedules = generateScheduleForScenario(scenario, startDate, targetYear, intake);
 
   return {
     scenario,
@@ -31,7 +32,8 @@ export function determineCycleSchedule(
 function determineScenario(
   totalTimeAvailable: number,
   startDate: Date,
-  targetYear: number
+  targetYear: number,
+  intake?: any
 ): ScenarioResult['scenario'] {
   const start = dayjs(startDate);
 
@@ -41,7 +43,7 @@ function determineScenario(
   const feb28 = dayjs(`${targetYear}-02-28`);
   const mar1 = dayjs(`${targetYear}-03-01`);
   const apr15 = dayjs(`${targetYear}-04-15`);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`);
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
 
   // S8: Too late (Apr 16 - May 15)
   const apr16Target = dayjs(`${targetYear}-04-16`);
@@ -89,25 +91,26 @@ function determineScenario(
 function generateScheduleForScenario(
   scenario: ScenarioResult['scenario'],
   startDate: Date,
-  targetYear: number
+  targetYear: number,
+  intake?: any
 ): CycleSchedule[] {
   switch (scenario) {
     case 'S1':
-      return getS1Schedule(startDate, targetYear);
+      return getS1Schedule(startDate, targetYear, intake);
     case 'S2':
-      return getS2Schedule(startDate, targetYear);
+      return getS2Schedule(startDate, targetYear, intake);
     case 'S3':
-      return getS3Schedule(startDate, targetYear);
+      return getS3Schedule(startDate, targetYear, intake);
     case 'S4':
-      return getS4Schedule(startDate, targetYear);
+      return getS4Schedule(startDate, targetYear, intake);
     case 'S4A':
-      return getS4ASchedule(startDate, targetYear);
+      return getS4ASchedule(startDate, targetYear, intake);
     case 'S5':
-      return getS5Schedule(startDate, targetYear);
+      return getS5Schedule(startDate, targetYear, intake);
     case 'S6':
-      return getS6Schedule(startDate, targetYear);
+      return getS6Schedule(startDate, targetYear, intake);
     case 'S7':
-      return getS7Schedule(startDate, targetYear);
+      return getS7Schedule(startDate, targetYear, intake);
     case 'S8':
       throw new Error(`Plan generation rejected: insufficient time. Consider targeting ${targetYear + 1}.`);
     default:
@@ -125,7 +128,7 @@ function generateScheduleForScenario(
  * C6: May 21 target year → Jul 31 target year (Mains Revision)
  * C7: Aug 1 target year → mains exam date (Rapid Mains)
  */
-function getS1Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
+function getS1Schedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
   const start = dayjs(startDate);
 
   const c1End = start.add(3, 'month').subtract(1, 'day'); // 3 months - 1 day
@@ -150,10 +153,10 @@ function getS1Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
   const c3DurationMonths = Math.ceil(c3End.diff(c3Start, 'month', true));
 
   const c4End = dayjs(`${targetYear}-03-31`);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`); // Prelims exam date
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
   const c5End = prelimsExamDate.subtract(1, 'day'); // Day before prelims
   const c6End = dayjs(`${targetYear}-07-31`);
-  const mainsExamDate = dayjs(`${targetYear}-08-20`); // Default mains date
+  const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
   return [
     {
@@ -212,8 +215,8 @@ function getS1Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
  * Scenario S2: Medium-Long Preparation (18-20 months)
  * Identical to S1
  */
-function getS2Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
-  return getS1Schedule(startDate, targetYear);
+function getS2Schedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
+  return getS1Schedule(startDate, targetYear, intake);
 }
 
 /**
@@ -226,10 +229,10 @@ function getS2Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
  * C6: May-Jul target year
  * C7: Aug-mains date
  */
-function getS3Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
+function getS3Schedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
   const start = dayjs(startDate);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`);
-  const mainsExamDate = dayjs(`${targetYear}-08-20`);
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
+  const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
   return [
     {
@@ -287,10 +290,10 @@ function getS3Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
  * C6: May-Jul target year
  * C7: Aug-mains date
  */
-function getS4Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
+function getS4Schedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
   const start = dayjs(startDate);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`);
-  const mainsExamDate = dayjs(`${targetYear}-08-20`);
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
+  const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
   return [
     {
@@ -343,10 +346,10 @@ function getS4Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
  * 
  * Validation: C2 duration must be ≥ 7 months
  */
-function getS4ASchedule(startDate: Date, targetYear: number): CycleSchedule[] {
+function getS4ASchedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
   const start = dayjs(startDate);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`);
-  const mainsExamDate = dayjs(`${targetYear}-08-20`);
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
+  const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
   // Calculate C2 duration to ensure it's at least 7 months
   const c2End = dayjs(`${targetYear - 1}-12-31`);
@@ -402,10 +405,10 @@ function getS4ASchedule(startDate: Date, targetYear: number): CycleSchedule[] {
  * C6: May-Jul target year
  * C7: Aug-mains date
  */
-function getS5Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
+function getS5Schedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
   const start = dayjs(startDate);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`);
-  const mainsExamDate = dayjs(`${targetYear}-08-20`);
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
+  const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
   return [
     {
@@ -457,10 +460,10 @@ function getS5Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
  * C6: May 21 → Jul 31 target year
  * C7: Aug 1 → mains exam date
  */
-function getS6Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
+function getS6Schedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
   const start = dayjs(startDate);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`);
-  const mainsExamDate = dayjs(`${targetYear}-08-20`);
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
+  const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
   // For very late starts (Nov/Dec), C5 should start from start date instead of Apr 1
   // 
@@ -521,10 +524,10 @@ function getS6Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
  * C6: May 21 → Jul 31 target year
  * C7: Aug 1 → mains exam date
  */
-function getS7Schedule(startDate: Date, targetYear: number): CycleSchedule[] {
+function getS7Schedule(startDate: Date, targetYear: number, intake?: any): CycleSchedule[] {
   const start = dayjs(startDate);
-  const prelimsExamDate = dayjs(`${targetYear}-05-20`);
-  const mainsExamDate = dayjs(`${targetYear}-08-20`);
+  const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
+  const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
   return [
     {
