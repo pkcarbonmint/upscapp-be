@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check-types": "pnpm tsc --noEmit",
     "dev:hmr": "vite --host 0.0.0.0 --port 5173",
     "dev:debug": "vite --config vite.debug.config.ts --open debug.html",
     "build": "tsc -b && vite build",

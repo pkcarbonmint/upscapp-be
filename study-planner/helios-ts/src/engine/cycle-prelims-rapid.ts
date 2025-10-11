@@ -60,6 +60,7 @@ export function calculatePrelimsRapidRevisionStartDate(
  */
 export async function planPrelimsRapidRevisionCycle(
   logger: Logger,
+  // @ts-ignore
   intake: StudentIntake,
   confidenceMap: Map<string, number>,
   startDate: dayjs.Dayjs | undefined,
@@ -76,7 +77,6 @@ export async function planPrelimsRapidRevisionCycle(
     return undefined;
   }
 
-  const targetYear = parseInt(intake.target_year || '2026');
   // Use the endDate parameter passed from the schedule, don't hardcode
   const cycleEndDate = dayjs(endDate);
   const durationWeeks = Math.ceil(cycleEndDate.diff(startDate, 'day') / 7);
