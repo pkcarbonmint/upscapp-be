@@ -1,0 +1,265 @@
+{
+  "subject_info": {
+    "code": "P01",
+    "name": "Indian-Polity",
+    "category": "Macro",
+    "exam_focus": "BothExams",
+    "has_current_affairs": true,
+    "baseline_hours": 50,
+    "resource_count": 7
+ },
+
+  "topic_resources": {
+    "P01/00": {
+      "topic_name": "Broad / Overlap",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p002"],
+        "revision": ["p001", "p002"],
+        "practice": ["p006"],
+        "expert": ["p002"]
+      },
+      "estimated_hours": 25
+    },
+
+    "P01/01": {
+      "topic_name": "Constitutional Framework",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p002"],
+        "revision": ["p001"],
+        "practice": ["p006"],
+        "expert": ["p002"]
+      },
+      "estimated_hours": 35
+    },
+
+    "P01/02": {
+      "topic_name": "Fundamental Rights",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p002", "p003"],
+        "revision": ["p001", "p002"],
+        "practice": ["p006", "p007"],
+        "expert": ["p002", "p003"]
+      },
+      "estimated_hours": 40
+    },
+
+    "P01/03": {
+      "topic_name": "Directive Principles",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p002"],
+        "revision": ["p001", "p002"],
+        "practice": ["p006"],
+        "expert": ["p002"]
+      },
+      "estimated_hours": 20
+    },
+
+    "P01/04": {
+      "topic_name": "Parliamentary System",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p002", "p004"],
+        "revision": ["p001", "p002"],
+        "practice": ["p006"],
+        "expert": ["p002", "p004"]
+      },
+      "estimated_hours": 45
+    },
+
+    "P01/05": {
+      "topic_name": "Federalism",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p002"],
+        "revision": ["p001", "p002"],
+        "practice": ["p006"],
+        "expert": ["p002"]
+      },
+      "estimated_hours": 35
+    },
+
+    "P01/06": {
+      "topic_name": "Judiciary",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p002", "p005"],
+        "revision": ["p001", "p002"],
+        "practice": ["p006", "p007"],
+        "expert": ["p002", "p005"]
+      },
+      "estimated_hours": 40
+    },
+
+    "P01/07": {
+      "topic_name": "Electoral System",
+      "priority": "Priority",
+      "resources": {
+        "study": ["p001", "p002"],
+        "revision": ["p001", "p002"],
+        "practice": ["p006"],
+        "expert": ["p002"]
+      },
+      "estimated_hours": 25
+    },
+
+    "P01/08": {
+      "topic_name": "Governance & Administration",
+      "priority": "Essential",
+      "resources": {
+        "study": ["p001", "p005"],
+        "revision": ["p001"],
+        "practice": ["p007"],
+        "expert": ["p005"]
+      },
+      "estimated_hours": 30
+    }
+  },
+
+  "resources": {
+    "p001": {
+      "resource_id": "p001",
+      "resource_title": "Polity NCERT Class 11 - Indian Constitution at Work",
+      "resource_type": "Book",
+      "resource_url": "https://ncert.nic.in/textbook.php?keps1=1-9",
+      "resource_description": "Foundation textbook covering constitutional framework, fundamental rights, and political processes",
+      "difficulty_level": "Beginner",
+      "estimated_hours": 25,
+      "resource_priority": "Essential",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Constitutional principles understanding",
+        "Fundamental rights analysis",
+        "Political system comprehension",
+        "Basic governance structure"
+      ],
+      "tags": ["ncert", "constitution", "fundamentals", "beginner-friendly"]
+    },
+
+    "p002": {
+      "resource_id": "p002",
+      "resource_title": "Indian Polity by Laxmikant",
+      "resource_type": "Book",
+      "resource_url": "https://amzn.in/d/laxmikant-polity",
+      "resource_description": "Comprehensive coverage of Indian polity and governance with constitutional amendments",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 60,
+      "resource_priority": "Essential",
+      "resource_cost": { "type": "Paid", "amount": 650 },
+      "learning_outcomes": [
+        "Detailed constitutional analysis",
+        "Governance structure understanding",
+        "Amendment tracking",
+        "Comparative polity analysis"
+      ],
+      "tags": ["laxmikant", "comprehensive", "standard", "detailed"]
+    },
+
+    "p003": {
+      "resource_id": "p003",
+      "resource_title": "Indian Constitution Bare Text with Comments",
+      "resource_type": "Book",
+      "resource_url": "https://amzn.in/d/constitution-bare-text",
+      "resource_description": "Full text of Indian Constitution with explanatory comments and case laws",
+      "difficulty_level": "Advanced",
+      "estimated_hours": 35,
+      "resource_priority": "Recommended",
+      "resource_cost": { "type": "Paid", "amount": 280 },
+      "learning_outcomes": [
+        "Constitutional provisions mastery",
+        "Case law integration",
+        "Judicial interpretation understanding",
+        "Article-wise detailed analysis"
+      ],
+      "tags": ["constitution", "case-law", "advanced", "detailed-analysis"]
+    },
+
+    "p004": {
+      "resource_id": "p004",
+      "resource_title": "Parliamentary Procedures Documentary",
+      "resource_type": "VideoLecture",
+      "resource_url": "https://video-platform.com/parliamentary-procedures",
+      "resource_description": "Visual explanation of parliamentary proceedings, motions, and voting procedures",
+      "difficulty_level": "Beginner",
+      "estimated_hours": 4,
+      "resource_priority": "Optional",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Parliamentary workflow understanding",
+        "Legislative process visualization",
+        "Constitutional provisions application"
+      ],
+      "tags": ["parliament", "procedures", "visual-learning", "workflow"]
+    },
+
+    "p005": {
+      "resource_id": "p005",
+      "resource_title": "Judiciary and Constitutional Law by J.N. Pandey",
+      "resource_type": "Book",
+      "resource_url": "https://amzn.in/d/pandey-constitutional-law",
+      "resource_description": "Specialized study of constitutional law and judicial system",
+      "difficulty_level": "Advanced",
+      "estimated_hours": 45,
+      "resource_priority": "Optional",
+      "resource_cost": { "type": "Paid", "amount": 420 },
+      "learning_outcomes": [
+        "Constitutional law principles",
+        "Judicial review concepts",
+        "Landmark verdict analysis",
+        "Legal precedents understanding"
+      ],
+      "tags": ["constitutional-law", "judiciary", "legal-theory", "advanced"]
+    },
+
+    "p006": {
+      "resource_id": "p006",
+      "resource_title": "Indian Polity Mock Tests Series",
+      "resource_type": "MockTest",
+      "resource_url": "https://mock-tests.com/polity-series",
+      "resource_description": "Comprehensive test series covering all polity topics with detailed analysis",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 20,
+      "resource_priority": "Recommended",
+      "resource_cost": { "type": "Subscription", "plan": "Premium" },
+      "learning_outcomes": [
+        "Exam pattern mastery",
+        "Topic-wise weakness identification",
+        "Time management optimization",
+        "Current affairs integration"
+      ],
+      "tags": ["mock-test", "practice", "assessment", "polity"]
+    },
+
+    "p007": {
+      "resource_id": "p007",
+      "resource_title": "Current Affairs Polity Section",
+      "resource_type": "CurrentAffairsSource",
+      "resource_url": "https://currentaffairs.in/polity",
+      "resource_description": "Daily current affairs specifically relevant to polity and governance",
+      "difficulty_level": "Beginner",
+      "estimated_hours": 1,
+      "resource_priority": "Essential",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Live constitutional developments",
+        "Government policies understanding",
+        "Legislative updates tracking",
+        "Contextual application"
+      ],
+      "tags": ["current-affairs", "polity", "daily", "live-updates"]
+    }
+  },
+
+  "subject_level_resources": {
+    "primary_books": ["p001", "p002"],
+    "supplementary_materials": ["p003", "p005"],
+    "practice_resources": ["p006", "p007"],
+    "video_content": ["p004"],
+    "current_affairs_sources": ["p007"],
+    "revision_materials": ["p001", "p002"],
+    "expert_recommendations": ["p002", "p003", "p005"]
+  }
+}

@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from fastapi import FastAPI, Depends
+from fastapi.responses import Response
+import os
+import httpx
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_async_sqlalchemy import db, SQLAlchemyMiddleware
 from sqlalchemy.pool import NullPool, QueuePool
@@ -36,6 +39,10 @@ from src.modules.contentmgnt.routes import cntn_mgnt_router_v2
 from src.modules.tests.routesv2 import test_router_v2
 from src.modules.fee.routes import fee_router
 from src.modules.eventlogs.routes import log_router
+from src.modules.helios.routes import router as helios_router
+from src.modules.telegram.routes import telegram_router
+from src.modules.studyplanner.onboarding.routes import router as onboarding_router
+from src.modules.faculty.routes import faculty_router
 
 from fastapi.exceptions import (
     RequestValidationError,
@@ -74,16 +81,20 @@ async def lifespan(_application: FastAPI) -> AsyncGenerator:
 app = FastAPI(**app_configs, lifespan=lifespan)
 # app = FastAPI(**app_configs)
 
+_middleware_db_url = str(settings.DATABASE_URL)
+if _middleware_db_url.startswith("postgresql://") and "+asyncpg" not in _middleware_db_url:
+    _middleware_db_url = _middleware_db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 app.add_middleware(
     SQLAlchemyMiddleware,
-    db_url=str(settings.DATABASE_URL),
+    db_url=_middleware_db_url,
     engine_args={
-        "echo": True if Environment.is_debug else False,
+        "echo": False,  # Disable verbose SQL logging to speed up development
         "pool_pre_ping": True,
         # "pool_size": settings.POOL_SIZE,
         "pool_size": settings.DB_POOL_SIZE,
         "max_overflow": settings.DB_POOL_MAX_OVERFLOW,
-        "echo_pool": True,
+        "echo_pool": False,  # Disable pool logging too
         # "poolclass": NullPool
         # if settings.ENVIRONMENT == Environment.TESTING
         # else QueuePool,  # Asincio pytest works with NullPool
@@ -158,3 +169,12 @@ app.include_router(report_router_v2)
 app.include_router(zoom_router)
 if settings.ENVIRONMENT.is_debug:
     app.include_router(auth_test_router)
+# Helios engine integration routes (v2 namespace)
+app.include_router(helios_router, prefix="/v2")
+# Telegram bot integration routes (v2 namespace)
+app.include_router(telegram_router, prefix="/v2")
+# Study Planner Onboarding routes
+app.include_router(onboarding_router, prefix="/api/studyplanner/onboarding")
+# Faculty routes
+app.include_router(faculty_router, prefix="/api/studyplanner/faculty")
+

@@ -151,3 +151,5 @@ backup.dump.gz
 
 fb.json
 
+
+docker.env

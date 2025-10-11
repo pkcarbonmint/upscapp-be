@@ -1,0 +1,7 @@
+packages:
+  - helios-ts
+  - helios-server
+  - onboarding-ui
+  - shared-ui-library
+  - faculty-ui
+  - plan-editor-library

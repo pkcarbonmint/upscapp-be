@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Intake Form - Wizard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body, html, #root { height: 100%; }
+        .form-wrapper { display: flex; justify-content: center; align-items: center; height: 100%; padding: 1rem; }
+        .form-container { 
+            max-width: 800px; 
+            width: 100%;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff; 
+            padding: 2rem; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .progress-container { display: flex; justify-content: space-between; position: relative; margin-bottom: 2rem; flex-shrink: 0; }
+        .progress-line { position: absolute; top: 12px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
+        .progress-line-active { position: absolute; top: 12px; left: 0; height: 3px; background-color: #007bff; z-index: 2; transition: width 0.4s ease; }
+        .step-item { display: flex; flex-direction: column; align-items: center; z-index: 3; width: 120px; text-align: center; }
+        .step-circle { width: 24px; height: 24px; border-radius: 50%; background-color: #fff; border: 3px solid #e9ecef; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; transition: all 0.4s ease; color: #6c757d; }
+        .step-label { margin-top: 0.5rem; font-size: 12px; color: #6c757d; transition: all 0.4s ease; }
+        .step-item.active .step-circle { border-color: #007bff; }
+        .step-item.active .step-label { font-weight: bold; color: #007bff; }
+        .step-item.completed .step-circle { border-color: #007bff; background-color: #007bff; color: #fff; }
+        .step-item.completed .step-label { color: #212529; }
+        .step-item.clickable { cursor: pointer; }
+        .step-content { flex-grow: 1; overflow-y: auto; padding-right: 15px; }
+        .form-navigation { flex-shrink: 0; padding-top: 1rem; border-top: 1px solid #e9ecef; }
+    </style>
+</head>
+<body class="bg-light">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useReducer } = React;
+
+        const ProgressBar = ({ steps, currentStep, maxStepVisited, onStepClick }) => {
+            const activeLineWidth = ((currentStep - 1) / (steps.length - 1)) * 100;
+            return (
+                <div className="progress-container">
+                    <div className="progress-line"></div>
+                    <div className="progress-line-active" style={{ width: `${activeLineWidth}%` }}></div>
+                    {steps.map((name, index) => {
+                        const stepNum = index + 1;
+                        let status = '';
+                        if (stepNum < currentStep) status = 'completed';
+                        else if (stepNum === currentStep) status = 'active';
+                        
+                        const isClickable = stepNum <= maxStepVisited;
+                        const clickableClass = isClickable ? 'clickable' : '';
+
+                        return (
+                            <div 
+                                className={`step-item ${status} ${clickableClass}`} 
+                                key={name}
+                                onClick={() => isClickable && onStepClick(stepNum)}
+                            >
+                                <div className="step-circle">{stepNum < currentStep ? '✓' : stepNum}</div>
+                                <div className="step-label">{name}</div>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [step, setStep] = useState(1);
+            const [maxStepVisited, setMaxStepVisited] = useState(1);
+            const [errors, setErrors] = useState({});
+
+            const [formData, setFormData] = useState({
+                personal_and_academic_details: { full_name: '', email: '', phone_number: '', present_location: '', current_status: 'Full-time Aspirant', graduation_stream: 'Engg', college_university: '', year_of_passing: 2024 },
+                preparation_background: { preparing_since: '', target_year: '2026', number_of_attempts: '0', highest_stage_per_attempt: '', last_attempt_gs_prelims_score: 0, last_attempt_csat_score: 0, wrote_mains_in_last_attempt: 'No', mains_paper_marks: '' },
+                coaching_and_mentorship: { prior_coaching: 'No', coaching_institute_name: '', prior_mentorship: 'No', programme_mentor_name: '', place_of_preparation: 'Home+Online' },
+                optional_subject_details: { optional_subject: '', optional_status: 'Yet to decide', optional_taken_from: '' },
+                test_series_and_csat: { test_series_attempted: [], csat_self_assessment: 'Average', csat_weak_areas: [] },
+                syllabus_and_pyq_awareness: { gs_syllabus_understanding: 'No', optional_syllabus_understanding: 'No', pyq_awareness_and_use: 'Not aware' },
+                subject_confidence: {
+                    prelims_confidence: { current_events: 'Moderate', history_of_india: 'Moderate', indian_world_geography: 'Moderate', polity_governance: 'Moderate', economy_social_development: 'Moderate', environment_ecology: 'Moderate', science_technology: 'Moderate', csat: 'Moderate' },
+                    mains_gs1_confidence: { essay: 'Moderate', indian_culture: 'Moderate', modern_history: 'Moderate', world_history: 'Moderate', post_independence_india: 'Moderate', indian_society: 'Moderate', indian_world_geography: 'Moderate' },
+                    mains_gs2_confidence: { constitution: 'Moderate', polity: 'Moderate', governance: 'Moderate', social_justice: 'Moderate', international_relations: 'Moderate' },
+                    mains_gs3_confidence: { economy: 'Moderate', agriculture: 'Moderate', environment: 'Moderate', science_technology: 'Moderate', disaster_management: 'Moderate', internal_security: 'Moderate' },
+                    mains_gs4_optional_confidence: { ethics_integrity_aptitude: 'Moderate', optional_subject_paper1: 'Moderate', optional_subject_paper2: 'Moderate' }
+                },
+                study_strategy: { study_focus_combo: 'GS + Optional', weekly_study_hours: '40 hours', time_distribution: 'GS-heavy (60% GS, 30% Optional, 10% others)', study_approach: 'Weak subjects first', revision_strategy: 'Daily light revision (1–2 hrs)', test_frequency: 'Weekly (every 7 days)', seasonal_windows: [], catch_up_day_preference: 'Once a week (fixed catch-up day)' }
+            });
+
+            const validationMap = {
+                1: { section: 'personal_and_academic_details', required: ['full_name', 'email', 'phone_number', 'college_university', 'year_of_passing'] },
+                2: { section: 'preparation_background', required: ['preparing_since', 'highest_stage_per_attempt'] },
+                4: { section: 'optional_subject_details', required: ['optional_subject'] },
+            };
+
+            const validateStep = () => {
+                const stepValidation = validationMap[step];
+                if (!stepValidation) return true;
+
+                const currentData = formData[stepValidation.section];
+                const newErrors = {};
+                let isValid = true;
+
+                stepValidation.required.forEach(field => {
+                    if (!currentData[field] || currentData[field] === '') {
+                        newErrors[field] = 'This field is required.';
+                        isValid = false;
+                    }
+                });
+                
+                // Special email validation
+                if (step === 1 && currentData.email && !/\S+@\S+\.\S+/.test(currentData.email)) {
+                    newErrors.email = 'Please enter a valid email address.';
+                    isValid = false;
+                }
+
+                // Special phone number validation
+                if (step === 1 && currentData.phone_number && !/^\d{10}$/.test(currentData.phone_number)) {
+                    newErrors.phone_number = 'Phone number must be 10 digits.';
+                    isValid = false;
+                }
+
+                setErrors(newErrors);
+                return isValid;
+            };
+
+            const nextStep = () => setStep(prev => {
+                const newStep = prev + 1;
+                if (newStep > maxStepVisited) {
+                    setMaxStepVisited(newStep);
+                }
+                return newStep;
+            });
+
+            const handleNext = () => {
+                if (validateStep()) {
+                    setErrors({});
+                    nextStep();
+                }
+            };
+
+            const prevStep = () => {
+                setErrors({});
+                setStep(prev => prev - 1);
+            }
+
+            const jumpToStep = (stepNum) => {
+                if (stepNum <= maxStepVisited) {
+                    setErrors({});
+                    setStep(stepNum);
+                }
+            };
+
+            const handleChange = (section, field, subSection = null) => e => {
+                const { type, value, checked } = e.target;
+                setFormData(prev => {
+                    const newData = { ...prev };
+                    if (subSection) {
+                        if (type === 'checkbox') {
+                            const currentValues = newData[section][subSection][field] || [];
+                            if (checked) {
+                                newData[section][subSection][field] = [...currentValues, value];
+                            } else {
+                                newData[section][subSection][field] = currentValues.filter(item => item !== value);
+                            }
+                        } else {
+                            newData[section][subSection][field] = value;
+                        }
+                    } else {
+                         if (type === 'checkbox') {
+                            const currentValues = newData[section][field] || [];
+                            if (checked) {
+                                newData[section][field] = [...currentValues, value];
+                            } else {
+                                newData[section][field] = currentValues.filter(item => item !== value);
+                            }
+                        } else {
+                            newData[section][field] = value;
+                        }
+                    }
+                    return newData;
+                });
+            };
+
+            const handleSubmit = () => {
+                if(validateStep()){
+                    console.log("Final Form Data:", formData);
+                    nextStep();
+                }
+            };
+            
+            const stepNames = ['Personal', 'Preparation', 'Coaching', 'Optional', 'Tests/CSAT', 'Awareness', 'Confidence', 'Strategy', 'Review'];
+
+            const renderStepContent = () => {
+                switch (step) {
+                    case 1: return <Step1 data={formData.personal_and_academic_details} handleChange={handleChange} errors={errors} />;
+                    case 2: return <Step2 data={formData.preparation_background} handleChange={handleChange} errors={errors} />;
+                    case 3: return <Step3 data={formData.coaching_and_mentorship} handleChange={handleChange} errors={errors} />;
+                    case 4: return <Step4 data={formData.optional_subject_details} handleChange={handleChange} errors={errors} />;
+                    case 5: return <Step5 data={formData.test_series_and_csat} handleChange={handleChange} errors={errors} />;
+                    case 6: return <Step6 data={formData.syllabus_and_pyq_awareness} handleChange={handleChange} errors={errors} />;
+                    case 7: return <Step7 data={formData.subject_confidence} handleChange={handleChange} errors={errors} />;
+                    case 8: return <Step8 data={formData.study_strategy} handleChange={handleChange} errors={errors} />;
+                    case 9: return <Review data={formData} />;
+                    case 10: return <Success />;
+                    default: return <div>Form Complete</div>;
+                }
+            };
+
+            return (
+                <div className="form-wrapper">
+                    <div className="form-container">
+                        {step <= stepNames.length && <ProgressBar steps={stepNames} currentStep={step} maxStepVisited={maxStepVisited} onStepClick={jumpToStep} />}
+                        
+                        <div className="step-content">
+                            {renderStepContent()}
+                        </div>
+
+                        {step <= stepNames.length && (
+                             <div className="form-navigation d-flex justify-content-between">
+                                {step > 1 && step <= stepNames.length && (
+                                    <button className="btn btn-secondary" onClick={prevStep}>Back</button>
+                                )}
+                                {step < stepNames.length && (
+                                    <button className="btn btn-primary" onClick={handleNext}>Next</button>
+                                )}
+                                {step === stepNames.length && (
+                                     <button className="btn btn-success" onClick={handleSubmit}>Submit</button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const Step1 = ({ data, handleChange, errors }) => (
+            <div>
+                <h2>Personal & Academic Details</h2>
+                <div className="form-group"><label>Full Name</label><input type="text" className={`form-control ${errors.full_name ? 'is-invalid' : ''}`} value={data.full_name} onChange={handleChange('personal_and_academic_details', 'full_name')} required /><div className="invalid-feedback">{errors.full_name}</div></div>
+                <div className="form-group"><label>Email</label><input type="email" className={`form-control ${errors.email ? 'is-invalid' : ''}`} value={data.email} onChange={handleChange('personal_and_academic_details', 'email')} required /><div className="invalid-feedback">{errors.email}</div></div>
+                <div className="form-group"><label>Phone Number</label><input type="tel" className={`form-control ${errors.phone_number ? 'is-invalid' : ''}`} value={data.phone_number} onChange={handleChange('personal_and_academic_details', 'phone_number')} required /><div className="invalid-feedback">{errors.phone_number}</div></div>
+                <div className="form-group"><label>Present Location (City, State)</label><input type="text" className="form-control" value={data.present_location} onChange={handleChange('personal_and_academic_details', 'present_location')} /></div>
+                <div className="form-group"><label>Current Status</label><select className="form-control" value={data.current_status} onChange={handleChange('personal_and_academic_details', 'current_status')}><option>Final-Year Student</option><option>Full-time Aspirant</option><option>Working Professional</option></select></div>
+                <div className="form-group"><label>Graduation Stream</label><select className="form-control" value={data.graduation_stream} onChange={handleChange('personal_and_academic_details', 'graduation_stream')}><option>Arts</option><option>Commerce</option><option>Science</option><option>Engg</option><option>Medicine</option><option>Law</option><option>Other</option></select></div>
+                <div className="form-group"><label>College / University</label><input type="text" className={`form-control ${errors.college_university ? 'is-invalid' : ''}`} value={data.college_university} onChange={handleChange('personal_and_academic_details', 'college_university')} required /><div className="invalid-feedback">{errors.college_university}</div></div>
+                <div className="form-group"><label>Year of Passing</label><input type="number" className={`form-control ${errors.year_of_passing ? 'is-invalid' : ''}`} value={data.year_of_passing} onChange={handleChange('personal_and_academic_details', 'year_of_passing')} required /><div className="invalid-feedback">{errors.year_of_passing}</div></div>
+            </div>
+        );
+
+        const Step2 = ({ data, handleChange, errors }) => (
+            <div>
+                <h2>Preparation Background</h2>
+                <div className="form-group"><label>Preparing since (MM/YYYY)</label><input type="text" className={`form-control ${errors.preparing_since ? 'is-invalid' : ''}`} value={data.preparing_since} onChange={handleChange('preparation_background', 'preparing_since')} required placeholder="MM/YYYY" /><div className="invalid-feedback">{errors.preparing_since}</div></div>
+                <div className="form-group"><label>Target Year</label><select className="form-control" value={data.target_year} onChange={handleChange('preparation_background', 'target_year')}><option>2026</option><option>2027</option><option>2028</option><option>Not decided</option></select></div>
+                <div className="form-group"><label>Number of Attempts</label><select className="form-control" value={data.number_of_attempts} onChange={handleChange('preparation_background', 'number_of_attempts')}><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></div>
+                <div className="form-group"><label>Highest Stage per Attempt</label><input type="text" className={`form-control ${errors.highest_stage_per_attempt ? 'is-invalid' : ''}`} value={data.highest_stage_per_attempt} onChange={handleChange('preparation_background', 'highest_stage_per_attempt')} required /><small className="form-text text-muted">e.g., Prelims 2023, Mains 2024</small><div className="invalid-feedback">{errors.highest_stage_per_attempt}</div></div>
+                <div className="form-group"><label>Last Attempt – GS Prelims Score (0–200)</label><input type="number" className="form-control" value={data.last_attempt_gs_prelims_score} onChange={handleChange('preparation_background', 'last_attempt_gs_prelims_score')} /></div>
+                <div className="form-group"><label>Last Attempt – CSAT Score (0–200)</label><input type="number" className="form-control" value={data.last_attempt_csat_score} onChange={handleChange('preparation_background', 'last_attempt_csat_score')} /></div>
+                <div className="form-group"><label>Wrote Mains in last attempt?</label><div><label><input type="radio" value="Yes" checked={data.wrote_mains_in_last_attempt === 'Yes'} onChange={handleChange('preparation_background', 'wrote_mains_in_last_attempt')} /> Yes</label><label className="ml-2"><input type="radio" value="No" checked={data.wrote_mains_in_last_attempt === 'No'} onChange={handleChange('preparation_background', 'wrote_mains_in_last_attempt')} /> No</label></div></div>
+                <div className="form-group"><label>Mains Paper Marks</label><input type="text" className="form-control" value={data.mains_paper_marks} onChange={handleChange('preparation_background', 'mains_paper_marks')} /></div>
+            </div>
+        );
+
+        const Step3 = ({ data, handleChange, errors }) => (
+            <div>
+                <h2>Coaching & Mentorship</h2>
+                <div className="form-group"><label>Prior Coaching?</label><select className="form-control" value={data.prior_coaching} onChange={handleChange('coaching_and_mentorship', 'prior_coaching')}><option>No</option><option>Yes–Offline</option><option>Yes–Online</option><option>Mixed</option></select></div>
+                <div className="form-group"><label>Coaching Institute Name</label><input type="text" className="form-control" value={data.coaching_institute_name} onChange={handleChange('coaching_and_mentorship', 'coaching_institute_name')} /></div>
+                <div className="form-group"><label>Prior Mentorship?</label><div><label><input type="radio" value="Yes" checked={data.prior_mentorship === 'Yes'} onChange={handleChange('coaching_and_mentorship', 'prior_mentorship')} /> Yes</label><label className="ml-2"><input type="radio" value="No" checked={data.prior_mentorship === 'No'} onChange={handleChange('coaching_and_mentorship', 'prior_mentorship')} /> No</label></div></div>
+                <div className="form-group"><label>Programme/Mentor Name</label><input type="text" className="form-control" value={data.programme_mentor_name} onChange={handleChange('coaching_and_mentorship', 'programme_mentor_name')} /></div>
+                <div className="form-group"><label>Place of Preparation</label><select className="form-control" value={data.place_of_preparation} onChange={handleChange('coaching_and_mentorship', 'place_of_preparation')}><option>Home+Online</option><option>City+Offline</option><option>City+Online</option></select></div>
+            </div>
+        );
+
+        const Step4 = ({ data, handleChange, errors }) => {
+            const optionalSubjects = [
+                "Agriculture", "Animal Husbandry and Veterinary Science", "Anthropology", "Botany", "Chemistry", "Civil Engineering",
+                "Commerce and Accountancy", "Economics", "Electrical Engineering", "Geography", "Geology", "History", "Law",
+                "Management", "Mathematics", "Mechanical Engineering", "Medical Science", "Philosophy", "Physics",
+                "Political Science and International Relations", "Psychology", "Public Administration", "Sociology", "Statistics", "Zoology",
+                "Assamese", "Bengali", "Bodo", "Dogri", "Gujarati", "Hindi", "Kannada", "Kashmiri", "Konkani", "Maithili",
+                "Malayalam", "Manipuri", "Marathi", "Nepali", "Odia", "Punjabi", "Sanskrit", "Santhali", "Sindhi", "Tamil",
+                "Telugu", "Urdu", "English", "Other"
+            ];
+
+            return (
+                <div>
+                    <h2>Optional Subject</h2>
+                    <div className="form-group">
+                        <label>Optional Subject</label>
+                        <select 
+                            className={`form-control ${errors.optional_subject ? 'is-invalid' : ''}`}
+                            value={data.optional_subject}
+                            onChange={handleChange('optional_subject_details', 'optional_subject')} 
+                            required
+                        >
+                            <option value="">-- Select an Optional Subject --</option>
+                            {optionalSubjects.map(subject => <option key={subject} value={subject}>{subject}</option>)}
+                        </select>
+                        <div className="invalid-feedback">{errors.optional_subject}</div>
+                    </div>
+                    <div className="form-group">
+                        <label>Optional Status</label>
+                        <select className="form-control" value={data.optional_status} onChange={handleChange('optional_subject_details', 'optional_status')}>
+                            <option>Done coaching</option>
+                            <option>Done test series</option>
+                            <option>Ongoing</option>
+                            <option>Yet to decide</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>Optional Taken From (Institute/Faculty)</label>
+                        <input type="text" className="form-control" value={data.optional_taken_from} onChange={handleChange('optional_subject_details', 'optional_taken_from')} />
+                    </div>
+                </div>
+            );
+        };
+
+        const Step5 = ({ data, handleChange }) => (
+            <div>
+                <h2>Test Series & CSAT</h2>
+                <div className="form-group"><label>Test Series Attempted</label><div>{['Prelims GS', 'CSAT', 'Mains', 'Optional'].map(item => <div key={item}><label><input type="checkbox" value={item} checked={data.test_series_attempted.includes(item)} onChange={handleChange('test_series_and_csat', 'test_series_attempted')} /> {item}</label></div>)}</div></div>
+                <div className="form-group"><label>CSAT Self-Assessment</label><select className="form-control" value={data.csat_self_assessment} onChange={handleChange('test_series_and_csat', 'csat_self_assessment')}><option>Strong</option><option>Average</option><option>Weak</option></select></div>
+                <div className="form-group"><label>CSAT Weak Areas</label><div>{['Arithmetic', 'Comprehension', 'Reasoning', 'Time Mgmt', 'Not Sure'].map(item => <div key={item}><label><input type="checkbox" value={item} checked={data.csat_weak_areas.includes(item)} onChange={handleChange('test_series_and_csat', 'csat_weak_areas')} /> {item}</label></div>)}</div></div>
+            </div>
+        );
+
+        const Step6 = ({ data, handleChange }) => (
+            <div>
+                <h2>Syllabus & PYQ Awareness</h2>
+                <div className="form-group"><label>GS Syllabus Understanding</label><div><label><input type="radio" value="Yes" checked={data.gs_syllabus_understanding === 'Yes'} onChange={handleChange('syllabus_and_pyq_awareness', 'gs_syllabus_understanding')} /> Yes</label><label className="ml-2"><input type="radio" value="No" checked={data.gs_syllabus_understanding === 'No'} onChange={handleChange('syllabus_and_pyq_awareness', 'gs_syllabus_understanding')} /> No</label></div></div>
+                <div className="form-group"><label>Optional Syllabus Understanding</label><div><label><input type="radio" value="Yes" checked={data.optional_syllabus_understanding === 'Yes'} onChange={handleChange('syllabus_and_pyq_awareness', 'optional_syllabus_understanding')} /> Yes</label><label className="ml-2"><input type="radio" value="No" checked={data.optional_syllabus_understanding === 'No'} onChange={handleChange('syllabus_and_pyq_awareness', 'optional_syllabus_understanding')} /> No</label></div></div>
+                <div className="form-group"><label>PYQ Awareness & Use</label><select className="form-control" value={data.pyq_awareness_and_use} onChange={handleChange('syllabus_and_pyq_awareness', 'pyq_awareness_and_use')}><option>Use regularly</option><option>Aware but don’t use</option><option>Not aware</option></select></div>
+            </div>
+        );
+
+        const ConfidenceComponent = ({ title, subjects, data, handleChange, subSection }) => (
+            <div>
+                <h4>{title}</h4>
+                {subjects.map(subject => (
+                    <div className="form-group" key={subject.id}>
+                        <label>{subject.label}</label>
+                        <select 
+                            className="form-control" 
+                            value={data[subject.id] || 'Moderate'} 
+                            onChange={handleChange('subject_confidence', subject.id, subSection)}
+                        >
+                            {['Not Started', 'Very Weak', 'Weak', 'Moderate', 'Strong', 'Very Strong'].map(level => <option key={level} value={level}>{level}</option>)}
+                        </select>
+                    </div>
+                ))}
+            </div>
+        );
+
+        const Step7 = ({ data, handleChange }) => {
+            const prelimsSubjects = [{id: 'current_events', label: 'Current Events'}, {id: 'history_of_india', label: 'History of India'}, {id: 'indian_world_geography', label: 'Indian & World Geography'}, {id: 'polity_governance', label: 'Polity & Governance'}, {id: 'economy_social_development', label: 'Economy & Social Development'}, {id: 'environment_ecology', label: 'Environment & Ecology'}, {id: 'science_technology', label: 'Science & Technology'}, {id: 'csat', label: 'CSAT'}];
+            const mainsGs1Subjects = [{id: 'essay', label: 'Essay'}, {id: 'indian_culture', label: 'Indian Culture'}, {id: 'modern_history', label: 'Modern History'}, {id: 'world_history', label: 'World History'}, {id: 'post_independence_india', label: 'Post-Independence India'}, {id: 'indian_society', label: 'Indian Society'}, {id: 'indian_world_geography', label: 'Indian & World Geography'}];
+            const mainsGs2Subjects = [{id: 'constitution', label: 'Constitution'}, {id: 'polity', label: 'Polity'}, {id: 'governance', label: 'Governance'}, {id: 'social_justice', label: 'Social Justice'}, {id: 'international_relations', label: 'International Relations'}];
+            const mainsGs3Subjects = [{id: 'economy', label: 'Economy'}, {id: 'agriculture', label: 'Agriculture'}, {id: 'environment', label: 'Environment'}, {id: 'science_technology', label: 'Science & Technology'}, {id: 'disaster_management', label: 'Disaster Management'}, {id: 'internal_security', label: 'Internal Security'}];
+            const mainsGs4OptionalSubjects = [{id: 'ethics_integrity_aptitude', label: 'Ethics, Integrity & Aptitude'}, {id: 'optional_subject_paper1', label: 'Optional Subject – Paper I'}, {id: 'optional_subject_paper2', label: 'Optional Subject – Paper II'}];
+
+            return (
+                <div>
+                    <h2>Subject Confidence</h2>
+                    <ConfidenceComponent title="Prelims Confidence" subjects={prelimsSubjects} data={data.prelims_confidence} handleChange={handleChange} subSection="prelims_confidence" />
+                    <ConfidenceComponent title="Mains GS-I Confidence" subjects={mainsGs1Subjects} data={data.mains_gs1_confidence} handleChange={handleChange} subSection="mains_gs1_confidence" />
+                    <ConfidenceComponent title="Mains GS-II Confidence" subjects={mainsGs2Subjects} data={data.mains_gs2_confidence} handleChange={handleChange} subSection="mains_gs2_confidence" />
+                    <ConfidenceComponent title="Mains GS-III Confidence" subjects={mainsGs3Subjects} data={data.mains_gs3_confidence} handleChange={handleChange} subSection="mains_gs3_confidence" />
+                    <ConfidenceComponent title="Mains GS-IV + Optional Confidence" subjects={mainsGs4OptionalSubjects} data={data.mains_gs4_optional_confidence} handleChange={handleChange} subSection="mains_gs4_optional_confidence" />
+                </div>
+            );
+        };
+
+        const Step8 = ({ data, handleChange }) => (
+            <div>
+                <h2>UPSC Study Strategy</h2>
+                <div className="form-group"><label>Study Focus Combo</label><select className="form-control" value={data.study_focus_combo} onChange={handleChange('study_strategy', 'study_focus_combo')}><option>GS (Prelims + Mains) only</option><option>GS + Optional</option><option>GS + Optional + CSAT + Current Affairs</option><option>GS Macro + GS Micro + Optional (rotation)</option><option>One GS Subject + One GS Subject + Optional</option><option>GS + Optional (Mains-focused)</option><option>Custom Mix</option></select></div>
+                <div className="form-group"><label>Weekly Study Hours</label><select className="form-control" value={data.weekly_study_hours} onChange={handleChange('study_strategy', 'weekly_study_hours')}><option>20 hours</option><option>25 hours</option><option>30 hours</option><option>35 hours</option><option>40 hours</option><option>50 hours</option><option>60 hours</option></select></div>
+                <div className="form-group"><label>Time Distribution</label><select className="form-control" value={data.time_distribution} onChange={handleChange('study_strategy', 'time_distribution')}><option>Balanced (equal across GS : Optional : CSAT : Current Affairs)</option><option>GS-heavy (60% GS, 30% Optional, 10% others)</option><option>Optional-heavy (60% Optional, 30% GS, 10% others)</option><option>GS + Optional only (ignore CSAT, CA separately)</option><option>Custom Ratio</option></select></div>
+                <div className="form-group"><label>Study Approach</label><select className="form-control" value={data.study_approach} onChange={handleChange('study_strategy', 'study_approach')}><option>Weak subjects first</option><option>Strong subjects first</option><option>Balanced (macro subject + micro subject in rotation)</option></select></div>
+                <div className="form-group"><label>Revision Strategy</label><select className="form-control" value={data.revision_strategy} onChange={handleChange('study_strategy', 'revision_strategy')}><option>Daily light revision (1–2 hrs)</option><option>Weekly dedicated revision block</option><option>Fortnightly comprehensive revision</option><option>Monthly comprehensive revision</option></select></div>
+                <div className="form-group"><label>Test Frequency</label><select className="form-control" value={data.test_frequency} onChange={handleChange('study_strategy', 'test_frequency')}><option>Weekly (every 7 days)</option><option>Every 10 days</option><option>Fortnightly (every 15 days)</option><option>Monthly</option><option>Only fixed schedule (as per Institute / Program)</option></select></div>
+                <div className="form-group"><label>Seasonal Windows</label><div>{['June – January → Mains Focus', 'August – November → Mains Writing Focus', 'November – January → Optional Writing Focus', 'February – May → Prelims Focus'].map(item => <div key={item}><label><input type="checkbox" value={item} checked={data.seasonal_windows.includes(item)} onChange={handleChange('study_strategy', 'seasonal_windows')} /> {item}</label></div>)}</div></div>
+                <div className="form-group"><label>Catch-Up Day Preference</label><select className="form-control" value={data.catch_up_day_preference} onChange={handleChange('study_strategy', 'catch_up_day_preference')}><option>Once a week (fixed catch-up day)</option><option>Once in 10 days</option><option>Twice a month</option><option>No fixed catch-up (daily adjustments only)</option></select></div>
+            </div>
+        );
+
+        const Review = ({ data }) => (
+            <div>
+                <h2>Review Your Information</h2>
+                {Object.entries(data).map(([section, sectionData]) => (
+                    <div key={section} className="card mb-3">
+                        <div className="card-header text-capitalize">{section.replace(/_/g, ' ')}</div>
+                        <ul className="list-group list-group-flush">
+                            {Object.entries(sectionData).map(([field, value]) => (
+                                <li key={field} className="list-group-item">
+                                    <strong className="text-capitalize">{field.replace(/_/g, ' ')}:</strong> 
+                                    <span className="pl-2">{typeof value === 'object' ? JSON.stringify(value) : value.toString()}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        );
+        
+        const Success = () => (
+            <div className="text-center">
+                <h2 className="mb-3">Thank You!</h2>
+                <p>Your information has been submitted successfully.</p>
+                <p>The form data has been logged to the browser's console.</p>
+            </div>
+        );
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

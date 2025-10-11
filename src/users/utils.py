@@ -10,7 +10,9 @@ from src.auth.security import (
     create_user_with_pwd,
     check_firebase_user,
     update_firebase_user,
+    FIREBASE_ENABLED,
 )
+from src.auth.exceptions import AuthorizationFailed
 from src.external.emailer import Email
 from src.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -95,31 +97,39 @@ async def create_super_admin_user(db_session: AsyncSession):
             db_session=db_session,
         )
 
-    fb_user = await check_firebase_user(email=email)
-    if not fb_user:
-        password = create_random_pwd()
-        fb_user = await create_user_with_pwd(
-            user_in=UserCreate(
-                phone_number=user_db.phone_number,
-                full_name=user_db.full_name,
-                email=user_db.email,
-                is_admin=user_db.is_admin,
-                tenant_id=user_db.tenant_id or 0,
-            ),
-            password=password,
-        )
-        await Email().send_password(
-            recipient_name=user_db.full_name,
-            email_to=[user_db.email],
-            data={"password": password},
-        )
-    else:
-        fb_user = await update_firebase_user(
-            fb_user.uid,
-            {
-                "phone_number": user_db.phone_number,
-                "display_name": user_db.full_name,
-            },
-        )
+    # If Firebase is disabled (dev/local), skip Firebase provisioning
+    if not FIREBASE_ENABLED:
+        return user_db
+
+    try:
+        fb_user = await check_firebase_user(email=email)
+        if not fb_user:
+            password = create_random_pwd()
+            fb_user = await create_user_with_pwd(
+                user_in=UserCreate(
+                    phone_number=user_db.phone_number,
+                    full_name=user_db.full_name,
+                    email=user_db.email,
+                    is_admin=user_db.is_admin,
+                    tenant_id=user_db.tenant_id or 0,
+                ),
+                password=password,
+            )
+            await Email().send_password(
+                recipient_name=user_db.full_name,
+                email_to=[user_db.email],
+                data={"password": password},
+            )
+        else:
+            fb_user = await update_firebase_user(
+                fb_user.uid,
+                {
+                    "phone_number": user_db.phone_number,
+                    "display_name": user_db.full_name,
+                },
+            )
+    except AuthorizationFailed:
+        # In non-Firebase environments, ignore and proceed
+        pass
 
     return user_db

@@ -1,0 +1,58 @@
+{
+  "name": "helios-ts",
+  "version": "1.0.0",
+  "description": "TypeScript study plan generation engine for UPSC and competitive exams",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest",
+    "generate-docs": "node --max-old-space-size=8192 --import tsx scripts/generate-test-documents2.ts",
+    "generate-docs-dry": "node --max-old-space-size=8192 --import tsx scripts/generate-test-documents2.ts --dry-run"
+  },
+  "keywords": [
+    "typescript",
+    "study-plan",
+    "education",
+    "upsc",
+    "planning",
+    "scheduling",
+    "helios"
+  ],
+  "author": "Laex Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "exceljs": "^4.4.0",
+    "postcss": "^8.4.0",
+    "terser": "^5.44.0",
+    "tsx": "^4.0.0",
+    "vite": "^4.5.14",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@types/uuid": "^10.0.0",
+    "clsx": "^2.0.0",
+    "dayjs": "^1.11.18",
+    "docx": "^9.5.1",
+    "firebase": "^12.3.0",
+    "typescript": "~5.8.3",
+    "uuid": "^13.0.0"
+  }
+}

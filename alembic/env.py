@@ -16,6 +16,7 @@ from src.modules.notifications.models import *
 from src.modules.products.models import *
 from src.modules.teaching.models import *
 from src.modules.eventlogs.models import *
+from src.modules.studyplanner.onboarding.models import *
 
 from alembic import context
 
@@ -38,7 +39,11 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL))
+# Ensure asyncpg driver is used even if DATABASE_URL is plain 'postgresql://'
+_db_url = str(settings.DATABASE_URL)
+if _db_url.startswith("postgresql://") and "+asyncpg" not in _db_url:
+    _db_url = _db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+config.set_main_option("sqlalchemy.url", _db_url)
 config.compare_type = True
 config.compare_server_default = True
 

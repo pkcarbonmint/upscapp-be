@@ -57,7 +57,7 @@ class Question(Base, BaseMixin):
     is_current_affairs = mapped_column(Boolean, default=False)
     current_affairs_topic = mapped_column(JSON)
 
-    reports = relationship("QuestionReport")
+    reports = relationship("QuestionReport", back_populates="question")
 
     # question level performance aggregates
     correct_attempts_percent = mapped_column(Float)
@@ -77,4 +77,4 @@ class QuestionReport(Base, BaseMixin):
     reason = mapped_column(String)
     remarks = mapped_column(Text)
     is_resolved = mapped_column(Boolean, default=False)
-    question = relationship("Question", lazy="selectin")
+    question = relationship("Question", back_populates="reports", lazy="selectin")

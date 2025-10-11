@@ -29,8 +29,24 @@ from sqlalchemy.orm import joinedload, aliased
 from sqlalchemy.dialects.postgresql import aggregate_order_by
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta, date
+from src.student_id import generate_student_id
 
 class UserService(BaseService[User, UserCreate, UserUpdate]):
+    
+    async def create(self, *, object: UserCreate | User, db_session: AsyncSession | None = None, commit: bool = True) -> User:
+        """
+        Override create method to automatically generate student ID for new users.
+        """
+        # Call parent create method first
+        user = await super().create(object=object, db_session=db_session, commit=False)
+        
+        # Generate student ID if not already present
+        if not user.student_id:
+            user.student_id = generate_student_id(user.id)
+            await db_session.commit() if db_session else await self.db.commit()
+            await db_session.refresh(user) if db_session else await self.db.refresh(user)
+        
+        return user
     async def check_user(self, value: str, auth_field_type: str,db_session: AsyncSession | None = None) -> User:
         user = await self.get_by_field(field=auth_field_type, value=value,db_session=db_session)
         if not user:

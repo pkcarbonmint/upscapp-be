@@ -1,0 +1,179 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "UPSC Preparation Mode Configuration for time-based study planning",
+    "last_updated": "2024-12-20",
+    "source": "Migrated from hardcoded PrepModeEngine.hs"
+  },
+  "exam_schedule": {
+    "prelims_month": 5,
+    "prelims_day": 20,
+    "mains_month": 8,
+    "mains_day": 20
+  },
+  "time_thresholds": {
+    "prelims": {
+      "standard_days": 120,
+      "accelerated_days": 45,
+      "crash_days": 30,
+      "minimum_hours_for_crash": 35,
+      "too_late_days": 30
+    },
+    "mains": {
+      "standard_days": 90,
+      "accelerated_days": 60,
+      "crash_days": 20
+    },
+    "foundation": {
+      "longterm_days": 365,
+      "mediumterm_days": 180
+    }
+  },
+  "prep_modes": [
+    {
+      "name": "StandardPrelims",
+      "category": "prelims",
+      "base_duration_weeks": 8,
+      "intensity_adjustment": 0,
+      "description": "Comprehensive coverage, complete syllabus + practice"
+    },
+    {
+      "name": "AcceleratedPrelims",
+      "category": "prelims",
+      "base_duration_weeks": 6,
+      "intensity_adjustment": 1,
+      "description": "High-yield topics, crash course, skip low-priority"
+    },
+    {
+      "name": "CrashPrelims",
+      "category": "prelims",
+      "base_duration_weeks": 3,
+      "intensity_adjustment": 2,
+      "description": "Revision only, mock tests, no new learning"
+    },
+    {
+      "name": "StandardMains",
+      "category": "mains",
+      "base_duration_weeks": 8,
+      "intensity_adjustment": 0,
+      "description": "Full answer writing, essay practice, comprehensive topics"
+    },
+    {
+      "name": "AcceleratedMains",
+      "category": "mains",
+      "base_duration_weeks": 5,
+      "intensity_adjustment": 1,
+      "description": "Focused topics, concentrated answer writing"
+    },
+    {
+      "name": "CrashMains",
+      "category": "mains",
+      "base_duration_weeks": 3,
+      "intensity_adjustment": 2,
+      "description": "Writing practice only, pure answer writing skills"
+    },
+    {
+      "name": "LongtermFoundation",
+      "category": "foundation",
+      "base_duration_weeks": 16,
+      "intensity_adjustment": 0,
+      "description": "Deep conceptual learning, strong base, multiple revisions"
+    },
+    {
+      "name": "MediumtermFoundation",
+      "category": "foundation",
+      "base_duration_weeks": 10,
+      "intensity_adjustment": 0,
+      "description": "Compressed coverage, strategic topic selection"
+    },
+    {
+      "name": "InterviewPrep",
+      "category": "interview",
+      "base_duration_weeks": 8,
+      "intensity_adjustment": 0,
+      "description": "Post-Mains interview preparation"
+    },
+    {
+      "name": "TransitionMode",
+      "category": "special",
+      "base_duration_weeks": 4,
+      "intensity_adjustment": 0,
+      "description": "Block spans exam boundaries"
+    },
+    {
+      "name": "TooLateMode",
+      "category": "special",
+      "base_duration_weeks": 0,
+      "intensity_adjustment": 0,
+      "description": "Below minimum viable preparation threshold"
+    }
+  ],
+  "archetype_adjustments": {
+    "part_time_duration_bonus": 2,
+    "full_time_base_daily_hours": [6, 7],
+    "part_time_base_daily_hours": [3, 4],
+    "generalist_accelerated_mains_intensity_override": 0
+  },
+  "progression_rules": [
+    {
+      "from": "LongtermFoundation",
+      "to": ["LongtermFoundation", "MediumtermFoundation", "StandardPrelims", "StandardMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true
+      }
+    },
+    {
+      "from": "MediumtermFoundation",
+      "full_time_progression": ["MediumtermFoundation", "StandardPrelims", "StandardMains", "InterviewPrep"],
+      "part_time_progression": ["MediumtermFoundation", "AcceleratedPrelims", "AcceleratedMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true,
+        "sufficient_time": true
+      }
+    },
+    {
+      "from": "StandardPrelims",
+      "full_time_progression": ["StandardPrelims", "StandardMains", "InterviewPrep"],
+      "part_time_progression": ["StandardPrelims", "AcceleratedMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true
+      }
+    },
+    {
+      "from": "AcceleratedPrelims",
+      "full_time_progression": ["AcceleratedPrelims", "StandardMains", "InterviewPrep"],
+      "part_time_progression": ["AcceleratedPrelims", "AcceleratedMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true
+      }
+    },
+    {
+      "from": "CrashPrelims",
+      "to": ["CrashPrelims", "CrashMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true
+      }
+    },
+    {
+      "from": "StandardMains",
+      "to": ["StandardMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true
+      }
+    },
+    {
+      "from": "AcceleratedMains",
+      "to": ["AcceleratedMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true
+      }
+    },
+    {
+      "from": "CrashMains",
+      "to": ["CrashMains", "InterviewPrep"],
+      "conditions": {
+        "has_target_year": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,1250 @@
+{
+  "domain": {
+    "name": "UPSC_Civil_Services",
+    "version": "2024.1",
+    "last_updated": "2024-12-20",
+    "source_authority": "Migrated from SubjectCoding.hs"
+  },
+  "subjects": [
+    {
+      "name": "History-Ancient",
+      "code": "H01",
+      "baseline_hours": 25,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": false,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "H01/00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Pre-historic  cultures",
+          "code": "H01/01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Harappan  civilisation",
+          "code": "H01/02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Vedic  &  Post  Vedic  -  Culture  & Philosophy",
+          "code": "H01/03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Mauryan  Empire",
+          "code": "H01/04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Post-Mauryan",
+          "code": "H01/05",
+          "priority": "Priority"
+        },
+        {
+          "name": "Satavahanas",
+          "code": "H01/06",
+          "priority": "Priority"
+        },
+        {
+          "name": "Guptas",
+          "code": "H01/07",
+          "priority": "Essential"
+        },
+        {
+          "name": "Sangam  age",
+          "code": "H01/08",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Post-gupta  and  Harshavardana",
+          "code": "H01/09",
+          "priority": "Priority"
+        },
+        {
+          "name": "Heterodox  religions  -  Buddhism  and Jainism",
+          "code": "H01/10",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "History-Medieval",
+      "code": "H02",
+      "baseline_hours": 25,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": false,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "H02/00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Advent  of  Islam",
+          "code": "H02/01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Tripartite  Struggle",
+          "code": "H02/02",
+          "priority": "Priority"
+        },
+        {
+          "name": "Imperial  Cholas",
+          "code": "H02/03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Delhi  Sultanate",
+          "code": "H02/04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Mughals",
+          "code": "H02/05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Bhakti  and  Sufi  movement",
+          "code": "H02/06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Vijayanagar  Empire",
+          "code": "H02/07",
+          "priority": "Priority"
+        },
+        {
+          "name": "Other  Regional  Kingdoms  of  medieval period",
+          "code": "H02/08",
+          "priority": "Supplementary"
+        }
+      ]
+    },
+    {
+      "name": "History-Modern",
+      "code": "H03",
+      "baseline_hours": 100,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "H03/00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Advent  of  Europeans",
+          "code": "H03/01",
+          "priority": "Essential"
+        },
+        {
+          "name": "British  Conquest  and  consolidation; Sepoy  Mutiny",
+          "code": "H03/02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Indian  Renaissance",
+          "code": "H03/03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Pre-congress  associations  and  formation of  INC;  INC  Sessions",
+          "code": "H03/04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Moderate  phase",
+          "code": "H03/05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Extremist  Phase",
+          "code": "H03/06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Ghandian  Phase",
+          "code": "H03/07",
+          "priority": "Essential"
+        },
+        {
+          "name": "Revolutionary  activitism",
+          "code": "H03/08",
+          "priority": "Priority"
+        },
+        {
+          "name": "Transfer  of  power  -  1940  to  1947",
+          "code": "H03/09",
+          "priority": "Essential"
+        },
+        {
+          "name": "Colonial  administration",
+          "code": "H03/10",
+          "priority": "Priority"
+        },
+        {
+          "name": "Reaction  of  society  towards  colonial  rule",
+          "code": "H03/11",
+          "priority": "Priority"
+        },
+        {
+          "name": "Role  of  women  in  Freedom  struggle",
+          "code": "H03/12",
+          "priority": "Priority"
+        },
+        {
+          "name": "Communism  and  communalism",
+          "code": "H03/13",
+          "priority": "Priority"
+        },
+        {
+          "name": "Important  personalities  of  INM;  Governor Generals  and  Viceroys",
+          "code": "H03/14",
+          "priority": "Supplementary"
+        }
+      ]
+    },
+    {
+      "name": "History-Art  and  Culture",
+      "code": "H04",
+      "baseline_hours": 50,
+      "category": "Micro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": false,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "H04/00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Art  and  architecture",
+          "code": "H04/01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Literature",
+          "code": "H04/02",
+          "priority": "Priority"
+        },
+        {
+          "name": "Paintings",
+          "code": "H04/03",
+          "priority": "Priority"
+        },
+        {
+          "name": "Dance  forms",
+          "code": "H04/04",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Theatre",
+          "code": "H04/05",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Music",
+          "code": "H04/06",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Religions  and  festivals",
+          "code": "H04/07",
+          "priority": "Priority"
+        }
+      ]
+    },
+    {
+      "name": "History-World",
+      "code": "H05",
+      "baseline_hours": 25,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": false,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "H05/00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Industrial Revolution",
+          "code": "H05/01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Revolutions- American, French, Russia",
+          "code": "H05/02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Unification Movements",
+          "code": "H05/03",
+          "priority": "Priority"
+        },
+        {
+          "name": "Colonialism and Imperialism",
+          "code": "H05/04",
+          "priority": "Essential"
+        },
+        {
+          "name": "World War-I",
+          "code": "H05/05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Inter-war period and World War-II",
+          "code": "H05/06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Decolonization and redrawal of national boundaries",
+          "code": "H05/07",
+          "priority": "Priority"
+        },
+        {
+          "name": "political philosophies",
+          "code": "H05/08",
+          "priority": "Priority"
+        },
+        {
+          "name": "Cold war era",
+          "code": "H05/09",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "History-Post Independent India",
+      "code": "H06",
+      "baseline_hours": 25,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "H06/00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Integration of Princely states.",
+          "code": "H06/01",
+          "priority": "Essential"
+        },
+        {
+          "name": "States re-organization",
+          "code": "H06/02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Story of Indian Democracy",
+          "code": "H06/03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Economic building and development",
+          "code": "H06/04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Years of crisis",
+          "code": "H06/05",
+          "priority": "Priority"
+        }
+      ]
+    },
+    {
+      "name": "Geography",
+      "code": "G",
+      "baseline_hours": 130,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": false,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "G00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Universe,  Solar  System  &  Evolution  of Earth.",
+          "code": "G01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Geomorphology",
+          "code": "G02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Climatology",
+          "code": "G03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Oceanography",
+          "code": "G04",
+          "priority": "Priority"
+        },
+        {
+          "name": "Bio-Geography",
+          "code": "G05",
+          "priority": "Priority"
+        },
+        {
+          "name": "World  Geography  -  Physical  and  world Map  related",
+          "code": "G06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Geo-physical  Phenomenon",
+          "code": "G07",
+          "priority": "Priority"
+        },
+        {
+          "name": "Resources  -  World  and  India",
+          "code": "G08",
+          "priority": "Essential"
+        },
+        {
+          "name": "Industry  -  World  and  India",
+          "code": "G09",
+          "priority": "Priority"
+        },
+        {
+          "name": "Settlements",
+          "code": "G10",
+          "priority": "Priority"
+        },
+        {
+          "name": "Population  and  Migration",
+          "code": "G11",
+          "priority": "Essential"
+        },
+        {
+          "name": "Physical  geogrpahy  of  India  &   Drainage;",
+          "code": "G12",
+          "priority": "Essential"
+        },
+        {
+          "name": "Indian  Climate  &  Vegetation",
+          "code": "G13",
+          "priority": "Essential"
+        },
+        {
+          "name": "Agriculture  and  allied  Sector  -  World  & India",
+          "code": "G14",
+          "priority": "Essential"
+        },
+        {
+          "name": "Trade,  Transport  and  Communication  - World  &  India",
+          "code": "G15",
+          "priority": "Priority"
+        },
+        {
+          "name": "Environmental Geography",
+          "code": "G16",
+          "priority": "Priority"
+        }
+      ]
+    },
+    {
+      "name": "Environment,  Ecology  and Disaster  Management",
+      "code": "B",
+      "baseline_hours": 80,
+      "category": "Micro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "B00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Basics  of  Environment",
+          "code": "B01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Biomes",
+          "code": "B02",
+          "priority": "Priority"
+        },
+        {
+          "name": "Wetlands,  Mangroves  and  Corals",
+          "code": "B03",
+          "priority": "Priority"
+        },
+        {
+          "name": "Biodiversity  and  its  conservation",
+          "code": "B04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Pollution",
+          "code": "B05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Land  Degradation",
+          "code": "B06",
+          "priority": "Priority"
+        },
+        {
+          "name": "Waste  Management",
+          "code": "B07",
+          "priority": "Priority"
+        },
+        {
+          "name": "Forest  Conservation",
+          "code": "B08",
+          "priority": "Essential"
+        },
+        {
+          "name": "Global  Warming  and  Climate  Change",
+          "code": "B09",
+          "priority": "Essential"
+        },
+        {
+          "name": "Green  Revolution  and  Sustainable Agriculture",
+          "code": "B10",
+          "priority": "Essential"
+        },
+        {
+          "name": "Renewable  Energy",
+          "code": "B11",
+          "priority": "Priority"
+        },
+        {
+          "name": "Global Agreements and Efforts",
+          "code": "B12",
+          "priority": "Priority"
+        },
+        {
+          "name": "Indian  Initiatives, efforts and Commitments",
+          "code": "B13",
+          "priority": "Priority"
+        },
+        {
+          "name": "Environmental  Impact  Assessment",
+          "code": "B14",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Disasters",
+          "code": "B15",
+          "priority": "Essential"
+        },
+        {
+          "name": "Disaster  Management",
+          "code": "B16",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "Science  &  Technology",
+      "code": "T",
+      "baseline_hours": 50,
+      "category": "Micro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "T00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Basics  of  Science  and  Technology",
+          "code": "T01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Bio-Technology",
+          "code": "T02",
+          "priority": "Priority"
+        },
+        {
+          "name": "Medical  science  and  Health",
+          "code": "T03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Space  Technology",
+          "code": "T04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Computer  and  ICT",
+          "code": "T05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Nuclear  Technology",
+          "code": "T06",
+          "priority": "Priority"
+        },
+        {
+          "name": "Defence  Technology",
+          "code": "T07",
+          "priority": "Priority"
+        },
+        {
+          "name": "Nanotechnology",
+          "code": "T08",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Robotics",
+          "code": "T09",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Artificial  Intelligence",
+          "code": "T10",
+          "priority": "Priority"
+        },
+        {
+          "name": "Internet  of  Things",
+          "code": "T11",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Blockchain",
+          "code": "T12",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Quantum  Computing",
+          "code": "T13",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "5G  Technology",
+          "code": "T14",
+          "priority": "Priority"
+        },
+        {
+          "name": "Cybersecurity",
+          "code": "T15",
+          "priority": "Priority"
+        },
+        {
+          "name": "Digital  India",
+          "code": "T16",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "Indian  Polity  and  Governance",
+      "code": "P",
+      "baseline_hours": 120,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "P00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Constitutional  Framework",
+          "code": "P01",
+          "priority": "Essential"
+        },
+        {
+          "name": "System  of  Government",
+          "code": "P02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Central  Government",
+          "code": "P03",
+          "priority": "Essential"
+        },
+        {
+          "name": "State  Government",
+          "code": "P04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Local  Government",
+          "code": "P05",
+          "priority": "Priority"
+        },
+        {
+          "name": "Union  Territories",
+          "code": "P06",
+          "priority": "Priority"
+        },
+        {
+          "name": "Constitutional  Bodies",
+          "code": "P07",
+          "priority": "Essential"
+        },
+        {
+          "name": "Non-Constitutional  Bodies",
+          "code": "P08",
+          "priority": "Priority"
+        },
+        {
+          "name": "Other  Constitutional  Dimensions",
+          "code": "P09",
+          "priority": "Priority"
+        },
+        {
+          "name": "Political  Dynamics",
+          "code": "P10",
+          "priority": "Essential"
+        },
+        {
+          "name": "Governance",
+          "code": "P11",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "Indian  Economy",
+      "code": "E",
+      "baseline_hours": 120,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "E00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Basic  concepts  and  definitions",
+          "code": "E01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Economic  Planning",
+          "code": "E02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Economic  Reforms",
+          "code": "E03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Inclusive  Growth",
+          "code": "E04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Poverty  and  Unemployment",
+          "code": "E05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Agriculture",
+          "code": "E06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Industry",
+          "code": "E07",
+          "priority": "Essential"
+        },
+        {
+          "name": "Services",
+          "code": "E08",
+          "priority": "Essential"
+        },
+        {
+          "name": "Infrastructure",
+          "code": "E09",
+          "priority": "Essential"
+        },
+        {
+          "name": "Investment  Models",
+          "code": "E10",
+          "priority": "Priority"
+        },
+        {
+          "name": "Land  Reforms",
+          "code": "E11",
+          "priority": "Priority"
+        },
+        {
+          "name": "Effects  of  Liberalization",
+          "code": "E12",
+          "priority": "Priority"
+        },
+        {
+          "name": "External  Sector",
+          "code": "E13",
+          "priority": "Essential"
+        },
+        {
+          "name": "International  Economic  Organizations",
+          "code": "E14",
+          "priority": "Priority"
+        },
+        {
+          "name": "Banking  and  Insurance",
+          "code": "E15",
+          "priority": "Essential"
+        },
+        {
+          "name": "Taxation",
+          "code": "E16",
+          "priority": "Essential"
+        },
+        {
+          "name": "Fiscal  Policy",
+          "code": "E17",
+          "priority": "Essential"
+        },
+        {
+          "name": "Monetary  Policy",
+          "code": "E18",
+          "priority": "Essential"
+        },
+        {
+          "name": "Capital  Market",
+          "code": "E19",
+          "priority": "Priority"
+        },
+        {
+          "name": "Money  Market",
+          "code": "E20",
+          "priority": "Priority"
+        },
+        {
+          "name": "Public  Finance",
+          "code": "E21",
+          "priority": "Essential"
+        },
+        {
+          "name": "Budget",
+          "code": "E22",
+          "priority": "Essential"
+        },
+        {
+          "name": "Economic  Survey",
+          "code": "E23",
+          "priority": "Essential"
+        },
+        {
+          "name": "NITI  Aayog",
+          "code": "E24",
+          "priority": "Priority"
+        },
+        {
+          "name": "Sustainable  Development",
+          "code": "E25",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "Governance",
+      "code": "O",
+      "baseline_hours": 40,
+      "category": "Micro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "O00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Good governance and applications",
+          "code": "O01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Transparency",
+          "code": "O02",
+          "priority": "Priority"
+        },
+        {
+          "name": "Accountability",
+          "code": "O03",
+          "priority": "Priority"
+        },
+        {
+          "name": "E-Governance",
+          "code": "O04",
+          "priority": "Priority"
+        },
+        {
+          "name": "Citizens Charter",
+          "code": "O05",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Role of Civil services in a democracy",
+          "code": "O06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Social Institutions-Civil society activism and NGO's",
+          "code": "O07",
+          "priority": "Priority"
+        },
+        {
+          "name": "Self Help Groups",
+          "code": "O08",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Government Policies",
+          "code": "O09",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "International Relations",
+      "code": "I",
+      "baseline_hours": 40,
+      "category": "Micro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "I00",
+          "priority": "Essential"
+        },
+        {
+          "name": "India's foreign policy",
+          "code": "I01",
+          "priority": "Essential"
+        },
+        {
+          "name": "India and its neighborhood",
+          "code": "I02",
+          "priority": "Essential"
+        },
+        {
+          "name": "India's relations with major powers",
+          "code": "I03",
+          "priority": "Essential"
+        },
+        {
+          "name": "India's relations with other nations",
+          "code": "I04",
+          "priority": "Priority"
+        },
+        {
+          "name": "Agreements involving India and/or affecting India's interests",
+          "code": "I05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Regional and global groupings",
+          "code": "I06",
+          "priority": "Essential"
+        },
+        {
+          "name": "International institutions, agencies and fora",
+          "code": "I07",
+          "priority": "Essential"
+        },
+        {
+          "name": "Indian diaspora",
+          "code": "I08",
+          "priority": "Priority"
+        },
+        {
+          "name": "Global issues",
+          "code": "I09",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "Internal Security",
+      "code": "C",
+      "baseline_hours": 50,
+      "category": "Micro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "C00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Role of external state and non-state actors",
+          "code": "C01",
+          "priority": "Essential"
+        },
+        {
+          "name": "North-East regional issues",
+          "code": "C02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Jammu & Kashmir - Issues",
+          "code": "C03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Challenges to Internal security through communication networks",
+          "code": "C04",
+          "priority": "Priority"
+        },
+        {
+          "name": "Cyber security",
+          "code": "C05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Left wing Extremism",
+          "code": "C06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Terrorism & extremism",
+          "code": "C07",
+          "priority": "Essential"
+        },
+        {
+          "name": "Organised crime and its linkages with terrorism",
+          "code": "C08",
+          "priority": "Priority"
+        },
+        {
+          "name": "Money Laundering and prevention",
+          "code": "C09",
+          "priority": "Priority"
+        },
+        {
+          "name": "Border Management",
+          "code": "C10",
+          "priority": "Essential"
+        },
+        {
+          "name": "Emerging Security challenges- Global commons.",
+          "code": "C11",
+          "priority": "Priority"
+        },
+        {
+          "name": "Security forces and their mandate",
+          "code": "C12",
+          "priority": "Essential"
+        },
+        {
+          "name": "Maritime Security",
+          "code": "C13",
+          "priority": "Priority"
+        }
+      ]
+    },
+    {
+      "name": "Society and Social Justice",
+      "code": "S",
+      "baseline_hours": 60,
+      "category": "Macro",
+      "exam_focus": "BothExams",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Broad / Overlap",
+          "code": "S00",
+          "priority": "Essential"
+        },
+        {
+          "name": "Salient features of Indian Society",
+          "code": "S01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Diversity of India",
+          "code": "S02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Issues of women",
+          "code": "S03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Urbanization - Problems and remedies",
+          "code": "S04",
+          "priority": "Priority"
+        },
+        {
+          "name": "Impact of Globalisation on Indian society",
+          "code": "S05",
+          "priority": "Priority"
+        },
+        {
+          "name": "Population and associated issues",
+          "code": "S06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Poverty, Hunger and developmental issues",
+          "code": "S07",
+          "priority": "Essential"
+        },
+        {
+          "name": "Regionalism",
+          "code": "S08",
+          "priority": "Priority"
+        },
+        {
+          "name": "Communalism",
+          "code": "S09",
+          "priority": "Essential"
+        },
+        {
+          "name": "Secularism",
+          "code": "S10",
+          "priority": "Essential"
+        },
+        {
+          "name": "Social empowerment and welfare",
+          "code": "S11",
+          "priority": "Essential"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to SCs",
+          "code": "S12",
+          "priority": "Essential"
+        },
+        {
+          "name": "Welfare schemes, mechanisms and institutions related to STs",
+          "code": "S13",
+          "priority": "Essential"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to Women",
+          "code": "S14",
+          "priority": "Essential"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to children",
+          "code": "S15",
+          "priority": "Priority"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to youth",
+          "code": "S16",
+          "priority": "Priority"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to Aged",
+          "code": "S17",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to Migrants",
+          "code": "S18",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to minorities",
+          "code": "S19",
+          "priority": "Priority"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to disabled",
+          "code": "S20",
+          "priority": "Priority"
+        },
+        {
+          "name": "Welfare schemes, mechanisms,laws and institutions related to LGBTQIA+",
+          "code": "S21",
+          "priority": "Supplementary"
+        },
+        {
+          "name": "Social sector - Health",
+          "code": "S22",
+          "priority": "Essential"
+        },
+        {
+          "name": "Social Sector - Education",
+          "code": "S23",
+          "priority": "Essential"
+        },
+        {
+          "name": "Social sector - Human resources",
+          "code": "S24",
+          "priority": "Priority"
+        },
+        {
+          "name": "Broad / Overlap",
+          "code": "S25",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
+      "name": "Essay",
+      "code": "Z",
+      "baseline_hours": 100,
+      "category": "Micro",
+      "exam_focus": "MainsOnly",
+      "has_current_affairs": true,
+      "topics": [
+        {
+          "name": "Philosophical topics",
+          "code": "Z01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Women based topics",
+          "code": "Z02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Education & Health based topics",
+          "code": "Z03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Economy based topics",
+          "code": "Z04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Enviroment based topics",
+          "code": "Z05",
+          "priority": "Essential"
+        },
+        {
+          "name": "Governance based topics",
+          "code": "Z06",
+          "priority": "Essential"
+        },
+        {
+          "name": "Technology based topics",
+          "code": "Z07",
+          "priority": "Priority"
+        },
+        {
+          "name": "International Relations based topics",
+          "code": "Z08",
+          "priority": "Priority"
+        }
+      ]
+    }
+  ]
+}

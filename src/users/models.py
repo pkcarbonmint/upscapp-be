@@ -61,8 +61,26 @@ class User(Base, BaseMixin):
     user_type = mapped_column(String) #student,workforce
     is_external: Mapped[bool] = mapped_column(default=False)
     tagline = mapped_column(String)
+    
+    # Student ID for referral system
+    student_id: Mapped[str] = mapped_column(String(8), index=True, unique=True, nullable=True)
+    
+    # Faculty flag for plan review
+    is_faculty: Mapped[bool] = mapped_column(default=False)
 
     profiles = relationship("Profile", lazy="selectin")
+
+
+class Referral(Base, BaseMixin):
+    __tablename__ = "referrals"
+    
+    referrer_student_id: Mapped[str] = mapped_column(String(8), index=True, nullable=False)
+    referred_student_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
+    referral_code: Mapped[str] = mapped_column(String(8), index=True, nullable=False)
+    
+    # Relationship to referred user
+    referred_user = relationship("User", foreign_keys=[referred_student_id])
+
 
 class Role(Base,BaseMixin):
     __tablename__= "roles"

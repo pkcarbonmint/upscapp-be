@@ -1,0 +1,292 @@
+[
+  {
+    "subjectCode": "P",
+    "basics": [
+      "NCERT IX–X Democratic Politics",
+      "NCERT XI Indian Constitution at Work"
+    ],
+    "textbooks": [
+      "M. Laxmikanth – Indian Polity"
+    ],
+    "value_addition": [
+      "NITI Aayog Reports + PRS Briefs",
+      "Newspapers (The Hindu/Indian Express)",
+      "Optional: Subhash Kashyap Our Constitution, Our Parliament"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Polity Material",
+      "Mains RRP + Prelims RRP",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "E",
+    "basics": [
+      "NCERT XI Indian Economic Development",
+      "NCERT XII Macroeconomics"
+    ],
+    "textbooks": [ "Nitin Singhania or Vivek Singh"],
+    "value_addition": [
+      "NITI Aayog Reports + Economic survey and Budget",
+      "Newspapers (Hindu and IE Explained)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Economy Material",
+      "Mains RRP + Prelims RRP",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "G",
+    "basics": [
+      "NCERT VI–X (Fundamentals)",
+      "NCERT XI Physical",
+      "NCERT XII Human"
+    ],
+    "textbooks": ["G.C. Leong", "PMF IAS Geography"],
+    "value_addition": [
+      "Atlas (Orient Blackswan)",
+      "Newspapers (The Hindu – Env/Geo pages)",
+      "Down to Earth"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Geography Material",
+      "Mains RRP + Prelims RRP",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "H03",
+    "basics": [
+      "Old NCERT – Bipan Chandra",
+      "NCERT Themes in History Part III"
+    ],
+    "textbooks": [
+      "Spectrum or Bipan Chandra – India's Struggle for Independence",
+      "Sekhar Bandyopadhyay – Plassey to Partition"
+    ],
+    "value_addition": ["Newspapers (IE – Explained History columns)"],
+    "rapid_revision_practice": [
+      "La Excellence Modern History Material",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "H01",
+    "basics": [
+      "NCERT"
+    ],
+    "textbooks": [],
+    "value_addition": [
+      "Newspapers (CA on Archaeology/Heritage)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Culture Material",
+      "Ancient/Medieval Prelims Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "H02",
+    "basics": [
+      "NCERT"
+    ],
+    "textbooks": [],
+    "value_addition": [
+      "Newspapers (CA on Archaeology/Heritage)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Culture Material",
+      "Ancient/Medieval Prelims Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "H04",
+    "basics": [
+      "NCERT Fine Arts",
+      "NIOS – Culture & Heritage"
+    ],
+    "textbooks": [
+      "Nitin Singhania"
+    ],
+    "value_addition": [
+      "Newspapers (CA on art awards, festivals, heritage)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Art & Culture Material",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "B",
+    "basics": [
+      "NCERT XII Biology (Unit 10)"
+    ],
+    "textbooks": [
+      "Shankar IAS Env (optional) or PMF IAS Environment"
+    ],
+    "value_addition": [
+      "Down to Earth", 
+      "Newspapers (The Hindu – Env, sections)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Environment Material",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "B",
+    "topicCode": "B16",
+    "basics": [
+      "CBSE XI – Disaster Mgmt"
+    ],
+    "textbooks": [],
+    "value_addition": [
+      "Down to earth",
+      "Disaster coverage – IE/The Hindu"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence DM Material",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "T",
+    "basics": [
+      "NCERT basics (VI–X)",
+      "NCERT XI–XII selective"
+    ],
+    "textbooks": [
+      "Science and Technology By Ravi P Agrahari"
+    ],
+    "value_addition": [
+      "Newspapers (The Hindu S&T, PIB updates)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence S&T Material",
+      "Prelims & Mains Workbooks"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence S&T Material",
+      "Prelims & Mains Workbooks"
+    ]
+  },
+  {
+    "subjectCode": "H05",
+    "basics": [
+      "NCERT – Arjun Dev",
+      "NCERT Themes – World History"
+    ],
+    "textbooks": [
+      "Norman Lowe – Mastering World History"
+    ],
+    "value_addition": [
+      "Newspapers (Hindu and IE Explained)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence World History Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "H06",
+    "basics": [
+      "NCERT XII – Politics since Independence"
+    ],
+    "textbooks": [
+      "Bipan Chandra – India Since Independence"
+    ],
+    "value_addition": [
+      "Newspapers (Hindu and IE Explained)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Post-Independence Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "S",
+    "basics": [
+      "NCERT XII Indian Society",
+      "NCERT XII Social Change",
+      "IGNOU (ESO-12, ESO-16)"
+    ],
+    "textbooks": [
+      "Indian Society - Themes and Social Issues By Nadeem Hasnain"
+    ],
+    "value_addition": [
+      "Newspapers (Hindu and IE Explained) (Social issues, NFHS reports)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Society Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "O",
+    "basics": [
+      "India Year Book (Schemes) + PIB"
+    ],
+    "textbooks": [
+      "Governance In India by M Laxmikanth"
+    ],
+    "value_addition": [
+      "NITI Aayog + Yojana",
+      "Newspapers (Hindu and IE Explained)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Governance Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "I",
+    "basics": [
+      "NCERT XII Contemporary World Politics"
+    ],
+    "textbooks": [
+      "Rajiv Sikri – Challenge & Strategy",
+      "International Relations by Ashok Kumar"
+    ],
+    "value_addition": [
+      "IDSA / ORF / MEA briefs",
+      "Newspapers (The Hindu and IE – International page)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence IR Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "C",
+    "basics": [
+      "NCERT XII Contemporary World (relevant)"
+    ],
+    "textbooks": [
+      "Challenges to Internal Security of India By Ashok Kumar"
+    ],
+    "value_addition": [
+      "IDSA Reports",
+      "Newspapers (Hindu and IE Explained)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Security Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "Z",
+    "basics": [],
+    "textbooks": [
+      "Michael Sandel – Justice",
+      "Ethics by Jitin Yadav",
+      "2nd ARC (4th, 10th – Ethics in Governance)"
+    ],
+    "value_addition": [
+      "Newspapers (case studies, ethical dilemmas in news)"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Ethics Material",
+      "Prelims & Mains Workbooks"
+    ]
+  }
+]

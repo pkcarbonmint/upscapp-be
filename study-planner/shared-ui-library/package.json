@@ -1,0 +1,50 @@
+{
+  "name": "shared-ui-library",
+  "version": "1.0.0",
+  "description": "Shared UI components for UPSC apps including OTP verification",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "ui-components",
+    "otp",
+    "authentication",
+    "upsc"
+  ],
+  "author": "Laex Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "lucide-react": ">=0.263.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+    },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "typescript": "~5.8.3",
+    "vite": "^4.4.0",
+    "vite-plugin-dts": "^3.0.0"
+  },
+  "dependencies": {
+    "firebase": "^12.3.0",
+    "clsx": "^2.0.0"
+  }
+}

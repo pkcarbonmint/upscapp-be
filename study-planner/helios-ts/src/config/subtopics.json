@@ -1,0 +1,3848 @@
+[
+    {
+        "topicCode": "B00",
+        "subtopic": "Miscellaneous",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Disasters",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Hazards, Vulnerabilities and Risks",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Classification of Disasters",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Vulnerability Profile of India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Natural Hazards",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Earthquake",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Tsunami",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Volcano",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Floods",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Urban Floods",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Landslides",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Cloudburst",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Cyclone",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Drought",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Heat Wave",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Cold Wave",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Wild Fire",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Anthropogenic Disasters",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Biological Disasters",
+        "priorityBand": "D",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Industrial Chemical Disasters",
+        "priorityBand": "D",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B15",
+        "subtopic": "Nuclear Disasters",
+        "priorityBand": "D",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Introduction to Disaster Management",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Disaster Management Cycle",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Introduction to the Disaster Management Cycle",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Disaster Preparedness",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Disaster Risk Reduction and Planning",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Relief and Rehabilitation",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Post-Disaster Recovery and Reconstruction",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Disaster Management in India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Legal and Institutional Framework in India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "Evolution of Global Framework on Disaster Management",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B16",
+        "subtopic": "International Cooperation on Disaster Management",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E00",
+        "subtopic": "Basic Key Concepts",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E01",
+        "subtopic": "National Income",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E01",
+        "subtopic": "Economic Growth versus Economic Development",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E01",
+        "subtopic": "Population and Demographic Dividend",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E01",
+        "subtopic": "Skill Development",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E01",
+        "subtopic": "Care Economy and Gender Transformative Approach in India",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E01",
+        "subtopic": "Sustainable Development and Climate Change",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E02",
+        "subtopic": "Poverty, Inequality and Unemployment",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E03",
+        "subtopic": "Unemployment and Labour Reforms",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E04",
+        "subtopic": "Economic Planning in India",
+        "priorityBand": "C",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E05",
+        "subtopic": "Banking Sector in India",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E05",
+        "subtopic": "Co-operative Sector in Indian Economy",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E06",
+        "subtopic": "Money Demand and Money Supply",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E07",
+        "subtopic": "Indian Tax Structure",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E08",
+        "subtopic": "Public Finance",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E09",
+        "subtopic": "Inflation",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E10",
+        "subtopic": "Agriculture and Allied Sectors in India",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E11",
+        "subtopic": "Indian Industry",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E11",
+        "subtopic": "MSME Sector",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E12",
+        "subtopic": "Service Sector",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E12",
+        "subtopic": "Health and Education",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E12",
+        "subtopic": "India's Booming Gig and Platform Economy",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E13",
+        "subtopic": "Financial Market",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E13",
+        "subtopic": "Technology and Finance",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E13",
+        "subtopic": "Insurance Sector of India",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E14",
+        "subtopic": "Infrastructure",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E14",
+        "subtopic": "Power and Energy Sector of India",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E15",
+        "subtopic": "Balance of Payments",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E15",
+        "subtopic": "India's Foreign Exchange and Foreign Trade",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E16",
+        "subtopic": "Investment Models",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E19",
+        "subtopic": "International Economic Institutions",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "E22",
+        "subtopic": "Irrigation in India",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E28",
+        "subtopic": "Food Security and Food Management",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E31",
+        "subtopic": "Food Processing Industry in India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "E32",
+        "subtopic": "Land Reforms in India",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "E17",
+        "subtopic": "Economic  reforms",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "E18",
+        "subtopic": "Economic  survey  &  Budget",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "E20",
+        "subtopic": "Economy  related  -  Acts,  Schemes, Policies,  Indices;",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "E21",
+        "subtopic": "Major Crops - Cropping Patterns",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "E23",
+        "subtopic": "Agriculture - Inputs",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "E24",
+        "subtopic": "Transport and Marketing of Agricultural Produce and Issues",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "E25",
+        "subtopic": "E-Technology in Aid of Farmers",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "E26",
+        "subtopic": "Farm Subsidies and MSP",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "E27",
+        "subtopic": "Public Distribution System",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "E29",
+        "subtopic": "Technology Missions",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "E30",
+        "subtopic": "Economics of Animal Rearing",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "B01",
+        "subtopic": "Environment, Habitat and Ecosystem",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "B01",
+        "subtopic": "Ecology \ufffd Principles and Organizations",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "B01",
+        "subtopic": "Functions of an Ecosystem \ufffd Succession and Homeostasis",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "B01",
+        "subtopic": "Functions of an Ecosystem \ufffd Trophic Levels",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "B01",
+        "subtopic": "Functions of an Ecosystem \ufffd Biogeo Chemical Cycling",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B02",
+        "subtopic": "Natural Ecosystems",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B03",
+        "subtopic": "Wetland Ecosystem",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B04",
+        "subtopic": "Biodiversity and Loss of Biodiversity",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B04",
+        "subtopic": "Biodiversity Conservation",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B04",
+        "subtopic": "Wildlife Conservation",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B04",
+        "subtopic": "Major Species and Their Conservation Status",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "B04",
+        "subtopic": "Invasive Species",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "B04",
+        "subtopic": "Protected Area Network of India",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "B05",
+        "subtopic": "Air Pollution: Causes and Air Pollutants",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B05",
+        "subtopic": "Air Pollution: Effects and Control Measures",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B05",
+        "subtopic": "Water Pollution: Causes, Effects & Control Measures",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B05",
+        "subtopic": "Highly Polluting Industries",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B06",
+        "subtopic": "Land Degradation",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B07",
+        "subtopic": "Plastic Pollution, Solid, Hazardous and E-Waste",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B08",
+        "subtopic": "India State of Forest Report 2023",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B09",
+        "subtopic": "Climate Change \ufffd Causes, Impacts & Mitigation",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B10",
+        "subtopic": "Green Revolution & Sustainable Agricultural Practises",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B11",
+        "subtopic": "Sources of Energy, Renewables and Energy Conservation",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B12",
+        "subtopic": "International Environmental Conventions, NGOs and Laws",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "B13",
+        "subtopic": "National Environmental Legislation",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B13",
+        "subtopic": "Water Conservation",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "B14",
+        "subtopic": "Environmental  Impact  Assessment",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z01",
+        "subtopic": "Philosophical topics",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z02",
+        "subtopic": "Women based topics",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z03",
+        "subtopic": "Education & Health based topics",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z04",
+        "subtopic": "Economy based topics",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z05",
+        "subtopic": "Enviroment based topics",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z06",
+        "subtopic": "Governance based topics",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z07",
+        "subtopic": "Technology based topics",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "Z08",
+        "subtopic": "International Relations based topics",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A00",
+        "subtopic": "Broad/Overlap",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A02",
+        "subtopic": "Contribution of Moral Thinkers and Philosophers from India and World",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A03",
+        "subtopic": "Ethics and Human Interface",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A04",
+        "subtopic": "Ethical Theories",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A05",
+        "subtopic": "Importance Quotes on Ethics",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A05",
+        "subtopic": "Quotes based Questions",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A06",
+        "subtopic": "Aptitude and Foundational Values for Civil service",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A07",
+        "subtopic": "Attitude",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A10",
+        "subtopic": "Emotional Intelligence",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A13",
+        "subtopic": "Public / Civil service values and Ethics in Public Administration",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A19",
+        "subtopic": "Probity in Governance",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A18",
+        "subtopic": "Case Studies",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A26",
+        "subtopic": "Commendable Contributions of Civil servants",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A26",
+        "subtopic": "Inspirational Social Initiatives by CSOs & Institutions",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A01",
+        "subtopic": "Western thinkers ",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A08",
+        "subtopic": "Attitude case studies ",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A09",
+        "subtopic": "Attitude, social influence and persuasion ",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A11",
+        "subtopic": "Emotional Intelligence - Applications in administration and governance ",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "A12",
+        "subtopic": "Emotional Intelligence - case studies ",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A14",
+        "subtopic": "Ethics in PA:Laws, rules, conscience as source of ethical guidance",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A15",
+        "subtopic": "Ethics in PA: Accountability and ethical governance",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A16",
+        "subtopic": "Ethics in PA: Strengthening ethical values in governance",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A17",
+        "subtopic": "Ethics in PA: Ethics of IR and funding ",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A20",
+        "subtopic": "Probity in Governance: code of conduct and code of ethics",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A21",
+        "subtopic": "Probity in Governance: Citizen charter, work culture and quality of service delivery",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A22",
+        "subtopic": "Probity in Governance : Utilisation of Public funds and corruption",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A23",
+        "subtopic": "Probity in Governance: Case studies",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A24",
+        "subtopic": "Probity in Governance: Concept of Public Service, Philosophical Basis of Governance and Probity",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "A25",
+        "subtopic": "Ethics in PA: Corporate Governance",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO1",
+        "subtopic": "Origin and Evolution of Earth",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO1",
+        "subtopic": "Age of the Earth",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO1",
+        "subtopic": "Motions of the Earth",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO1",
+        "subtopic": "Earth's Magnetosphere",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO2",
+        "subtopic": "Internal Structure of the Earth",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO2",
+        "subtopic": "Distribution of Oceans and Continents",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO2",
+        "subtopic": "Mechanism of Plates Movement",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO2",
+        "subtopic": "Plate Boundaries",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO2",
+        "subtopic": "Landforms and their Evolution",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO3",
+        "subtopic": "Difference between Climate and Weather",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO3",
+        "subtopic": "Earth's Atmosphere",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO3",
+        "subtopic": "Heat Budget",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO3",
+        "subtopic": "Heat Dome",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO3",
+        "subtopic": "Mammatus Clouds",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO3",
+        "subtopic": "Winter Storm in U.S",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO3",
+        "subtopic": "Fujiwhara Effect",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Ocean Reliefs",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Salinity",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Ocean Acidification",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Movement of Ocean Waters",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Ocean Currents",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Climate Change and Ocean Circulation",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Coral Reefs",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Marine Resources",
+        "priorityBand": "C",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Atlantic Meridional Overturning Circulation (AMOC)",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "Deep Ocean Mission",
+        "priorityBand": "C",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "GO4",
+        "subtopic": "O-Storms",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "GO7",
+        "subtopic": "Seismicity and Earthquakes",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "GO7",
+        "subtopic": "Volcanoes",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Types of Mineral Resources",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Distribution of Key Mineral Resources in India",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Production of Minerals",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "National Mineral Policy, 2019",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Energy Resources",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Sources of Energy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Major Sources of Power Generation in India",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Problems with India's Power Sector",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Initiatives Taken to Resolve Challenges",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Non-Conventional Sources of Energy",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Solar Power",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Tidal Energy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Hydrogen-Based Energy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Hybrid Renewable Energy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Gas-Based Economy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "New Emission Norms for Thermal Power Plants",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Fly Ash",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Lithium Reserves",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Biofuel \ufffd Lessons from Brazil",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "National Offshore Wind Energy Policy, 2015",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "M-Sand Policy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Vanadium in Arunachal",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Water Scarcity",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Water Resource Management (WRM)",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Water Use Efficiency",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Micro-Watershed Development and Management",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Evolution of Watershed Development Policy",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Problems with Water Resource Management",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Way Ahead for Water Resource Management",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Draft Water Policy",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Dam Safety Act, 2021",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO8",
+        "subtopic": "Mining Sector in India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Importance of the Industrial Sector in the Indian Context",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Types of Industries",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Factors Influencing the Location of Industries",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Industrial Corridors (IC) in India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Strategy of Regional Resource-Based Manufacturing and Management",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Textile Industries",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Cotton Textile Industry",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Jute Industry",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Sugar Industry",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO9",
+        "subtopic": "Secondary Sector",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO10",
+        "subtopic": "Smart City Mission: A Remedy to India's Unplanned Urbanisation",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO12",
+        "subtopic": "Land Use Pattern in India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO12",
+        "subtopic": "Land Use Planning",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO12",
+        "subtopic": "Importance of Land Use Planning",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO12",
+        "subtopic": "Impact of Land Use Change",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO12",
+        "subtopic": "Changing Trends in Land Use Pattern in India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO12",
+        "subtopic": "Land Use Classification",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO12",
+        "subtopic": "Land Utilization and Population Distribution",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Characteristic Features of Indian Climate",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Factors Determining the Climate of India",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Weather Condition in the Winter Season",
+        "priorityBand": "D",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Weather Conditions in the Summer Season",
+        "priorityBand": "D",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Indian Monsoon",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Origin of Indian Monsoon",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Jet Streams",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Nature and Important Aspects of Monsoon",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Indian Ocean Dipole (IOD) and Indian Monsoon",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "El-Ni\ufffdo and Indian Monsoon",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "La-Ni\ufffda and Indian Monsoon",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Impact of Cyclones/ Anti-Cyclones on Monsoon",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Indian Climate \ufffd Seasons",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Distribution of Rainfall",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Changing Rainfall Pattern in the Country",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Koeppen's Classification of Climatic Regions of India",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Monsoon and Economic Life of India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Monsoon Mission",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO13",
+        "subtopic": "Assessment of Climate Change over the Indian Region",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Primary Activities",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Agriculture Sector in India",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Types of Agriculture",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Cooperative Farming in India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Rising Share of Agricultural Employment",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Major Constraints in Indian Agriculture",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Changing Trends in Agriculture Modernisation",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Future Scope for Agriculture Sector",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Dairy Sector in India",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO14",
+        "subtopic": "Agro-Based and Agro-Processing Industries",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Modes of Transportation",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Utility of Transportation in Improving Industrial Growth",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Railway Transport System",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Road Transport",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Civil Aviation",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Shipping and Inland Waterways",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Interlinking of Rivers",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Development of Pipeline Transport",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Tertiary Sector",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Significance of Indian Services Sector",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Quaternary Sector/ Knowledge-Based Industries",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO15",
+        "subtopic": "Quinary Sector",
+        "priorityBand": "B",
+        "exam": "prelism"
+    },
+    {
+        "topicCode": "GO16",
+        "subtopic": "Climate Change and Atmosphere",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO16",
+        "subtopic": "Cryosphere and Climate Change",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO16",
+        "subtopic": "Ambition on Melting Ice (AMI) on Sea-Level Rise and Mountain Water Resources",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO16",
+        "subtopic": "Pollution Dome",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO16",
+        "subtopic": "Ocean Pollution",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO16",
+        "subtopic": "Link Between Land Use Change and Climate Change",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO0",
+        "subtopic": "Broad / Overlap",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "GO5",
+        "subtopic": "Bio-Geography",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "GO6",
+        "subtopic": "World  Geography  -  Physical  and  world Map  related",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "GO11",
+        "subtopic": "Population  and  Migration",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O01",
+        "subtopic": "Governance \ufffd conceptual introduction & key aspects",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O02",
+        "subtopic": "General framework of Indian model of governance",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O08",
+        "subtopic": "Citizen's participation in governance (CSOs, PGs, SHGs)",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O05",
+        "subtopic": "E-Governance \ufffd concepts, applications & initiatives",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O03",
+        "subtopic": "Right to Information (RTI) \ufffd framework & practice",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O06",
+        "subtopic": "Citizen's Charter \ufffd principles & implementation",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O07",
+        "subtopic": "Role of Civil Services in a democracy",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O10",
+        "subtopic": "Government policies & implementation challenges",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O00",
+        "subtopic": "Broad / Overlap",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O04",
+        "subtopic": "Accountability",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "O09",
+        "subtopic": "Self Help Groups",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H01/06",
+        "subtopic": "Satavahanas",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H01/08",
+        "subtopic": "Sangam  age",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H01/09",
+        "subtopic": "Post-gupta  and  Harshavardana",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H01/01",
+        "subtopic": "Pre-Historic India",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H01/02",
+        "subtopic": "Harappan Civilization/Bronze Age (c. 2600\ufffd1900 bce)",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H01/03",
+        "subtopic": "The Vedic Age (Rig Vedic and Later Vedic) (c. 1500\ufffd500 bce)",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H01/00",
+        "subtopic": "The Mahajanapadas of the Indo-Gangetic Plain (c. 600?300 bce)",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H01/10",
+        "subtopic": "Buddhism and Jainism",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H01/04",
+        "subtopic": "The Maurya Empire (c. 324\ufffd187 bce)",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H01/05",
+        "subtopic": "Political and Cultural Developments During c. 200 bce\ufffd300 ce",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H01/07",
+        "subtopic": "The Guptas and the Vakatakas (c. 300\ufffd600 ce)",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Tribal Culture in India",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Trade, Traders and Cultural Exchange",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Languages in India",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Science and Technology through the ages",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Indian Cinema",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Awards and Honours",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Calendars in India",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Law and Culture",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Indian Culture Abroad",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Indian through the Eyes of Foreign Travellers",
+        "priorityBand": "C",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Cultural Institutions in India",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "UNESCO's List of Intangible Cultural Heritage",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/00",
+        "subtopic": "Martial Arts in India",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/01",
+        "subtopic": "Indian Architecture",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/01",
+        "subtopic": "Legendary Cities of Ancient and Medieval India",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/01",
+        "subtopic": "Indian Sculpture and Pottery",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/01",
+        "subtopic": "Edicts and Inscriptions",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/01",
+        "subtopic": "Coins in Ancient and Medieval India",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/01",
+        "subtopic": "Indian Handicrafts",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/01",
+        "subtopic": "UNESCO's List of World Heritage Sites in India",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/02",
+        "subtopic": "Indian Literature",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/02",
+        "subtopic": "Education in Ancient and Medieval India",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H04/02",
+        "subtopic": "Indian Schools of Philosophy",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/03",
+        "subtopic": "Indian Paintings",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/04",
+        "subtopic": "Indian Dance Forms",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/05",
+        "subtopic": "Indian Theatre",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/05",
+        "subtopic": "Indian Puppetry",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/05",
+        "subtopic": "Indian Circus",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/06",
+        "subtopic": "Indian Music",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H04/07",
+        "subtopic": "Religion in India",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H04/07",
+        "subtopic": "Bhakti and Sufi Movements",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/07",
+        "subtopic": "Buddhism and Jainism",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H04/07",
+        "subtopic": "Fairs and Festivals in India",
+        "priorityBand": "D",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H02/01",
+        "subtopic": "Advent  of  Islam",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H02/03",
+        "subtopic": "Imperial  Cholas",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H02/07",
+        "subtopic": "Vijayanagar  Empire",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H02/00",
+        "subtopic": "Early Medieval India: The Age of Regional Configurations (c. 600-1200 ce)",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H02/02",
+        "subtopic": "Period from c. 1000 to 1200 ce: Northern India",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H02/04",
+        "subtopic": "The Delhi Sultanate (c. 1206\ufffd1526 ce)",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H02/08",
+        "subtopic": "Provincial Kingdoms of Medieval India",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H02/05",
+        "subtopic": "The Mughals (c. 1526\ufffd1857 ce)",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H02/08",
+        "subtopic": "The Later Mughals, the Marathas and Other Provincial Kingdoms",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H02/06",
+        "subtopic": "Bhakti and Other Important Religious Movements",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/12",
+        "subtopic": "Role  of  women  in  Freedom  struggle",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/13",
+        "subtopic": "Communism  and  communalism",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/14",
+        "subtopic": "Important  personalities  of  INM;  Governor Generals  and  Viceroys",
+        "priorityBand": "B",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H03/00",
+        "subtopic": "Sources for the History of Modern India",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H03/00",
+        "subtopic": "Major Approaches to the History of Modern India",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H03/01",
+        "subtopic": "Advent of the Europeans in India",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H03/01",
+        "subtopic": "India on the Eve of British Conquest",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/02",
+        "subtopic": "Expansion and Consolidation of British Power in India",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/02",
+        "subtopic": "People's Resistance Against British Before 1857",
+        "priorityBand": "A",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H03/02",
+        "subtopic": "The Revolt of 1857",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/03",
+        "subtopic": "Socio-Religious Reform Movements",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/03",
+        "subtopic": "A General Survey of Socio-Cultural Reform Movements",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/04",
+        "subtopic": "Beginning of Modern Nationalism in India",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/05",
+        "subtopic": "Indian National Congress: Foundation and the Moderate Phase",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/06",
+        "subtopic": "Era of Militant Nationalism (1905-1909)",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/08",
+        "subtopic": "First Phase of Revolutionary Activities (1907-1917)",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/06",
+        "subtopic": "First World War and Nationalist Response",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/07",
+        "subtopic": "Emergence of Gandhi",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/07",
+        "subtopic": "Non-Cooperation Movement and Khilafat Andolan",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/08",
+        "subtopic": "Emergence of Swarajists, Socialist Ideas, Revolutionary Activities and Other New Forces",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/07",
+        "subtopic": "Simon Commission and the Nehru Report",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/07",
+        "subtopic": "Civil Disobedience Movement and Round Table Conferences",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/07",
+        "subtopic": "Debates on the Future Strategy after Civil Disobedience Movement",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/07",
+        "subtopic": "Congress Rule in Provinces",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/09",
+        "subtopic": "Nationalist Response in the Wake of World War II",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/09",
+        "subtopic": "Quit India Movement, Demand for Pakistan, and the INA",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/09",
+        "subtopic": "Post-War National Scenario",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/09",
+        "subtopic": "Independence with Partition",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/10",
+        "subtopic": "Constitutional, Administrative and Judicial Developments",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/10",
+        "subtopic": "Survey of British Policies in India",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/10",
+        "subtopic": "Economic Impact of British Rule in India",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/10",
+        "subtopic": "Development of Indian Press",
+        "priorityBand": "B",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/10",
+        "subtopic": "Development of Education",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/11",
+        "subtopic": "Peasant Movements 1857-1947",
+        "priorityBand": "C",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "H03/11",
+        "subtopic": "The Movement of the Working Class",
+        "priorityBand": "D",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H03/01",
+        "subtopic": "The Advent of Europeans",
+        "priorityBand": "C",
+        "exam": "Prelims"
+    },
+    {
+        "topicCode": "H06/00",
+        "subtopic": "Introduction",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/00",
+        "subtopic": "The Colonial Legacy",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/00",
+        "subtopic": "The National Movement and its Legacy",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/00",
+        "subtopic": "The Evolution of the Constitution and Basic Features",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/00",
+        "subtopic": "India's Foreign Policy: The Nehru Phase",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/00",
+        "subtopic": "India's Foreign Policy: The Post-Nehru Phase",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/01",
+        "subtopic": "The Initial Years",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/01",
+        "subtopic": "Consolidation of India as a Nation I",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/01",
+        "subtopic": "Integration",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/02",
+        "subtopic": "Regionalism",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/02",
+        "subtopic": "West Bengal: Left Front Rule and After",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "The Years of Hope and Achievement 1951-1964",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "The Nehru Era",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "Jawaharlal Nehru in Historical Perspective",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "The Congress",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "The Opposition",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "From Shastri to Indira Gandhi 1964-1969",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "The Indira Gandhi Years 1969-1973",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "The Janata Interregnum and Indira Gandhi's Return to Power 1977-1984",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "The Rajiv Years 1984-1989",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "Run-up to the New Millennium and After 1989-2007",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/03",
+        "subtopic": "Caste, Untouchability, Anti-Caste Politics and Strategies",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Agriculture Growth and the Green Revolution",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Land Reforms and Cooperatives",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Agrarian Struggles Since Independence",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "The Postcolonial Indian State and the Political Economy of Development: An Overview",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Economy 1947-1965: The Nehruvian Legacy",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Economy 1965-1991: The Crisis of the Post-Nehruvian Political Economy",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Economic Reforms Since 1991",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "The Indian Economy in the New Millennium",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Science and Technology: Pre-Independence Colonial Backwardness and Post-Independence Development",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Education: Colonial Legacy and Post-Independence Development",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Culture: The Colonial Shadow and Beyond",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Women Since Independence: The Status of Women in Indian Society",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Women Since Independence: The Women's Movement",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Environment: Colonialism, Industrialisation and the Environment; Environmental Movements",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/04",
+        "subtopic": "Indian Environment: Ecological Problems and Environmental Policy",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/05",
+        "subtopic": "Indian Democracy at the Crossroads 1973-1977",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/05",
+        "subtopic": "The Punjab Crisis",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/05",
+        "subtopic": "Revival and Growth of Communalism",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H06/05",
+        "subtopic": "Communalism and the Use of State Power",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/04",
+        "subtopic": "Colonialism and Imperialism",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "H05/00",
+        "subtopic": "Emergence of the Modern World",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/00",
+        "subtopic": "The 19th-Century World",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/01",
+        "subtopic": "The Industrial Revolution",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/02",
+        "subtopic": "The American Revolution and the Constitution",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/02",
+        "subtopic": "The French Revolution",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/02",
+        "subtopic": "The Russian Revolution and History of the Soviet Union",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/03",
+        "subtopic": "Unification of Italy and Germany",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/05",
+        "subtopic": "The First World Order",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/05",
+        "subtopic": "The league of Nations",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/06",
+        "subtopic": "The Inter-War Years 1918-39",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/06",
+        "subtopic": "The Second World Order",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/06",
+        "subtopic": "The United Nations Organizations",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/07",
+        "subtopic": "Decolonisation",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/07",
+        "subtopic": "Asia in Focus",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/08",
+        "subtopic": "Translation to Modernity - Role of Ideas",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/08",
+        "subtopic": "Fascism and Nazism",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/09",
+        "subtopic": "The Cold War",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "H05/09",
+        "subtopic": "The New World Order",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "C00",
+        "subtopic": "Deconstruction of How Nations Construct Security Narratives",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C00",
+        "subtopic": "Security Threats and Domestic Fault Lines",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C01",
+        "subtopic": "Role of External State and Non-State Actors in Creating Challenges to Internal Security: The Terrorism and Counterrorism in Punjab",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C02",
+        "subtopic": "Role of External State and Non-State Actors in Creating Challenges to Internal Security: The Terrorism and Counterrorism in Northeast",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C03",
+        "subtopic": "Role of External State and Non-State Actors in Creating Challenges to Internal Security: The Terrorism and Counterrorism in Jammu and Kashmir",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C05",
+        "subtopic": "Cyberspace Threats to India's Security in the Civilian Realm and Prevention Strategies",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C05",
+        "subtopic": "Cyberspace Threats to India's Security in the Military Realm and Prevention Strategies",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C07",
+        "subtopic": "Fundamentalism and its Threat to the Security of India",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C07",
+        "subtopic": "Home Grown Terrorism in India and Counterterrorism Strategies",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C07",
+        "subtopic": "Counterterrorism Financing, Doctrines, Laws and Counter Narrative of India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C07",
+        "subtopic": "Linkages between development and spread of extremism",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C08",
+        "subtopic": "Linkages of Organised Crime With Terrorism",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C09",
+        "subtopic": "Money Laundering and its Prevention",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C10",
+        "subtopic": "Security Challenges and Their Management in Border Areas",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C12",
+        "subtopic": "Various Security Forces and Their Mandate and Intelligence Tradecraft",
+        "priorityBand": "C",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "C04",
+        "subtopic": "Challenges to Internal security through communication networks",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "C06",
+        "subtopic": "Left wing Extremism  ",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "C11",
+        "subtopic": "Emerging Security challenges- Global commons.",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "C13",
+        "subtopic": "Maritime Security",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I00",
+        "subtopic": "Key Terms in International Relations",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I01",
+        "subtopic": "Indian Foreign Policy in Ancient Times and India's Strategic Thought",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I01",
+        "subtopic": "Determinants and the Formation of Indian Foreign Policy",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I01",
+        "subtopic": "Overview of Indian Foreign Policy from Nehru till the Present",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I01",
+        "subtopic": "Challenges in the Indian Foreign Policy",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I01",
+        "subtopic": "India's Grand Strategy",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I01",
+        "subtopic": "Foreign and Strategic Policy of India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I02",
+        "subtopic": "India and Neighbourhood Policy\ufffdKey Drivers",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I03",
+        "subtopic": "India and Japan Relations",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I03",
+        "subtopic": "India and the USA Relations",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I03",
+        "subtopic": "India and Israel Relations",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I03",
+        "subtopic": "India and Russia Relations",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I03",
+        "subtopic": "India and Pakistan Relations",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I03",
+        "subtopic": "India and China Relations",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India and Africa Policy\ufffdKey Drivers",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India's Outreach to Africa",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India and Central Asia Policy\ufffdKey Drivers of the Relationship",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India and South East Asia Policy\ufffdKey Drivers",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India and Australia Relations",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India and Europe Policy\ufffdKey Drivers of the Relations",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India and West Asia Policy\ufffdKey Drivers",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "India and Latin America Policy\ufffdKey Drivers",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I04",
+        "subtopic": "The Concept of Middle Powers",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I07",
+        "subtopic": "United Nations\ufffdEnvisaged Role and Actual Record; Specialised UN Agencies\ufffdAims and Functioning; and the Debate on need of UN Reforms and Case of India",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I07",
+        "subtopic": "Other International and Regional Agencies and Forums\ufffdAnalysis of their Structures and Mandates",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I08",
+        "subtopic": "Indian Diaspora",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I09",
+        "subtopic": "Issues in the Middle East",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I09",
+        "subtopic": "Issues Related to China",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I09",
+        "subtopic": "Issues Related to Indian Foreign Policy",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I09",
+        "subtopic": "Issues Related to Europe",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I09",
+        "subtopic": "Issues Related to USA",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I09",
+        "subtopic": "Issues Related to Nuclear Diplomacy",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I09",
+        "subtopic": "Issues in Global Politics and International Foreign Policy",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I05",
+        "subtopic": "Agreements involving India and/or affecting India's interests",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "I06",
+        "subtopic": "Regional and global groupings",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P01",
+        "subtopic": "Historical Background",
+        "priorityBand": "A",
+        "exam": "Overlap"
+    },
+    {
+        "topicCode": "P01",
+        "subtopic": "Making of the Constitution",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Concept of Constitution",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Salient Features of the Constitution",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Preamble of the Constitution",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Amendment of the Constitution",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Basic Structure of the Constitution",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Constitutional Prescriptions",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Official Language",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P02",
+        "subtopic": "Emergency Provisions",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P03",
+        "subtopic": "Fundamental Rights",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P03",
+        "subtopic": "Directive Principles of State Policy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P03",
+        "subtopic": "Fundamental Duties",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P04",
+        "subtopic": "Important Doctrines of Constitutional Interpretation",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P04",
+        "subtopic": "Rights and Liabilities of the Government",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "President",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "Vice-President",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "Prime Minister",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "Central Council of Ministers",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "Cabinet Committees",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "Governor",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "Chief Minister",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "State Council of Ministers",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P05",
+        "subtopic": "Coalition Government",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P06",
+        "subtopic": "Parliament",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P06",
+        "subtopic": "Parliamentary Committees",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P06",
+        "subtopic": "Parliamentary Group",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P06",
+        "subtopic": "State Legislature",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P06",
+        "subtopic": "Anti-Defection Law",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Judicial Review",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Judicial Activism",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Public Interest Litigation",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Landmark Judgements and their Impact",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Supreme Court",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "High Court",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Subordinate Courts",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Tribunals",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "National Consumer Disputes Redressal Commission",
+        "priorityBand": "D",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P07",
+        "subtopic": "Lok Adalat and other courts",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P08",
+        "subtopic": "Panchayati Raj",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P08",
+        "subtopic": "Municipalities",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P08",
+        "subtopic": "Co-operative Societies",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P09",
+        "subtopic": "Federal System",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P09",
+        "subtopic": "Centre\ufffdState Relations",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P09",
+        "subtopic": "Inter-State Relations",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P09",
+        "subtopic": "Union Territories",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P09",
+        "subtopic": "Scheduled and Tribal Areas",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P09",
+        "subtopic": "Special Provisions for Some States",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P09",
+        "subtopic": "Union and its Territory",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Commission to Review the Working of the Constitution",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Human Rights Commission",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "State Human Rights Commission",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Commission for Women",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Commission for Protection of Child Rights",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Commission for Minorities",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Law Commission of India",
+        "priorityBand": "C",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Bar Council of India",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "NITI Aayog",
+        "priorityBand": "B",
+        "exam": "prelism"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Goods and Services Tax Council",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Election Commission",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Union Public Service Commission",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "State Public Service Commission",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Finance Commission",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Commission for SCs",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Commission for STs",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Commission for BCs",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Special Officer for Linguistic Minorities",
+        "priorityBand": "D",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Comptroller and Auditor General of India",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Attorney General of India",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Advocate General of the State",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Central Information Commission",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "State Information Commission",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Central Vigilance Commission",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Central Bureau of Investigation",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Lokpal and Lokayuktas",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Investigation Agency",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "National Disaster Management Authority",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P10",
+        "subtopic": "Delimitation Commission of India",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P11",
+        "subtopic": "World Constitutions",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P11",
+        "subtopic": "Parliamentary System",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P12",
+        "subtopic": "Elections",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P12",
+        "subtopic": "Election Laws",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "P12",
+        "subtopic": "Electoral Reforms",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P12",
+        "subtopic": "Voting Behaviour",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P12",
+        "subtopic": "Political Parties",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P12",
+        "subtopic": "Role of Regional Parties",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P13",
+        "subtopic": "Pressure Groups",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P14",
+        "subtopic": "Citizenship",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P15",
+        "subtopic": "Public Services",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "P16",
+        "subtopic": "Foreign Policy",
+        "priorityBand": "D",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "P00",
+        "subtopic": "National Integration under polity",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "T01",
+        "subtopic": "Development of Science and Technology in the Past, Present and Future",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T01",
+        "subtopic": "Universe",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T01",
+        "subtopic": "Particle Physics",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T02",
+        "subtopic": "Biotechnology",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T02",
+        "subtopic": "Advancements in Biotechnology",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T03",
+        "subtopic": "Recent Health and Welfare Programmes including Different Types of Diseases",
+        "priorityBand": "B",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T03",
+        "subtopic": "Corona Diary: COVID 19-History and Updates",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T04",
+        "subtopic": "Various institutional setups for Space research and Concepts of Orbits and Launch Stations",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T04",
+        "subtopic": "Satellites and Launch Vehicle Technology of India with Space Observatory",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T04",
+        "subtopic": "Outer Space Affairs and Various National and International Space Missions",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T05",
+        "subtopic": "Different Regulatory Bodies and Government Programmes on ICT",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T05",
+        "subtopic": "Technical Aspect of Information and Communication Technology",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T05",
+        "subtopic": "Internet, Global Internet Governance Network and Their Various Applications",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T05",
+        "subtopic": "ICT- based issues",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "T05",
+        "subtopic": "Cyber Security",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T05",
+        "subtopic": "Fundamentals of Computer",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T06",
+        "subtopic": "Defence Technology",
+        "priorityBand": "B",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T07",
+        "subtopic": "Artificial Intelligence",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T07",
+        "subtopic": "Robotics",
+        "priorityBand": "A",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T08",
+        "subtopic": "Nanotechnology",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T09",
+        "subtopic": "Nuclear Energy, Nuclear Fuel, Radioactive Element and Radioactivity",
+        "priorityBand": "C",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T09",
+        "subtopic": "Nuclear Diplomacy",
+        "priorityBand": "D",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "T10",
+        "subtopic": "IPR and Related Rights",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "T14",
+        "subtopic": "Different Organisations, Institutions and Departments for the Development of Science and Technology",
+        "priorityBand": "C",
+        "exam": "prelims"
+    },
+    {
+        "topicCode": "T15",
+        "subtopic": "Structure of Energy Development in India: Renewable and Non-renewable Energy",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "T11",
+        "subtopic": "Achievements  of  India  in  the  field  of Science  and  Technology",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "T12",
+        "subtopic": "Indigenization  and  Development  of Technologies",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "T13",
+        "subtopic": "S  &  T  initiatives  -  India  &  Global",
+        "priorityBand": "B",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "T16",
+        "subtopic": "Emerging Technologies",
+        "priorityBand": "A",
+        "exam": "overlap"
+    },
+    {
+        "topicCode": "S01",
+        "subtopic": "Salient features of Indian society & diversity",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S02",
+        "subtopic": "Diversity of India \ufffd unity in diversity",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S03",
+        "subtopic": "Role of women & women's organisations",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S04",
+        "subtopic": "Urbanisation \ufffd problems & remedies",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S05",
+        "subtopic": "Impact of globalisation on Indian society",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S06",
+        "subtopic": "Population & associated issues",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S07",
+        "subtopic": "Poverty & developmental issues",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S08",
+        "subtopic": "Regionalism",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S09",
+        "subtopic": "Communalism",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S10",
+        "subtopic": "Secularism",
+        "priorityBand": "B",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S11",
+        "subtopic": "Social empowerment",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S11",
+        "subtopic": "Welfare schemes & programmes for vulnerable sections",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S22",
+        "subtopic": "Social justice & health (public health, inclusion)",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S23",
+        "subtopic": "Social justice & education (access, equity, quality)",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S00",
+        "subtopic": "Introduction to Social Justice: Indian landscape",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S00",
+        "subtopic": "Dimensions of Social Justice in India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S00",
+        "subtopic": "Constitutional provisions for social justice",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S00",
+        "subtopic": "Social justice & economic policies in India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S00",
+        "subtopic": "Social justice & governance in India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S00",
+        "subtopic": "Global dimensions of social justice",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S00",
+        "subtopic": "Emerging issues in social justice in India",
+        "priorityBand": "A",
+        "exam": "Mains"
+    },
+    {
+        "topicCode": "S12",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to SCs",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S13",
+        "subtopic": "Welfare schemes, mechanisms and institutions related to STs",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S14",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to Women",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S15",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to children",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S16",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to youth",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S17",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to Aged",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S18",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to Migrants",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S19",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to minorities",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S20",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to disabled",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S21",
+        "subtopic": "Welfare schemes, mechanisms,laws and institutions related to LGBTQ+",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S24",
+        "subtopic": "Social sector - Human resources",
+        "priorityBand": "A",
+        "exam": "mains"
+    },
+    {
+        "topicCode": "S25",
+        "subtopic": "Broad / Overlap",
+        "priorityBand": "A",
+        "exam": "mains"
+    }
+]

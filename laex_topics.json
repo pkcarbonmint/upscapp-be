@@ -1,0 +1,1130 @@
+{
+  "subjects": [
+    {
+      "subject": "History-Ancient",
+      "subject_code": "H01",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "H01/00"
+        },
+        {
+          "topic": "Pre-historic  cultures",
+          "topic_code": "H01/01"
+        },
+        {
+          "topic": "Harappan  civilisation",
+          "topic_code": "H01/02"
+        },
+        {
+          "topic": "Vedic  &  Post  Vedic  -  Culture  & Philosophy",
+          "topic_code": "H01/03"
+        },
+        {
+          "topic": "Mauryan  Empire",
+          "topic_code": "H01/04"
+        },
+        {
+          "topic": "Post-Mauryan",
+          "topic_code": "H01/05"
+        },
+        {
+          "topic": "Satavahanas",
+          "topic_code": "H01/06"
+        },
+        {
+          "topic": "Guptas",
+          "topic_code": "H01/07"
+        },
+        {
+          "topic": "Sangam  age",
+          "topic_code": "H01/08"
+        },
+        {
+          "topic": "Post-gupta  and  Harshavardana",
+          "topic_code": "H01/09"
+        },
+        {
+          "topic": "Heterodox  religions  -  Buddhism  and Jainism",
+          "topic_code": "H01/10"
+        }
+      ]
+    },
+    {
+      "subject": "History-Medieval",
+      "subject_code": "H02",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "H02/00"
+        },
+        {
+          "topic": "Advent  of  Islam",
+          "topic_code": "H02/01"
+        },
+        {
+          "topic": "Tripartite  Struggle",
+          "topic_code": "H02/02"
+        },
+        {
+          "topic": "Imperial  Cholas",
+          "topic_code": "H02/03"
+        },
+        {
+          "topic": "Delhi  Sultanate",
+          "topic_code": "H02/04"
+        },
+        {
+          "topic": "Mughals",
+          "topic_code": "H02/05"
+        },
+        {
+          "topic": "Bhakti  and  Sufi  movement",
+          "topic_code": "H02/06"
+        },
+        {
+          "topic": "Vijayanagar  Empire",
+          "topic_code": "H02/07"
+        },
+        {
+          "topic": "Other  Regional  Kingdoms  of  medieval period",
+          "topic_code": "H02/08"
+        }
+      ]
+    },
+    {
+      "subject": "History-Modern",
+      "subject_code": "H03",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "H03/00"
+        },
+        {
+          "topic": "Advent  of  Europeans",
+          "topic_code": "H03/01"
+        },
+        {
+          "topic": "British  Conquest  and  consolidation; Sepoy  Mutiny",
+          "topic_code": "H03/02"
+        },
+        {
+          "topic": "Indian  Renaissance",
+          "topic_code": "H03/03"
+        },
+        {
+          "topic": "Pre-congress  associations  and  formation of  INC;  INC  Sessions",
+          "topic_code": "H03/04"
+        },
+        {
+          "topic": "Moderate  phase",
+          "topic_code": "H03/05"
+        },
+        {
+          "topic": "Extremist  Phase",
+          "topic_code": "H03/06"
+        },
+        {
+          "topic": "Ghandian  Phase",
+          "topic_code": "H03/07"
+        },
+        {
+          "topic": "Revolutionary  activitism",
+          "topic_code": "H03/08"
+        },
+        {
+          "topic": "Transfer  of  power  -  1940  to  1947",
+          "topic_code": "H03/09"
+        },
+        {
+          "topic": "Colonial  administration",
+          "topic_code": "H03/10"
+        },
+        {
+          "topic": "Reaction  of  society  towards  colonial  rule",
+          "topic_code": "H03/11"
+        },
+        {
+          "topic": "Role  of  women  in  Freedom  struggle",
+          "topic_code": "H03/12"
+        },
+        {
+          "topic": "Communism  and  communalism",
+          "topic_code": "H03/13"
+        },
+        {
+          "topic": "Important  personalities  of  INM;  Governor Generals  and  Viceroys",
+          "topic_code": "H03/14"
+        }
+      ]
+    },
+    {
+      "subject": "History-Art and Culture",
+      "subject_code": "H04",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "H04/00"
+        },
+        {
+          "topic": "Art  and  architecture",
+          "topic_code": "H04/01"
+        },
+        {
+          "topic": "Literature",
+          "topic_code": "H04/02"
+        },
+        {
+          "topic": "Paintings",
+          "topic_code": "H04/03"
+        },
+        {
+          "topic": "Dance  forms",
+          "topic_code": "H04/04"
+        },
+        {
+          "topic": "Theatre",
+          "topic_code": "H04/05"
+        },
+        {
+          "topic": "Music",
+          "topic_code": "H04/06"
+        },
+        {
+          "topic": "Religions  and  festivals",
+          "topic_code": "H04/07"
+        }
+      ]
+    },
+    {
+      "subject": "History-World",
+      "subject_code": "H05",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "H05/00"
+        },
+        {
+          "topic": "Industrial Revolution",
+          "topic_code": "H05/01"
+        },
+        {
+          "topic": "Revolutions- American, French, Russia",
+          "topic_code": "H05/02"
+        },
+        {
+          "topic": "Unification Movements",
+          "topic_code": "H05/03"
+        },
+        {
+          "topic": "Colonialism and Imperialism",
+          "topic_code": "H05/04"
+        },
+        {
+          "topic": "World War-I",
+          "topic_code": "H05/05"
+        },
+        {
+          "topic": "Inter-war period and World War-II",
+          "topic_code": "H05/06"
+        },
+        {
+          "topic": "Decolonization and redrawal of national boundaries",
+          "topic_code": "H05/07"
+        },
+        {
+          "topic": "political philosophies",
+          "topic_code": "H05/08"
+        },
+        {
+          "topic": "Cold war era",
+          "topic_code": "H05/09"
+        }
+      ]
+    },
+    {
+      "subject": "History-Post Independent India",
+      "subject_code": "H06",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "H06/00"
+        },
+        {
+          "topic": "Integration of Princely states.",
+          "topic_code": "H06/01"
+        },
+        {
+          "topic": "States re-organization",
+          "topic_code": "H06/02"
+        },
+        {
+          "topic": "Story of Indian Democracy",
+          "topic_code": "H06/03"
+        },
+        {
+          "topic": "Economic building and development",
+          "topic_code": "H06/04"
+        },
+        {
+          "topic": "Years of crisis",
+          "topic_code": "H06/05"
+        }
+      ]
+    },
+    {
+      "subject": "Geography",
+      "subject_code": "G",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "G00"
+        },
+        {
+          "topic": "Universe,  Solar  System  &  Evolution  of Earth.",
+          "topic_code": "G01"
+        },
+        {
+          "topic": "Geomorphology",
+          "topic_code": "G02"
+        },
+        {
+          "topic": "Climatology",
+          "topic_code": "G03"
+        },
+        {
+          "topic": "Oceanography",
+          "topic_code": "G04"
+        },
+        {
+          "topic": "Bio-Geography",
+          "topic_code": "G05"
+        },
+        {
+          "topic": "World  Geography  -  Physical  and  world Map  related",
+          "topic_code": "G06"
+        },
+        {
+          "topic": "Geo-physical  Phenomenon",
+          "topic_code": "G07"
+        },
+        {
+          "topic": "Resources  -  World  and  India",
+          "topic_code": "G08"
+        },
+        {
+          "topic": "Industry  -  World  and  India",
+          "topic_code": "G09"
+        },
+        {
+          "topic": "Settlements",
+          "topic_code": "G10"
+        },
+        {
+          "topic": "Population  and  Migration",
+          "topic_code": "G11"
+        },
+        {
+          "topic": "Physical  geogrpahy  of  India  &   Drainage;",
+          "topic_code": "G12"
+        },
+        {
+          "topic": "Indian  Climate  &  Vegetation",
+          "topic_code": "G13"
+        },
+        {
+          "topic": "Agriculture  and  allied  Sector  -  World  & India",
+          "topic_code": "G14"
+        },
+        {
+          "topic": "Trade,  Transport  and  Communication  - World  &  India",
+          "topic_code": "G15"
+        },
+        {
+          "topic": "Environmental Geography",
+          "topic_code": "G16"
+        }
+      ]
+    },
+    {
+      "subject": "Environment, Ecology and Disaster Management",
+      "subject_code": "B",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "B00"
+        },
+        {
+          "topic": "Basics  of  Environment",
+          "topic_code": "B01"
+        },
+        {
+          "topic": "Biomes",
+          "topic_code": "B02"
+        },
+        {
+          "topic": "Wetlands,  Mangroves  and  Corals",
+          "topic_code": "B03"
+        },
+        {
+          "topic": "Biodiversity  and  its  conservation",
+          "topic_code": "B04"
+        },
+        {
+          "topic": "Pollution",
+          "topic_code": "B05"
+        },
+        {
+          "topic": "Land  Degradation",
+          "topic_code": "B06"
+        },
+        {
+          "topic": "Waste  Management",
+          "topic_code": "B07"
+        },
+        {
+          "topic": "Forest  Conservation",
+          "topic_code": "B08"
+        },
+        {
+          "topic": "Global  Warming  and  Climate  Change",
+          "topic_code": "B09"
+        },
+        {
+          "topic": "Green  Revolution  and  Sustainable Agriculture",
+          "topic_code": "B10"
+        },
+        {
+          "topic": "Renewable  Energy",
+          "topic_code": "B11"
+        },
+        {
+          "topic": "Global Agreements and Efforts",
+          "topic_code": "B12"
+        },
+        {
+          "topic": "Indian  Initiatives, efforts and Commitments",
+          "topic_code": "B13"
+        },
+        {
+          "topic": "Environmental  Impact  Assessment",
+          "topic_code": "B14"
+        },
+        {
+          "topic": "Disasters  -",
+          "topic_code": "B15"
+        },
+        {
+          "topic": "Disaster  Management",
+          "topic_code": "B16"
+        }
+      ]
+    },
+    {
+      "subject": "Science & Technology",
+      "subject_code": "T",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "T00"
+        },
+        {
+          "topic": "Basics  of  Science  and  Technology",
+          "topic_code": "T01"
+        },
+        {
+          "topic": "Bio-Technology",
+          "topic_code": "T02"
+        },
+        {
+          "topic": "Medical  science  and  Health",
+          "topic_code": "T03"
+        },
+        {
+          "topic": "Space  Technology",
+          "topic_code": "T04"
+        },
+        {
+          "topic": "Computer  and  ICT",
+          "topic_code": "T05"
+        },
+        {
+          "topic": "Defence  Technologies",
+          "topic_code": "T06"
+        },
+        {
+          "topic": "Fourth  Industrial  Revolution Technologies",
+          "topic_code": "T07"
+        },
+        {
+          "topic": "Nano  Technology",
+          "topic_code": "T08"
+        },
+        {
+          "topic": "Nuclear  Technology",
+          "topic_code": "T09"
+        },
+        {
+          "topic": "Intellectual  Property  Rights",
+          "topic_code": "T10"
+        },
+        {
+          "topic": "Achievements  of  India  in  the  field  of Science  and  Technology",
+          "topic_code": "T11"
+        },
+        {
+          "topic": "Indigenization  and  Development  of Technologies",
+          "topic_code": "T12"
+        },
+        {
+          "topic": "S  &  T  initiatives  -  India  &  Global",
+          "topic_code": "T13"
+        },
+        {
+          "topic": "Scientific  Institutions  and  their  Mandate",
+          "topic_code": "T14"
+        },
+        {
+          "topic": "Renewable  Energy",
+          "topic_code": "T15"
+        },
+        {
+          "topic": "Emerging Technologies",
+          "topic_code": "T16"
+        }
+      ]
+    },
+    {
+      "subject": "Economy",
+      "subject_code": "E",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "E00"
+        },
+        {
+          "topic": "Growth  and  Development",
+          "topic_code": "E01"
+        },
+        {
+          "topic": "Poverty",
+          "topic_code": "E02"
+        },
+        {
+          "topic": "Unemployment",
+          "topic_code": "E03"
+        },
+        {
+          "topic": "Planning  and  Mobilization  of  resources",
+          "topic_code": "E04"
+        },
+        {
+          "topic": "Banking  and  Financial  Intermediaries",
+          "topic_code": "E05"
+        },
+        {
+          "topic": "Monetary  policies  and  instruments.",
+          "topic_code": "E06"
+        },
+        {
+          "topic": "Taxation",
+          "topic_code": "E07"
+        },
+        {
+          "topic": "Fiscal  policy  and  Budgeting",
+          "topic_code": "E08"
+        },
+        {
+          "topic": "Inflation",
+          "topic_code": "E09"
+        },
+        {
+          "topic": "Agriculture  and  allied  Sector",
+          "topic_code": "E10"
+        },
+        {
+          "topic": "Industry  and  Industrial  policies",
+          "topic_code": "E11"
+        },
+        {
+          "topic": "Services  sector",
+          "topic_code": "E12"
+        },
+        {
+          "topic": "Financial  markets",
+          "topic_code": "E13"
+        },
+        {
+          "topic": "Infrastructure",
+          "topic_code": "E14"
+        },
+        {
+          "topic": "Trade  and  External  sector",
+          "topic_code": "E15"
+        },
+        {
+          "topic": "Investment  models",
+          "topic_code": "E16"
+        },
+        {
+          "topic": "Economic  reforms",
+          "topic_code": "E17"
+        },
+        {
+          "topic": "Economic  survey  &  Budget",
+          "topic_code": "E18"
+        },
+        {
+          "topic": "Economic  Institutions",
+          "topic_code": "E19"
+        },
+        {
+          "topic": "Economy  related  -  Acts,  Schemes, Policies,  Indices;",
+          "topic_code": "E20"
+        },
+        {
+          "topic": "Major Crops - Cropping Patterns",
+          "topic_code": "E21"
+        },
+        {
+          "topic": "Irrigation - Types and Systems",
+          "topic_code": "E22"
+        },
+        {
+          "topic": "Agriculture - Inputs",
+          "topic_code": "E23"
+        },
+        {
+          "topic": "Transport and Marketing of Agricultural Produce and Issues",
+          "topic_code": "E24"
+        },
+        {
+          "topic": "e-Technology in Aid of Farmers",
+          "topic_code": "E25"
+        },
+        {
+          "topic": "Farm Subsidies and MSP",
+          "topic_code": "E26"
+        },
+        {
+          "topic": "Public Distribution System",
+          "topic_code": "E27"
+        },
+        {
+          "topic": "Issues of Buffer Stock and Food Security",
+          "topic_code": "E28"
+        },
+        {
+          "topic": "Technology Missions",
+          "topic_code": "E29"
+        },
+        {
+          "topic": "Economics of Animal Rearing",
+          "topic_code": "E30"
+        },
+        {
+          "topic": "Food Processing and Related Industries",
+          "topic_code": "E31"
+        },
+        {
+          "topic": "Land Reforms",
+          "topic_code": "E32"
+        }
+      ]
+    },
+    {
+      "subject": "Polity",
+      "subject_code": "P",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "P00"
+        },
+        {
+          "topic": "Evolution  of  Constitution",
+          "topic_code": "P01"
+        },
+        {
+          "topic": "Salient  features/Preamble/Basic Concepts",
+          "topic_code": "P02"
+        },
+        {
+          "topic": "Rights  issues",
+          "topic_code": "P03"
+        },
+        {
+          "topic": "Legal  issues",
+          "topic_code": "P04"
+        },
+        {
+          "topic": "Executive",
+          "topic_code": "P05"
+        },
+        {
+          "topic": "Legislature",
+          "topic_code": "P06"
+        },
+        {
+          "topic": "Judiciary  and  Tribunals",
+          "topic_code": "P07"
+        },
+        {
+          "topic": "Local  government",
+          "topic_code": "P08"
+        },
+        {
+          "topic": "Federalism",
+          "topic_code": "P09"
+        },
+        {
+          "topic": "Institutions",
+          "topic_code": "P10"
+        },
+        {
+          "topic": "Comparative  constitutions",
+          "topic_code": "P11"
+        },
+        {
+          "topic": "Elections  and  RPA",
+          "topic_code": "P12"
+        },
+        {
+          "topic": "Pressure  groups,  SHGs  and  associations",
+          "topic_code": "P13"
+        },
+        {
+          "topic": "Citizenship",
+          "topic_code": "P14"
+        },
+        {
+          "topic": "Governance",
+          "topic_code": "P15"
+        },
+        {
+          "topic": "International  Relations  &  Global Institutions.",
+          "topic_code": "P16"
+        }
+      ]
+    },
+    {
+      "subject": "Ethics",
+      "subject_code": "A",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "A00"
+        },
+        {
+          "topic": "Western thinkers",
+          "topic_code": "A01"
+        },
+        {
+          "topic": "Indian thinkers",
+          "topic_code": "A02"
+        },
+        {
+          "topic": "Determinants, consequences of ethics",
+          "topic_code": "A03"
+        },
+        {
+          "topic": "Dimensions of ethics",
+          "topic_code": "A04"
+        },
+        {
+          "topic": "Human values and lessons from the lives of great people",
+          "topic_code": "A05"
+        },
+        {
+          "topic": "Aptitude and Foundational values of civil services",
+          "topic_code": "A06"
+        },
+        {
+          "topic": "Attitutde and its relation with though thought and behavior",
+          "topic_code": "A07"
+        },
+        {
+          "topic": "Attitude case studies",
+          "topic_code": "A08"
+        },
+        {
+          "topic": "Attitude, social influence and persuasion",
+          "topic_code": "A09"
+        },
+        {
+          "topic": "Emotional Intelligence - Concepts and utilities",
+          "topic_code": "A10"
+        },
+        {
+          "topic": "Emotional Intelligence - Applications in administration and governance",
+          "topic_code": "A11"
+        },
+        {
+          "topic": "Emotional Intelligence - case studies",
+          "topic_code": "A12"
+        },
+        {
+          "topic": "Ethics in PA: Ethical concerns and dilemmas in government and private institutions",
+          "topic_code": "A13"
+        },
+        {
+          "topic": "Ethics in PA:Laws, rules, conscience as source of ethical guidance",
+          "topic_code": "A14"
+        },
+        {
+          "topic": "Ethics in PA: Accountability and ethical governance",
+          "topic_code": "A15"
+        },
+        {
+          "topic": "Ethics in PA: Strengthening ethical values in governance",
+          "topic_code": "A16"
+        },
+        {
+          "topic": "Ethics in PA: Ethics of IR and funding",
+          "topic_code": "A17"
+        },
+        {
+          "topic": "Ethics in PA: Case studies",
+          "topic_code": "A18"
+        },
+        {
+          "topic": "Probity in Governance: Transpareny, RTI",
+          "topic_code": "A19"
+        },
+        {
+          "topic": "Probity in Governance: code of conduct and code of ethics",
+          "topic_code": "A20"
+        },
+        {
+          "topic": "Probity in Governance: Citizen charter, work culture and quality of service delivery",
+          "topic_code": "A21"
+        },
+        {
+          "topic": "Probity in Governance : Utilisation of Public funds and corruption",
+          "topic_code": "A22"
+        },
+        {
+          "topic": "Probity in Governance: Case studies",
+          "topic_code": "A23"
+        },
+        {
+          "topic": "Probity in Governance: Concept of Public Service, Philosophical Basis of Governance and Probity",
+          "topic_code": "A24"
+        },
+        {
+          "topic": "Ethics in PA: Corporate Governance",
+          "topic_code": "A25"
+        },
+        {
+          "topic": "Other Case Studies",
+          "topic_code": "A26"
+        }
+      ]
+    },
+    {
+      "subject": "Governance",
+      "subject_code": "O",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "O00"
+        },
+        {
+          "topic": "Important aspects of governance",
+          "topic_code": "O01"
+        },
+        {
+          "topic": "Good governance and applications",
+          "topic_code": "O02"
+        },
+        {
+          "topic": "Transparency",
+          "topic_code": "O03"
+        },
+        {
+          "topic": "Accountability",
+          "topic_code": "O04"
+        },
+        {
+          "topic": "E-Governance",
+          "topic_code": "O05"
+        },
+        {
+          "topic": "Citizens Charter",
+          "topic_code": "O06"
+        },
+        {
+          "topic": "Role of Civil services in a democracy",
+          "topic_code": "O07"
+        },
+        {
+          "topic": "Social Institutions-Civil society activism and NGO's",
+          "topic_code": "O08"
+        },
+        {
+          "topic": "Self Help Groups",
+          "topic_code": "O09"
+        },
+        {
+          "topic": "Government Policies",
+          "topic_code": "O10"
+        }
+      ]
+    },
+    {
+      "subject": "International Relations",
+      "subject_code": "I",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "I00"
+        },
+        {
+          "topic": "India's foreign policy",
+          "topic_code": "I01"
+        },
+        {
+          "topic": "India and its neighborhood",
+          "topic_code": "I02"
+        },
+        {
+          "topic": "India's relations with major powers",
+          "topic_code": "I03"
+        },
+        {
+          "topic": "India's relations with other nations",
+          "topic_code": "I04"
+        },
+        {
+          "topic": "Agreements involving India and/or affecting India's interests",
+          "topic_code": "I05"
+        },
+        {
+          "topic": "Regional and global groupings",
+          "topic_code": "I06"
+        },
+        {
+          "topic": "International institutions, agencies and fora",
+          "topic_code": "I07"
+        },
+        {
+          "topic": "Indian diaspora",
+          "topic_code": "I08"
+        },
+        {
+          "topic": "Global issues",
+          "topic_code": "I09"
+        }
+      ]
+    },
+    {
+      "subject": "Internal Security",
+      "subject_code": "C",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "C00"
+        },
+        {
+          "topic": "Role of external state and non-state actors",
+          "topic_code": "C01"
+        },
+        {
+          "topic": "North -East regional issues",
+          "topic_code": "C02"
+        },
+        {
+          "topic": "Jammu & Kashmir - Issues",
+          "topic_code": "C03"
+        },
+        {
+          "topic": "Challenges to Internal security through communication networks",
+          "topic_code": "C04"
+        },
+        {
+          "topic": "Cyber security",
+          "topic_code": "C05"
+        },
+        {
+          "topic": "Left wing Extremism",
+          "topic_code": "C06"
+        },
+        {
+          "topic": "Terrorism & extremism",
+          "topic_code": "C07"
+        },
+        {
+          "topic": "Organised crime and its linkages with terrorism",
+          "topic_code": "C08"
+        },
+        {
+          "topic": "Money Laundering and prevention",
+          "topic_code": "C09"
+        },
+        {
+          "topic": "Border Management",
+          "topic_code": "C10"
+        },
+        {
+          "topic": "Emerging Security challenges- Global commons.",
+          "topic_code": "C11"
+        },
+        {
+          "topic": "Security forces and their mandate",
+          "topic_code": "C12"
+        },
+        {
+          "topic": "Maritime Security",
+          "topic_code": "C13"
+        }
+      ]
+    },
+    {
+      "subject": "Society and Social Justice",
+      "subject_code": "S",
+      "topics": [
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "S00"
+        },
+        {
+          "topic": "Salient features of Indian Society",
+          "topic_code": "S01"
+        },
+        {
+          "topic": "Diversity of India",
+          "topic_code": "S02"
+        },
+        {
+          "topic": "Issues of women",
+          "topic_code": "S03"
+        },
+        {
+          "topic": "Urbanization - Problems and remedies",
+          "topic_code": "S04"
+        },
+        {
+          "topic": "Impact of Globalisation on Indian society",
+          "topic_code": "S05"
+        },
+        {
+          "topic": "Population and associated issues",
+          "topic_code": "S06"
+        },
+        {
+          "topic": "Poverty, Hunger and developmental issues",
+          "topic_code": "S07"
+        },
+        {
+          "topic": "Regionalism",
+          "topic_code": "S08"
+        },
+        {
+          "topic": "Communalism",
+          "topic_code": "S09"
+        },
+        {
+          "topic": "Secularism",
+          "topic_code": "S10"
+        },
+        {
+          "topic": "Social empowerment and welfare",
+          "topic_code": "S11"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to SCs",
+          "topic_code": "S12"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms and institutions related to STs",
+          "topic_code": "S13"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to Women",
+          "topic_code": "S14"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to children",
+          "topic_code": "S15"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to youth",
+          "topic_code": "S16"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to Aged",
+          "topic_code": "S17"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to Migrants",
+          "topic_code": "S18"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to minorities",
+          "topic_code": "S19"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to disabled",
+          "topic_code": "S20"
+        },
+        {
+          "topic": "Welfare schemes, mechanisms,laws and institutions related to LGBTQIA+",
+          "topic_code": "S21"
+        },
+        {
+          "topic": "Social sector - Health",
+          "topic_code": "S22"
+        },
+        {
+          "topic": "Social Sector - Education",
+          "topic_code": "S23"
+        },
+        {
+          "topic": "Social sector - Human resources",
+          "topic_code": "S24"
+        },
+        {
+          "topic": "Broad / Overlap",
+          "topic_code": "S25"
+        }
+      ]
+    },
+    {
+      "subject": "Essay",
+      "subject_code": "Z",
+      "topics": [
+        {
+          "topic": "Philosophical topics",
+          "topic_code": "Z01"
+        },
+        {
+          "topic": "Women based topics",
+          "topic_code": "Z02"
+        },
+        {
+          "topic": "Education & Health based topics",
+          "topic_code": "Z03"
+        },
+        {
+          "topic": "Economy based topics",
+          "topic_code": "Z04"
+        },
+        {
+          "topic": "Enviroment based topics",
+          "topic_code": "Z05"
+        },
+        {
+          "topic": "Governance based topics",
+          "topic_code": "Z06"
+        },
+        {
+          "topic": "Technology based topics",
+          "topic_code": "Z07"
+        },
+        {
+          "topic": "International Relations based topics",
+          "topic_code": "Z08"
+        }
+      ]
+    }
+  ]
+}

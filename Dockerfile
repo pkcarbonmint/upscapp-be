@@ -16,7 +16,28 @@ COPY requirements/ /tmp/requirements
 RUN pip install -U pip && \
     pip install --no-cache-dir -r /tmp/requirements/dev.txt
 
-COPY . /code
+# Copy source code first for validation
+COPY src/ /code/src/
+COPY type_contracts/ /code/type_contracts/
+COPY scripts/ci-compatibility-check.sh /code/scripts/ci-compatibility-check.sh
+
+# Install validation dependencies
+RUN pip install --no-cache-dir jsonschema requests pydantic
+
+# Run comprehensive interface compatibility validation
+# RUN chmod +x /code/scripts/ci-compatibility-check.sh && \
+#     cd /code && \
+#     REPORT_FILE=/tmp/python-compatibility-report.json ./scripts/ci-compatibility-check.sh && \
+#     echo "✅ Python service interface compatibility validated" && \
+#     cat /tmp/python-compatibility-report.json
+
+COPY alembic/ /code/alembic/
+COPY alembic.ini /code/alembic.ini
+COPY scripts/ /code/scripts/
+COPY logging.ini /code/logging.ini
+COPY logging_production.ini /code/logging_production.ini
+COPY pytest.ini /code/pytest.ini
+    
 ENV PATH "$PATH:/code/scripts"
 
 RUN useradd -m -d /code -s /bin/bash app \
@@ -24,5 +45,5 @@ RUN useradd -m -d /code -s /bin/bash app \
 
 WORKDIR /code
 USER app
-RUN ["./scripts/migrate"]
+# Skip migration during build - will run at startup when env vars are available
 CMD ["./scripts/start-dev.sh"]

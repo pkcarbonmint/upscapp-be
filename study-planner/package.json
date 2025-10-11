@@ -1,0 +1,39 @@
+{
+  "name": "upscapp-be",
+  "version": "1.0.0",
+  "description": "UPSC Study Planner Backend and Frontend Applications",
+  "private": true,
+  "workspaces": [
+    "helios-ts",
+    "helios-server",
+    "onboarding-ui",
+    "shared-ui-library",
+    "faculty-ui",
+    "plan-editor-library"
+  ],
+  "scripts": {
+    "install:all": "pnpm install",
+    "build:all": "pnpm --filter helios-ts --filter helios-server --filter onboarding --filter faculty build",
+    "build:frontend": "pnpm --filter onboarding-ui --filter faculty-ui build",
+    "build:helios": "pnpm --filter helios-ts build",
+    "build:helios-server": "pnpm --filter helios-server build",
+    "build:onboarding": "pnpm --filter onboarding-ui build",
+    "build:shared": "pnpm --filter shared-ui-library build",
+    "build:faculty": "pnpm --filter faculty-ui build",
+    "build:plan-editor": "pnpm --filter plan-editor-library build",
+    "dev:helios-server": "pnpm --filter helios-server dev",
+    "dev:onboarding": "pnpm --filter onboarding-ui dev",
+    "dev:faculty": "pnpm --filter faculty-ui dev",
+    "dev:shared": "pnpm --filter shared-ui-library dev",
+    "dev:plan-editor": "pnpm --filter plan-editor-library dev",
+    "clean": "pnpm -r exec rm -rf dist node_modules",
+    "clean:install": "pnpm clean && pnpm install:all"
+  },
+  "devDependencies": {
+    "pnpm": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

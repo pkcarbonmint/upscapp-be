@@ -10,6 +10,9 @@ from fastapi.security import (
 )
 from jose import JWTError, jwt
 from pydantic import ValidationError
+import os
+import json
+import tempfile
 import firebase_admin
 from firebase_admin import auth, credentials
 
@@ -28,9 +31,34 @@ from src.users.schemas import UserCreate
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
 jwt_bearer_scheme = HTTPBearer(auto_error=False)
 
-cred = credentials.Certificate(auth_config.FIREBASE_CERT_FILE)
+FIREBASE_ENABLED = False
+_cert_path: str | None = None
+try:
+    # Prefer explicit file path if provided
+    if auth_config.FIREBASE_CERT_FILE:
+        _cert_path = auth_config.FIREBASE_CERT_FILE
+    # Or accept inline JSON via FIREBASE_CERT
+    elif auth_config.FIREBASE_CERT:
+        # Write inline JSON to a temp file for firebase_admin
+        data = auth_config.FIREBASE_CERT
+        # Ensure it's valid JSON (string may already be JSON string)
+        try:
+            obj = json.loads(data) if isinstance(data, str) else data
+        except Exception:
+            obj = data
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+        tmp.write(json.dumps(obj).encode("utf-8"))
+        tmp.flush()
+        tmp.close()
+        _cert_path = tmp.name
 
-firebase_admin.initialize_app(cred)
+    if _cert_path:
+        cred = credentials.Certificate(_cert_path)
+        firebase_admin.initialize_app(cred)
+        FIREBASE_ENABLED = True
+except Exception:
+    # Do not block app startup in dev if Firebase config is missing/invalid
+    FIREBASE_ENABLED = False
 
 
 def create_access_token(
@@ -137,6 +165,9 @@ def check_password(password: str, password_in_db: str) -> bool:
 async def verify_id_token(
     id_token: str = Header(..., alias="idToken")
 ) -> dict[str, Any]:
+    if not FIREBASE_ENABLED:
+        # In dev mode without Firebase, reject verification explicitly
+        raise AuthorizationFailed()
     try:
         user_info: dict[str, Any] = auth.verify_id_token(
             id_token=id_token, check_revoked=True
@@ -157,6 +188,8 @@ async def verify_id_token(
 
 
 async def create_user_with_pwd(user_in: UserCreate, password: str):
+    if not FIREBASE_ENABLED:
+        raise AuthorizationFailed()
     fb_user = auth.create_user(
         display_name=user_in.full_name,
         email=user_in.email,
@@ -166,6 +199,8 @@ async def create_user_with_pwd(user_in: UserCreate, password: str):
     return fb_user
 
 async def create_fb_user(user_in: UserCreate):
+    if not FIREBASE_ENABLED:
+        raise AuthorizationFailed()
     fb_user = auth.create_user(
         display_name=user_in.full_name,
         email=user_in.email,
@@ -175,36 +210,37 @@ async def create_fb_user(user_in: UserCreate):
 
 
 async def check_firebase_user(email: str):
+    if not FIREBASE_ENABLED:
+        return None
     try:
         fb_user = auth.get_user_by_email(email=email)
-        
     except auth.UserNotFoundError:
         return None
     except Exception as err:
         raise err
-
     return fb_user
     
 
 
 async def check_firebase_user_phone(phone_number: str):
+    if not FIREBASE_ENABLED:
+        return None
     try:
         fb_user = auth.get_user_by_phone_number(phone_number=phone_number)
     except auth.UserNotFoundError:
         return None
     except Exception as err:
         raise err
-
     return fb_user
 
 
 async def update_firebase_user(uid: str, data: dict[str, Any]):
+    if not FIREBASE_ENABLED:
+        raise AuthorizationFailed()
     try:
         fb_user = auth.update_user(uid=uid, **data)
-
     except Exception as err:
         raise err
-
     return fb_user
 
 

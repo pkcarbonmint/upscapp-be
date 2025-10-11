@@ -1,0 +1,1581 @@
+{
+  "generated_at": "2025-08-25 15:20:30",
+  "scenario": "05c-scenario-priya-test-spec.md",
+  "study_plan": {
+    "study_plan_id": "2ef493b2-a9a1-4d23-90a1-54551f0ac929",
+    "user_id": "user-3b1f0ef2",
+    "title": "Helios Study Plan",
+    "blocks": [
+      {
+        "block_id": "8860d0cb-8829-42b0-a067-043d79890e72",
+        "title": "Block 1: Economy, Ethics",
+        "subjects": [
+          "Economy",
+          "Ethics"
+        ],
+        "duration_weeks": 5,
+        "weekly_plan": {
+          "week": 1,
+          "daily_plans": [
+            {
+              "day": 1,
+              "tasks": [
+                {
+                  "task_id": "E00S1",
+                  "title": "Study: Broad / Overlap (E00), Growth and Development (E01)",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap",
+                    "Growth  and  Development"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:E",
+                    "topic:E00",
+                    "topic:E01"
+                  ]
+                },
+                {
+                  "task_id": "E00R1",
+                  "title": "Revision: Broad / Overlap (E00), Growth and Development (E01)",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap",
+                    "Growth  and  Development"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:E",
+                    "topic:E00",
+                    "topic:E01"
+                  ]
+                },
+                {
+                  "task_id": "E00P1",
+                  "title": "Practice: Broad / Overlap (E00), Growth and Development (E01)",
+                  "description": "Broad / Overlap (E00): https://practice.example.com/E/E00/practice; Growth and Development (E01): https://practice.example.com/E/E01/practice",
+                  "topics": [
+                    "Broad / Overlap",
+                    "Growth  and  Development"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:E",
+                    "topic:E00",
+                    "topic:E01"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 2,
+              "tasks": [
+                {
+                  "task_id": "E02S1",
+                  "title": "Study: Poverty (E02), Unemployment (E03)",
+                  "description": null,
+                  "topics": [
+                    "Poverty",
+                    "Unemployment"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:E",
+                    "topic:E02",
+                    "topic:E03"
+                  ]
+                },
+                {
+                  "task_id": "E02R1",
+                  "title": "Revision: Poverty (E02), Unemployment (E03)",
+                  "description": null,
+                  "topics": [
+                    "Poverty",
+                    "Unemployment"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:E",
+                    "topic:E02",
+                    "topic:E03"
+                  ]
+                },
+                {
+                  "task_id": "E02P1",
+                  "title": "Practice: Poverty (E02), Unemployment (E03)",
+                  "description": "Poverty (E02): https://practice.example.com/E/E02/practice; Unemployment (E03): https://practice.example.com/E/E03/practice",
+                  "topics": [
+                    "Poverty",
+                    "Unemployment"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:E",
+                    "topic:E02",
+                    "topic:E03"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 3,
+              "tasks": [
+                {
+                  "task_id": "E04S1",
+                  "title": "Study: Planning and Mobilization of resources (E04), Banking and Financial Intermediaries (E05)",
+                  "description": null,
+                  "topics": [
+                    "Planning  and  Mobilization  of  resources",
+                    "Banking  and  Financial  Intermediaries"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:E",
+                    "topic:E04",
+                    "topic:E05"
+                  ]
+                },
+                {
+                  "task_id": "E04R1",
+                  "title": "Revision: Planning and Mobilization of resources (E04), Banking and Financial Intermediaries (E05)",
+                  "description": null,
+                  "topics": [
+                    "Planning  and  Mobilization  of  resources",
+                    "Banking  and  Financial  Intermediaries"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:E",
+                    "topic:E04",
+                    "topic:E05"
+                  ]
+                },
+                {
+                  "task_id": "E04P1",
+                  "title": "Practice: Planning and Mobilization of resources (E04), Banking and Financial Intermediaries (E05)",
+                  "description": "Planning and Mobilization of resources (E04): https://practice.example.com/E/E04/practice; Banking and Financial Intermediaries (E05): https://practice.example.com/E/E05/practice",
+                  "topics": [
+                    "Planning  and  Mobilization  of  resources",
+                    "Banking  and  Financial  Intermediaries"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:E",
+                    "topic:E04",
+                    "topic:E05"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 4,
+              "tasks": [
+                {
+                  "task_id": "E06S1",
+                  "title": "Study: Monetary policies and instruments. (E06), Taxation (E07)",
+                  "description": null,
+                  "topics": [
+                    "Monetary  policies  and  instruments.",
+                    "Taxation"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:E",
+                    "topic:E06",
+                    "topic:E07"
+                  ]
+                },
+                {
+                  "task_id": "E06R1",
+                  "title": "Revision: Monetary policies and instruments. (E06), Taxation (E07)",
+                  "description": null,
+                  "topics": [
+                    "Monetary  policies  and  instruments.",
+                    "Taxation"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:E",
+                    "topic:E06",
+                    "topic:E07"
+                  ]
+                },
+                {
+                  "task_id": "E06P1",
+                  "title": "Practice: Monetary policies and instruments. (E06), Taxation (E07)",
+                  "description": "Monetary policies and instruments. (E06): https://practice.example.com/E/E06/practice; Taxation (E07): https://practice.example.com/E/E07/practice",
+                  "topics": [
+                    "Monetary  policies  and  instruments.",
+                    "Taxation"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:E",
+                    "topic:E06",
+                    "topic:E07"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 5,
+              "tasks": [
+                {
+                  "task_id": "E08S1",
+                  "title": "Study: Fiscal policy and Budgeting (E08), Inflation (E09)",
+                  "description": null,
+                  "topics": [
+                    "Fiscal  policy  and  Budgeting",
+                    "Inflation"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:E",
+                    "topic:E08",
+                    "topic:E09"
+                  ]
+                },
+                {
+                  "task_id": "E08R1",
+                  "title": "Revision: Fiscal policy and Budgeting (E08), Inflation (E09)",
+                  "description": null,
+                  "topics": [
+                    "Fiscal  policy  and  Budgeting",
+                    "Inflation"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:E",
+                    "topic:E08",
+                    "topic:E09"
+                  ]
+                },
+                {
+                  "task_id": "E08P1",
+                  "title": "Practice: Fiscal policy and Budgeting (E08), Inflation (E09)",
+                  "description": "Fiscal policy and Budgeting (E08): https://practice.example.com/E/E08/practice; Inflation (E09): https://practice.example.com/E/E09/practice",
+                  "topics": [
+                    "Fiscal  policy  and  Budgeting",
+                    "Inflation"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:E",
+                    "topic:E08",
+                    "topic:E09"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 6,
+              "tasks": [
+                {
+                  "task_id": "E10S1",
+                  "title": "Study: Agriculture and allied Sector (E10), Industry and Industrial policies (E11)",
+                  "description": null,
+                  "topics": [
+                    "Agriculture  and  allied  Sector",
+                    "Industry  and  Industrial  policies"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:E",
+                    "topic:E10",
+                    "topic:E11"
+                  ]
+                },
+                {
+                  "task_id": "E10R1",
+                  "title": "Revision: Agriculture and allied Sector (E10), Industry and Industrial policies (E11)",
+                  "description": null,
+                  "topics": [
+                    "Agriculture  and  allied  Sector",
+                    "Industry  and  Industrial  policies"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:E",
+                    "topic:E10",
+                    "topic:E11"
+                  ]
+                },
+                {
+                  "task_id": "E10P1",
+                  "title": "Practice: Agriculture and allied Sector (E10), Industry and Industrial policies (E11)",
+                  "description": "Agriculture and allied Sector (E10): https://practice.example.com/E/E10/practice; Industry and Industrial policies (E11): https://practice.example.com/E/E11/practice",
+                  "topics": [
+                    "Agriculture  and  allied  Sector",
+                    "Industry  and  Industrial  policies"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:E",
+                    "topic:E10",
+                    "topic:E11"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 7,
+              "tasks": [
+                {
+                  "task_id": "E00T1",
+                  "title": "Weekly Test",
+                  "description": "Broad / Overlap (E00): https://test.example.com/E/E00/test; Growth and Development (E01): https://test.example.com/E/E01/test; Poverty (E02): https://test.example.com/E/E02/test; Unemployment (E03): https://test.example.com/E/E03/test; Planning and Mobilization of resources (E04): https://test.example.com/E/E04/test; Banking and Financial Intermediaries (E05): https://test.example.com/E/E05/test; Monetary policies and instruments. (E06): https://test.example.com/E/E06/test; Taxation (E07): https://test.example.com/E/E07/test; Fiscal policy and Budgeting (E08): https://test.example.com/E/E08/test; Inflation (E09): https://test.example.com/E/E09/test; Agriculture and allied Sector (E10): https://test.example.com/E/E10/test; Industry and Industrial policies (E11): https://test.example.com/E/E11/test",
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 495,
+                  "tags": [
+                    "type:test",
+                    "topic:E00",
+                    "topic:E01",
+                    "topic:E02",
+                    "topic:E03",
+                    "topic:E04",
+                    "topic:E05",
+                    "topic:E06",
+                    "topic:E07",
+                    "topic:E08",
+                    "topic:E09",
+                    "topic:E10",
+                    "topic:E11"
+                  ]
+                },
+                {
+                  "task_id": "E00R1",
+                  "title": "Weekly Review & Catch-up",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap",
+                    "Growth  and  Development",
+                    "Poverty",
+                    "Unemployment",
+                    "Planning  and  Mobilization  of  resources",
+                    "Banking  and  Financial  Intermediaries",
+                    "Monetary  policies  and  instruments.",
+                    "Taxation",
+                    "Fiscal  policy  and  Budgeting",
+                    "Inflation",
+                    "Agriculture  and  allied  Sector",
+                    "Industry  and  Industrial  policies"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 660,
+                  "tags": [
+                    "type:revision",
+                    "topic:E00",
+                    "topic:E01",
+                    "topic:E02",
+                    "topic:E03",
+                    "topic:E04",
+                    "topic:E05",
+                    "topic:E06",
+                    "topic:E07",
+                    "topic:E08",
+                    "topic:E09",
+                    "topic:E10",
+                    "topic:E11"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "tags": [
+          "subject:Economy",
+          "subject:Ethics"
+        ],
+        "resources": {
+          "Economy": [
+            "Sriram Economy Notes",
+            "NCERT Economy",
+            "PYQs (Economy)"
+          ],
+          "Ethics": [
+            "Lexicon Ethics",
+            "Case Studies",
+            "PYKs (Ethics)"
+          ]
+        }
+      },
+      {
+        "block_id": "6a4ec9bc-d482-48a9-8933-db5e5ddeebe6",
+        "title": "Block 2: Geography, International Relations",
+        "subjects": [
+          "Geography",
+          "International Relations"
+        ],
+        "duration_weeks": 4,
+        "weekly_plan": {
+          "week": 1,
+          "daily_plans": [
+            {
+              "day": 1,
+              "tasks": [
+                {
+                  "task_id": "G00S1",
+                  "title": "Study: Broad / Overlap (G00), Universe, Solar System & Evolution of Earth. (G01)",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap",
+                    "Universe,  Solar  System  &  Evolution  of Earth."
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:G",
+                    "topic:G00",
+                    "topic:G01"
+                  ]
+                },
+                {
+                  "task_id": "G00R1",
+                  "title": "Revision: Broad / Overlap (G00), Universe, Solar System & Evolution of Earth. (G01)",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap",
+                    "Universe,  Solar  System  &  Evolution  of Earth."
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:G",
+                    "topic:G00",
+                    "topic:G01"
+                  ]
+                },
+                {
+                  "task_id": "G00P1",
+                  "title": "Practice: Broad / Overlap (G00), Universe, Solar System & Evolution of Earth. (G01)",
+                  "description": "Broad / Overlap (G00): https://practice.example.com/G/G00/practice; Universe, Solar System & Evolution of Earth. (G01): https://practice.example.com/G/G01/practice",
+                  "topics": [
+                    "Broad / Overlap",
+                    "Universe,  Solar  System  &  Evolution  of Earth."
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:G",
+                    "topic:G00",
+                    "topic:G01"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 2,
+              "tasks": [
+                {
+                  "task_id": "G02S1",
+                  "title": "Study: Geomorphology (G02)",
+                  "description": null,
+                  "topics": [
+                    "Geomorphology"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:G",
+                    "topic:G02"
+                  ]
+                },
+                {
+                  "task_id": "G02R1",
+                  "title": "Revision: Geomorphology (G02)",
+                  "description": null,
+                  "topics": [
+                    "Geomorphology"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:G",
+                    "topic:G02"
+                  ]
+                },
+                {
+                  "task_id": "G02P1",
+                  "title": "Practice: Geomorphology (G02)",
+                  "description": "Geomorphology (G02): https://practice.example.com/G/G02/practice",
+                  "topics": [
+                    "Geomorphology"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:G",
+                    "topic:G02"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 3,
+              "tasks": [
+                {
+                  "task_id": "G03S1",
+                  "title": "Study: Climatology (G03)",
+                  "description": null,
+                  "topics": [
+                    "Climatology"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:G",
+                    "topic:G03"
+                  ]
+                },
+                {
+                  "task_id": "G03R1",
+                  "title": "Revision: Climatology (G03)",
+                  "description": null,
+                  "topics": [
+                    "Climatology"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:G",
+                    "topic:G03"
+                  ]
+                },
+                {
+                  "task_id": "G03P1",
+                  "title": "Practice: Climatology (G03)",
+                  "description": "Climatology (G03): https://practice.example.com/G/G03/practice",
+                  "topics": [
+                    "Climatology"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:G",
+                    "topic:G03"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 4,
+              "tasks": [
+                {
+                  "task_id": "G04S1",
+                  "title": "Study: Oceanography (G04)",
+                  "description": null,
+                  "topics": [
+                    "Oceanography"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:G",
+                    "topic:G04"
+                  ]
+                },
+                {
+                  "task_id": "G04R1",
+                  "title": "Revision: Oceanography (G04)",
+                  "description": null,
+                  "topics": [
+                    "Oceanography"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:G",
+                    "topic:G04"
+                  ]
+                },
+                {
+                  "task_id": "G04P1",
+                  "title": "Practice: Oceanography (G04)",
+                  "description": "Oceanography (G04): https://practice.example.com/G/G04/practice",
+                  "topics": [
+                    "Oceanography"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:G",
+                    "topic:G04"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 5,
+              "tasks": [
+                {
+                  "task_id": "G05S1",
+                  "title": "Study: Bio-Geography (G05)",
+                  "description": null,
+                  "topics": [
+                    "Bio-Geography"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:G",
+                    "topic:G05"
+                  ]
+                },
+                {
+                  "task_id": "G05R1",
+                  "title": "Revision: Bio-Geography (G05)",
+                  "description": null,
+                  "topics": [
+                    "Bio-Geography"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:G",
+                    "topic:G05"
+                  ]
+                },
+                {
+                  "task_id": "G05P1",
+                  "title": "Practice: Bio-Geography (G05)",
+                  "description": "Bio-Geography (G05): https://practice.example.com/G/G05/practice",
+                  "topics": [
+                    "Bio-Geography"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:G",
+                    "topic:G05"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 6,
+              "tasks": [
+                {
+                  "task_id": "G06S1",
+                  "title": "Study: World Geography - Physical and world Map related (G06)",
+                  "description": null,
+                  "topics": [
+                    "World  Geography  -  Physical  and  world Map  related"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:G",
+                    "topic:G06"
+                  ]
+                },
+                {
+                  "task_id": "G06R1",
+                  "title": "Revision: World Geography - Physical and world Map related (G06)",
+                  "description": null,
+                  "topics": [
+                    "World  Geography  -  Physical  and  world Map  related"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:G",
+                    "topic:G06"
+                  ]
+                },
+                {
+                  "task_id": "G06P1",
+                  "title": "Practice: World Geography - Physical and world Map related (G06)",
+                  "description": "World Geography - Physical and world Map related (G06): https://practice.example.com/G/G06/practice",
+                  "topics": [
+                    "World  Geography  -  Physical  and  world Map  related"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:G",
+                    "topic:G06"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 7,
+              "tasks": [
+                {
+                  "task_id": "G00T1",
+                  "title": "Weekly Test",
+                  "description": "Broad / Overlap (G00): https://test.example.com/G/G00/test; Universe, Solar System & Evolution of Earth. (G01): https://test.example.com/G/G01/test; Geomorphology (G02): https://test.example.com/G/G02/test; Climatology (G03): https://test.example.com/G/G03/test; Oceanography (G04): https://test.example.com/G/G04/test; Bio-Geography (G05): https://test.example.com/G/G05/test; World Geography - Physical and world Map related (G06): https://test.example.com/G/G06/test",
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 495,
+                  "tags": [
+                    "type:test",
+                    "topic:G00",
+                    "topic:G01",
+                    "topic:G02",
+                    "topic:G03",
+                    "topic:G04",
+                    "topic:G05",
+                    "topic:G06"
+                  ]
+                },
+                {
+                  "task_id": "G00R1",
+                  "title": "Weekly Review & Catch-up",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap",
+                    "Universe,  Solar  System  &  Evolution  of Earth.",
+                    "Geomorphology",
+                    "Climatology",
+                    "Oceanography",
+                    "Bio-Geography",
+                    "World  Geography  -  Physical  and  world Map  related"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 660,
+                  "tags": [
+                    "type:revision",
+                    "topic:G00",
+                    "topic:G01",
+                    "topic:G02",
+                    "topic:G03",
+                    "topic:G04",
+                    "topic:G05",
+                    "topic:G06"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "tags": [
+          "subject:Geography",
+          "subject:International Relations"
+        ],
+        "resources": {
+          "Geography": [
+            "NCERT Geography",
+            "G.C. Leong",
+            "PYQs (Geography)"
+          ],
+          "International Relations": [
+            "International Relations",
+            "PYQs (IR)"
+          ]
+        }
+      },
+      {
+        "block_id": "923d48db-47ec-43f5-857b-200d60c839c7",
+        "title": "Block 3: Essay, Polity",
+        "subjects": [
+          "Essay",
+          "Polity"
+        ],
+        "duration_weeks": 4,
+        "weekly_plan": {
+          "week": 1,
+          "daily_plans": [
+            {
+              "day": 1,
+              "tasks": [
+                {
+                  "task_id": "Z01S1",
+                  "title": "Study: Philosophical topics (Z01), Women based topics (Z02)",
+                  "description": null,
+                  "topics": [
+                    "Philosophical topics",
+                    "Women based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:Z",
+                    "topic:Z01",
+                    "topic:Z02"
+                  ]
+                },
+                {
+                  "task_id": "Z01R1",
+                  "title": "Revision: Philosophical topics (Z01), Women based topics (Z02)",
+                  "description": null,
+                  "topics": [
+                    "Philosophical topics",
+                    "Women based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:Z",
+                    "topic:Z01",
+                    "topic:Z02"
+                  ]
+                },
+                {
+                  "task_id": "Z01P1",
+                  "title": "Practice: Philosophical topics (Z01), Women based topics (Z02)",
+                  "description": "Philosophical topics (Z01): https://practice.example.com/Z/Z01/practice; Women based topics (Z02): https://practice.example.com/Z/Z02/practice",
+                  "topics": [
+                    "Philosophical topics",
+                    "Women based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:Z",
+                    "topic:Z01",
+                    "topic:Z02"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 2,
+              "tasks": [
+                {
+                  "task_id": "Z03S1",
+                  "title": "Study: Education & Health based topics (Z03)",
+                  "description": null,
+                  "topics": [
+                    "Education & Health based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:Z",
+                    "topic:Z03"
+                  ]
+                },
+                {
+                  "task_id": "Z03R1",
+                  "title": "Revision: Education & Health based topics (Z03)",
+                  "description": null,
+                  "topics": [
+                    "Education & Health based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:Z",
+                    "topic:Z03"
+                  ]
+                },
+                {
+                  "task_id": "Z03P1",
+                  "title": "Practice: Education & Health based topics (Z03)",
+                  "description": "Education & Health based topics (Z03): https://practice.example.com/Z/Z03/practice",
+                  "topics": [
+                    "Education & Health based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:Z",
+                    "topic:Z03"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 3,
+              "tasks": [
+                {
+                  "task_id": "Z04S1",
+                  "title": "Study: Economy based topics (Z04)",
+                  "description": null,
+                  "topics": [
+                    "Economy based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:Z",
+                    "topic:Z04"
+                  ]
+                },
+                {
+                  "task_id": "Z04R1",
+                  "title": "Revision: Economy based topics (Z04)",
+                  "description": null,
+                  "topics": [
+                    "Economy based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:Z",
+                    "topic:Z04"
+                  ]
+                },
+                {
+                  "task_id": "Z04P1",
+                  "title": "Practice: Economy based topics (Z04)",
+                  "description": "Economy based topics (Z04): https://practice.example.com/Z/Z04/practice",
+                  "topics": [
+                    "Economy based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:Z",
+                    "topic:Z04"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 4,
+              "tasks": [
+                {
+                  "task_id": "Z05S1",
+                  "title": "Study: Enviroment based topics (Z05)",
+                  "description": null,
+                  "topics": [
+                    "Enviroment based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:Z",
+                    "topic:Z05"
+                  ]
+                },
+                {
+                  "task_id": "Z05R1",
+                  "title": "Revision: Enviroment based topics (Z05)",
+                  "description": null,
+                  "topics": [
+                    "Enviroment based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:Z",
+                    "topic:Z05"
+                  ]
+                },
+                {
+                  "task_id": "Z05P1",
+                  "title": "Practice: Enviroment based topics (Z05)",
+                  "description": "Enviroment based topics (Z05): https://practice.example.com/Z/Z05/practice",
+                  "topics": [
+                    "Enviroment based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:Z",
+                    "topic:Z05"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 5,
+              "tasks": [
+                {
+                  "task_id": "Z06S1",
+                  "title": "Study: Governance based topics (Z06)",
+                  "description": null,
+                  "topics": [
+                    "Governance based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:Z",
+                    "topic:Z06"
+                  ]
+                },
+                {
+                  "task_id": "Z06R1",
+                  "title": "Revision: Governance based topics (Z06)",
+                  "description": null,
+                  "topics": [
+                    "Governance based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:Z",
+                    "topic:Z06"
+                  ]
+                },
+                {
+                  "task_id": "Z06P1",
+                  "title": "Practice: Governance based topics (Z06)",
+                  "description": "Governance based topics (Z06): https://practice.example.com/Z/Z06/practice",
+                  "topics": [
+                    "Governance based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:Z",
+                    "topic:Z06"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 6,
+              "tasks": [
+                {
+                  "task_id": "Z07S1",
+                  "title": "Study: Technology based topics (Z07)",
+                  "description": null,
+                  "topics": [
+                    "Technology based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:Z",
+                    "topic:Z07"
+                  ]
+                },
+                {
+                  "task_id": "Z07R1",
+                  "title": "Revision: Technology based topics (Z07)",
+                  "description": null,
+                  "topics": [
+                    "Technology based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:Z",
+                    "topic:Z07"
+                  ]
+                },
+                {
+                  "task_id": "Z07P1",
+                  "title": "Practice: Technology based topics (Z07)",
+                  "description": "Technology based topics (Z07): https://practice.example.com/Z/Z07/practice",
+                  "topics": [
+                    "Technology based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:Z",
+                    "topic:Z07"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 7,
+              "tasks": [
+                {
+                  "task_id": "Z01T1",
+                  "title": "Weekly Test",
+                  "description": "Philosophical topics (Z01): https://test.example.com/Z/Z01/test; Women based topics (Z02): https://test.example.com/Z/Z02/test; Education & Health based topics (Z03): https://test.example.com/Z/Z03/test; Economy based topics (Z04): https://test.example.com/Z/Z04/test; Enviroment based topics (Z05): https://test.example.com/Z/Z05/test; Governance based topics (Z06): https://test.example.com/Z/Z06/test; Technology based topics (Z07): https://test.example.com/Z/Z07/test",
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 495,
+                  "tags": [
+                    "type:test",
+                    "topic:Z01",
+                    "topic:Z02",
+                    "topic:Z03",
+                    "topic:Z04",
+                    "topic:Z05",
+                    "topic:Z06",
+                    "topic:Z07"
+                  ]
+                },
+                {
+                  "task_id": "Z01R1",
+                  "title": "Weekly Review & Catch-up",
+                  "description": null,
+                  "topics": [
+                    "Philosophical topics",
+                    "Women based topics",
+                    "Education & Health based topics",
+                    "Economy based topics",
+                    "Enviroment based topics",
+                    "Governance based topics",
+                    "Technology based topics"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 660,
+                  "tags": [
+                    "type:revision",
+                    "topic:Z01",
+                    "topic:Z02",
+                    "topic:Z03",
+                    "topic:Z04",
+                    "topic:Z05",
+                    "topic:Z06",
+                    "topic:Z07"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "tags": [
+          "subject:Essay",
+          "subject:Polity"
+        ],
+        "resources": {
+          "Essay": [
+            "Essay topics compendium",
+            "Model essays"
+          ],
+          "Polity": [
+            "Laxmikanth Polity",
+            "NCERT Polity",
+            "PYQs (Polity)"
+          ]
+        }
+      },
+      {
+        "block_id": "36a16fd9-75c2-4859-8fd2-777bd533b1b7",
+        "title": "Block 4: Internal Security",
+        "subjects": [
+          "Internal Security"
+        ],
+        "duration_weeks": 4,
+        "weekly_plan": {
+          "week": 1,
+          "daily_plans": [
+            {
+              "day": 1,
+              "tasks": [
+                {
+                  "task_id": "C00S1",
+                  "title": "Study: Broad / Overlap (C00)",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:C",
+                    "topic:C00"
+                  ]
+                },
+                {
+                  "task_id": "C00R1",
+                  "title": "Revision: Broad / Overlap (C00)",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:C",
+                    "topic:C00"
+                  ]
+                },
+                {
+                  "task_id": "C00P1",
+                  "title": "Practice: Broad / Overlap (C00)",
+                  "description": "Broad / Overlap (C00): https://practice.example.com/C/C00/practice",
+                  "topics": [
+                    "Broad / Overlap"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:C",
+                    "topic:C00"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 2,
+              "tasks": [
+                {
+                  "task_id": "C01S1",
+                  "title": "Study: Role of external state and non-state actors (C01)",
+                  "description": null,
+                  "topics": [
+                    "Role of external state and non-state actors"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:C",
+                    "topic:C01"
+                  ]
+                },
+                {
+                  "task_id": "C01R1",
+                  "title": "Revision: Role of external state and non-state actors (C01)",
+                  "description": null,
+                  "topics": [
+                    "Role of external state and non-state actors"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:C",
+                    "topic:C01"
+                  ]
+                },
+                {
+                  "task_id": "C01P1",
+                  "title": "Practice: Role of external state and non-state actors (C01)",
+                  "description": "Role of external state and non-state actors (C01): https://practice.example.com/C/C01/practice",
+                  "topics": [
+                    "Role of external state and non-state actors"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:C",
+                    "topic:C01"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 3,
+              "tasks": [
+                {
+                  "task_id": "C02S1",
+                  "title": "Study: North -East regional issues (C02)",
+                  "description": null,
+                  "topics": [
+                    "North -East regional issues"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:C",
+                    "topic:C02"
+                  ]
+                },
+                {
+                  "task_id": "C02R1",
+                  "title": "Revision: North -East regional issues (C02)",
+                  "description": null,
+                  "topics": [
+                    "North -East regional issues"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:C",
+                    "topic:C02"
+                  ]
+                },
+                {
+                  "task_id": "C02P1",
+                  "title": "Practice: North -East regional issues (C02)",
+                  "description": "North -East regional issues (C02): https://practice.example.com/C/C02/practice",
+                  "topics": [
+                    "North -East regional issues"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:C",
+                    "topic:C02"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 4,
+              "tasks": [
+                {
+                  "task_id": "C03S1",
+                  "title": "Study: Jammu & Kashmir - Issues (C03)",
+                  "description": null,
+                  "topics": [
+                    "Jammu & Kashmir - Issues"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study",
+                    "subject:C",
+                    "topic:C03"
+                  ]
+                },
+                {
+                  "task_id": "C03R1",
+                  "title": "Revision: Jammu & Kashmir - Issues (C03)",
+                  "description": null,
+                  "topics": [
+                    "Jammu & Kashmir - Issues"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision",
+                    "subject:C",
+                    "topic:C03"
+                  ]
+                },
+                {
+                  "task_id": "C03P1",
+                  "title": "Practice: Jammu & Kashmir - Issues (C03)",
+                  "description": "Jammu & Kashmir - Issues (C03): https://practice.example.com/C/C03/practice",
+                  "topics": [
+                    "Jammu & Kashmir - Issues"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice",
+                    "subject:C",
+                    "topic:C03"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 5,
+              "tasks": [
+                {
+                  "task_id": "naS1",
+                  "title": "Study: New Topics",
+                  "description": null,
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study"
+                  ]
+                },
+                {
+                  "task_id": "naR1",
+                  "title": "Revision",
+                  "description": null,
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision"
+                  ]
+                },
+                {
+                  "task_id": "naP1",
+                  "title": "Practice (PYQs/MCQs/Answers)",
+                  "description": null,
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 6,
+              "tasks": [
+                {
+                  "task_id": "naS1",
+                  "title": "Study: New Topics",
+                  "description": null,
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 275,
+                  "tags": [
+                    "type:study"
+                  ]
+                },
+                {
+                  "task_id": "naR1",
+                  "title": "Revision",
+                  "description": null,
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 110,
+                  "tags": [
+                    "type:revision"
+                  ]
+                },
+                {
+                  "task_id": "naP1",
+                  "title": "Practice (PYQs/MCQs/Answers)",
+                  "description": null,
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 82,
+                  "tags": [
+                    "type:practice"
+                  ]
+                }
+              ]
+            },
+            {
+              "day": 7,
+              "tasks": [
+                {
+                  "task_id": "C00T1",
+                  "title": "Weekly Test",
+                  "description": "Broad / Overlap (C00): https://test.example.com/C/C00/test; Role of external state and non-state actors (C01): https://test.example.com/C/C01/test; North -East regional issues (C02): https://test.example.com/C/C02/test; Jammu & Kashmir - Issues (C03): https://test.example.com/C/C03/test",
+                  "topics": [],
+                  "completed": false,
+                  "duration_minutes": 495,
+                  "tags": [
+                    "type:test",
+                    "topic:C00",
+                    "topic:C01",
+                    "topic:C02",
+                    "topic:C03"
+                  ]
+                },
+                {
+                  "task_id": "C00R1",
+                  "title": "Weekly Review & Catch-up",
+                  "description": null,
+                  "topics": [
+                    "Broad / Overlap",
+                    "Role of external state and non-state actors",
+                    "North -East regional issues",
+                    "Jammu & Kashmir - Issues"
+                  ],
+                  "completed": false,
+                  "duration_minutes": 660,
+                  "tags": [
+                    "type:revision",
+                    "topic:C00",
+                    "topic:C01",
+                    "topic:C02",
+                    "topic:C03"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "tags": [
+          "subject:Internal Security"
+        ],
+        "resources": {
+          "Internal Security": [
+            "Internal Security",
+            "PYQs (IS)"
+          ]
+        }
+      }
+    ],
+    "curated_resources": {
+      "Economy": [
+        "Sriram Economy Notes",
+        "NCERT Economy",
+        "PYQs (Economy)"
+      ],
+      "Ethics": [
+        "Lexicon Ethics",
+        "Case Studies",
+        "PYKs (Ethics)"
+      ],
+      "Geography": [
+        "NCERT Geography",
+        "G.C. Leong",
+        "PYQs (Geography)"
+      ],
+      "International Relations": [
+        "International Relations",
+        "PYQs (IR)"
+      ],
+      "Essay": [
+        "Essay topics compendium",
+        "Model essays"
+      ],
+      "Polity": [
+        "Laxmikanth Polity",
+        "NCERT Polity",
+        "PYQs (Polity)"
+      ],
+      "Internal Security": [
+        "Internal Security",
+        "PYQs (IS)"
+      ]
+    }
+  }
+}

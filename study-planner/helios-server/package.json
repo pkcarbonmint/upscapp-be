@@ -1,0 +1,37 @@
+{
+  "name": "helios-server",
+  "version": "1.0.0",
+  "description": "Helios TypeScript API Server",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "typescript",
+    "api",
+    "server",
+    "helios",
+    "express"
+  ],
+  "author": "Laex Team",
+  "license": "MIT",
+  "dependencies": {
+    "helios-ts": "workspace:*",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "docx": "^9.5.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "~5.8.3",
+    "eslint": "^9.35.0"
+  }
+}

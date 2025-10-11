@@ -1,0 +1,51 @@
+
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "UPSC Student Archetypes for personalized study planning",
+    "last_updated": "2024-12-20",
+    "source": "Migrated from hardcoded Archetypes.hs"
+  },
+  "archetypes": [
+    {
+      "name": "The Full-Time Professional",
+      "time_commitment": "FullTime",
+      "weekly_hours_min": 40,
+      "weekly_hours_max": 50,
+      "description": "For students who can dedicate a full-time schedule to their studies.",
+      "default_pacing": "Balanced",
+      "default_approach": "DualSubject",
+      "special_focus": null
+    },
+    {
+      "name": "The Working Professional",
+      "time_commitment": "PartTime",
+      "weekly_hours_min": 20,
+      "weekly_hours_max": 30,
+      "description": "For students who are balancing their studies with a full-time job.",
+      "default_pacing": "Balanced",
+      "default_approach": "SingleSubject",
+      "special_focus": null
+    },
+    {
+      "name": "The Specialist",
+      "time_commitment": "FullTime",
+      "weekly_hours_min": 40,
+      "weekly_hours_max": 50,
+      "description": "For students who want to focus on strengthening their weak areas first.",
+      "default_pacing": "WeakFirst",
+      "default_approach": "SingleSubject",
+      "special_focus": ["H01", "H02", "G"]
+    },
+    {
+      "name": "The Generalist",
+      "time_commitment": "FullTime",
+      "weekly_hours_min": 40,
+      "weekly_hours_max": 50,
+      "description": "For students who want to build on their strengths first.",
+      "default_pacing": "StrongFirst",
+      "default_approach": "TripleSubject",
+      "special_focus": null
+    }
+  ]
+}

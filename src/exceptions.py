@@ -34,7 +34,15 @@ async def request_validation_exception_handler(
         # "query_params": query_params,
     }
     logger.info(detail)
-    return await _request_validation_exception_handler(request, exc)
+    # Standardized error shape
+    return JSONResponse(
+        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "code": "validation_error",
+            "message": "Request validation failed",
+            "details": jsonable_encoder(exc.errors()),
+        },
+    )
 
 
 async def response_validation_exception_handler(
@@ -53,10 +61,14 @@ async def response_validation_exception_handler(
         # "query_params": query_params,
     }
     logger.info(detail)
-    # return await _response_validation_exception_handler(request, exc)
+    # Standardized error shape
     return JSONResponse(
         status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-        content={"detail": jsonable_encoder(exc.errors())},
+        content={
+            "code": "response_validation_error",
+            "message": "Response validation failed",
+            "details": jsonable_encoder(exc.errors()),
+        },
     )
 
 
@@ -68,7 +80,20 @@ async def http_exception_handler(
     This function will be called when a HTTPException is explicitly raised.
     """
     logger.debug("Our custom http_exception_handler was called")
-    return await _http_exception_handler(request, exc)
+    # If detail is already a dict with our schema, pass it through
+    if isinstance(exc.detail, dict) and "code" in exc.detail and "message" in exc.detail:
+        return JSONResponse(status_code=exc.status_code, content=exc.detail)
+
+    # Otherwise, map common status codes to a standard code/message
+    code_map = {
+        400: ("bad_request", "Bad request"),
+        401: ("unauthorized", "User not authenticated"),
+        403: ("forbidden", "Permission denied"),
+        404: ("not_found", "Resource not found"),
+        422: ("validation_error", "Request validation failed"),
+    }
+    code, message = code_map.get(exc.status_code, ("http_error", str(exc.detail) if exc.detail else "HTTP error"))
+    return JSONResponse(status_code=exc.status_code, content={"code": code, "message": message})
 
 
 async def unhandled_exception_handler(
@@ -91,7 +116,8 @@ async def unhandled_exception_handler(
     logger.error(
         f'{host}:{port} - "{request.method} {url}" 500 Internal Server Error <{exception_name}: {exception_value}>'
     )
-    return PlainTextResponse(str(exc), status_code=500)
+    # Standard server error response
+    return JSONResponse(status_code=500, content={"code": "server_error", "message": "Internal server error"})
 
 
 class DetailedHTTPException(HTTPException):

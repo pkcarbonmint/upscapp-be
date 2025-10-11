@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+
+# Stack build artifacts
+.stack-work/
+helios-hs/.stack-work/
+
+# Cabal build artifacts
+dist-newstyle/
+
+# Editor backup files
+*~
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+node_modules
+.stack-work
+
+# Exclude large non-backend subprojects and generated assets
+generated_outputs/
+
+# Include type contracts and validation scripts for all services
+!type_contracts/
+!scripts/ci-compatibility-check.sh
+!scripts/quick-check.sh
+
+# Python & test caches
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# Local envs and venvs
+.venv/
+venv/
+env/
+
+# Build outputs
+build/
+dist/
+**/dist/
+
+# Data dumps
+dump.rdb
+venv
+**/node_modules/
+*.log

@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "version": "2024.1",
+    "created_date": "2024-12-20",
+    "description": "Master index for UPSC subject resources - provides quick lookups and file mapping",
+    "total_subjects": 2,
+    "last_updated": "2024-12-20"
+  },
+
+  "subject_file_mapping": {
+    "H01": {
+      "file_name": "H01_resources.json",
+      "subject_name": "History-Ancient",
+      "category": "Macro",
+      "resource_count": 12
+    },
+    "P01": {
+      "file_name": "P01_resources.json", 
+      "subject_name": "Indian-Polity",
+      "category": "Macro",
+      "resource_count": 7
+    }
+  },
+
+  "resource_id_mapping": {
+    "r001": "H01_resources.json",
+    "r002": "H01_resources.json", 
+    "r004": "H01_resources.json",
+    "r008": "H01_resources.json",
+    "r009": "H01_resources.json",
+    "r010": "H01_resources.json",
+    "r011": "H01_resources.json",
+    "r012": "H01_resources.json",
+    "r013": "H01_resources.json",
+    "r014": "H01_resources.json",
+    "r015": "H01_resources.json",
+    "r003": "H01_resources.json",
+    
+    "p001": "P01_resources.json",
+    "p002": "P01_resources.json",
+    "p003": "P01_resources.json",
+    "p004": "P01_resources.json",
+    "p005": "P01_resources.json",
+    "p006": "P01_resources.json",
+    "p007": "P01_resources.json"
+  },
+
+  "quick_topic_lookup": {
+    "H01/00": "H01_resources.json",
+    "H01/01": "H01_resources.json",
+    "H01/02": "H01_resources.json", 
+    "H01/03": "H01_resources.json",
+    "H01/04": "H01_resources.json",
+    "H01/05": "H01_resources.json",
+    "H01/06": "H01_resources.json",
+    "H01/07": "H01_resources.json",
+    "H01/08": "H01_resources.json",
+    "H01/09": "H01_resources.json",
+    "H01/10": "H01_resources.json",
+    
+    "P01/00": "P01_resources.json",
+    "P01/01": "P01_resources.json",
+    "P01/02": "P01_resources.json",
+    "P01/03": "P01_resources.json",
+    "P01/04": "P01_resources.json",
+    "P01/05": "P01_resources.json",
+    "P01/06": "P01_resources.json",
+    "P01/07": "P01_resources.json",
+    "P01/08": "P01_resources.json"
+  },
+
+  "subject_categories": {
+    "Macro": {
+      "subjects": ["H01", "P01"],
+      "description": "Subjects requiring comprehensive understanding across multiple exam stages"
+    },
+    "Micro": {
+      "subjects": [],
+      "description": "Specialized subjects with detailed technical content"
+    }
+  },
+
+  "resource_stats": {
+    "total_resources": 19,
+    "total_topics": 19,
+    "resources_by_type": {
+      "Book": 12,
+      "MockTest": 3,
+      "VideoLecture": 2,
+      "CurrentAffairsSource": 1,
+      "OnlineCourse": 1,
+      "PracticePaper": 1,
+      "RevisionNotes": 1
+    },
+    "resources_by_difficulty": {
+      "Beginner": 8,
+      "Intermediate": 9,
+      "Advanced": 2
+    },
+    "resources_by_cost": {
+      "Free": 10,
+      "Paid": 7,
+      "Subscription": 2
+    }
+  }
+}

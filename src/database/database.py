@@ -13,8 +13,11 @@ DB_NAMING_CONVENTION = {
     "pk": "%(table_name)s_pkey",
 }
 
-# Create Engine and Session
-engine = create_async_engine(str(settings.DATABASE_URL), future=True, echo=True)
+# Create Engine and Session (force asyncpg driver if plain postgresql URL provided)
+_db_url = str(settings.DATABASE_URL)
+if _db_url.startswith("postgresql://") and "+asyncpg" not in _db_url:
+    _db_url = _db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+engine = create_async_engine(_db_url, future=True, echo=True)
 SessionLocal = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 

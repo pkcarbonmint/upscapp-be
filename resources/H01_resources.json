@@ -1,0 +1,377 @@
+{
+  "subject_info": {
+    "code": "H01",
+    "name": "History-Ancient",
+    "category": "Macro",
+    "exam_focus": "BothExams",
+    "has_current_affairs": false,
+    "baseline_hours": 25,
+    "resource_count": 8
+  },
+
+  "topic_resources": {
+    "H01/00": {
+      "topic_name": "Broad / Overlap",
+      "priority": "Essential",
+      "resources": {
+        "study": ["r001", "r002"],
+        "revision": ["r001", "r002"],
+        "practice": ["r003"],
+        "expert": ["r002"]
+      },
+      "estimated_hours": 15
+    },
+
+    "H01/01": {
+      "topic_name": "Pre-historic cultures",
+      "priority": "Essential",
+      "resources": {
+        "study": ["r001", "r008"],
+        "revision": ["r001"],
+        "practice": [],
+        "expert": ["r008"]
+      },
+      "estimated_hours": 8
+    },
+
+    "H01/02": {
+      "topic_name": "Harappan civilisation",
+      "priority": "Essential",
+      "resources": {
+        "study": ["r001", "r004", "r009"],
+        "revision": ["r001", "r002"],
+        "practice": ["r003"],
+        "expert": ["r002", "r009"]
+      },
+      "estimated_hours": 12
+    },
+
+    "H01/03": {
+      "topic_name": "Vedic & Post Vedic - Culture & Philosophy",
+      "priority": "Essential",
+      "resources": {
+        "study": ["r001", "r002"],
+        "revision": ["r001", "r002"],
+        "practice": ["r010"],
+        "expert": ["r002"]
+      },
+      "estimated_hours": 15
+    },
+
+    "H01/04": {
+      "topic_name": "Mauryan Empire",
+      "priority": "Essential",
+      "resources": {
+        "study": ["r002", "r011"],
+        "revision": ["r002"],
+        "practice": ["r003"],
+        "expert": ["r002", "r011"]
+      },
+      "estimated_hours": 20
+    },
+
+    "H01/05": {
+      "topic_name": "Post-Mauryan",
+      "priority": "Priority",
+      "resources": {
+        "study": ["r002"],
+        "revision": ["r002"],
+        "practice": [],
+        "expert": ["r002"]
+      },
+      "estimated_hours": 8
+    },
+
+    "H01/06": {
+      "topic_name": "Satavahanas",
+      "priority": "Priority",
+      "resources": {
+        "study": ["r002"],
+        "revision": ["r002"],
+        "practice": [],
+        "expert": ["r002"]
+      },
+      "estimated_hours": 6
+    },
+
+    "H01/07": {
+      "topic_name": "Guptas",
+      "priority": "Essential",
+      "resources": {
+        "study": ["r002", "r012"],
+        "revision": ["r002"],
+        "practice": ["r003"],
+        "expert": ["r002", "r012"]
+      },
+      "estimated_hours": 18
+    },
+
+    "H01/08": {
+      "topic_name": "Sangam age",
+      "priority": "Supplementary",
+      "resources": {
+        "study": ["r013"],
+        "revision": ["r013"],
+        "practice": [],
+        "expert": ["r013"]
+      },
+      "estimated_hours": 5
+    },
+
+    "H01/09": {
+      "topic_name": "Post-gupta and Harshavardana",
+      "priority": "Priority",
+      "resources": {
+        "study": ["r002"],
+        "revision": ["r002"],
+        "practice": [],
+        "expert": ["r002"]
+      },
+      "estimated_hours": 10
+    },
+
+    "H01/10": {
+      "topic_name": "Heterodox religions - Buddhism and Jainism",
+      "priority": "Essential",
+      "resources": {
+        "study": ["r001", "r002", "r014"],
+        "revision": ["r001", "r002"],
+        "practice": ["r015"],
+        "expert": ["r002", "r014"]
+      },
+      "estimated_hours": 22
+    }
+  },
+
+  "resources": {
+    "r001": {
+      "resource_id": "r001",
+      "resource_title": "NCERT Class 12 - Themes in Indian History-I",
+      "resource_type": "Book",
+      "resource_url": "https://ncert.nic.in/textbook.php?kehs1=1-4",
+      "resource_description": "Fundamental textbook covering ancient Indian history with archaeological evidence and cultural developments",
+      "difficulty_level": "Beginner",
+      "estimated_hours": 20,
+      "resource_priority": "Essential",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Understanding of prehistoric cultures",
+        "Harappan civilization analysis",
+        "Vedic period cultural aspects",
+        "Basic chronology of ancient periods"
+      ],
+      "tags": ["ncert", "foundation", "ancient-history", "beginner-friendly"]
+    },
+
+    "r002": {
+      "resource_id": "r002",
+      "resource_title": "Ancient India by R.S. Sharma",
+      "resource_type": "Book",
+      "resource_url": "https://amzn.in/d/example-link",
+      "resource_description": "Comprehensive academic coverage of ancient Indian history with detailed archaeological and literary sources",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 40,
+      "resource_priority": "Essential",
+      "resource_cost": { "type": "Paid", "amount": 450 },
+      "learning_outcomes": [
+        "Mauryan empire administrative systems",
+        "Gupta period golden age",
+        "Post-Gupta political developments",
+        "Ancient Indian historiography"
+      ],
+      "tags": ["rs-sharma", "detailed-study", "academic", "standard-reference"]
+    },
+
+    "r004": {
+      "resource_id": "r004",
+      "resource_title": "Harappan Civilization Documentary",
+      "resource_type": "VideoLecture",
+      "resource_url": "https://video-platform.com/harappan-doc",
+      "resource_description": "Visual exploration of Harappan sites, artifacts, and archaeological discoveries",
+      "difficulty_level": "Beginner",
+      "estimated_hours": 3,
+      "resource_priority": "Optional",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Visual understanding of urban planning",
+        "Artifact identification skills",
+        "Archaeological site orientation"
+      ],
+      "tags": ["documentary", "visual-learning", "archaeology", "beginners"]
+    },
+
+    "r008": {
+      "resource_id": "r008",
+      "resource_title": "Prehistoric Cultures NCERT Class 6",
+      "resource_type": "Book",
+      "resource_url": "https://ncert.nic.in/textbook.php?fhss1=1-2",
+      "resource_description": "Basic foundation for understanding prehistoric periods",
+      "difficulty_level": "Beginner",
+      "estimated_hours": 4,
+      "resource_priority": "Essential",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Paleolithic, Mesolithic, Neolithic periods",
+        "Tools and lifestyle understanding",
+        "Chronological framework"
+      ],
+      "tags": ["ncert", "prehistory", "foundation"]
+    },
+
+    "r009": {
+      "resource_id": "r009",
+      "resource_title": "Harappan Civilization Advanced Study Material",
+      "resource_type": "Book",
+      "resource_url": "https://example.com/harappan-advanced",
+      "resource_description": "Detailed analysis of Harappan urban planning, drainage, and cultural aspects",
+      "difficulty_level": "Advanced",
+      "estimated_hours": 12,
+      "resource_priority": "Recommended",
+      "resource_cost": { "type": "Paid", "amount": 200 },
+      "learning_outcomes": [
+        "Urban planning theories",
+        "Trade and commerce analysis",
+        "Cultural synthesis understanding"
+      ],
+      "tags": ["harappan", "advanced", "urban-planning", "commerce"]
+    },
+
+    "r010": {
+      "resource_id": "r010",
+      "resource_title": "Vedic Period Practice Tests",
+      "resource_type": "MockTest",
+      "resource_url": "https://practice-tests.com/vedic-period",
+      "resource_description": "MCQ practice specifically for Vedic and post-Vedic periods",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 8,
+      "resource_priority": "Optional",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Vedic literature familiarity",
+        "Religious philosophy understanding",
+        "Social structure analysis"
+      ],
+      "tags": ["vedic", "mock-test", "philosophy", "practice"]
+    },
+
+    "r011": {
+      "resource_id": "r011",
+      "resource_title": "Mauryan Empire by B.N. Mukherjee",
+      "resource_type": "Book",
+      "resource_url": "https://amzn.in/d/mauryan-mukherjee",
+      "resource_description": "Specialized study of Mauryan administration and policies",
+      "difficulty_level": "Advanced",
+      "estimated_hours": 25,
+      "resource_priority": "Optional",
+      "resource_cost": { "type": "Paid", "amount": 350 },
+      "learning_outcomes": [
+        "Mauryan administrative structure",
+        "Arthashastra principles",
+        "Megasthenes accounts analysis"
+      ],
+      "tags": ["mauryan", "administration", "arthashastra", "advanced"]
+    },
+
+    "r012": {
+      "resource_id": "r012",
+      "resource_title": "Gupta Golden Age Special Material",
+      "resource_type": "RevisionNotes",
+      "resource_url": "https://revision-notes.com/gupta-age",
+      "resource_description": "Comprehensive revision notes covering Gupta period achievements",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 10,
+      "resource_priority": "Recommended",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Gupta literary achievements",
+        "Art and architecture analysis",
+        "Scientific developments",
+        "Economic prosperity factors"
+      ],
+      "tags": ["gupta", "golden-age", "literature", "science", "revision"]
+    },
+
+    "r013": {
+      "resource_id": "r013",
+      "resource_title": "Sangam Literature - Tamil Classics",
+      "resource_type": "Book",
+      "resource_url": "https://example.com/sangam-literature",
+      "resource_description": "Understanding Tamil literature and early South Indian history",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 8,
+      "resource_priority": "Optional",
+      "resource_cost": { "type": "Paid", "amount": 180 },
+      "learning_outcomes": [
+        "Sangam age literary works",
+        "Early Tamil society",
+        "Trade and commerce patterns"
+      ],
+      "tags": ["sangam", "tamil-literature", "south-india", "optional"]
+    },
+
+    "r014": {
+      "resource_id": "r014",
+      "resource_title": "Buddhism and Jainism Comparative Study",
+      "resource_type": "OnlineCourse",
+      "resource_url": "https://course-platform.com/buddhism-jainism",
+      "resource_description": "Comprehensive online course comparing Buddhist and Jain philosophies",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 15,
+      "responsibility_priority": "Recommended",
+      "resource_cost": { "type": "Subscription", "plan": "Standard" },
+      "learning_outcomes": [
+        "Philosophical differences",
+        "Spread and influence",
+        "Artistic representations",
+        "Social reform aspects"
+      ],
+      "tags": ["buddhism", "jainism", "philosophy", "comparative-study"]
+    },
+
+    "r015": {
+      "resource_id": "r015",
+      "resource_title": "Ancient Religions MCQ Bank",
+      "resource_type": "PracticePaper",
+      "resource_url": "https://practice-bank.com/ancient-religions",
+      "resource_description": "Extensive MCQ collection for religious movements in ancient India",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 12,
+      "resource_priority": "Optional",
+      "resource_cost": { "type": "Free" },
+      "learning_outcomes": [
+        "Religious terminology understanding",
+        "Historical context analysis",
+        "Cultural impact assessment"
+      ],
+      "tags": ["religions", "mcq", "practice", "ancient-india"]
+    },
+
+    "r003": {
+      "resource_id": "r003",
+      "resource_title": "Ancient History Mock Tests",
+      "resource_type": "MockTest",
+      "resource_url": "https://mock-test-platform.com/history",
+      "resource_description": "Comprehensive practice tests covering ancient history topics with detailed explanations",
+      "difficulty_level": "Intermediate",
+      "estimated_hours": 15,
+      "resource_priority": "Recommended",
+      "resource_cost": { "type": "Subscription", "plan": "Premium" },
+      "learning_outcomes": [
+        "Exam pattern familiarity",
+        "Time management skills",
+        "Weak area identification"
+      ],
+      "tags": ["mock-test", "practice", "assessment", "ancient-history"]
+    }
+  },
+
+  "subject_level_resources": {
+    "primary_books": ["r001", "r002"],
+    "supplementary_materials": ["r008", "r011", "r013"],
+    "practice_resources": ["r003", "r010", "r015"],
+    "video_content": ["r004"],
+    "current_affairs_sources": [],
+    "revision_materials": ["r012"],
+    "expert_recommendations": ["r002", "r009", "r011", "r014"]
+  }
+}

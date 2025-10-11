@@ -18,6 +18,18 @@ class StudyPlan(Base,BaseMixin):
     status = mapped_column(String) # draft, published
     remarks = mapped_column(String, nullable=True)
     is_deleted: Mapped[bool] = mapped_column(default=False)
+    
+    # Student ID for plan ownership
+    student_id: Mapped[str] = mapped_column(String(8), index=True, nullable=True)
+    
+    # Approval workflow fields
+    approval_status: Mapped[str] = mapped_column(String(20), default='draft')  # draft, review, approved, published
+    approved_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
+    approved_at: Mapped[DateTime] = mapped_column(DateTime, nullable=True)
+    review_notes: Mapped[str] = mapped_column(String, nullable=True)
+    
+    # Relationship to approver
+    approver = relationship("User", foreign_keys=[approved_by])
 
 class PlanTask(Base,BaseMixin):
     __tablename__ = "plantasks"

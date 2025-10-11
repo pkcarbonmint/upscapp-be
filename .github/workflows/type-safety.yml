@@ -1,0 +1,83 @@
+name: Type Safety Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate-types:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install Python dependencies
+      run: |
+        pip install pydantic jsonschema requests pytest
+        
+    - name: Validate JSON Schema
+      run: |
+        cd type_contracts
+        python3 -c "import json; json.load(open('interface_schemas.json'))"
+        echo "✅ JSON Schema is valid"
+        
+    - name: Validate Python types
+      run: |
+        cd type_contracts
+        python3 -m py_compile python_helios_adapter.py
+        python3 -m py_compile elm_type_generator.py
+        python3 -m py_compile validation_tests.py
+        echo "✅ Python types validated"
+        
+    - name: Generate Elm types
+      run: |
+        cd type_contracts
+        python3 elm_type_generator.py
+        echo "✅ Elm types generated"
+        
+    - name: Run comprehensive validation
+      run: |
+        cd type_contracts
+        python3 validation_tests.py
+        echo "✅ Type validation complete"
+        
+    - name: Upload generated types
+      uses: actions/upload-artifact@v3
+      with:
+        name: generated-elm-types
+        path: mentora-ui/src/Generated/Types.elm
+        retention-days: 30
+
+  build-with-validation:
+    runs-on: ubuntu-latest
+    needs: validate-types
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Build Python backend with type validation
+      run: |
+        docker build -f Dockerfile.prod -t backend:test .
+        echo "✅ Backend built with type validation"
+        
+    - name: Build Helios engine with type validation
+      run: |
+        cd helios-hs
+        docker build -t helios:test .
+        echo "✅ Helios built with type validation"
+        
+    - name: Build frontend with generated types
+      run: |
+        cd mentora-ui
+        docker build -t frontend:test .
+        echo "✅ Frontend built with generated types"

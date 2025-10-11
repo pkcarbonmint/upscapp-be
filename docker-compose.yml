@@ -1,36 +1,87 @@
-version: '3.7'
 
 services:
+  # PostgreSQL Database
+  app_db:
+    container_name: app_db
+    hostname: app_db
+    image: library/postgres:14.1
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+      - POSTGRES_DB=app
+    volumes:
+      - app_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - upscpro-be
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # TypeScript Helios Server
+  helios:
+    container_name: helios
+    build:
+      context: .
+      dockerfile: study-planner/Dockerfile
+      target: runtime
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - upscpro-be
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Python FastAPI Backend
   app:
     container_name: app
     env_file:
-      - .env
+      - docker.env
     build:
       context: .
       dockerfile: Dockerfile
     restart: always
     volumes:
       - ./:/code
+      - ./resources:/code/resources
     ports:
       - "8000:8000"
     networks:
       - upscpro-be
+    depends_on:
+      app_db:
+        condition: service_healthy
+      helios:
+        condition: service_healthy
+    environment:
+      - HELIOS_SERVER_URL=http://helios:8080
+      - DATABASE_URL=postgresql://app:app@app_db:5432/app
+      - ENVIRONMENT=LOCAL
+      - CORS_ORIGINS=["http://localhost:5173", "http://localhost:3000"]
     cpuset: "0"
-    # depends_on:
-    #   - app_db
+    command: sh -c "alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --port 8000"
 
-    # app_db:
-    #   container_name: app_db
-    #   hostname: app_db
-    #   image: library/postgres:14.1
-    #   environment:
-    #     - POSTGRES_USER=app
-    #     - POSTGRES_PASSWORD=app
-    #     - POSTGRES_DB=app
-    #   volumes:
-    #     - app_pg_data:/var/lib/postgresql/data
-    #   ports:
-    #     - "5432:5432"
+
+  # Unified Frontend Web Server (nginx serving both onboarding and faculty UIs)
+  frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+    networks:
+      - upscpro-be
 
   app_redis:
     container_name: app_redis
@@ -49,13 +100,16 @@ services:
   celery_worker:
     container_name: celery_worker
     env_file:
-      - .env
+      - docker.env
     build:
       context: .
     restart: always
     command: celery -A src.tasks.celery_tasks worker -l INFO -E
     volumes:
       - ./:/code
+      - ./resources:/code/resources
+    environment:
+      - ENVIRONMENT=development
     networks:
       - upscpro-be
     depends_on:
@@ -66,7 +120,7 @@ services:
   celery_flower:
     container_name: celery_flower
     env_file:
-      - .env
+      - docker.env
     build:
       context: .
     command: celery -A src.tasks.celery_tasks flower
@@ -74,6 +128,9 @@ services:
       - 5555:5555
     volumes:
       - ./:/code
+      - ./resources:/code/resources
+    environment:
+      - ENVIRONMENT=development
     networks:
       - upscpro-be
     depends_on:
@@ -82,14 +139,10 @@ services:
       - celery_worker
     cpuset: "0"
 
-# volumes:
-#   app_pg_data:
-#     driver: "local"
+volumes:
+  app_pg_data:
+    driver: "local"
 
 networks:
-  default:
-    external: true
-    name: app_main
   upscpro-be:
-    external: false
-    name: upscpro-be
+    driver: bridge

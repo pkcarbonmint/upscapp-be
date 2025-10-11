@@ -1,0 +1,103 @@
+/* Mobile-specific optimizations */
+
+/* Prevent zoom on input focus on iOS Safari */
+@media screen and (max-width: 767px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Improve touch targets */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve slider touch targets */
+  input[type="range"] {
+    height: 44px;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Improve scrolling on mobile */
+body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Better focus indicators for keyboard navigation */
+@media (prefers-reduced-motion: no-preference) {
+  *:focus-visible {
+    transition: box-shadow 0.2s ease;
+  }
+}
+
+/* Optimize for safe areas on mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-inset-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-inset-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-inset-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+  
+  .safe-area-inset-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Improve readability on small screens */
+@media screen and (max-width: 480px) {
+  .prose {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .prose p {
+    margin-bottom: 1rem;
+  }
+  
+  .prose h1, .prose h2, .prose h3 {
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+}

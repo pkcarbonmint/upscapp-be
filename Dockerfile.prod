@@ -1,28 +1,68 @@
-FROM python:3.10-slim-bullseye
+# Multi-stage build for production
+FROM python:3.10-slim-bullseye as python-base
 
-RUN apt-get update && \
-    apt-get install -y gcc libpq-dev && \
-    apt update && \
-    apt install -y libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0 libffi-dev libjpeg-dev libopenjp2-7-dev && \
-    apt clean && \
-    rm -rf /var/cache/apt/*
-
+# Python configuration
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONIOENCODING=utf-8
+    PYTHONIOENCODING=utf-8 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        libpq-dev \
+        libpango-1.0-0 \
+        libharfbuzz0b \
+        libpangoft2-1.0-0 \
+        libffi-dev \
+        libjpeg-dev \
+        libopenjp2-7-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Production Python app
+FROM python-base as production
+
+# Install Python dependencies
 COPY requirements/ /tmp/requirements
-
 RUN pip install -U pip && \
     pip install --no-cache-dir -r /tmp/requirements/prod.txt
 
-COPY . /code
-ENV PATH "$PATH:/code/scripts"
+# Copy type contracts for validation
+COPY type_contracts/ /code/type_contracts/
 
-RUN useradd -m -d /code -s /bin/bash app \
-    && chown -R app:app /code/* && chmod +x /code/scripts/*
+# Run type safety validation during build
+RUN cd /code/type_contracts && \
+    python3 -c "import json; json.load(open('interface_schemas.json'))" && \
+    python3 -m py_compile python_helios_adapter.py && \
+    python3 -m py_compile elm_type_generator.py && \
+    python3 -m py_compile validation_tests.py && \
+    echo "✅ Type safety validation passed"
+
+# Copy application code
+COPY . /code
+ENV PATH="$PATH:/code/scripts"
+
+# Set up application user
+RUN useradd -m -d /code -s /bin/bash app && \
+    chown -R app:app /code && \
+    chmod +x /code/scripts/*
 
 WORKDIR /code
 USER app
+
+# Production environment variables
+ENV ENVIRONMENT=production \
+    HELIOS_INTEGRATION_MODE=http \
+    HELIOS_SERVER_URL=http://helios-engine:8080 \
+    HELIOS_SERVER_TIMEOUT=30
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Run migrations and start production server
 RUN ["./scripts/migrate"]
 CMD ["./scripts/start-prod.sh"]
