@@ -12,6 +12,7 @@ import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, Ta
 import { generateInitialPlan } from '../src/engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../src/config';
 import type { StudentIntake, Archetype, StudyPlan, StudyCycle } from '../src/types/models';
+import { createStudentIntake } from '../src/types/models';
 import { ResourceService } from '../src/services/ResourceService';
 import { DocumentService } from '../src/services/DocumentService';
 import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
@@ -927,7 +928,7 @@ Financial Planning Tips:
   }
 
   private makeIntake(targetYear: string, startDate: string): StudentIntake {
-    return {
+    return createStudentIntake({
       subject_confidence: {
         'H01': 'VeryStrong',
         'H02': 'VeryStrong',
@@ -952,7 +953,7 @@ Financial Planning Tips:
       },
       target_year: targetYear,
       start_date: startDate
-    };
+    });
   }
 
   private getTestConfig() {
