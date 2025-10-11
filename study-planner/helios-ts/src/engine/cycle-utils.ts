@@ -43,6 +43,7 @@ export async function createBlocksForSubjects(
       cycleName,
       cycleStartDate,
       cycleEndDate,
+      intake,
       subjData
     );
   }
@@ -584,6 +585,7 @@ async function createContinuousParallelBlocks(
   cycleName: string,
   cycleStartDate: string,
   cycleEndDate: string,
+  intake: StudentIntake,
   subjData?: any
 ): Promise<Block[]> {
   
@@ -621,7 +623,8 @@ async function createContinuousParallelBlocks(
       cycleType,
       cycleOrder,
       cycleName,
-      cycleEndDate
+      cycleEndDate,
+      intake
     );
     
     parallelBlocks.push(block);
@@ -657,7 +660,8 @@ async function createContinuousParallelBlocks(
       cycleType,
       cycleOrder,
       cycleName,
-      cycleEndDate
+      cycleEndDate,
+      intake
     );
     
     parallelBlocks.push(block);

@@ -35,6 +35,8 @@ export type {
   StudentIntake 
 } from './types/models';
 
+export { createStudentIntake } from './types/models';
+
 export type { 
   ConfidenceLevel, 
   StudyPacing, 

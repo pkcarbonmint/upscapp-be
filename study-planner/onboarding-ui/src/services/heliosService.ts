@@ -1,5 +1,6 @@
 // Service for integrating with helios-ts library
 import type { ConfidenceLevel, StudentIntake, StudyPlan, Config } from 'helios-ts';
+import { createStudentIntake } from 'helios-ts';
 
 // Dynamic imports for heavy helios-ts functions to reduce initial bundle size
 async function loadHeliosPlanGenerator() {
@@ -129,7 +130,7 @@ export async function transformToStudentIntake(formData: IntakeWizardFormData): 
   };
 
   // Create student intake with all required fields
-  const studentIntake: StudentIntake = {
+  const studentIntake: StudentIntake = createStudentIntake({
     subject_confidence: subjectConfidence,
     study_strategy: studyStrategy,
     target_year: targetYear.targetYear,
@@ -166,7 +167,7 @@ export async function transformToStudentIntake(formData: IntakeWizardFormData): 
       optional_syllabus_understanding: 'Basic',
       pyq_awareness_and_use: 'Basic'
     }
-  };
+  });
 
   return studentIntake;
 }
