@@ -153,3 +153,6 @@ fb.json
 
 
 docker.env
+
+# Generated documentation files
+study-planner/helios-ts/generated-docs/
