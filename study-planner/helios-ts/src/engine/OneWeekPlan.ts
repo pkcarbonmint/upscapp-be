@@ -88,7 +88,7 @@ export async function createPlanForOneWeek(
   logger.logDebug('OneWeekPlan', `Week ${weekNum} generated ${tasksForWeek.length} tasks`);
 
   // 3. Distribute this list of tasks across the 7 days of the week
-  const dailyPlans = distributeTasksIntoDays(tasksForWeek, config.daily_hour_limits, logger);
+  const dailyPlans = distributeTasksIntoDays(tasksForWeek, config.daily_hour_limits, logger, studentIntake);
   
   // 4. Assign the simple, human-readable IDs to each task
   const finalDailyPlans = assignHumanReadableIDs(dailyPlans, blockIndex, weekNum);
@@ -278,14 +278,16 @@ async function generatePracticeTasks(practiceHoursPerSubject: number, subject: S
       const prelimsTask = await createTask(
         `Practice (MCQs): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60),
-        undefined
+        undefined,
+        'practice'
       );
       return [prelimsTask];
     case 'MainsOnly':
       const mainsTask = await createTask(
         `Practice (Answer Writing): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60),
-        undefined
+        undefined,
+        'practice'
       );
       return [mainsTask];
     case 'BothExams':
@@ -293,12 +295,14 @@ async function generatePracticeTasks(practiceHoursPerSubject: number, subject: S
       const mcqTask = await createTask(
         `Practice (MCQs): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60 / 2),
-        undefined
+        undefined,
+        'practice'
       );
       const writingTask = await createTask(
         `Practice (Answer Writing): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60 / 2),
-        undefined
+        undefined,
+        'practice'
       );
       return [mcqTask, writingTask];
     default:
@@ -316,7 +320,8 @@ async function generateTestTasks(testHoursPerSubject: number, subject: Subject, 
         const prelimsTestTask = await createTask(
             `Test (MCQs): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60),
-            undefined
+            undefined,
+            'test'
         );
         return [prelimsTestTask];
     }
@@ -325,7 +330,8 @@ async function generateTestTasks(testHoursPerSubject: number, subject: Subject, 
         const mainsTestTask = await createTask(
             `Test (Mains): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60),
-            undefined
+            undefined,
+            'test'
         );
         return [mainsTestTask];
     }
@@ -335,12 +341,14 @@ async function generateTestTasks(testHoursPerSubject: number, subject: Subject, 
         const mcqTestTask = await createTask(
             `Test (MCQs): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60 / 2),
-            undefined
+            undefined,
+            'test'
         );
         const mainsTestTask = await createTask(
             `Test (Mains): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60 / 2),
-            undefined
+            undefined,
+            'test'
         );
         return [mcqTestTask, mainsTestTask];
     }
@@ -353,7 +361,7 @@ async function generateTestTasks(testHoursPerSubject: number, subject: Subject, 
  * Generate revision task
  */
 async function generateRevisionTask(revisionHours: number, _logger: Logger): Promise<Task> {
-  return createTask('Weekly Revision', Math.round(revisionHours * 60), undefined);
+  return createTask('Weekly Revision', Math.round(revisionHours * 60), undefined, 'revision');
 }
 
 /**
@@ -373,7 +381,8 @@ async function createStudyTask(
     duration_minutes: durationMinutes,
     details_link: resourceLink,
     currentAffairsType: undefined, // Not a CA task
-    task_resources: taskResources
+    task_resources: taskResources,
+    taskType: 'study'
   };
 }
 
@@ -383,7 +392,8 @@ async function createStudyTask(
 async function createTask(
   title: string,
   durationMinutes: number,
-  resourceLink?: string
+  resourceLink?: string,
+  taskType: 'practice' | 'revision' | 'test' = 'practice'
 ): Promise<Task> {
   const taskId = `task-${uuidv4()}`;
   return {
@@ -393,14 +403,15 @@ async function createTask(
     duration_minutes: durationMinutes,
     details_link: resourceLink,
     currentAffairsType: undefined, // Not a CA task
-    task_resources: undefined // No resources for non-study tasks
+    task_resources: undefined, // No resources for non-study tasks
+    taskType: taskType
   };
 }
 
 /**
  * Distribute tasks into 7 days using greedy bin-packing
  */
-function distributeTasksIntoDays(tasks: Task[], dailyLimits: Config['daily_hour_limits'], _logger: Logger): DailyPlan[] {
+function distributeTasksIntoDays(tasks: Task[], dailyLimits: Config['daily_hour_limits'], _logger: Logger, studentIntake?: StudentIntake): DailyPlan[] {
   // Initialize 7 days, each with 0 hours used
   const initialDays: DayState[] = Array(7).fill(null).map(() => ({ dayTasks: [], hours: 0 }));
   
@@ -409,7 +420,7 @@ function distributeTasksIntoDays(tasks: Task[], dailyLimits: Config['daily_hour_
   
   // Distribute tasks
   const finalDays = sortedTasks.reduce((days, task) => 
-    distributeTaskToDay(dailyLimits, days, task), initialDays
+    distributeTaskToDay(dailyLimits, days, task, studentIntake), initialDays
   );
   
   // Convert to DailyPlan format
@@ -422,17 +433,20 @@ function distributeTasksIntoDays(tasks: Task[], dailyLimits: Config['daily_hour_
 /**
  * Distribute a single task to the best available day
  */
-function distributeTaskToDay(dailyLimits: Config['daily_hour_limits'], days: DayState[], task: Task): DayState[] {
+function distributeTaskToDay(dailyLimits: Config['daily_hour_limits'], days: DayState[], task: Task, studentIntake?: StudentIntake): DayState[] {
   const taskHours = task.duration_minutes / 60.0;
-  const dayLimits = [
-    dailyLimits.regular_day,
-    dailyLimits.regular_day,
-    dailyLimits.regular_day,
-    dailyLimits.regular_day,
-    dailyLimits.regular_day,
-    dailyLimits.catch_up_day,
-    dailyLimits.test_day
-  ];
+  
+  // Determine catchup day based on student preference
+  const catchupDayIndex = getCatchupDayIndex(studentIntake);
+  const testDayIndex = getTestDayIndex(studentIntake);
+  
+  const dayLimits = Array(7).fill(dailyLimits.regular_day);
+  dayLimits[catchupDayIndex] = 0; // Catchup day should be empty - for student to catch up on missed work
+  dayLimits[testDayIndex] = dailyLimits.test_day;
+  
+  // Debug logging for catchup day assignment
+  if (studentIntake?.study_strategy?.catch_up_day_preference === 'Saturday') {
+  }
   
   // Find the day with the most available space that can fit the task
   const findBestSlot = (days: DayState[], limits: number[], dayIndex: number): { index: number; space: number } | null => {
@@ -578,4 +592,53 @@ function createStudentProfile(archetype: any, studentIntake: StudentIntake): any
 async function getResourcesForStudyTask(_studyTaskDef: StudyTaskDef, _studentProfile: any): Promise<Resource[] | undefined> {
   // Mock implementation - in real code this would fetch actual resources
   return undefined;
+}
+
+/**
+ * Get catchup day index based on student preference
+ * @param studentIntake Student intake with catchup day preference
+ * @returns Day index (0-6, where 0=Monday, 6=Sunday)
+ */
+function getCatchupDayIndex(studentIntake?: StudentIntake): number {
+  if (!studentIntake?.study_strategy?.catch_up_day_preference) {
+    return 5; // Default to Saturday (day 6, index 5)
+  }
+  
+  const preference = studentIntake.study_strategy.catch_up_day_preference.toLowerCase();
+  
+  switch (preference) {
+    case 'monday': return 0;
+    case 'tuesday': return 1;
+    case 'wednesday': return 2;
+    case 'thursday': return 3;
+    case 'friday': return 4;
+    case 'saturday': return 5;
+    case 'sunday': return 6;
+    default: return 5; // Default to Saturday
+  }
+}
+
+/**
+ * Get test day index based on student preference
+ * @param studentIntake Student intake with test frequency preference
+ * @returns Day index (0-6, where 0=Monday, 6=Sunday)
+ */
+function getTestDayIndex(studentIntake?: StudentIntake): number {
+  if (!studentIntake?.study_strategy?.test_frequency) {
+    return 6; // Default to Sunday (day 7, index 6)
+  }
+  
+  // const frequency = studentIntake.study_strategy.test_frequency.toLowerCase();
+  
+  // Get catchup day to avoid conflict
+  const catchupDayIndex = getCatchupDayIndex(studentIntake);
+  
+  // Choose a different day for test day to avoid conflict with catchup day
+  if (catchupDayIndex === 5) { // If Saturday is catchup day
+    return 6; // Use Sunday for test day
+  } else if (catchupDayIndex === 6) { // If Sunday is catchup day
+    return 5; // Use Saturday for test day
+  } else {
+    return 6; // Default to Sunday
+  }
 }

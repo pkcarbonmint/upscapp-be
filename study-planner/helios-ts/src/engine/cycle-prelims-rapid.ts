@@ -60,7 +60,6 @@ export function calculatePrelimsRapidRevisionStartDate(
  */
 export async function planPrelimsRapidRevisionCycle(
   logger: Logger,
-  // @ts-ignore
   intake: StudentIntake,
   confidenceMap: Map<string, number>,
   startDate: dayjs.Dayjs | undefined,
@@ -93,6 +92,7 @@ export async function planPrelimsRapidRevisionCycle(
 
   // Create blocks for prelims subjects
   const blocks = await createBlocksForSubjects(
+    intake,
     prelimsSubjects,
     totalHours,
     confidenceMap,
@@ -101,7 +101,8 @@ export async function planPrelimsRapidRevisionCycle(
     3,
     'Prelims Rapid Revision Cycle',
     startDate.format('YYYY-MM-DD'),
-    cycleEndDate.format('YYYY-MM-DD'), subjData);
+    cycleEndDate.format('YYYY-MM-DD'),
+    subjData);
 
   const cycle: StudyCycle = {
     cycleId: `prelims-rapid-revision-${Date.now()}`,

@@ -87,6 +87,7 @@ export async function planMainsRevisionCycle(
 
   // Create blocks for mains subjects
   const blocks = await createBlocksForSubjects(
+    intake,
     mainsSubjects,
     totalHours,
     confidenceMap,

@@ -112,7 +112,7 @@ export interface Task {
   currentAffairsType?: CurrentAffairsTaskType;
   task_resources?: Resource[];
   topicCode?: string; // Track which topic this task belongs to
-  taskType?: 'study' | 'practice' | 'revision'; // Task category
+  taskType?: 'study' | 'practice' | 'revision' | 'test'; // Task category
 }
 
 export interface DailyPlan {

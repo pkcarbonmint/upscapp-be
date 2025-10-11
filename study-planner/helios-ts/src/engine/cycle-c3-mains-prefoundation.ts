@@ -41,6 +41,7 @@ export async function planC3Cycle(
 
   // Create blocks for mains subjects using C3 cycle type
   const blocks = await createBlocksForSubjects(
+    intake,
     mainsSubjects,
     totalHours,
     confidenceMap,

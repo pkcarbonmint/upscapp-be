@@ -1,39 +1,30 @@
-import { Block, WeeklyPlan, DailyPlan, Task } from '../types/models';
-import { CycleType, SubjectApproach } from '../types/Types';
+import { Block, WeeklyPlan, DailyPlan, StudentIntake } from '../types/models';
+import { CycleType } from '../types/Types';
 import { Subject, getTopicEstimatedHours } from '../types/Subjects';
 import { ResourceService } from '../services/ResourceService';
 import { SubjectLoader } from '../services/SubjectLoader';
+import { createPlanForOneWeek, Config } from './OneWeekPlan';
+import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
+import assert from 'assert';
 
-
-/**
- * Get descriptive task title with subject and topic information
- */
-function getDescriptiveTaskTitle(
-  _taskType: 'study' | 'practice' | 'revision',
-  subjectCode: string,
-  topicCode?: string,
-  _week?: number,
-  _day?: number
-): string {
-  const subject = SubjectLoader.getSubjectByCode(subjectCode);
-  const subjectName = subject?.subjectName || subjectCode;
-  
-  // If we have topic information, include it
-  if (topicCode) {
-    const topic = subject?.topics?.find(t => t.topicCode === topicCode);
-    const topicName = topic?.topicName || topicCode;
-    return `${subjectName} - ${topicName} (${topicCode})`;
-  }
-  
-  // For subject-level tasks without topics
-  return `${subjectName}`;
-}
+const taskRatios: Record<CycleType, { study: number; practice: number; revision: number; test: number }> = {
+  'C1': { study: 1.0, practice: 0, revision: 0, test: 0 }, // NCERT Foundation - Study only
+  'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05 }, // Comprehensive Foundation - Balanced
+  'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0 }, // Mains Revision Pre-Prelims
+  'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1 }, // Prelims Revision
+  'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 }, // Prelims Rapid Revision
+  'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1 }, // Mains Revision
+  'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1 }, // Mains Rapid Revision
+  'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0 }, // Mains Foundation
+};
+const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 
 /**
  * Create blocks for subjects with confidence factors applied and trimming
  */
 export async function createBlocksForSubjects(
+  intake: StudentIntake,
   subjects: Subject[],
   totalHours: number,
   confidenceMap: Map<string, number>,
@@ -43,9 +34,10 @@ export async function createBlocksForSubjects(
   cycleName: string,
   cycleStartDate: string,
   cycleEndDate: string,
-  subjData?: any,
-  subjectApproach?: SubjectApproach
+  subjData: any,
 ): Promise<Block[]> {
+  const subjectApproach = intake.subject_approach;
+  const hoursPerDay = parseInt(intake.study_strategy.weekly_study_hours, 10) / 7; 
   // If parallel approach requested, use our continuous parallel logic
   if (subjectApproach === 'DualSubject' || subjectApproach === 'TripleSubject') {
     const numberOfParallelSubjects = subjectApproach === 'DualSubject' ? 2 : 3;
@@ -71,26 +63,32 @@ export async function createBlocksForSubjects(
     Creating blocks for cycle type: 
     ${cycleType} 
     period: ${cycleStartDate} to ${cycleEndDate}`);
-  
+
   // Calculate total weighted baseline hours for proportional allocation
   const totalWeightedBaseline = subjects.reduce((sum, subject) => {
     const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
     return sum + (subject.baselineHours * confidenceMultiplier);
   }, 0);
-  
+
   console.log(`Total weighted baseline hours: ${totalWeightedBaseline}, Total available hours: ${totalHours}`);
   
-  // Debug: Log Geography's calculation
-  if (subjects.some(s => s.subjectCode === 'G')) {
-    const geography = subjects.find(s => s.subjectCode === 'G')!;
-    const geoConfidence = confidenceMap.get('G') || 1.0;
-    const geoWeighted = geography.baselineHours * geoConfidence;
-    const geoAllocated = Math.max(4, Math.floor((totalHours * geoWeighted) / totalWeightedBaseline));
-    console.log(`🔍 Geography calc: baseline=${geography.baselineHours}, confidence=${geoConfidence}, weighted=${geoWeighted}, allocated=${geoAllocated}`);
+  // Calculate cycle duration in weeks for validation
+  let cycleDurationWeeks = 0;
+  if (cycleStartDate && cycleEndDate) {
+    const start = dayjs(cycleStartDate);
+    const end = dayjs(cycleEndDate);
+    cycleDurationWeeks = Math.ceil(end.diff(start, 'day') / 7);
+    console.log(`Cycle duration: ${cycleDurationWeeks} weeks (${cycleDurationWeeks * 7} days)`);
   }
+  
   
   const blocks: Block[] = [];
   for (const subject of subjects) {
+    // Check if we have enough time left in the cycle for this subject
+    if (cycleDurationWeeks > 0 && cumulativeWeeks >= cycleDurationWeeks) {
+      console.log(`Skipping subject ${subject.subjectName}: no time left in cycle (cumulativeWeeks=${cumulativeWeeks}, cycleDurationWeeks=${cycleDurationWeeks})`);
+      continue;
+    }
     // Get subtopics for this subject from subjData
     let subjectSubtopics: any[] = [];
 
@@ -112,7 +110,6 @@ export async function createBlocksForSubjects(
       }))
       .sort((a, b) => {
         // Sort by band only (A=1, B=2, C=3, D=4)
-        const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
         return bandOrder[a.band] - bandOrder[b.band];
       });
 
@@ -129,7 +126,7 @@ export async function createBlocksForSubjects(
     const trimmedSubtopics = trimSubtopicsToFit(adjustedSubtopics, allocatedHours);
 
     // Calculate block duration in weeks
-    const blockDurationWeeks = Math.ceil(allocatedHours / (8 * 7)); // 8 hours/day, 7 days/week
+    const blockDurationWeeks = Math.ceil(allocatedHours / (hoursPerDay * 7)); // 8 hours/day, 7 days/week
 
     // Calculate block dates if cycle start date is provided
     let blockStartDate: string | undefined;
@@ -141,8 +138,15 @@ export async function createBlocksForSubjects(
     if (cycleStartDate) {
       const cycleStart = new Date(cycleStartDate);
 
+      // Check if we have enough time left in the cycle for this block
+      if (cycleDurationWeeks > 0 && cumulativeWeeks >= cycleDurationWeeks) {
+        console.log(`Skipping subject ${subject.subjectName}: no time left in cycle (cumulativeWeeks=${cumulativeWeeks}, cycleDurationWeeks=${cycleDurationWeeks})`);
+        continue;
+      }
+
       // Calculate this block's start date
       const blockStart = dayjs(cycleStart).add(cumulativeWeeks * 7, 'day');
+      console.log(`Block ${subject.subjectName}: cumulativeWeeks=${cumulativeWeeks}, blockStart=${blockStart.format('YYYY-MM-DD')}, blockDurationWeeks=${blockDurationWeeks}`);
 
       // Calculate desired end date based on allocated hours
       const desiredBlockEnd = blockStart.add(blockDurationWeeks * 7 - 1, 'day');
@@ -152,11 +156,7 @@ export async function createBlocksForSubjects(
       if (cycleEndDate) {
         const cycleEnd = dayjs(cycleEndDate);
         
-        // If block start is after cycle end, create the block anyway and let rescheduling handle it
-        if (blockStart.isAfter(cycleEnd)) {
-          console.log(`Block ${subject.subjectName} starts after cycle end (${blockStart.format('YYYY-MM-DD')} > ${cycleEnd.format('YYYY-MM-DD')}). Will be rescheduled later.`);
-          // Continue with block creation - rescheduling will handle it
-        }
+        // If block start is after cycle end, this indicates a scheduling logic error
         
         if (desiredBlockEnd.isAfter(cycleEnd)) {
           // Block would exceed cycle end date, constrain it
@@ -177,12 +177,20 @@ export async function createBlocksForSubjects(
         }
       }
 
-      blockStartDate = blockStart.toISOString().split('T')[0];
-      blockEndDate = blockEnd.toISOString().split('T')[0];
+      blockEndDate = blockEnd.format('YYYY-MM-DD');
+      const newStartDate = blockEnd.subtract(blockDurationWeeks * 7 - 1, 'day');
+      // Not valid: dayjs.max does not exist. Use workaround for min/max of dayjs objects.
+      const newStartDate2 = dayjs(newStartDate).isAfter(dayjs(cycleStartDate))
+        ? dayjs(newStartDate)
+        : dayjs(cycleStartDate);
+      assert(newStartDate2.isBefore(cycleEndDate));
+      blockStartDate = newStartDate2.format('YYYY-MM-DD');
+
 
       // Update cumulative weeks for next block based on actual duration
       const actualWeeks = Math.ceil(blockEnd.diff(blockStart, 'day') / 7);
       cumulativeWeeks += actualWeeks;
+      console.log(`After block ${subject.subjectName}: actualWeeks=${actualWeeks}, total cumulativeWeeks=${cumulativeWeeks}, cycleDurationWeeks=${cycleDurationWeeks}`);
     }
 
     // Get resources for this subject
@@ -210,7 +218,7 @@ export async function createBlocksForSubjects(
       cycle_name: cycleName,
       subjects: [subject.subjectCode],
       duration_weeks: blockDurationWeeks,
-      weekly_plan: createTopicAwareWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, confidenceMap.get(subject.subjectCode) || 1.0)),
+      weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, confidenceMap.get(subject.subjectCode) || 1.0)),
       block_resources: blockResources,
       block_start_date: blockStartDate,
       block_end_date: blockEndDate,
@@ -434,130 +442,138 @@ function calculateTopicHours(
 }
 
 /**
- * Create topic-aware weekly plan with topic-specific tasks
+ * Create enhanced weekly plan using OneWeekPlan.ts for better task variety
  * @param durationWeeks Duration in weeks
  * @param cycleType Type of cycle (Foundation, Revision, etc.)
  * @param subjectCode Subject code (e.g., H01)
  * @param topicHoursMap Map of topicCode -> allocated hours
- * @returns WeeklyPlan array with topic-specific tasks
+ * @returns WeeklyPlan array with diverse task types
  */
-function createTopicAwareWeeklyPlan(
+async function createEnhancedWeeklyPlan(
   durationWeeks: number,
   cycleType: CycleType,
   subjectCode: string,
-  topicHoursMap: Map<string, number>
-): WeeklyPlan[] {
-  const taskRatios: Record<CycleType, { study: number; practice: number; revision: number }> = {
-    // New cycle types with updated task ratios
-    'C1': { study: 1.0, practice: 0, revision: 0 }, // NCERT Foundation - Heavy study focus
-    'C2': { study: 0.7, practice: 0.15, revision: 0.15 }, // Comprehensive Foundation - More balanced
-    'C3': { study: 1.0, practice: 0, revision: 0 }, // Mains Revision Pre-Prelims
-    
-    // Revision Cycles - Focus on practice and revision
-    'C4': { study: 0.0, practice: 0.4, revision: 0.6 }, // Prelims Revision
-    'C5': { study: 0.0, practice: 0.4, revision: 0.6 }, // Prelims Rapid Revision
-    
-    // Mains Cycles - Balanced practice and revision
-    'C6': { study: 0.0, practice: 0.4, revision: 0.6 }, // Mains Revision
-    'C7': { study: 0.0, practice: 0.4, revision: 0.6 }, // Mains Rapid Revision
-    
-    // Special Foundation Cycle
-    'C8': { study: 1.0, practice: 0, revision: 0 }, // Mains Foundation - Similar to CNCERT
-    
+  _topicHoursMap: Map<string, number>
+): Promise<WeeklyPlan[]> {
+  // Create config from cycle type ratios
+  const config = createConfigFromCycleType(cycleType);
+  
+  // Convert topic hours to subject format for OneWeekPlan.ts
+  const subject = SubjectLoader.getSubjectByCode(subjectCode);
+  if (!subject) {
+    console.warn(`Subject ${subjectCode} not found, falling back to basic plan`);
+    return createBasicWeeklyPlan(durationWeeks, subjectCode);
+  }
+  
+  // Create mock student intake for OneWeekPlan.ts
+  const mockStudentIntake = {
+    subject_confidence: { [subjectCode]: 'Moderate' as const },
+    study_strategy: {
+      study_focus_combo: 'GSPlusOptionalPlusCSAT' as const,
+      weekly_study_hours: '50',
+      time_distribution: 'Balanced',
+      study_approach: 'Balanced' as const,
+      revision_strategy: 'Weekly',
+      test_frequency: 'Weekly',
+      seasonal_windows: ['Foundation', 'Revision', 'Intensive'],
+      catch_up_day_preference: 'Saturday'
+    },
+    start_date: new Date().toISOString().split('T')[0]
   };
+  
+  // Create mock archetype
+  const mockArchetype = {
+    archetype: 'Balanced',
+    timeCommitment: 'FullTime' as const,
+    weeklyHoursMin: 40,
+    weeklyHoursMax: 60,
+    description: 'Balanced study approach',
+    defaultPacing: 'Balanced' as const,
+    defaultApproach: 'SingleSubject' as const
+  };
+  
+  // Create logger
+  const logger = makeLogger([]);
+  
+  // Generate weeks using OneWeekPlan.ts
+  const weeklyPlans: WeeklyPlan[] = [];
+  for (let week = 1; week <= durationWeeks; week++) {
+    try {
+      const weekPlan = await createPlanForOneWeek(
+        0, // blockIndex
+        [subject],
+        mockStudentIntake,
+        mockArchetype,
+        config,
+        week,
+        durationWeeks,
+        logger
+      );
+      weeklyPlans.push(weekPlan);
+    } catch (error) {
+      console.warn(`Failed to generate week ${week} with OneWeekPlan.ts, falling back to basic plan:`, error);
+      // Fallback to basic plan for this week
+      const basicWeek = createBasicWeeklyPlan(1, subjectCode)[0];
+      basicWeek.week = week;
+      weeklyPlans.push(basicWeek);
+    }
+  }
+  
+  return weeklyPlans;
+}
 
+/**
+ * Create config from cycle type with appropriate task ratios
+ */
+function createConfigFromCycleType(cycleType: CycleType): Config {
+  
   const ratio = taskRatios[cycleType] || taskRatios['C2'];
   
-  // Convert topicHoursMap to array for processing
-  const topicEntries: [string, number][] = Array.from(topicHoursMap.entries());
-  
-  const weeklyPlans: WeeklyPlan[] = [];
+  return {
+    daily_hour_limits: {
+      regular_day: 8,
+      catch_up_day: 0, // Catchup day should be empty - for student to catch up on missed work
+      test_day: 6
+    },
+    task_effort_split: ratio
+  };
+}
 
+/**
+ * Fallback basic weekly plan creation
+ */
+function createBasicWeeklyPlan(durationWeeks: number, subjectCode: string): WeeklyPlan[] {
+  const weeklyPlans: WeeklyPlan[] = [];
+  
   for (let week = 1; week <= durationWeeks; week++) {
     const daily_plans: DailyPlan[] = [];
-
-    // Create 7 days (Monday to Sunday)
+    
     for (let day = 1; day <= 7; day++) {
-      
-      // Calculate topic-specific tasks for this day
-      const tasks = createTopicSpecificTasks(
-        topicEntries,
-        subjectCode,
-        week,
-        day,
-        ratio
-      );
-
       daily_plans.push({
         day,
-        tasks
+        tasks: [{
+          task_id: `study-${subjectCode}-w${week}-d${day}`,
+          humanReadableId: `Study ${subjectCode} W${week}D${day}`,
+          title2: `${subjectCode} - Study Session`,
+          duration_minutes: 240, // 4 hours default
+          topicCode: subjectCode,
+          taskType: 'study'
+        }]
       });
     }
-
+    
     weeklyPlans.push({
       week,
       daily_plans
     });
   }
-
+  
   return weeklyPlans;
 }
 
-/**
- * Create topic-specific tasks for a given day
- * @param topicEntries Array of [topicCode, topicTotalHours]
- * @param totalDailyHours Total hours available for the day
- * @param subjectCode Subject code
- * @param week Week number
- * @param day Day number
- * @param ratio Study:practice:revision ratio
- * @returns Array of tasks for this day
- */
-function createTopicSpecificTasks(
-  topicEntries: [string, number][],
-  subjectCode: string,
-  week: number,
-  day: number,
-  status: { study: number; practice: number; revision: number }
-): Task[] {
-  const tasks: Task[] = [];
-  
-  if (topicEntries.length === 0) {
-    // Fallback: create generic subject-level tasks
-    const defaultTaskDuration = 240; // 4 hours default
-    return [{
-      task_id: `study-${subjectCode}-w${week}-d${day}`,
-      humanReadableId: `Study ${subjectCode} W${week}D${day}`,
-      title2: getDescriptiveTaskTitle('study', subjectCode, subjectCode),
-      duration_minutes: defaultTaskDuration * status.study,
-      topicCode: subjectCode,
-      taskType: 'study'
-    }];
-  }
-  
-  // Memory optimization: Create one task per topic per day, not per task type per topic
-  // Distribute the 8 daily hours proportionally among topics
-  const totalTopicHours = topicEntries.reduce((sum, [, hours]) => sum + hours, 0);
-  const dailyHours = 8; // Assume 8 hours/day
-  
-  topicEntries.forEach(([topicCode, topicTotalHours]) => {
-    const proportionalHours = (topicTotalHours / totalTopicHours) * dailyHours;
-    
-    if (proportionalHours > 0.5) { // Only create task if it has meaningful duration
-      // Create a single combined task per topic (not split by study/practice/revision)
-      tasks.push({
-        task_id: `study-${subjectCode}-${topicCode}-w${week}-d${day}`,
-        humanReadableId: `Study ${topicCode} W${week}D${day}`,
-        title2: getDescriptiveTaskTitle('study', subjectCode, topicCode, week, day),
-        duration_minutes: Math.round(proportionalHours * 60),
-        topicCode,
-        taskType: 'study' // Default to study, could be made configurable
-      });
-    }
-  });
+// Legacy function removed - using createEnhancedWeeklyPlan instead
 
-  return tasks;
-}
+// Legacy function removed - using OneWeekPlan.ts for task generation
 
 /**
  * Create blocks with continuous parallel execution
@@ -758,7 +774,7 @@ async function createSingleSubjectBlock(
       cycle_name: cycleName,
       subjects: [subject.subjectCode],
       duration_weeks: blockDurationWeeks,
-      weekly_plan: createTopicAwareWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, 1.0)),
+      weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, 1.0)),
       block_resources: blockResources,
       block_start_date: blockStart.format('YYYY-MM-DD'),
     block_end_date: blockEnd.format('YYYY-MM-DD'),

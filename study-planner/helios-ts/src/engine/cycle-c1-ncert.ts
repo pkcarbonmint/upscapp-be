@@ -44,6 +44,7 @@ export async function planC1Cycle(
 
   // Create blocks for NCERT subjects using C1 cycle type
   const blocks = await createBlocksForSubjects(
+    intake,
     ncertSubjects, 
     totalHours, 
     confidenceMap, 
@@ -53,8 +54,7 @@ export async function planC1Cycle(
     'C1 NCERT Foundation Cycle',
     startDate.format('YYYY-MM-DD'),
     endDate.format('YYYY-MM-DD'),
-    subjData,
-    'SingleSubject' // Use single subject approach for NCERT foundation
+    subjData
   );
 
   const cycle: StudyCycle = {

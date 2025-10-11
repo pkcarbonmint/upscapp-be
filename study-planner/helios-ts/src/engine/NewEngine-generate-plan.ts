@@ -142,8 +142,7 @@ async function generateCyclesFromSchedule(
       logger, 
       intake, 
       schedule,
-      subjData,
-      subjectApproach
+      subjData
     );
     if (cycle) cycles.push(cycle);
   }
@@ -158,8 +157,7 @@ async function generateCycleForSchedule(
   logger: Logger,
   intake: StudentIntake,
   schedule: any, // CycleSchedule
-  subjData: SubjData,
-  subjectApproach: SubjectApproach
+  subjData: SubjData
 ): Promise<StudyCycle | undefined> {
   const startDate = dayjs(schedule.startDate);
   const endDate = dayjs(schedule.endDate);
@@ -169,7 +167,7 @@ async function generateCycleForSchedule(
     case 'C1':
       return await planC1Cycle(logger, intake, confidenceMap, startDate, endDate, subjData, subjData.subjects);
     case 'C2':
-      return await planC2FoundationCycle(logger, intake, confidenceMap, startDate, subjData, subjData.subjects, subjectApproach);
+      return await planC2FoundationCycle(logger, intake, confidenceMap, startDate, subjData, subjData.subjects);
     case 'C3':
       return await planC3Cycle(logger, intake, confidenceMap, startDate, endDate, subjData, subjData.subjects);
     case 'C4':

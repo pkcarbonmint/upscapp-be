@@ -43,6 +43,7 @@ export async function planC8Cycle(
 
   // Create blocks for mains foundation subjects using C8 cycle type
   const blocks = await createBlocksForSubjects(
+    intake,
     mainsFoundationSubjects,
     totalHours,
     confidenceMap,

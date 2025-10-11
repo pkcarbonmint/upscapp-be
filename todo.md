@@ -1,10 +1,23 @@
+in createEnhancedWeeklyPlan function  _topicHoursMap is unused. Study why.
+
+TODO:
+1. Plan editor - create a small app for developing and testing the plan editor library. You can keep it inside the plan-editor-library directory.
+4. Catchup day
+
+
+OLD stuff:
+1. C4:C5 ratio is not respected in S6
+1. Fix @CycleSchedulerScenarios.test.ts issues
+2. Review generated documents - both weekly and full plan
+3. Generate HTML visualization to see if that looks better
+
+
 1. DualSubject, TripleSubject support - need to take from StudentIntake and use it in the plan generation code.
 3. subtopics need to be added
 4. Download needs to be fixed adn verified
 5. catchup day
 6. editor
-
-OLD stuff:
+7. Tweaks to the engine - NCERT Foundation phase, X Phase if time available  
 1. The generated blocks are going beyond end dates - for example, prelims rapid revision cycle should end on May 20, but some blocks are going beyond that. We need to drop subtopics from the blocks to fit in the end date. When that is not enough, we need to proportionately reduce the hours of the subjects.
 2. resources need to be added to config files
 
