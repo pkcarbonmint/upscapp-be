@@ -612,7 +612,7 @@ export class EnhancedPDFService {
         labels: subjects,
         datasets: [{
           data: subjectHours,
-          backgroundColor: subjects.map((_, index) => Object.values(this.CHART_COLORS)[index]),
+          backgroundColor: subjects.map((_: string, index: number) => Object.values(this.CHART_COLORS)[index % Object.values(this.CHART_COLORS).length]),
           borderWidth: 2,
           borderColor: '#ffffff'
         }]
