@@ -489,12 +489,12 @@ export class PaymentService {
     };
   }
 
-  async submitPayment(studentId: string, paymentData: any): Promise<any> {
+  async submitPayment(_studentId: string, _paymentData: any): Promise<any> {
     // Legacy method - redirect to new flow
     return { success: true, message: "Use initiatePayment method instead" };
   }
 
-  async checkPaymentStatus(paymentId: string): Promise<PaymentStatus> {
+  async checkPaymentStatusLegacy(_paymentId: string): Promise<PaymentStatus> {
     // Legacy method - will need reference_id and other params for new API
     throw new Error("Use checkPaymentStatus with full parameters");
   }
@@ -502,7 +502,7 @@ export class PaymentService {
   async generateRazorpayLink(
     studentId: string, 
     amount: number, 
-    description: string = 'Study Plan Payment'
+    _description: string = 'Study Plan Payment'
   ): Promise<string> {
     try {
       const result = await this.initiatePayment(
@@ -534,7 +534,7 @@ export class PaymentService {
     }
   }
 
-  async getPaymentHistory(studentId: string): Promise<PaymentStatus[]> {
+  async getPaymentHistory(_studentId: string): Promise<PaymentStatus[]> {
     // Will need to implement based on backend API
     return [];
   }

@@ -18,8 +18,6 @@ export { PaymentService, paymentService } from './services/PaymentService';
 export { default as CrossAppNavigation } from './components/CrossAppNavigation';
 export { default as StudentList } from './components/StudentList';
 export { default as OTPVerification } from './components/OTPVerification';
-export { default as PasswordLogin } from './components/PasswordLogin';
-export { default as EnhancedAuth } from './components/EnhancedAuth';
 
 // Utility exports
 export * from './utils/cn';

@@ -62,13 +62,13 @@ export class FirebasePhoneAuthService {
           return;
         }
 
-        this.recaptchaVerifier = new RecaptchaVerifier(containerId, {
+        this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
           size: 'invisible',
           callback: () => {
             console.log('reCAPTCHA solved');
             resolve();
           }
-        }, auth);
+        });
 
         resolve();
       } catch (error) {
