@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple PDF Generation Browser Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <h1>Simple PDF Generation Test</h1>
+    <button onclick="generateSimplePDF()">Generate Simple PDF</button>
+    
+    <script>
+        function generateSimplePDF() {
+            try {
+                // Create a new jsPDF instance
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                
+                // Add some content
+                pdf.setFontSize(20);
+                pdf.text('Study Plan Test', 20, 20);
+                
+                pdf.setFontSize(12);
+                pdf.text('This is a simple PDF generated in the browser.', 20, 40);
+                pdf.text('Student: John Doe', 20, 60);
+                pdf.text('Target Year: 2025', 20, 80);
+                
+                // Add a simple table
+                pdf.autoTable({
+                    startY: 100,
+                    head: [['Subject', 'Duration', 'Status']],
+                    body: [
+                        ['History', '4 weeks', 'Completed'],
+                        ['Geography', '3 weeks', 'In Progress'],
+                        ['Polity', '2 weeks', 'Pending']
+                    ],
+                    theme: 'striped',
+                    styles: {
+                        fontSize: 10,
+                        cellPadding: 5
+                    }
+                });
+                
+                // Save the PDF
+                pdf.save('simple-study-plan.pdf');
+                
+                console.log('Simple PDF generated successfully!');
+            } catch (error) {
+                console.error('PDF generation failed:', error);
+            }
+        }
+    </script>
+</body>
+</html>
