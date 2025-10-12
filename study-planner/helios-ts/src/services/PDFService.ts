@@ -89,13 +89,13 @@ const DOCUMENT_STYLES = {
     margins: { left: 15, right: 15 },
     availableWidth: 180, // pageWidth - left margin - right margin
     profileTable: {
-      columnWidths: [35, 30, 35, 30] // Total: 130mm (fits within 180mm)
+      columnWidths: [45, 40, 45, 40] // Total: 170mm (better width utilization)
     },
     cycleTable: {
-      columnWidths: [45, 40, 50] // Total: 135mm (fits within 180mm)
+      columnWidths: [60, 50, 60] // Total: 170mm (better width utilization)
     },
     resourceTable: {
-      columnWidths: [20, 50, 18, 18] // Total: 106mm (fits within 180mm)
+      columnWidths: [35, 75, 25, 25] // Total: 160mm (better width utilization)
     }
   }
 } as const;
@@ -283,7 +283,7 @@ export class PDFService {
   }
 
   /**
-   * Add study plan overview with narrative description
+   * Add study plan overview with narrative description and timeline SVG
    */
   private static addStudyPlanOverview(
     pdf: jsPDF, 
@@ -298,7 +298,23 @@ export class PDFService {
     pdf.setTextColor(...DOCUMENT_STYLES.colors.primary);
     pdf.setFont('helvetica', 'bold');
     pdf.text('Study Plan Overview', 20, currentY);
-    currentY += 15;
+    currentY += 10; // Reduced spacing
+    
+    // Add timeline SVG (similar to DocumentService)
+    try {
+      const timelineSVG = this.generateTimelineSVG(studyPlan);
+      if (timelineSVG) {
+        currentY = this.addTimelineSVGToPDF(pdf, timelineSVG, currentY);
+      }
+    } catch (error) {
+      console.warn('Failed to add timeline SVG:', error);
+      // Add placeholder text
+      pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+      pdf.setTextColor(...DOCUMENT_STYLES.colors.secondary);
+      pdf.setFont('helvetica', 'italic');
+      pdf.text('[Study plan timeline visualization]', 20, currentY);
+      currentY += 15;
+    }
     
     // Overview text
     const cycles = studyPlan.cycles || [];
@@ -312,21 +328,60 @@ export class PDFService {
     const overviewText = `This comprehensive study plan is strategically designed for ${studentName} for UPSC ${targetYear} preparation, structured across multiple specialized cycles to maximize learning efficiency and exam readiness.`;
     
     const splitText = pdf.splitTextToSize(overviewText, 170);
-    pdf.text(splitText, 20, currentY);
-    currentY += splitText.length * 5 + 10;
+    // Handle both string and array return from splitTextToSize
+    if (Array.isArray(splitText)) {
+      splitText.forEach((line, index) => {
+        // Ensure line is not undefined or null
+        if (line && typeof line === 'string') {
+          pdf.text(line, 20, currentY + (index * 4));
+        }
+      });
+      currentY += splitText.length * 4 + 8; // Reduced spacing
+    } else if (splitText && typeof splitText === 'string') {
+      pdf.text(splitText, 20, currentY);
+      currentY += 12; // Single line spacing
+    } else {
+      // Fallback if splitText is invalid
+      currentY += 12;
+    }
     
-    // Add cycle descriptions
+    // Add cycle descriptions with bold names
     cycles.forEach(cycle => {
       if (currentY > 250) {
         pdf.addPage();
         currentY = 20;
       }
       
+      // Add cycle name in bold
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(DOCUMENT_STYLES.fonts.body);
+      pdf.setTextColor(...DOCUMENT_STYLES.colors.text);
+      const cycleName = cycle.cycleName || cycle.cycleType || 'Unnamed Cycle';
+      pdf.text(cycleName, 20, currentY);
+      currentY += 6;
+      
+      // Add cycle description
       const cycleDescription = this.getCycleDescription(cycle);
       if (cycleDescription) {
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(DOCUMENT_STYLES.fonts.body);
         const cycleSplit = pdf.splitTextToSize(cycleDescription, 170);
-        pdf.text(cycleSplit, 20, currentY);
-        currentY += cycleSplit.length * 5 + 8;
+        // Handle both string and array return from splitTextToSize
+        if (Array.isArray(cycleSplit)) {
+          cycleSplit.forEach((line, index) => {
+            // Ensure line is not undefined or null
+            if (line && typeof line === 'string') {
+              pdf.text(line, 20, currentY + (index * 4));
+            }
+          });
+          currentY += cycleSplit.length * 4 + 6; // Reduced spacing
+        } else if (cycleSplit && typeof cycleSplit === 'string') {
+          pdf.text(cycleSplit, 20, currentY);
+          currentY += 10; // Single line spacing
+        } else {
+          // Fallback if cycleSplit is invalid
+          currentY += 10;
+        }
       }
     });
     
@@ -341,8 +396,22 @@ export class PDFService {
     
     const summaryText = `The entire study journey spans ${totalWeeks} weeks across ${cycles.length} specialized cycles, broken down into ${totalBlocks} focused study blocks. Each cycle is carefully timed to align with UPSC examination dates and optimal learning patterns.`;
     const summarySplit = pdf.splitTextToSize(summaryText, 170);
-    pdf.text(summarySplit, 20, currentY);
-    currentY += summarySplit.length * 5 + 20;
+    // Handle both string and array return from splitTextToSize
+    if (Array.isArray(summarySplit)) {
+      summarySplit.forEach((line, index) => {
+        // Ensure line is not undefined or null
+        if (line && typeof line === 'string') {
+          pdf.text(line, 20, currentY + (index * 4));
+        }
+      });
+      currentY += summarySplit.length * 4 + 15; // Reduced spacing
+    } else if (summarySplit && typeof summarySplit === 'string') {
+      pdf.text(summarySplit, 20, currentY);
+      currentY += 19; // Single line spacing
+    } else {
+      // Fallback if summarySplit is invalid
+      currentY += 19;
+    }
     
     return currentY;
   }
@@ -434,20 +503,46 @@ export class PDFService {
       currentY = 20;
     }
     
-    // Cycle heading
+    // Cycle heading - emphasized and bold
     pdf.setFontSize(DOCUMENT_STYLES.fonts.heading1);
-    pdf.setTextColor(...DOCUMENT_STYLES.colors.text);
+    pdf.setTextColor(...DOCUMENT_STYLES.colors.primary);
     pdf.setFont('helvetica', 'bold');
     const cycleName = cycle.cycleName || 'Untitled Cycle';
     pdf.text(cycleName, 20, currentY);
-    currentY += 10;
+    currentY += 8; // Reduced spacing
+    
+    // Add cycle description (matching DOCX format)
+    const cycleDescription = this.getCycleDescription(cycle);
+    if (cycleDescription) {
+      pdf.setFontSize(DOCUMENT_STYLES.fonts.body);
+      pdf.setTextColor(...DOCUMENT_STYLES.colors.text);
+      pdf.setFont('helvetica', 'normal');
+      const descriptionSplit = pdf.splitTextToSize(cycleDescription, 170);
+      // Handle both string and array return from splitTextToSize
+      if (Array.isArray(descriptionSplit)) {
+        descriptionSplit.forEach((line, index) => {
+          // Ensure line is not undefined or null
+          if (line && typeof line === 'string') {
+            pdf.text(line, 20, currentY + (index * 4));
+          }
+        });
+        currentY += descriptionSplit.length * 4 + 6; // Reduced spacing
+      } else if (descriptionSplit && typeof descriptionSplit === 'string') {
+        pdf.text(descriptionSplit, 20, currentY);
+        currentY += 10; // Single line spacing
+      } else {
+        // Fallback if descriptionSplit is invalid
+        currentY += 10;
+      }
+    }
     
     // Cycle duration info
     pdf.setFontSize(DOCUMENT_STYLES.fonts.body);
     pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(...DOCUMENT_STYLES.colors.secondary);
     const durationText = `Duration: ${cycle.cycleStartDate || 'TBD'} to ${cycle.cycleEndDate || 'TBD'} (${cycle.cycleDuration || 0} weeks)`;
     pdf.text(durationText, 20, currentY);
-    currentY += 10;
+    currentY += 8; // Reduced spacing
     
     // Generate table data for this cycle
     const tableData = this.generateCycleTableData(cycle);
@@ -492,7 +587,7 @@ export class PDFService {
   }
 
   /**
-   * Add resources section with tables per subject
+   * Add resources section with complete tables per subject (no truncation)
    */
   private static async addResourcesSection(pdf: jsPDF, studyPlan: StudyPlan, startY: number): Promise<void> {
     let currentY = startY;
@@ -508,26 +603,39 @@ export class PDFService {
     pdf.setTextColor(...DOCUMENT_STYLES.colors.primary);
     pdf.setFont('helvetica', 'bold');
     pdf.text('Resources', 20, currentY);
-    currentY += 15;
+    currentY += 10; // Reduced spacing
     
     // Get all unique subjects from the study plan
     const subjects = this.getUniqueSubjects(studyPlan);
     
-    // Add a summary table for now (detailed resources would make PDF too long)
+    // Add comprehensive resource information for ALL subjects
     if (subjects.length > 0) {
       pdf.setFontSize(DOCUMENT_STYLES.fonts.body);
       pdf.setTextColor(...DOCUMENT_STYLES.colors.text);
       pdf.setFont('helvetica', 'normal');
       
-      const resourceText = `This study plan covers ${subjects.length} subjects: ${subjects.join(', ')}. Detailed resources for each subject include primary books, current affairs sources, practice materials, and expert recommendations as specified in the full resource database.`;
+      const resourceText = `This study plan covers ${subjects.length} subjects with comprehensive resource allocation. Below are the detailed resources for each subject in your study plan:`;
       
       const splitResourceText = pdf.splitTextToSize(resourceText, 170);
-      pdf.text(splitResourceText, 20, currentY);
-      currentY += splitResourceText.length * 5 + 10;
+      // Handle both string and array return from splitTextToSize
+      if (Array.isArray(splitResourceText)) {
+        splitResourceText.forEach((line, index) => {
+          // Ensure line is not undefined or null
+          if (line && typeof line === 'string') {
+            pdf.text(line, 20, currentY + (index * 4));
+          }
+        });
+        currentY += splitResourceText.length * 4 + 8; // Reduced spacing
+      } else if (splitResourceText && typeof splitResourceText === 'string') {
+        pdf.text(splitResourceText, 20, currentY);
+        currentY += 12; // Single line spacing
+      } else {
+        // Fallback if splitResourceText is invalid
+        currentY += 12;
+      }
       
-      // Add a sample resources table for the first few subjects
-      const sampleSubjects = subjects.slice(0, 3);
-      for (const subjectCode of sampleSubjects) {
+      // Add detailed resources table for ALL subjects (no truncation)
+      for (const subjectCode of subjects) {
         if (currentY > 240) {
           pdf.addPage();
           currentY = 20;
@@ -536,22 +644,68 @@ export class PDFService {
         try {
           const subjectName = this.getSubjectName(subjectCode);
           pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(DOCUMENT_STYLES.fonts.body);
           pdf.text(subjectName, 20, currentY);
           currentY += 8;
           pdf.setFont('helvetica', 'normal');
           
           const resources = await ResourceService.getResourcesForSubject(subjectCode);
           
-          // Create a simplified resources table
+          // Create a comprehensive resources table with full details
           const resourceTableData: string[][] = [];
           
-          if (resources.primary_books.length > 0) {
-            resources.primary_books.slice(0, 3).forEach(book => {
+          // Primary Books
+          if (resources.primary_books && resources.primary_books.length > 0) {
+            resources.primary_books.forEach(book => {
+              const timeFrame = book.duration_weeks ? `${book.duration_weeks} week(s)` : 'Ongoing';
+              const fullDetails = `${timeFrame} | ${this.formatResourceCost(book.resource_cost)} | ${book.resource_priority}`;
               resourceTableData.push([
                 'Primary Book',
                 book.resource_title,
-                book.resource_priority,
-                this.formatResourceCost(book.resource_cost)
+                fullDetails,
+                book.resource_description || 'Essential reading'
+              ]);
+            });
+          }
+          
+          // Current Affairs Sources
+          if (resources.current_affairs_sources && resources.current_affairs_sources.length > 0) {
+            resources.current_affairs_sources.forEach(ca => {
+              const timeFrame = ca.duration_weeks ? `${ca.duration_weeks} week(s)` : 'Daily';
+              const fullDetails = `${timeFrame} | ${this.formatResourceCost(ca.resource_cost)} | ${ca.resource_priority}`;
+              resourceTableData.push([
+                'Current Affairs',
+                ca.resource_title,
+                fullDetails,
+                ca.resource_description || 'Daily updates'
+              ]);
+            });
+          }
+          
+          // Practice Resources
+          if (resources.practice_resources && resources.practice_resources.length > 0) {
+            resources.practice_resources.forEach(practice => {
+              const timeFrame = practice.duration_weeks ? `${practice.duration_weeks} week(s)` : 'As needed';
+              const fullDetails = `${timeFrame} | ${this.formatResourceCost(practice.resource_cost)} | ${practice.resource_priority}`;
+              resourceTableData.push([
+                'Practice Material',
+                practice.resource_title,
+                fullDetails,
+                practice.resource_description || 'Practice questions'
+              ]);
+            });
+          }
+          
+          // Video Content
+          if (resources.video_content && resources.video_content.length > 0) {
+            resources.video_content.forEach(video => {
+              const timeFrame = video.duration_weeks ? `${video.duration_weeks} week(s)` : 'Self-paced';
+              const fullDetails = `${timeFrame} | ${this.formatResourceCost(video.resource_cost)} | ${video.resource_priority}`;
+              resourceTableData.push([
+                'Video Content',
+                video.resource_title,
+                fullDetails,
+                video.resource_description || 'Video lectures'
               ]);
             });
           }
@@ -559,17 +713,19 @@ export class PDFService {
           if (resourceTableData.length > 0) {
             autoTable(pdf, {
               startY: currentY,
-              head: [['Type', 'Resource', 'Priority', 'Cost']],
+              head: [['Type', 'Resource', 'Details & Cost', 'Description']],
               body: resourceTableData,
               theme: 'striped',
               styles: {
                 fontSize: DOCUMENT_STYLES.fonts.small,
-                cellPadding: 3
+                cellPadding: 3,
+                textColor: [...DOCUMENT_STYLES.colors.text]
               },
               headStyles: {
                 fillColor: [...DOCUMENT_STYLES.colors.secondary],
                 textColor: [255, 255, 255],
-                fontSize: DOCUMENT_STYLES.fonts.small
+                fontSize: DOCUMENT_STYLES.fonts.small,
+                fontStyle: 'bold'
               },
               columnStyles: {
                 0: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[0] },
@@ -581,21 +737,30 @@ export class PDFService {
               tableWidth: 'wrap'
             });
             
-            currentY = pdf.lastAutoTable?.finalY ? pdf.lastAutoTable.finalY + 10 : currentY + 40;
+            currentY = pdf.lastAutoTable?.finalY ? pdf.lastAutoTable.finalY + 8 : currentY + 40; // Reduced spacing
           } else {
-            pdf.text('Resources available in full database', 20, currentY);
-            currentY += 10;
+            pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+            pdf.text('Comprehensive resources available in full database', 20, currentY);
+            currentY += 8;
           }
         } catch (error) {
           console.warn(`Failed to load resources for ${subjectCode}`, error);
+          pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
           pdf.text(`Resources available for ${subjectCode}`, 20, currentY);
-          currentY += 10;
+          currentY += 8;
         }
       }
       
-      if (subjects.length > 3) {
-        pdf.text(`... and ${subjects.length - 3} more subjects with comprehensive resources`, 20, currentY);
+      // Add summary note (removed truncation message)
+      if (currentY > 260) {
+        pdf.addPage();
+        currentY = 20;
       }
+      
+      pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+      pdf.setTextColor(...DOCUMENT_STYLES.colors.secondary);
+      pdf.setFont('helvetica', 'italic');
+      pdf.text(`Complete resource listing for all ${subjects.length} subjects in your study plan.`, 20, currentY);
     }
   }
 
@@ -924,10 +1089,177 @@ export class PDFService {
     }
   }
 
+  // ===== TIMELINE SVG METHODS =====
+
+  /**
+   * Generate timeline SVG for study plan (copied from DocumentService)
+   */
+  private static generateTimelineSVG(studyPlan: StudyPlan): string {
+    const cycles = studyPlan.cycles || [];
+    if (cycles.length === 0) return '';
+
+    // Timeline dimensions
+    const width = 600; // Slightly smaller for PDF
+    const cycleHeight = 50;
+    const padding = 30;
+    const timelineWidth = 4;
+    const markerRadius = 6;
+    const totalHeight = cycles.length * cycleHeight + padding * 2;
+
+    // Cycle colors mapping - much lighter backgrounds
+    const cycleColors: Record<string, string> = {
+      'C1': '#e3f2fd', // Very light blue
+      'C2': '#e8f5e8', // Very light green  
+      'C3': '#fce4ec', // Very light pink
+      'C4': '#ffebee', // Very light red
+      'C5': '#f3e5f5', // Very light purple
+      'C6': '#e1f5fe', // Very light cyan
+      'C7': '#fff3e0', // Very light orange
+      'C8': '#f1f8e9', // Very light lime
+    };
+
+    // Border colors for contrast
+    const borderColors: Record<string, string> = {
+      'C1': '#2196f3', // Blue border
+      'C2': '#4caf50', // Green border
+      'C3': '#e91e63', // Pink border
+      'C4': '#f44336', // Red border
+      'C5': '#9c27b0', // Purple border
+      'C6': '#00bcd4', // Cyan border
+      'C7': '#ff9800', // Orange border
+      'C8': '#8bc34a', // Lime border
+    };
+
+    let svg = `<svg width="${width}" height="${totalHeight}" xmlns="http://www.w3.org/2000/svg">`;
+
+    // Add scenario code at the top if available
+    if (studyPlan.scenario) {
+      svg += `<text x="20" y="20" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#667eea" text-anchor="start">${studyPlan.scenario}</text>`;
+    }
+
+    // Timeline axis - centered horizontally
+    const axisX = padding - 20;
+    svg += `<line x1="${axisX}" y1="${padding}" x2="${axisX}" y2="${totalHeight - padding}" stroke="#667eea" stroke-width="${timelineWidth}" stroke-linecap="round"/>`;
+
+    // Generate cycle elements
+    cycles.forEach((cycle, index) => {
+      const y = padding + (index * cycleHeight) + (cycleHeight / 2);
+      const backgroundColor = cycleColors[cycle.cycleType] || '#f5f5f5';
+      const borderColor = borderColors[cycle.cycleType] || '#666666';
+
+      // Timeline marker
+      svg += `<circle cx="${axisX}" cy="${y}" r="${markerRadius}" fill="${borderColor}" stroke="white" stroke-width="2"/>`;
+
+      // Cycle card background - centered around timeline
+      const cardWidth = width * 0.75; // 75% of total width
+      const cardX = padding; // Center the card
+      const cardY = y - 18;
+
+      svg += `<rect x="${cardX}" y="${cardY}" width="${cardWidth}" height="36" fill="${backgroundColor}" stroke="${borderColor}" stroke-width="1.5" rx="4"/>`;
+
+      // Cycle type badge - positioned to the left of center
+      const badgeX = cardX + 15;
+      svg += `<rect x="${badgeX}" y="${cardY + 4}" width="20" height="10" fill="${borderColor}" rx="2"/>`;
+      svg += `<text x="${badgeX + 10}" y="${cardY + 11}" font-family="Arial, Helvetica, sans-serif" font-size="7" font-weight="bold" fill="white" text-anchor="middle">${cycle.cycleType}</text>`;
+
+      // Cycle name - positioned to the right of badge
+      const cycleName = cycle.cycleName || 'Unnamed Cycle';
+      svg += `<text x="${badgeX + 28}" y="${cardY + 12}" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="600" fill="#1a1a1a">${cycleName}</text>`;
+
+      const cycleStartDate = cycle.cycleStartDate;
+      const cycleEndDate = cycle.cycleEndDate;
+      // Duration info - below cycle name
+      const durationText = `${cycle.cycleDuration || 0} weeks`;
+      svg += `<text x="${badgeX + 28}" y="${cardY + 26}" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#4a4a4a">${durationText}</text>`;
+
+      // Date range (compact) - positioned to the right
+      const startDate = cycleStartDate ? new Date(cycleStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD';
+      const endDate = cycleEndDate ? new Date(cycleEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD';
+      const dateText = `${startDate} - ${endDate}`;
+      svg += `<text x="${cardX + cardWidth - 15}" y="${cardY + 12}" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#4a4a4a" text-anchor="end">${dateText}</text>`;
+
+      // Subject count - below date range
+      const subjectCount = this.getUniqueSubjectsFromCycle(cycle.cycleBlocks).length;
+      svg += `<text x="${cardX + cardWidth - 15}" y="${cardY + 26}" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#4a4a4a" text-anchor="end">${subjectCount} subjects</text>`;
+    });
+
+    svg += `</svg>`;
+    return svg;
+  }
+
+  /**
+   * Add Timeline SVG to PDF as an image using html2canvas
+   */
+  private static async addTimelineSVGToPDF(pdf: jsPDF, svgString: string, startY: number): Promise<number> {
+    try {
+      // For Node.js environment, we'll add a simple text representation instead of rendering SVG
+      if (typeof window === 'undefined') {
+        // Add a simple timeline representation
+        pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+        pdf.setTextColor(...DOCUMENT_STYLES.colors.secondary);
+        pdf.setFont('helvetica', 'italic');
+        pdf.text('[Study Plan Timeline - Visual representation available in browser version]', 20, startY);
+        return startY + 15;
+      }
+      
+      // Browser environment - render SVG as image
+      const container = document.createElement('div');
+      container.innerHTML = svgString;
+      container.style.position = 'fixed';
+      container.style.top = '-9999px';
+      container.style.left = '-9999px';
+      container.style.backgroundColor = 'white';
+      document.body.appendChild(container);
+
+      // Use html2canvas to render SVG to canvas
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true
+      });
+
+      // Convert canvas to data URL
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Calculate dimensions for PDF
+      const imgWidth = 170; // Max width in PDF
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add image to PDF
+      pdf.addImage(imgData, 'PNG', 20, startY, imgWidth, imgHeight);
+
+      // Cleanup
+      document.body.removeChild(container);
+
+      return startY + imgHeight + 10;
+    } catch (error) {
+      console.warn('Failed to render timeline SVG:', error);
+      // Fallback to text
+      pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+      pdf.setTextColor(...DOCUMENT_STYLES.colors.secondary);
+      pdf.setFont('helvetica', 'italic');
+      pdf.text('[Timeline visualization - rendering failed]', 20, startY);
+      return startY + 15;
+    }
+  }
+
+  /**
+   * Get unique subjects from cycle blocks
+   */
+  private static getUniqueSubjectsFromCycle(cycleBlocks?: Block[]): string[] {
+    const subjects = new Set<string>();
+    cycleBlocks?.forEach(block => {
+      if (block.subjects) {
+        block.subjects.forEach(subject => subjects.add(subject));
+      }
+    });
+    return Array.from(subjects);
+  }
+
   // ===== HELPER METHODS =====
   
   /**
-   * Generate student profile data for table
+   * Generate student profile data for table - enhanced to match DOCX version
    */
   private static generateStudentProfileData(studentIntake: StudentIntake): string[][] {
     const rows: string[][] = [];
@@ -947,6 +1279,18 @@ export class PDFService {
         'Student Type', pd.student_archetype || 'Not provided',
         'Graduation Stream', pd.graduation_stream || 'Not provided'
       ]);
+      if (pd.date_of_birth) {
+        rows.push([
+          'Date of Birth', pd.date_of_birth,
+          'Gender', pd.gender || 'Not provided'
+        ]);
+      }
+      if (pd.occupation) {
+        rows.push([
+          'Occupation', pd.occupation,
+          'Work Experience', pd.work_experience || 'Not provided'
+        ]);
+      }
     }
     
     // Preparation Background
@@ -954,12 +1298,18 @@ export class PDFService {
       const pb = studentIntake.preparation_background;
       rows.push([
         'Preparing Since', pb.preparing_since || 'Not provided',
-        'Number of Attempts', pb.number_of_attempts || 'Not provided'
+        'Number of Attempts', (pb.number_of_attempts || 0).toString()
       ]);
       rows.push([
-        'Highest Stage', pb.highest_stage_per_attempt || 'Not provided',
-        'Last GS Score', pb.last_attempt_gs_prelims_score > 0 ? pb.last_attempt_gs_prelims_score.toString() : 'N/A'
+        'Highest Stage Reached', pb.highest_stage_per_attempt || 'Not provided',
+        'Previous Prelims Score', pb.last_attempt_gs_prelims_score > 0 ? pb.last_attempt_gs_prelims_score.toString() : 'N/A'
       ]);
+      if (pb.previous_optional_subjects && pb.previous_optional_subjects.length > 0) {
+        rows.push([
+          'Previous Optional', pb.previous_optional_subjects.join(', '),
+          'Coaching Experience', pb.coaching_experience || 'Self-study'
+        ]);
+      }
     }
     
     // Study Strategy
@@ -969,13 +1319,56 @@ export class PDFService {
         'Weekly Study Hours', ss.weekly_study_hours || 'Not provided',
         'Study Approach', ss.study_approach || 'Not provided'
       ]);
+      rows.push([
+        'Focus Combination', ss.study_focus_combo || 'Not provided',
+        'Time Distribution', ss.time_distribution || 'Balanced'
+      ]);
+      rows.push([
+        'Revision Strategy', ss.revision_strategy || 'Weekly',
+        'Test Frequency', ss.test_frequency || 'Monthly'
+      ]);
+      if (ss.catch_up_day_preference) {
+        rows.push([
+          'Preferred Catch-up Day', ss.catch_up_day_preference,
+          'Seasonal Windows', ss.seasonal_windows ? ss.seasonal_windows.join(', ') : 'Not specified'
+        ]);
+      }
     }
     
-    // Target Year and Start Date
+    // Current Status and Confidence
+    if (studentIntake.subject_confidence && Object.keys(studentIntake.subject_confidence).length > 0) {
+      const subjects = Object.entries(studentIntake.subject_confidence);
+      const subjectStrings = subjects.map(([code, level]) => `${code}:${level}`);
+      const midPoint = Math.ceil(subjectStrings.length / 2);
+      
+      rows.push([
+        'Subject Confidence (Part 1)', subjectStrings.slice(0, midPoint).join(', '),
+        'Subject Confidence (Part 2)', subjectStrings.slice(midPoint).join(', ')
+      ]);
+    }
+    
+    // Target Year and Exam Details
     rows.push([
       'Target Year', studentIntake.target_year || 'Not provided',
-      'Start Date', studentIntake.start_date || 'Not provided'
+      'Plan Start Date', studentIntake.start_date || 'Not provided'
     ]);
+    
+    // Optional Subject and Language Preferences
+    if (studentIntake.optional_subject_selection) {
+      const oss = studentIntake.optional_subject_selection;
+      rows.push([
+        'Optional Subject', oss.selected_optional_subject || 'Not selected',
+        'Optional Confidence', oss.optional_subject_confidence || 'Not assessed'
+      ]);
+    }
+    
+    if (studentIntake.language_preferences) {
+      const lp = studentIntake.language_preferences;
+      rows.push([
+        'Exam Medium', lp.exam_medium || 'English',
+        'Essay Language', lp.essay_language || 'English'
+      ]);
+    }
     
     return rows;
   }
@@ -1042,37 +1435,66 @@ export class PDFService {
   }
 
   /**
-   * Summarize block resources for table display
+   * Summarize block resources for table display - enhanced with full details
    */
   private static summarizeBlockResources(blockResources?: BlockResources): string[] {
     if (!blockResources) {
       return ['No resources'];
     }
 
-    const resourceNames: string[] = [];
+    const resourceDetails: string[] = [];
     
-    // Add primary books
+    // Add primary books with full details
     if (blockResources.primary_books && blockResources.primary_books.length > 0) {
-      resourceNames.push(...blockResources.primary_books.slice(0, 2).map(book => book.resource_title));
+      blockResources.primary_books.forEach(book => {
+        const timeFrame = book.duration_weeks ? ` (${book.duration_weeks} weeks)` : '';
+        const cost = book.resource_cost ? ` - ${this.formatResourceCost(book.resource_cost)}` : '';
+        resourceDetails.push(`${book.resource_title}${timeFrame}${cost}`);
+      });
     }
     
-    // Add supplementary materials
+    // Add supplementary materials with details
     if (blockResources.supplementary_materials && blockResources.supplementary_materials.length > 0) {
-      resourceNames.push(...blockResources.supplementary_materials.slice(0, 1).map(mat => mat.resource_title));
+      blockResources.supplementary_materials.forEach(mat => {
+        const timeFrame = mat.duration_weeks ? ` (${mat.duration_weeks} weeks)` : '';
+        const cost = mat.resource_cost ? ` - ${this.formatResourceCost(mat.resource_cost)}` : '';
+        resourceDetails.push(`${mat.resource_title}${timeFrame}${cost}`);
+      });
     }
     
-    // Limit to reasonable length for table display
-    if (resourceNames.length === 0) {
+    // Add current affairs sources
+    if (blockResources.current_affairs_sources && blockResources.current_affairs_sources.length > 0) {
+      blockResources.current_affairs_sources.forEach(ca => {
+        const timeFrame = ca.duration_weeks ? ` (${ca.duration_weeks} weeks)` : '';
+        const cost = ca.resource_cost ? ` - ${this.formatResourceCost(ca.resource_cost)}` : '';
+        resourceDetails.push(`${ca.resource_title}${timeFrame}${cost}`);
+      });
+    }
+    
+    // Add practice resources
+    if (blockResources.practice_resources && blockResources.practice_resources.length > 0) {
+      blockResources.practice_resources.forEach(practice => {
+        const timeFrame = practice.duration_weeks ? ` (${practice.duration_weeks} weeks)` : '';
+        const cost = practice.resource_cost ? ` - ${this.formatResourceCost(practice.resource_cost)}` : '';
+        resourceDetails.push(`${practice.resource_title}${timeFrame}${cost}`);
+      });
+    }
+    
+    // Add video content
+    if (blockResources.video_content && blockResources.video_content.length > 0) {
+      blockResources.video_content.forEach(video => {
+        const timeFrame = video.duration_weeks ? ` (${video.duration_weeks} weeks)` : '';
+        const cost = video.resource_cost ? ` - ${this.formatResourceCost(video.resource_cost)}` : '';
+        resourceDetails.push(`${video.resource_title}${timeFrame}${cost}`);
+      });
+    }
+    
+    // Return full list (no truncation to match DOCX behavior)
+    if (resourceDetails.length === 0) {
       return ['Resources available'];
     }
     
-    if (resourceNames.length > 3) {
-      const firstThree = resourceNames.slice(0, 3);
-      firstThree.push(`(+${resourceNames.length - 3} more)`);
-      return firstThree;
-    }
-    
-    return resourceNames;
+    return resourceDetails;
   }
 
   /**
