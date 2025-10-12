@@ -41,6 +41,11 @@ const LoginPage: React.FC = () => {
     try {
       setLoginError(null);
       // Use shared auth service for OTP verification
+      if (!otpData.verificationId || !otpData.otpCode) {
+        setLoginError('Missing verification data. Please try again.');
+        return;
+      }
+      
       const result = await verifyOTP(otpData.verificationId, otpData.otpCode, 'faculty');
       
       if (result.success) {
