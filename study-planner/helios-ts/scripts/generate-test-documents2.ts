@@ -337,7 +337,7 @@ class TestDocumentGenerator {
   }
 
   /**
-   * Generate PDF document from study plan data using a simple Node.js-compatible approach
+   * Generate PDF document using consolidated PDFService
    */
   private async generatePDFDocument(
     scenarioName: string,
@@ -348,8 +348,33 @@ class TestDocumentGenerator {
     console.log(`      📄 Generating PDF document...`);
     
     try {
+      // Use the consolidated PDF service for structured documents
+      const { PDFService } = await import('../src/services/PDFService');
+      
+      // Generate structured PDF that matches Word document format
+      await PDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
+      
+      const pdfDocTime = Date.now() - pdfDocStartTime;
+      console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
+      console.log(`      📁 PDF generated: ${scenarioName}.pdf (browser download)`);
+      
+    } catch (error) {
+      console.error(`      ❌ Failed to generate PDF for ${scenarioName}:`, error);
+      // Fallback to simple PDF generation
+      await this.generateSimplePDFDocument(scenarioName, studyPlan, studentIntake);
+    }
+  }
+
+  /**
+   * Fallback simple PDF generation for Node.js compatibility
+   */
+  private async generateSimplePDFDocument(
+    scenarioName: string,
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake
+  ): Promise<void> {
+    try {
       // Create a simple PDF using jsPDF directly (Node.js compatible)
-      // Import jsPDF dynamically since it's already available in dependencies
       const { jsPDF } = await import('jspdf');
       const pdf = new jsPDF();
       
@@ -407,17 +432,14 @@ class TestDocumentGenerator {
       pdf.text(`Generated on ${new Date().toLocaleDateString()} | Helios Study Planner`, 20, 280);
       
       // Save PDF to file
-      const outputPath = path.join(this.outputDir, `${scenarioName}.pdf`);
+      const outputPath = path.join(this.outputDir, `${scenarioName}-simple.pdf`);
       const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
       fs.writeFileSync(outputPath, pdfBuffer);
       
-      const pdfDocTime = Date.now() - pdfDocStartTime;
-      console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
-      console.log(`      📁 PDF saved: ${path.resolve(outputPath)}`);
+      console.log(`      📁 Simple PDF saved: ${path.resolve(outputPath)}`);
       
     } catch (error) {
-      console.error(`      ❌ Failed to generate PDF for ${scenarioName}:`, error);
-      // Don't throw error for PDF generation failure, just log and continue
+      console.error(`      ❌ Failed to generate simple PDF for ${scenarioName}:`, error);
       console.warn(`      ⚠️  Continuing without PDF for ${scenarioName}`);
     }
   }
