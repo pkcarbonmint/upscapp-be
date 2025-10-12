@@ -1,7 +1,7 @@
 // Enhanced Authentication Service that combines Firebase and Backend APIs
 import { firebasePhoneAuth, FirebasePhoneAuthService } from './firebase';
 import { backendAuthService, BackendAuthService } from './BackendAuthService';
-import { User, AuthState, LoginResponse, ApiResponse } from '../auth/types';
+import { User, AuthState } from '../auth/types';
 
 export interface PhoneAuthResult {
   success: boolean;
