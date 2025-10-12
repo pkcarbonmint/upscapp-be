@@ -9,6 +9,7 @@ import { isFeatureEnabled } from './config/featureFlags'
 import { useTheme } from './hooks/useTheme'
 import { initializeAnalytics, analytics } from './services/analytics'
 import { usePageTracking, useConversionTracking } from './hooks/useAnalytics'
+import { SharedAuthProvider, useSharedAuth, studentService } from 'shared-ui-library'
 import Header from './components/Header';
 import BackgroundStep from './components/BackgroundStep';
 import OTPVerificationStep from './components/OTPVerificationStep';
@@ -84,6 +85,9 @@ function App() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [studentId, setStudentId] = useState<string | null>(null)
   const { getClasses } = useTheme()
+  
+  // Use shared auth for cross-app integration
+  const { user, isAuthenticated, getCurrentApp } = useSharedAuth()
   
   // Analytics hooks
   usePageTracking()
@@ -191,9 +195,22 @@ function App() {
       let response: any;
       switch (currentStep) {
         case 'Background':
-          response = await apiService.submitBackground(formData.background)
-          if (response.success && response.data?.student_id) {
-            setStudentId(response.data.student_id)
+          // Use shared student service for cross-app integration
+          const studentData = {
+            name: formData.background.fullName,
+            email: formData.background.email,
+            phone: formData.background.phoneNumber,
+            city: formData.background.presentLocation.split(',')[0]?.trim() || formData.background.presentLocation,
+            state: formData.background.presentLocation.split(',')[1]?.trim() || '',
+            graduation_stream: formData.background.graduationStream,
+            college: formData.background.collegeUniversity,
+            graduation_year: formData.background.yearOfPassing,
+            about: formData.background.about
+          };
+          
+          response = await studentService.createStudent(studentData)
+          if (response.student_id) {
+            setStudentId(response.student_id)
           }
           break
         case 'OTPVerification':
@@ -203,15 +220,21 @@ function App() {
           break
         case 'Commitment':
           if (!studentId) throw new Error('Student ID not found')
-          response = await apiService.updateCommitment(studentId, formData.commitment)
+          await studentService.updateStudentCommitment(studentId, formData.commitment)
+          response = { success: true }
           break
         case 'ConfidenceLevel':
           if (!studentId) throw new Error('Student ID not found')
-          response = await apiService.updateConfidence(studentId, formData.confidenceLevel)
+          await studentService.updateStudentConfidence(studentId, formData.confidenceLevel)
+          response = { success: true }
           break
         case 'TargetYear':
           if (!studentId) throw new Error('Student ID not found')
-          response = await apiService.updateTarget(studentId, formData.targetYear)
+          await studentService.updateStudentTarget(studentId, { 
+            target_year: parseInt(formData.targetYear.targetYear),
+            start_date: formData.targetYear.startDate 
+          })
+          response = { success: true }
           break
         case 'Preview':
           // Preview data is already fetched when navigating to this step
@@ -223,14 +246,14 @@ function App() {
           break
         case 'Final':
           if (!studentId) throw new Error('Student ID not found')
-          response = await apiService.submitFinal(studentId)
-          if (response.success && response.data) {
+          const finalResponse = await studentService.submitStudentApplication(studentId)
+          if (finalResponse) {
             // Update final step with server response
             setFormData(prev => ({
               ...prev,
               final: {
                 submitted: true,
-                message: response.data?.message || null,
+                message: finalResponse?.message || 'Application submitted successfully',
                 studentId: studentId
               }
             }))
@@ -610,4 +633,12 @@ function App() {
   )
 }
 
-export default App
+const AppWithAuth = () => {
+  return (
+    <SharedAuthProvider>
+      <App />
+    </SharedAuthProvider>
+  );
+};
+
+export default AppWithAuth;

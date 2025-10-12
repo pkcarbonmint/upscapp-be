@@ -2,12 +2,22 @@ import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, Phone, ArrowLeft } from 'lucide-react';
-import { useFacultyAuth } from '../hooks/useFacultyAuth';
-import { LoginForm } from '../types';
+import { useSharedAuth } from 'shared-ui-library';
 import PhoneInput from '../components/PhoneInput';
-import { type OTPVerificationData } from 'shared-ui-library';
-import { facultyApi } from '../services/api';
 import FacultyOTPVerification from '../components/FacultyOTPVerification';
+
+interface LoginForm {
+  email: string;
+  password: string;
+}
+
+interface OTPData {
+  phoneNumber: string;
+  otpCode: string;
+  verificationId: string;
+  isVerified: boolean;
+  attempts: number;
+}
 
 type LoginMode = 'email' | 'phone';
 type PhoneMode = 'phone-entry' | 'otp-verification';
@@ -18,7 +28,7 @@ const LoginPage: React.FC = () => {
   const [loginMode, setLoginMode] = useState<LoginMode>('phone');
   const [phoneMode, setPhoneMode] = useState<PhoneMode>('phone-entry');
   const [phoneNumber, setPhoneNumber] = useState<string|null>('1234567890');
-  const [otpData, setOtpData] = useState<OTPVerificationData>({
+  const [otpData, setOtpData] = useState<OTPData>({
     phoneNumber: '',
     otpCode: '',
     verificationId: '',
@@ -26,7 +36,7 @@ const LoginPage: React.FC = () => {
     attempts: 0
   });
   
-  const { login, isLoading } = useFacultyAuth();
+  const { login, loginWithOTP, verifyOTP, isLoading } = useSharedAuth();
   const navigate = useNavigate();
   
   const {
@@ -38,19 +48,20 @@ const LoginPage: React.FC = () => {
   const handlePhoneLogin = useCallback(async () => {
     try {
       setLoginError(null);
-      // Use real OTP verification with backend API
-      const result = await facultyApi.verifyOTP(otpData.verificationId!, otpData.otpCode!);
+      // Use shared auth service for OTP verification
+      const result = await verifyOTP(otpData.verificationId, otpData.otpCode, 'faculty');
       
-      // Store token and user data
-      localStorage.setItem('faculty_token', result.token);
-      
-      // Navigate to dashboard using React Router
-      navigate('/faculty/dashboard');
+      if (result.success) {
+        // Navigate to dashboard using React Router
+        navigate('/faculty/dashboard');
+      } else {
+        setLoginError(result.error || 'OTP verification failed. Please try again.');
+      }
     } catch (error: any) {
       console.error('Error in handlePhoneLogin:', error);
-      setLoginError(error.response?.data?.message || 'OTP verification failed. Please try again.');
+      setLoginError('OTP verification failed. Please try again.');
     }
-  }, [otpData.verificationId, otpData.otpCode, navigate]);
+  }, [otpData.verificationId, otpData.otpCode, verifyOTP, navigate]);
 
   // Watch for OTP verification changes and trigger login
   useEffect(() => {
@@ -84,20 +95,33 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handlePhoneSubmit = (phone: string | null) => {
+  const handlePhoneSubmit = async (phone: string | null) => {
     if (!phone) {
       return;
     }
     try {
-      setPhoneNumber(phone);
-      setOtpData((prev: OTPVerificationData) => ({ ...prev, phoneNumber: phone }));
-      setPhoneMode('otp-verification'); // Switch to OTP mode
+      setLoginError(null);
+      // Send OTP using shared auth service
+      const result = await loginWithOTP(phone, 'faculty');
+      
+      if (result.success && result.verificationId) {
+        setPhoneNumber(phone);
+        setOtpData((prev) => ({ 
+          ...prev, 
+          phoneNumber: phone,
+          verificationId: result.verificationId! 
+        }));
+        setPhoneMode('otp-verification'); // Switch to OTP mode
+      } else {
+        setLoginError(result.error || 'Failed to send OTP. Please try again.');
+      }
     } catch (error) {
       console.error('Error in handlePhoneSubmit:', error);
+      setLoginError('Failed to send OTP. Please try again.');
     }
   };
 
-  const handleOTPUpdate = (updater: (prev: OTPVerificationData) => OTPVerificationData) => {
+  const handleOTPUpdate = (updater: (prev: OTPData) => OTPData) => {
     try {
       setOtpData(updater);
     } catch (error) {
