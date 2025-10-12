@@ -92,7 +92,7 @@ const DOCUMENT_STYLES = {
       columnWidths: [45, 40, 45, 40] // Total: 170mm (better width utilization)
     },
     cycleTable: {
-      columnWidths: [60, 50, 60] // Total: 170mm (better width utilization)
+      columnWidths: [40, 30, 100] // Total: 170mm (better width utilization)
     },
     resourceTable: {
       columnWidths: [35, 75, 25, 25] // Total: 160mm (better width utilization)
@@ -123,7 +123,7 @@ export class PDFService {
       currentY = this.addTitle(pdf, studyPlan, studentIntake, currentY);
       
       // Add study plan overview
-      currentY = this.addStudyPlanOverview(pdf, studyPlan, studentIntake, currentY);
+      currentY = await this.addStudyPlanOverview(pdf, studyPlan, studentIntake, currentY);
       
       // Add student profile table
       currentY = this.addStudentProfileSection(pdf, studentIntake, currentY);
@@ -285,12 +285,12 @@ export class PDFService {
   /**
    * Add study plan overview with narrative description and timeline SVG
    */
-  private static addStudyPlanOverview(
+  private static async addStudyPlanOverview(
     pdf: jsPDF, 
     studyPlan: StudyPlan, 
     studentIntake: StudentIntake, 
     startY: number
-  ): number {
+  ): Promise<number> {
     let currentY = startY;
     
     // Section heading
@@ -300,11 +300,12 @@ export class PDFService {
     pdf.text('Study Plan Overview', 20, currentY);
     currentY += 10; // Reduced spacing
     
-    // Add timeline SVG (similar to DocumentService)
+    // Add timeline SVG (reuse DocumentService implementation)
     try {
-      const timelineSVG = this.generateTimelineSVG(studyPlan);
+      const { DocumentService } = await import('./DocumentService');
+      const timelineSVG = DocumentService.generateTimelineSVG(studyPlan);
       if (timelineSVG) {
-        currentY = this.addTimelineSVGToPDF(pdf, timelineSVG, currentY);
+        currentY = await this.addTimelineSVGToPDF(pdf, timelineSVG, currentY, studyPlan);
       }
     } catch (error) {
       console.warn('Failed to add timeline SVG:', error);
@@ -331,8 +332,8 @@ export class PDFService {
     // Handle both string and array return from splitTextToSize
     if (Array.isArray(splitText)) {
       splitText.forEach((line, index) => {
-        // Ensure line is not undefined or null
-        if (line && typeof line === 'string') {
+        // Ensure line is not undefined, null, or empty string
+        if (line && typeof line === 'string' && line.trim().length > 0) {
           pdf.text(line, 20, currentY + (index * 4));
         }
       });
@@ -369,8 +370,8 @@ export class PDFService {
         // Handle both string and array return from splitTextToSize
         if (Array.isArray(cycleSplit)) {
           cycleSplit.forEach((line, index) => {
-            // Ensure line is not undefined or null
-            if (line && typeof line === 'string') {
+            // Ensure line is not undefined, null, or empty string
+            if (line && typeof line === 'string' && line.trim().length > 0) {
               pdf.text(line, 20, currentY + (index * 4));
             }
           });
@@ -399,8 +400,8 @@ export class PDFService {
     // Handle both string and array return from splitTextToSize
     if (Array.isArray(summarySplit)) {
       summarySplit.forEach((line, index) => {
-        // Ensure line is not undefined or null
-        if (line && typeof line === 'string') {
+        // Ensure line is not undefined, null, or empty string
+        if (line && typeof line === 'string' && line.trim().length > 0) {
           pdf.text(line, 20, currentY + (index * 4));
         }
       });
@@ -521,8 +522,8 @@ export class PDFService {
       // Handle both string and array return from splitTextToSize
       if (Array.isArray(descriptionSplit)) {
         descriptionSplit.forEach((line, index) => {
-          // Ensure line is not undefined or null
-          if (line && typeof line === 'string') {
+          // Ensure line is not undefined, null, or empty string
+          if (line && typeof line === 'string' && line.trim().length > 0) {
             pdf.text(line, 20, currentY + (index * 4));
           }
         });
@@ -556,7 +557,11 @@ export class PDFService {
       styles: {
         fontSize: DOCUMENT_STYLES.fonts.body,
         cellPadding: 5,
-        textColor: [...DOCUMENT_STYLES.colors.text]
+        textColor: [...DOCUMENT_STYLES.colors.text],
+        font: 'helvetica',
+        overflow: 'linebreak',
+        halign: 'left',
+        valign: 'top'
       },
       headStyles: {
         fillColor: [...DOCUMENT_STYLES.colors.primary],
@@ -564,9 +569,27 @@ export class PDFService {
         fontStyle: 'bold'
       },
       columnStyles: {
-        0: { cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[0] },
-        1: { cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[1] },
-        2: { cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[2] }
+        0: { 
+          cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[0],
+          font: 'helvetica',
+          overflow: 'linebreak',
+          halign: 'left',
+          valign: 'top'
+        },
+        1: { 
+          cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[1],
+          font: 'helvetica',
+          overflow: 'linebreak',
+          halign: 'left',
+          valign: 'top'
+        },
+        2: { 
+          cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[2],
+          font: 'helvetica',
+          overflow: 'linebreak',
+          halign: 'left',
+          valign: 'top'
+        }
       },
       margin: DOCUMENT_STYLES.table.margins,
       tableWidth: 'wrap',
@@ -620,8 +643,8 @@ export class PDFService {
       // Handle both string and array return from splitTextToSize
       if (Array.isArray(splitResourceText)) {
         splitResourceText.forEach((line, index) => {
-          // Ensure line is not undefined or null
-          if (line && typeof line === 'string') {
+          // Ensure line is not undefined, null, or empty string
+          if (line && typeof line === 'string' && line.trim().length > 0) {
             pdf.text(line, 20, currentY + (index * 4));
           }
         });
@@ -1091,118 +1114,18 @@ export class PDFService {
 
   // ===== TIMELINE SVG METHODS =====
 
-  /**
-   * Generate timeline SVG for study plan (copied from DocumentService)
-   */
-  private static generateTimelineSVG(studyPlan: StudyPlan): string {
-    const cycles = studyPlan.cycles || [];
-    if (cycles.length === 0) return '';
-
-    // Timeline dimensions
-    const width = 600; // Slightly smaller for PDF
-    const cycleHeight = 50;
-    const padding = 30;
-    const timelineWidth = 4;
-    const markerRadius = 6;
-    const totalHeight = cycles.length * cycleHeight + padding * 2;
-
-    // Cycle colors mapping - much lighter backgrounds
-    const cycleColors: Record<string, string> = {
-      'C1': '#e3f2fd', // Very light blue
-      'C2': '#e8f5e8', // Very light green  
-      'C3': '#fce4ec', // Very light pink
-      'C4': '#ffebee', // Very light red
-      'C5': '#f3e5f5', // Very light purple
-      'C6': '#e1f5fe', // Very light cyan
-      'C7': '#fff3e0', // Very light orange
-      'C8': '#f1f8e9', // Very light lime
-    };
-
-    // Border colors for contrast
-    const borderColors: Record<string, string> = {
-      'C1': '#2196f3', // Blue border
-      'C2': '#4caf50', // Green border
-      'C3': '#e91e63', // Pink border
-      'C4': '#f44336', // Red border
-      'C5': '#9c27b0', // Purple border
-      'C6': '#00bcd4', // Cyan border
-      'C7': '#ff9800', // Orange border
-      'C8': '#8bc34a', // Lime border
-    };
-
-    let svg = `<svg width="${width}" height="${totalHeight}" xmlns="http://www.w3.org/2000/svg">`;
-
-    // Add scenario code at the top if available
-    if (studyPlan.scenario) {
-      svg += `<text x="20" y="20" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#667eea" text-anchor="start">${studyPlan.scenario}</text>`;
-    }
-
-    // Timeline axis - centered horizontally
-    const axisX = padding - 20;
-    svg += `<line x1="${axisX}" y1="${padding}" x2="${axisX}" y2="${totalHeight - padding}" stroke="#667eea" stroke-width="${timelineWidth}" stroke-linecap="round"/>`;
-
-    // Generate cycle elements
-    cycles.forEach((cycle, index) => {
-      const y = padding + (index * cycleHeight) + (cycleHeight / 2);
-      const backgroundColor = cycleColors[cycle.cycleType] || '#f5f5f5';
-      const borderColor = borderColors[cycle.cycleType] || '#666666';
-
-      // Timeline marker
-      svg += `<circle cx="${axisX}" cy="${y}" r="${markerRadius}" fill="${borderColor}" stroke="white" stroke-width="2"/>`;
-
-      // Cycle card background - centered around timeline
-      const cardWidth = width * 0.75; // 75% of total width
-      const cardX = padding; // Center the card
-      const cardY = y - 18;
-
-      svg += `<rect x="${cardX}" y="${cardY}" width="${cardWidth}" height="36" fill="${backgroundColor}" stroke="${borderColor}" stroke-width="1.5" rx="4"/>`;
-
-      // Cycle type badge - positioned to the left of center
-      const badgeX = cardX + 15;
-      svg += `<rect x="${badgeX}" y="${cardY + 4}" width="20" height="10" fill="${borderColor}" rx="2"/>`;
-      svg += `<text x="${badgeX + 10}" y="${cardY + 11}" font-family="Arial, Helvetica, sans-serif" font-size="7" font-weight="bold" fill="white" text-anchor="middle">${cycle.cycleType}</text>`;
-
-      // Cycle name - positioned to the right of badge
-      const cycleName = cycle.cycleName || 'Unnamed Cycle';
-      svg += `<text x="${badgeX + 28}" y="${cardY + 12}" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="600" fill="#1a1a1a">${cycleName}</text>`;
-
-      const cycleStartDate = cycle.cycleStartDate;
-      const cycleEndDate = cycle.cycleEndDate;
-      // Duration info - below cycle name
-      const durationText = `${cycle.cycleDuration || 0} weeks`;
-      svg += `<text x="${badgeX + 28}" y="${cardY + 26}" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#4a4a4a">${durationText}</text>`;
-
-      // Date range (compact) - positioned to the right
-      const startDate = cycleStartDate ? new Date(cycleStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD';
-      const endDate = cycleEndDate ? new Date(cycleEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD';
-      const dateText = `${startDate} - ${endDate}`;
-      svg += `<text x="${cardX + cardWidth - 15}" y="${cardY + 12}" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#4a4a4a" text-anchor="end">${dateText}</text>`;
-
-      // Subject count - below date range
-      const subjectCount = this.getUniqueSubjectsFromCycle(cycle.cycleBlocks).length;
-      svg += `<text x="${cardX + cardWidth - 15}" y="${cardY + 26}" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#4a4a4a" text-anchor="end">${subjectCount} subjects</text>`;
-    });
-
-    svg += `</svg>`;
-    return svg;
-  }
 
   /**
-   * Add Timeline SVG to PDF as an image using html2canvas
+   * Add Timeline SVG to PDF as an image using Node.js compatible approach
    */
-  private static async addTimelineSVGToPDF(pdf: jsPDF, svgString: string, startY: number): Promise<number> {
+  private static async addTimelineSVGToPDF(pdf: jsPDF, svgString: string, startY: number, studyPlan?: StudyPlan): Promise<number> {
     try {
-      // For Node.js environment, we'll add a simple text representation instead of rendering SVG
+      // For Node.js environment, convert SVG to PNG and embed as image
       if (typeof window === 'undefined') {
-        // Add a simple timeline representation
-        pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
-        pdf.setTextColor(...DOCUMENT_STYLES.colors.secondary);
-        pdf.setFont('helvetica', 'italic');
-        pdf.text('[Study Plan Timeline - Visual representation available in browser version]', 20, startY);
-        return startY + 15;
+        return await this.addSVGAsPNG(pdf, svgString, startY);
       }
       
-      // Browser environment - render SVG as image
+      // Browser environment - render SVG as image using html2canvas
       const container = document.createElement('div');
       container.innerHTML = svgString;
       container.style.position = 'fixed';
@@ -1241,6 +1164,165 @@ export class PDFService {
       pdf.text('[Timeline visualization - rendering failed]', 20, startY);
       return startY + 15;
     }
+  }
+
+  /**
+   * Convert SVG to PNG and add to PDF using Sharp
+   */
+  private static async addSVGAsPNG(pdf: jsPDF, svgString: string, startY: number): Promise<number> {
+    try {
+      const sharp = await import('sharp');
+      
+      // Extract SVG dimensions
+      const svgMatch = svgString.match(/width="(\d+)"\s+height="(\d+)"/);
+      const width = svgMatch ? parseInt(svgMatch[1]) : 700;
+      const height = svgMatch ? parseInt(svgMatch[2]) : 400;
+      
+      // Convert SVG to PNG buffer
+      const pngBuffer = await sharp.default(Buffer.from(svgString))
+        .png()
+        .resize(width, height)
+        .toBuffer();
+      
+      // Convert PNG buffer to base64 data URL
+      const imgData = `data:image/png;base64,${pngBuffer.toString('base64')}`;
+      
+      // Calculate dimensions for PDF
+      const imgWidth = 170; // Max width in PDF
+      const imgHeight = (height * imgWidth) / width;
+      
+      // Add image to PDF
+      pdf.addImage(imgData, 'PNG', 20, startY, imgWidth, imgHeight);
+      
+      return startY + imgHeight + 10;
+      
+    } catch (error) {
+      console.warn('Failed to convert SVG to PNG:', error);
+      // Fallback to text-based timeline
+      return this.addTextBasedTimeline(pdf, undefined, startY);
+    }
+  }
+
+  /**
+   * Create a text-based timeline representation for Node.js environment
+   */
+  private static addTextBasedTimeline(pdf: jsPDF, studyPlan: StudyPlan | undefined, startY: number): number {
+    let currentY = startY;
+    
+    // Add timeline title
+    pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+    pdf.setTextColor(...DOCUMENT_STYLES.colors.primary);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Study Plan Timeline:', 20, currentY);
+    currentY += 8;
+    
+    if (!studyPlan?.cycles) {
+      pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+      pdf.setTextColor(...DOCUMENT_STYLES.colors.secondary);
+      pdf.setFont('helvetica', 'italic');
+      pdf.text('No timeline data available', 20, currentY);
+      return currentY + 15;
+    }
+    
+    // Add timeline entries from study plan cycles
+    pdf.setFontSize(DOCUMENT_STYLES.fonts.small);
+    pdf.setTextColor(...DOCUMENT_STYLES.colors.text);
+    pdf.setFont('helvetica', 'normal');
+    
+    studyPlan.cycles.forEach((cycle, index) => {
+      if (currentY > 280) return; // Prevent overflow
+      
+      // Get subjects from cycle blocks
+      const subjects = this.getUniqueSubjectsFromCycle(cycle.cycleBlocks);
+      const subjectText = subjects.length > 0 ? subjects.join(', ') : 'No subjects';
+      
+      // Format dates
+      const startDate = cycle.cycleStartDate ? new Date(cycle.cycleStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD';
+      const endDate = cycle.cycleEndDate ? new Date(cycle.cycleEndDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBD';
+      const duration = cycle.cycleDuration ? `${cycle.cycleDuration} weeks` : 'Duration TBD';
+      
+      // Create timeline entry
+      const cycleName = cycle.cycleName || 'Unnamed Cycle';
+      const line = `${cycle.cycleType} - ${cycleName}: ${subjectText} (${startDate} to ${endDate}, ${duration})`;
+      
+      const lines = pdf.splitTextToSize(line, 170);
+      
+      if (Array.isArray(lines)) {
+        lines.forEach((line, lineIndex) => {
+          if (line && typeof line === 'string' && line.trim().length > 0) {
+            pdf.text(line, 20, currentY + (lineIndex * 4));
+          }
+        });
+        currentY += lines.length * 4 + 4;
+      } else if (lines && typeof lines === 'string') {
+        pdf.text(lines, 20, currentY);
+        currentY += 8;
+      }
+    });
+    
+    return currentY + 10;
+  }
+
+  /**
+   * Parse timeline data from SVG string
+   */
+  private static parseTimelineFromSVG(svgString: string): Array<{cycle: string, subjects: string[], period: string}> {
+    const timelineData: Array<{cycle: string, subjects: string[], period: string}> = [];
+    
+    try {
+      // Extract text elements from SVG
+      const textMatches = svgString.match(/<text[^>]*>([^<]+)<\/text>/g);
+      if (textMatches) {
+        const cycles = new Map<string, {subjects: string[], period: string}>();
+        
+        textMatches.forEach(match => {
+          const textContent = match.replace(/<[^>]*>/g, '').trim();
+          
+          // Look for cycle patterns (C1, C2, etc.)
+          const cycleMatch = textContent.match(/(C\d+)/);
+          if (cycleMatch) {
+            const cycle = cycleMatch[1];
+            if (!cycles.has(cycle)) {
+              cycles.set(cycle, {subjects: [], period: ''});
+            }
+          }
+          
+          // Look for subject patterns
+          const subjectMatch = textContent.match(/(History|Geography|Polity|Economy|Society|Environment|Science|Governance|International|Security)/i);
+          if (subjectMatch) {
+            // Find the most recent cycle for this subject
+            const lastCycle = Array.from(cycles.keys()).pop();
+            if (lastCycle) {
+              cycles.get(lastCycle)!.subjects.push(subjectMatch[1]);
+            }
+          }
+          
+          // Look for period patterns
+          const periodMatch = textContent.match(/(\d{4}-\d{2}-\d{2})\s*to\s*(\d{4}-\d{2}-\d{2})/);
+          if (periodMatch) {
+            const lastCycle = Array.from(cycles.keys()).pop();
+            if (lastCycle) {
+              cycles.get(lastCycle)!.period = `${periodMatch[1]} to ${periodMatch[2]}`;
+            }
+          }
+        });
+        
+        // Convert map to array
+        cycles.forEach((data, cycle) => {
+          if (data.subjects.length > 0 || data.period) {
+            timelineData.push({
+              cycle,
+              subjects: data.subjects,
+              period: data.period
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Failed to parse timeline from SVG:', error);
+    }
+    
+    return timelineData;
   }
 
   /**
@@ -1387,7 +1469,7 @@ export class PDFService {
       rows.push([
         block.block_title || 'Untitled',
         durationText,
-        resourceSummary.join(', ')
+        resourceSummary
       ]);
     });
     
@@ -1435,11 +1517,11 @@ export class PDFService {
   }
 
   /**
-   * Summarize block resources for table display - enhanced with full details
+   * Summarize block resources for table display - with proper text wrapping
    */
-  private static summarizeBlockResources(blockResources?: BlockResources): string[] {
+  private static summarizeBlockResources(blockResources?: BlockResources): string {
     if (!blockResources) {
-      return ['No resources'];
+      return 'No resources';
     }
 
     const resourceDetails: string[] = [];
@@ -1489,12 +1571,19 @@ export class PDFService {
       });
     }
     
-    // Return full list (no truncation to match DOCX behavior)
     if (resourceDetails.length === 0) {
-      return ['Resources available'];
+      return 'Resources available';
     }
     
-    return resourceDetails;
+    // Join with line breaks and truncate if too long
+    const fullText = resourceDetails.join('\n');
+    const maxLength = 200; // Adjust based on column width
+    
+    if (fullText.length > maxLength) {
+      return fullText.substring(0, maxLength) + '...';
+    }
+    
+    return fullText;
   }
 
   /**

@@ -337,7 +337,7 @@ class TestDocumentGenerator {
   }
 
   /**
-   * Generate PDF document using consolidated PDFService
+   * Generate PDF document using PDFService with SVG to PNG conversion
    */
   private async generatePDFDocument(
     scenarioName: string,
@@ -347,23 +347,17 @@ class TestDocumentGenerator {
     const pdfDocStartTime = Date.now();
     console.log(`      📄 Generating PDF document...`);
     
-    try {
-      // Use the consolidated PDF service for structured documents
-      const { PDFService } = await import('../src/services/PDFService');
-      
-      // Generate structured PDF that matches Word document format
-      await PDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
-      
-      const pdfDocTime = Date.now() - pdfDocStartTime;
-      console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
-      console.log(`      📁 PDF generated: ${scenarioName}.pdf (browser download)`);
-      
-    } catch (error) {
-      console.error(`      ❌ Failed to generate PDF for ${scenarioName}:`, error);
-      // Fallback to simple PDF generation
-      await this.generateSimplePDFDocument(scenarioName, studyPlan, studentIntake);
-    }
+    // Use PDFService with Sharp for SVG to PNG conversion
+    const { PDFService } = await import('../src/services/PDFService');
+    
+    // Generate PDF with visual timeline (SVG converted to PNG)
+    await PDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
+    
+    const pdfDocTime = Date.now() - pdfDocStartTime;
+    console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
+    console.log(`      📁 PDF generated: ${scenarioName}.pdf (with visual timeline)`);
   }
+
 
   /**
    * Fallback simple PDF generation for Node.js compatibility
