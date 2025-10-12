@@ -172,6 +172,9 @@ importers:
       jspdf:
         specifier: ^2.5.1
         version: 2.5.2
+      jspdf-autotable:
+        specifier: ^5.0.2
+        version: 5.0.2(jspdf@2.5.2)
       puppeteer-core:
         specifier: ^23.0.0
         version: 23.11.1
@@ -3581,6 +3584,11 @@ packages:
 
   jsonfile@6.2.0:
     resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
+
+  jspdf-autotable@5.0.2:
+    resolution: {integrity: sha512-YNKeB7qmx3pxOLcNeoqAv3qTS7KuvVwkFe5AduCawpop3NOkBUtqDToxNc225MlNecxT4kP2Zy3z/y/yvGdXUQ==}
+    peerDependencies:
+      jspdf: ^2 || ^3
 
   jspdf@2.5.2:
     resolution: {integrity: sha512-myeX9c+p7znDWPk0eTrujCzNjT+CXdXyk7YmJq5nD5V7uLLKmSXnlQ/Jn/kuo3X09Op70Apm0rQSnFWyGK8uEQ==}
@@ -8985,6 +8993,10 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  jspdf-autotable@5.0.2(jspdf@2.5.2):
+    dependencies:
+      jspdf: 2.5.2
 
   jspdf@2.5.2:
     dependencies:

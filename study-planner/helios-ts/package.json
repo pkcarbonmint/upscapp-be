@@ -48,17 +48,18 @@
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
+    "chart.js": "^4.4.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "clsx": "^2.0.0",
+    "date-fns": "^3.0.0",
     "dayjs": "^1.11.18",
     "docx": "^9.5.1",
     "firebase": "^12.3.0",
-    "typescript": "~5.8.3",
-    "uuid": "^13.0.0",
-    "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^5.0.2",
     "puppeteer-core": "^23.0.0",
-    "chart.js": "^4.4.0",
-    "chartjs-adapter-date-fns": "^3.0.0",
-    "date-fns": "^3.0.0"
+    "typescript": "~5.8.3",
+    "uuid": "^13.0.0"
   }
 }
