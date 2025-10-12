@@ -1,8 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
-import fs from 'fs';
-import path from 'path';
 import {
   Chart,
   CategoryScale,
@@ -139,21 +137,32 @@ export class PDFService {
       // Add footer to all pages
       this.addFooterToAllPages(pdf);
       
-      // Save the PDF to filesystem
+      // Save the PDF (browser download or filesystem based on environment)
       const finalFilename = filename || `study-plan-${studyPlan.study_plan_id || 'plan'}.pdf`;
-      const outputDir = path.join(process.cwd(), 'generated-docs');
       
-      // Ensure output directory exists
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+      if (typeof window !== 'undefined') {
+        // Browser environment - trigger download
+        pdf.save(finalFilename);
+        console.log(`📁 PDF download triggered: ${finalFilename}`);
+      } else {
+        // Node.js environment - save to filesystem
+        const fs = await import('fs');
+        const path = await import('path');
+        
+        const outputDir = path.join(process.cwd(), 'generated-docs');
+        
+        // Ensure output directory exists
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        const outputPath = path.join(outputDir, finalFilename);
+        const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
+        fs.writeFileSync(outputPath, pdfBuffer);
+        
+        console.log(`✅ PDF saved: ${finalFilename}`);
+        console.log(`   📁 Location: ${outputPath}`);
       }
-      
-      const outputPath = path.join(outputDir, finalFilename);
-      const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
-      fs.writeFileSync(outputPath, pdfBuffer);
-      
-      console.log(`✅ PDF saved: ${finalFilename}`);
-      console.log(`   📁 Location: ${outputPath}`);
       
     } catch (error) {
       console.error('Failed to generate structured PDF:', error);
@@ -183,21 +192,32 @@ export class PDFService {
       // Generate PDF from HTML
       const pdf = await this.generatePDFFromHTML(container);
       
-      // Save the PDF to filesystem
+      // Save the PDF (browser download or filesystem based on environment)
       const finalFilename = filename || `visual-study-plan-${studyPlan.study_plan_id || 'plan'}.pdf`;
-      const outputDir = path.join(process.cwd(), 'generated-docs');
       
-      // Ensure output directory exists
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+      if (typeof window !== 'undefined') {
+        // Browser environment - trigger download
+        pdf.save(finalFilename);
+        console.log(`📁 PDF download triggered: ${finalFilename}`);
+      } else {
+        // Node.js environment - save to filesystem
+        const fs = await import('fs');
+        const path = await import('path');
+        
+        const outputDir = path.join(process.cwd(), 'generated-docs');
+        
+        // Ensure output directory exists
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        const outputPath = path.join(outputDir, finalFilename);
+        const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
+        fs.writeFileSync(outputPath, pdfBuffer);
+        
+        console.log(`✅ PDF saved: ${finalFilename}`);
+        console.log(`   📁 Location: ${outputPath}`);
       }
-      
-      const outputPath = path.join(outputDir, finalFilename);
-      const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
-      fs.writeFileSync(outputPath, pdfBuffer);
-      
-      console.log(`✅ PDF saved: ${finalFilename}`);
-      console.log(`   📁 Location: ${outputPath}`);
       
       // Cleanup
       this.cleanupTemporaryContainer(container);
@@ -880,6 +900,10 @@ export class PDFService {
    * Create temporary container for HTML rendering
    */
   private static createTemporaryContainer(htmlContent: string): HTMLElement {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      throw new Error('DOM methods not available in Node.js environment. Use generateStructuredPDF instead.');
+    }
+    
     const container = document.createElement('div');
     container.innerHTML = htmlContent;
     container.style.position = 'fixed';
@@ -895,7 +919,7 @@ export class PDFService {
    * Cleanup temporary container
    */
   private static cleanupTemporaryContainer(container: HTMLElement): void {
-    if (container.parentNode) {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined' && container.parentNode) {
       container.parentNode.removeChild(container);
     }
   }
