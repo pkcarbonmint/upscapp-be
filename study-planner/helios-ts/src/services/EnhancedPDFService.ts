@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import {
   Chart,
@@ -16,7 +17,18 @@ import {
 import 'chartjs-adapter-date-fns';
 import type { StudyPlan, StudyCycle, Block, StudentIntake } from '../types/models';
 import { DocumentService } from './DocumentService';
+import { ImprovedPDFService } from './ImprovedPDFService';
 import dayjs from 'dayjs';
+
+// Extend jsPDF type to include autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+    lastAutoTable?: {
+      finalY: number;
+    };
+  }
+}
 
 // Register Chart.js components
 Chart.register(
@@ -64,6 +76,24 @@ export class EnhancedPDFService {
     indigo: '#6366f1',
     teal: '#14b8a6'
   };
+
+  /**
+   * Generate enhanced PDF that matches Word document structure
+   * This is the IMPROVED method that creates structured PDFs like the Word documents
+   */
+  static async generateStructuredStudyPlanPDF(
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake,
+    filename?: string
+  ): Promise<void> {
+    try {
+      // Use the improved PDF service for structured documents
+      await ImprovedPDFService.generateStudyPlanPDF(studyPlan, studentIntake, filename);
+    } catch (error) {
+      console.error('Failed to generate structured PDF:', error);
+      throw new Error('Structured PDF generation failed');
+    }
+  }
 
   /**
    * Generate enhanced PDF with beautiful visualizations for overall study plan

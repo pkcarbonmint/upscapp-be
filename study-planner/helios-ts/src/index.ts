@@ -170,3 +170,6 @@ export { DocumentService } from './services/DocumentService';
 
 // Export EnhancedPDFService for beautiful PDF generation
 export { EnhancedPDFService } from './services/EnhancedPDFService';
+
+// Export ImprovedPDFService for structured PDF generation that matches Word documents  
+export { ImprovedPDFService } from './services/ImprovedPDFService';
