@@ -1,0 +1,46 @@
+# Copy this file to terraform.tfvars and update the values
+
+# Basic Configuration
+aws_region   = "us-west-2"
+environment  = "production"
+project_name = "upscpro"
+
+# Database Configuration (REQUIRED)
+rds_password = "your-secure-database-password-here"
+
+# Redis Configuration (REQUIRED if using Redis)
+redis_password = "your-secure-redis-password-here"
+
+# Flower Configuration (REQUIRED for Celery monitoring)
+flower_user     = "admin"
+flower_password = "your-secure-flower-password-here"
+
+# Optional: Custom VPC CIDR (default: 10.0.0.0/16)
+# vpc_cidr = "10.0.0.0/16"
+
+# Optional: Enable/Disable Services
+# enable_rds   = true
+# enable_redis = true
+
+# Optional: RDS Configuration
+# rds_instance_class = "db.t3.micro"
+# rds_allocated_storage = 20
+
+# Optional: ECS Resource Configuration
+# ecs_app_cpu     = 512
+# ecs_app_memory  = 1024
+# ecs_app_count   = 1
+
+# Optional: Application Environment Variables
+# app_environment_variables = {
+#   ENVIRONMENT = "production"
+#   CORS_ORIGINS = "[\"https://your-domain.com\"]"
+# }
+
+# Optional: SSL Configuration (uncomment and configure for HTTPS)
+# enable_https    = true
+# certificate_arn = "arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+
+# Optional: Domain Configuration (for Route53)
+# route53_zone_id = "Z1D633PJN98FT9"
+# domain_name     = "your-domain.com"
