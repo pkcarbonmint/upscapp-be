@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SharedAuthProvider, useSharedAuth, ProtectedRoute } from 'shared-ui-library';
@@ -63,10 +62,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/login" element={<Navigate to="/faculty/login" replace />} />
         <Route path="/dashboard" element={<Navigate to="/faculty/dashboard" replace />} />
         {/* Cross-app navigation - redirect to onboarding */}
-        <Route path="/onboarding" element={() => {
-          window.location.href = '/onboarding';
-          return null;
-        }} />
+        <Route path="/onboarding" element={<Navigate to="/onboarding" replace />} />
       </Routes>
     </div>
   );

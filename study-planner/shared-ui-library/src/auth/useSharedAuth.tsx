@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
-import { AuthState, User, LoginCredentials } from './types';
+import { AuthState, LoginCredentials } from './types';
 import { sharedAuthService } from './SharedAuthService';
 
 // Auth Context

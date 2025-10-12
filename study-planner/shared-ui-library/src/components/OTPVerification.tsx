@@ -118,9 +118,9 @@ const OTPVerification: FC<OTPVerificationProps> = ({
 
   // Countdown timer for resend button
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: number;
     if (countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      timer = window.setTimeout(() => setCountdown(countdown - 1), 1000);
     }
     return () => clearTimeout(timer);
   }, [countdown]);

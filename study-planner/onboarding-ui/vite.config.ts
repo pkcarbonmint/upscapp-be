@@ -38,16 +38,17 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "helios-ts": path.resolve(__dirname, "../helios-ts/src"),
+      "shared-ui-library": path.resolve(__dirname, "../shared-ui-library/src"),
     },
-    dedupe: ["helios-ts"]
+    dedupe: ["helios-ts", "shared-ui-library"]
   },
   optimizeDeps: {
-    exclude: ["helios-ts"],
+    exclude: ["helios-ts", "shared-ui-library"],
     include: ['react', 'react-dom', 'antd'] // Pre-bundle common dependencies
   },
   build: {
     commonjsOptions: {
-      include: [/helios-ts/, /node_modules/]
+      include: [/helios-ts/, /shared-ui-library/, /node_modules/]
     },
     rollupOptions: {
       output: {
@@ -55,6 +56,10 @@ export default defineConfig({
           // Separate helios-ts into its own chunk
           if (id.includes('helios-ts')) {
             return 'helios-ts';
+          }
+          // Separate shared-ui-library into its own chunk
+          if (id.includes('shared-ui-library')) {
+            return 'shared-ui-library';
           }
           // Separate vendor dependencies
           if (id.includes('react') || id.includes('react-dom')) {

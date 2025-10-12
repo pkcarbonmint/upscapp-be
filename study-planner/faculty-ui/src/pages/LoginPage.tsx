@@ -1,22 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, Phone, ArrowLeft } from 'lucide-react';
 import { useSharedAuth } from 'shared-ui-library';
 import PhoneInput from '../components/PhoneInput';
-import FacultyOTPVerification from '../components/FacultyOTPVerification';
+import FacultyOTPVerification, { OTPVerificationData } from '../components/FacultyOTPVerification';
 
 interface LoginForm {
   email: string;
   password: string;
-}
-
-interface OTPData {
-  phoneNumber: string;
-  otpCode: string;
-  verificationId: string;
-  isVerified: boolean;
-  attempts: number;
 }
 
 type LoginMode = 'email' | 'phone';
@@ -28,7 +20,7 @@ const LoginPage: React.FC = () => {
   const [loginMode, setLoginMode] = useState<LoginMode>('phone');
   const [phoneMode, setPhoneMode] = useState<PhoneMode>('phone-entry');
   const [phoneNumber, setPhoneNumber] = useState<string|null>('1234567890');
-  const [otpData, setOtpData] = useState<OTPData>({
+  const [otpData, setOtpData] = useState<OTPVerificationData>({
     phoneNumber: '',
     otpCode: '',
     verificationId: '',
@@ -74,7 +66,7 @@ const LoginPage: React.FC = () => {
     setLoginError(null);
     const result = await login(data);
     if (!result.success) {
-      setLoginError(result.error);
+      setLoginError(result.error || 'Login failed');
     }
   };
 
@@ -121,7 +113,7 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleOTPUpdate = (updater: (prev: OTPData) => OTPData) => {
+  const handleOTPUpdate = (updater: (prev: OTPVerificationData) => OTPVerificationData) => {
     try {
       setOtpData(updater);
     } catch (error) {

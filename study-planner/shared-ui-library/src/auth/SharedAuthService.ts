@@ -1,4 +1,4 @@
-import { User, AuthState, LoginCredentials, OTPRequest, OTPVerification, LoginResponse, OTPResponse, ApiResponse } from './types';
+import { User, AuthState, LoginCredentials, LoginResponse, OTPResponse, ApiResponse } from './types';
 
 export class SharedAuthService {
   private baseUrl: string;

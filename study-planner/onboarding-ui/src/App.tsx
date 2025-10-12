@@ -9,7 +9,7 @@ import { isFeatureEnabled } from './config/featureFlags'
 import { useTheme } from './hooks/useTheme'
 import { initializeAnalytics, analytics } from './services/analytics'
 import { usePageTracking, useConversionTracking } from './hooks/useAnalytics'
-import { SharedAuthProvider, useSharedAuth, studentService } from 'shared-ui-library'
+import { SharedAuthProvider, studentService } from 'shared-ui-library'
 import Header from './components/Header';
 import BackgroundStep from './components/BackgroundStep';
 import OTPVerificationStep from './components/OTPVerificationStep';
@@ -85,9 +85,6 @@ function App() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [studentId, setStudentId] = useState<string | null>(null)
   const { getClasses } = useTheme()
-  
-  // Use shared auth for cross-app integration
-  const { user, isAuthenticated, getCurrentApp } = useSharedAuth()
   
   // Analytics hooks
   usePageTracking()
