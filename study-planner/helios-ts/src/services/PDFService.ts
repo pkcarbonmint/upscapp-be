@@ -1,6 +1,8 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import html2canvas from 'html2canvas';
+import fs from 'fs';
+import path from 'path';
 import {
   Chart,
   CategoryScale,
@@ -15,7 +17,7 @@ import {
   TimeScale
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
-import type { StudyPlan, StudyCycle, Block, BlockResources, Resource, StudentIntake } from '../types/models';
+import type { StudyPlan, StudyCycle, Block, BlockResources, StudentIntake } from '../types/models';
 import { ResourceService } from './ResourceService';
 import { SubjectLoader } from './SubjectLoader';
 import dayjs from 'dayjs';
@@ -34,10 +36,9 @@ Chart.register(
   TimeScale
 );
 
-// Extend jsPDF type to include autoTable
+// Extend jsPDF type to include lastAutoTable property
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: (options: any) => jsPDF;
     lastAutoTable?: {
       finalY: number;
     };
@@ -84,6 +85,20 @@ const DOCUMENT_STYLES = {
     pink: '#ec4899',
     indigo: '#6366f1',
     teal: '#14b8a6'
+  },
+  table: {
+    pageWidth: 210, // A4 width in mm
+    margins: { left: 15, right: 15 },
+    availableWidth: 180, // pageWidth - left margin - right margin
+    profileTable: {
+      columnWidths: [35, 30, 35, 30] // Total: 130mm (fits within 180mm)
+    },
+    cycleTable: {
+      columnWidths: [45, 40, 50] // Total: 135mm (fits within 180mm)
+    },
+    resourceTable: {
+      columnWidths: [20, 50, 18, 18] // Total: 106mm (fits within 180mm)
+    }
   }
 } as const;
 
@@ -124,9 +139,21 @@ export class PDFService {
       // Add footer to all pages
       this.addFooterToAllPages(pdf);
       
-      // Download the PDF
+      // Save the PDF to filesystem
       const finalFilename = filename || `study-plan-${studyPlan.study_plan_id || 'plan'}.pdf`;
-      pdf.save(finalFilename);
+      const outputDir = path.join(process.cwd(), 'generated-docs');
+      
+      // Ensure output directory exists
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      
+      const outputPath = path.join(outputDir, finalFilename);
+      const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
+      fs.writeFileSync(outputPath, pdfBuffer);
+      
+      console.log(`✅ PDF saved: ${finalFilename}`);
+      console.log(`   📁 Location: ${outputPath}`);
       
     } catch (error) {
       console.error('Failed to generate structured PDF:', error);
@@ -156,9 +183,21 @@ export class PDFService {
       // Generate PDF from HTML
       const pdf = await this.generatePDFFromHTML(container);
       
-      // Download the PDF
+      // Save the PDF to filesystem
       const finalFilename = filename || `visual-study-plan-${studyPlan.study_plan_id || 'plan'}.pdf`;
-      pdf.save(finalFilename);
+      const outputDir = path.join(process.cwd(), 'generated-docs');
+      
+      // Ensure output directory exists
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      
+      const outputPath = path.join(outputDir, finalFilename);
+      const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
+      fs.writeFileSync(outputPath, pdfBuffer);
+      
+      console.log(`✅ PDF saved: ${finalFilename}`);
+      console.log(`   📁 Location: ${outputPath}`);
       
       // Cleanup
       this.cleanupTemporaryContainer(container);
@@ -311,7 +350,7 @@ export class PDFService {
     const profileData = this.generateStudentProfileData(studentIntake);
     
     // Create table
-    pdf.autoTable({
+    autoTable(pdf, {
       startY: currentY,
       head: [], // No headers for profile table
       body: profileData,
@@ -319,16 +358,16 @@ export class PDFService {
       styles: {
         fontSize: DOCUMENT_STYLES.fonts.body,
         cellPadding: 3,
-        textColor: DOCUMENT_STYLES.colors.text
+        textColor: [...DOCUMENT_STYLES.colors.text]
       },
       columnStyles: {
-        0: { fontStyle: 'bold', cellWidth: 45 },
-        1: { cellWidth: 40 },
-        2: { fontStyle: 'bold', cellWidth: 45 },
-        3: { cellWidth: 40 }
+        0: { fontStyle: 'bold', cellWidth: DOCUMENT_STYLES.table.profileTable.columnWidths[0] },
+        1: { cellWidth: DOCUMENT_STYLES.table.profileTable.columnWidths[1] },
+        2: { fontStyle: 'bold', cellWidth: DOCUMENT_STYLES.table.profileTable.columnWidths[2] },
+        3: { cellWidth: DOCUMENT_STYLES.table.profileTable.columnWidths[3] }
       },
-      margin: { left: 20, right: 20 },
-      tableWidth: 'auto'
+      margin: DOCUMENT_STYLES.table.margins,
+      tableWidth: 'wrap'
     });
     
     return pdf.lastAutoTable?.finalY ? pdf.lastAutoTable.finalY + 20 : currentY + 80;
@@ -394,7 +433,7 @@ export class PDFService {
     const tableData = this.generateCycleTableData(cycle);
     
     // Create table with colored rows
-    pdf.autoTable({
+    autoTable(pdf, {
       startY: currentY,
       head: [['Block', 'Time Frame', 'Resources']],
       body: tableData.rows,
@@ -402,19 +441,20 @@ export class PDFService {
       styles: {
         fontSize: DOCUMENT_STYLES.fonts.body,
         cellPadding: 5,
-        textColor: DOCUMENT_STYLES.colors.text
+        textColor: [...DOCUMENT_STYLES.colors.text]
       },
       headStyles: {
-        fillColor: DOCUMENT_STYLES.colors.primary,
+        fillColor: [...DOCUMENT_STYLES.colors.primary],
         textColor: [255, 255, 255],
         fontStyle: 'bold'
       },
       columnStyles: {
-        0: { cellWidth: 60 },
-        1: { cellWidth: 50 },
-        2: { cellWidth: 70 }
+        0: { cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[0] },
+        1: { cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[1] },
+        2: { cellWidth: DOCUMENT_STYLES.table.cycleTable.columnWidths[2] }
       },
-      margin: { left: 20, right: 20 },
+      margin: DOCUMENT_STYLES.table.margins,
+      tableWidth: 'wrap',
       didParseCell: (data: any) => {
         // Color rows based on cycle type
         if (data.section === 'body' && data.row.index !== undefined) {
@@ -497,7 +537,7 @@ export class PDFService {
           }
           
           if (resourceTableData.length > 0) {
-            pdf.autoTable({
+            autoTable(pdf, {
               startY: currentY,
               head: [['Type', 'Resource', 'Priority', 'Cost']],
               body: resourceTableData,
@@ -507,17 +547,18 @@ export class PDFService {
                 cellPadding: 3
               },
               headStyles: {
-                fillColor: DOCUMENT_STYLES.colors.secondary,
+                fillColor: [...DOCUMENT_STYLES.colors.secondary],
                 textColor: [255, 255, 255],
                 fontSize: DOCUMENT_STYLES.fonts.small
               },
               columnStyles: {
-                0: { cellWidth: 30 },
-                1: { cellWidth: 70 },
-                2: { cellWidth: 25 },
-                3: { cellWidth: 25 }
+                0: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[0] },
+                1: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[1] },
+                2: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[2] },
+                3: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[3] }
               },
-              margin: { left: 20 }
+              margin: DOCUMENT_STYLES.table.margins,
+              tableWidth: 'wrap'
             });
             
             currentY = pdf.lastAutoTable?.finalY ? pdf.lastAutoTable.finalY + 10 : currentY + 40;
@@ -969,7 +1010,7 @@ export class PDFService {
   /**
    * Calculate block dates from cycle dates and block position
    */
-  private static calculateBlockDates(cycle: StudyCycle, block: Block, _blockIndex: number): { start: string; end: string } {
+  private static calculateBlockDates(_cycle: StudyCycle, block: Block, _blockIndex: number): { start: string; end: string } {
     return {
       start: block.block_start_date || 'TBD',
       end: block.block_end_date || 'TBD'
