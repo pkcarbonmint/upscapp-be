@@ -167,3 +167,6 @@ export async function quickStart(
 
 // Export DocumentService for browser-based document generation
 export { DocumentService } from './services/DocumentService';
+
+// Export EnhancedPDFService for beautiful PDF generation
+export { EnhancedPDFService } from './services/EnhancedPDFService';
