@@ -165,11 +165,8 @@ export async function quickStart(
   return result;
 }
 
-// Export DocumentService for browser-based document generation
+// Export PDFService for comprehensive PDF generation (structured + visual)
+export { PDFService } from './services/PDFService';
+
+// Keep DocumentService for Word document generation
 export { DocumentService } from './services/DocumentService';
-
-// Export EnhancedPDFService for beautiful PDF generation
-export { EnhancedPDFService } from './services/EnhancedPDFService';
-
-// Export ImprovedPDFService for structured PDF generation that matches Word documents  
-export { ImprovedPDFService } from './services/ImprovedPDFService';

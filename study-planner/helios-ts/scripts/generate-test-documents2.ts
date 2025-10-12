@@ -337,7 +337,7 @@ class TestDocumentGenerator {
   }
 
   /**
-   * Generate PDF document from study plan data using improved structured approach
+   * Generate PDF document using consolidated PDFService
    */
   private async generatePDFDocument(
     scenarioName: string,
@@ -348,15 +348,11 @@ class TestDocumentGenerator {
     console.log(`      📄 Generating PDF document...`);
     
     try {
-      // Use the improved PDF service for structured documents
-      const { ImprovedPDFService } = await import('../src/services/ImprovedPDFService');
+      // Use the consolidated PDF service for structured documents
+      const { PDFService } = await import('../src/services/PDFService');
       
       // Generate structured PDF that matches Word document format
-      await ImprovedPDFService.generateStudyPlanPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
-      
-      // Note: The ImprovedPDFService handles file saving internally for browser compatibility
-      // For Node.js, we would need to handle the buffer differently, but the current
-      // implementation is designed for browser use where it automatically downloads the file
+      await PDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
       
       const pdfDocTime = Date.now() - pdfDocStartTime;
       console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);

@@ -1,11 +1,11 @@
 /**
- * Demo script showing how to use the improved PDF generation
+ * Demo script showing how to use the unified PDF generation
  * 
- * This demonstrates the new structured PDF generation that matches 
- * the Word document format with proper tables and formatting.
+ * This demonstrates the new consolidated PDFService that provides both
+ * structured (Word-like) and visual (chart-based) PDF generation.
  */
 
-import { ImprovedPDFService, EnhancedPDFService } from '../src/index';
+import { PDFService } from '../src/index';
 import type { StudyPlan, StudentIntake } from '../src/types/models';
 
 // Sample study plan data
@@ -170,36 +170,42 @@ const sampleStudentIntake: StudentIntake = {
  * Demo function showing different PDF generation options
  */
 async function demonstratePDFGeneration() {
-  console.log('🚀 Helios PDF Generation Demo');
+  console.log('🚀 Helios Unified PDF Generation Demo');
   console.log('=====================================');
   
   try {
-    // Option 1: Generate structured PDF (NEW - matches Word document format)
+    // Option 1: Generate structured PDF (RECOMMENDED - matches Word document format)
     console.log('📋 Generating structured PDF (matches Word document)...');
-    await ImprovedPDFService.generateStudyPlanPDF(
+    await PDFService.generateStructuredPDF(
       sampleStudyPlan, 
       sampleStudentIntake, 
       'demo-structured-study-plan.pdf'
     );
     console.log('✅ Structured PDF generated successfully!');
     
-    // Option 2: Generate enhanced PDF via wrapper method
-    console.log('📋 Generating structured PDF via EnhancedPDFService wrapper...');
-    await EnhancedPDFService.generateStructuredStudyPlanPDF(
-      sampleStudyPlan,
-      sampleStudentIntake,
-      'demo-enhanced-structured-plan.pdf'
-    );
-    console.log('✅ Enhanced structured PDF generated successfully!');
-    
-    // Option 3: Generate visual/chart-based PDF (EXISTING - for comparison)
-    console.log('📊 Generating visual PDF with charts (existing method)...');
-    await EnhancedPDFService.generateEnhancedStudyPlanPDF(
+    // Option 2: Generate visual PDF with charts and modern design
+    console.log('📊 Generating visual PDF with charts...');
+    await PDFService.generateVisualPDF(
       sampleStudyPlan,
       sampleStudentIntake,
       'demo-visual-study-plan.pdf'
     );
     console.log('✅ Visual PDF generated successfully!');
+    
+    // Option 3: Use unified API (defaults to structured)
+    console.log('🎯 Generating PDF using unified API (defaults to structured)...');
+    await PDFService.generateStudyPlanPDF(sampleStudyPlan, sampleStudentIntake, {
+      filename: 'demo-unified-default.pdf'
+    });
+    console.log('✅ Unified API PDF generated successfully!');
+    
+    // Option 4: Use unified API with visual type
+    console.log('🎨 Generating visual PDF using unified API...');
+    await PDFService.generateStudyPlanPDF(sampleStudyPlan, sampleStudentIntake, {
+      type: 'visual',
+      filename: 'demo-unified-visual.pdf'
+    });
+    console.log('✅ Unified visual PDF generated successfully!');
     
   } catch (error) {
     console.error('❌ PDF generation failed:', error);
@@ -212,43 +218,54 @@ async function demonstratePDFGeneration() {
 export const PDFGenerationExamples = {
   
   /**
-   * Generate PDF for browser download
-   * Use this in web applications
+   * Generate structured PDF (RECOMMENDED - matches Word documents)
    */
-  async generateForBrowser(studyPlan: StudyPlan, studentIntake: StudentIntake) {
-    // This automatically triggers browser download
-    await ImprovedPDFService.generateStudyPlanPDF(studyPlan, studentIntake);
-  },
-  
-  /**
-   * Generate PDF with custom filename
-   */
-  async generateWithCustomName(studyPlan: StudyPlan, studentIntake: StudentIntake, filename: string) {
-    await ImprovedPDFService.generateStudyPlanPDF(studyPlan, studentIntake, filename);
-  },
-  
-  /**
-   * Generate structured PDF (recommended for matching Word documents)
-   */
-  async generateStructuredPDF(studyPlan: StudyPlan, studentIntake: StudentIntake) {
+  async generateStructuredPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
     // This creates a PDF with:
     // - Title and subtitle
+    // - Study plan overview with cycle descriptions
     // - Student profile table
-    // - Study blocks tables for each cycle
+    // - Study blocks tables for each cycle (color-coded)
     // - Resources section
     // - Professional formatting matching Word documents
-    await ImprovedPDFService.generateStudyPlanPDF(studyPlan, studentIntake);
+    await PDFService.generateStructuredPDF(studyPlan, studentIntake, filename);
   },
   
   /**
-   * Generate visual PDF (existing method with charts)
+   * Generate visual PDF with charts and modern design
    */
-  async generateVisualPDF(studyPlan: StudyPlan, studentIntake: StudentIntake) {
+  async generateVisualPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
     // This creates a PDF with:
     // - Beautiful HTML/CSS design
     // - Interactive charts converted to images
-    // - Modern visual design
-    await EnhancedPDFService.generateEnhancedStudyPlanPDF(studyPlan, studentIntake);
+    // - Modern visual presentation
+    // - Statistics cards and progress bars
+    await PDFService.generateVisualPDF(studyPlan, studentIntake, filename);
+  },
+  
+  /**
+   * Use unified API - defaults to structured PDF
+   */
+  async generateDefaultPDF(studyPlan: StudyPlan, studentIntake: StudentIntake) {
+    // This automatically generates structured PDF (recommended)
+    await PDFService.generateStudyPlanPDF(studyPlan, studentIntake);
+  },
+  
+  /**
+   * Use unified API with specific type and options
+   */
+  async generateWithOptions(studyPlan: StudyPlan, studentIntake: StudentIntake) {
+    // Generate structured PDF with custom filename
+    await PDFService.generateStudyPlanPDF(studyPlan, studentIntake, {
+      type: 'structured',
+      filename: 'my-custom-plan.pdf'
+    });
+    
+    // Generate visual PDF with custom filename
+    await PDFService.generateStudyPlanPDF(studyPlan, studentIntake, {
+      type: 'visual', 
+      filename: 'my-visual-plan.pdf'
+    });
   }
 };
 

@@ -1,9 +1,38 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale
+} from 'chart.js';
+import 'chartjs-adapter-date-fns';
 import type { StudyPlan, StudyCycle, Block, BlockResources, Resource, StudentIntake } from '../types/models';
 import { ResourceService } from './ResourceService';
 import { SubjectLoader } from './SubjectLoader';
 import dayjs from 'dayjs';
+
+// Register Chart.js components
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale
+);
 
 // Extend jsPDF type to include autoTable
 declare module 'jspdf' {
@@ -43,20 +72,32 @@ const DOCUMENT_STYLES = {
     heading2: 14,
     body: 11,
     small: 9
+  },
+  chartColors: {
+    primary: '#2563eb',
+    secondary: '#64748b',
+    success: '#10b981',
+    warning: '#f59e0b',
+    error: '#ef4444',
+    info: '#06b6d4',
+    purple: '#8b5cf6',
+    pink: '#ec4899',
+    indigo: '#6366f1',
+    teal: '#14b8a6'
   }
 } as const;
 
 /**
- * Improved PDF generation service that matches Word document structure
- * Creates structured PDFs with tables and proper formatting like DocumentService
+ * Unified PDF generation service for Helios Study Planner
+ * Provides both structured (Word-like) and visual (chart-based) PDF generation
  */
-export class ImprovedPDFService {
+export class PDFService {
   
   /**
-   * Generate and download a PDF document from StudyPlan data
-   * Structure matches DocumentService Word generation
+   * Generate structured PDF that matches Word document format
+   * This is the RECOMMENDED method for professional study plan PDFs
    */
-  static async generateStudyPlanPDF(
+  static async generateStructuredPDF(
     studyPlan: StudyPlan, 
     studentIntake: StudentIntake, 
     filename?: string
@@ -88,10 +129,67 @@ export class ImprovedPDFService {
       pdf.save(finalFilename);
       
     } catch (error) {
-      console.error('Failed to generate improved PDF:', error);
-      throw new Error('PDF generation failed');
+      console.error('Failed to generate structured PDF:', error);
+      throw new Error('Structured PDF generation failed');
     }
   }
+
+  /**
+   * Generate visual PDF with charts and modern design
+   * Use this for presentation-style PDFs with visualizations
+   */
+  static async generateVisualPDF(
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake,
+    filename?: string
+  ): Promise<void> {
+    try {
+      // Create HTML document for PDF generation
+      const htmlContent = this.createEnhancedStudyPlanHTML(studyPlan, studentIntake);
+      
+      // Create temporary container for rendering
+      const container = this.createTemporaryContainer(htmlContent);
+      
+      // Generate charts and insert them
+      await this.generateAndInsertCharts(container, studyPlan);
+      
+      // Generate PDF from HTML
+      const pdf = await this.generatePDFFromHTML(container);
+      
+      // Download the PDF
+      const finalFilename = filename || `visual-study-plan-${studyPlan.study_plan_id || 'plan'}.pdf`;
+      pdf.save(finalFilename);
+      
+      // Cleanup
+      this.cleanupTemporaryContainer(container);
+      
+    } catch (error) {
+      console.error('Failed to generate visual PDF:', error);
+      throw new Error('Visual PDF generation failed');
+    }
+  }
+
+  /**
+   * Main entry point - defaults to structured PDF (recommended)
+   */
+  static async generateStudyPlanPDF(
+    studyPlan: StudyPlan, 
+    studentIntake: StudentIntake, 
+    options?: {
+      filename?: string;
+      type?: 'structured' | 'visual';
+    }
+  ): Promise<void> {
+    const type = options?.type || 'structured';
+    
+    if (type === 'visual') {
+      return this.generateVisualPDF(studyPlan, studentIntake, options?.filename);
+    } else {
+      return this.generateStructuredPDF(studyPlan, studentIntake, options?.filename);
+    }
+  }
+
+  // ===== STRUCTURED PDF METHODS =====
 
   /**
    * Add title and subtitle matching Word document format
@@ -463,7 +561,305 @@ export class ImprovedPDFService {
     }
   }
 
-  // Helper methods
+  // ===== VISUAL PDF METHODS =====
+
+  /**
+   * Create enhanced HTML template for study plan overview
+   */
+  private static createEnhancedStudyPlanHTML(studyPlan: StudyPlan, studentIntake: StudentIntake): string {
+    const totalWeeks = this.calculateTotalWeeks(studyPlan);
+    const totalBlocks = this.countTotalBlocks(studyPlan);
+    const uniqueSubjects = this.getUniqueSubjects(studyPlan);
+    
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${studyPlan.plan_title || 'Study Plan'}</title>
+        ${this.getEnhancedCSS()}
+    </head>
+    <body>
+        <div class="page">
+            <!-- Header Section -->
+            <div class="header">
+                <h1>${studyPlan.plan_title || 'Comprehensive Study Plan'}</h1>
+                <div class="subtitle">Strategic UPSC ${studyPlan.targeted_year || '2025'} Preparation Plan</div>
+            </div>
+            
+            <!-- Plan Information Grid -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>📋 Plan Details</h3>
+                    <div class="info-item">
+                        <span class="info-label">Student:</span>
+                        <span class="info-value">${studentIntake.personal_details?.full_name || 'Student'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Target Year:</span>
+                        <span class="info-value">${studyPlan.targeted_year || '2025'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Start Date:</span>
+                        <span class="info-value">${studentIntake.start_date || 'TBD'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Generated:</span>
+                        <span class="info-value">${dayjs().format('MMMM DD, YYYY')}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3>📊 Plan Statistics</h3>
+                    <div class="info-item">
+                        <span class="info-label">Total Duration:</span>
+                        <span class="info-value">${totalWeeks} weeks</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Study Cycles:</span>
+                        <span class="info-value">${studyPlan.cycles?.length || 0}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Study Blocks:</span>
+                        <span class="info-value">${totalBlocks}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Subjects:</span>
+                        <span class="info-value">${uniqueSubjects.length}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">${totalWeeks}</div>
+                    <div class="stat-label">Total Weeks</div>
+                </div>
+                <div class="stat-card accent">
+                    <div class="stat-number">${studyPlan.cycles?.length || 0}</div>
+                    <div class="stat-label">Study Cycles</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-number">${totalBlocks}</div>
+                    <div class="stat-label">Study Blocks</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-number">${uniqueSubjects.length}</div>
+                    <div class="stat-label">Subjects</div>
+                </div>
+            </div>
+            
+            <!-- Charts Container -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📊 Visual Analytics</h2>
+                </div>
+                
+                <div class="charts-row">
+                    <div class="chart-container" id="subjects-pie-chart">
+                        <h3>Subjects Time Distribution</h3>
+                        <canvas id="subjectsChart" width="400" height="200"></canvas>
+                    </div>
+                    
+                    <div class="chart-container" id="cycles-timeline-chart">
+                        <h3>Cycles Timeline</h3>
+                        <canvas id="cyclesChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Study Plan Cycles -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🗓️ Study Plan by Cycles</h2>
+                </div>
+                
+                ${this.generateCyclesHTML(studyPlan)}
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-content">
+                    <div class="footer-left">
+                        Generated on ${dayjs().format('MMMM DD, YYYY')} | Helios Study Planner
+                    </div>
+                    <div class="footer-right">
+                        Your Path to Excellence
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>`;
+  }
+
+  /**
+   * Generate and insert charts into the HTML container
+   */
+  private static async generateAndInsertCharts(container: HTMLElement, studyPlan: StudyPlan): Promise<void> {
+    const subjectsCanvas = container.querySelector('#subjectsChart') as HTMLCanvasElement;
+    const cyclesCanvas = container.querySelector('#cyclesChart') as HTMLCanvasElement;
+
+    if (subjectsCanvas) {
+      await this.createSubjectsPieChart(subjectsCanvas, studyPlan);
+    }
+
+    if (cyclesCanvas) {
+      await this.createCyclesTimelineChart(cyclesCanvas, studyPlan);
+    }
+  }
+
+  /**
+   * Create subjects pie chart
+   */
+  private static async createSubjectsPieChart(canvas: HTMLCanvasElement, studyPlan: StudyPlan): Promise<Chart> {
+    const subjects = this.getUniqueSubjects(studyPlan);
+    const subjectHours = this.calculateSubjectHours(studyPlan);
+    
+    const data = subjects.map(subject => subjectHours[subject] || 0);
+    const colors = subjects.map((_, index) => Object.values(DOCUMENT_STYLES.chartColors)[index % Object.values(DOCUMENT_STYLES.chartColors).length]);
+
+    return new Chart(canvas, {
+      type: 'pie',
+      data: {
+        labels: subjects,
+        datasets: [{
+          data: data,
+          backgroundColor: colors,
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              font: {
+                family: 'Inter, sans-serif',
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const label = context.label || '';
+                const value = context.parsed;
+                const percentage = ((value / data.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                return `${label}: ${value}h (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Create cycles timeline chart
+   */
+  private static async createCyclesTimelineChart(canvas: HTMLCanvasElement, studyPlan: StudyPlan): Promise<Chart> {
+    const cycles = studyPlan.cycles || [];
+    const cycleNames = cycles.map(cycle => cycle.cycleName || cycle.cycleType || 'Cycle');
+    const cycleDurations = cycles.map(cycle => cycle.cycleDuration || 0);
+
+    return new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: cycleNames,
+        datasets: [{
+          label: 'Duration (Weeks)',
+          data: cycleDurations,
+          backgroundColor: DOCUMENT_STYLES.chartColors.primary,
+          borderColor: DOCUMENT_STYLES.chartColors.primary,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y' as const,
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Weeks'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Generate PDF from HTML container
+   */
+  private static async generatePDFFromHTML(container: HTMLElement): Promise<jsPDF> {
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      width: container.scrollWidth,
+      height: container.scrollHeight
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('portrait', 'mm', 'a4');
+    
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    
+    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    const scaledWidth = imgWidth * ratio;
+    const scaledHeight = imgHeight * ratio;
+    
+    const x = (pdfWidth - scaledWidth) / 2;
+    const y = (pdfHeight - scaledHeight) / 2;
+    
+    pdf.addImage(imgData, 'PNG', x, y, scaledWidth, scaledHeight);
+    
+    return pdf;
+  }
+
+  /**
+   * Create temporary container for HTML rendering
+   */
+  private static createTemporaryContainer(htmlContent: string): HTMLElement {
+    const container = document.createElement('div');
+    container.innerHTML = htmlContent;
+    container.style.position = 'fixed';
+    container.style.top = '-9999px';
+    container.style.left = '-9999px';
+    container.style.width = '210mm';
+    container.style.backgroundColor = 'white';
+    document.body.appendChild(container);
+    return container;
+  }
+
+  /**
+   * Cleanup temporary container
+   */
+  private static cleanupTemporaryContainer(container: HTMLElement): void {
+    if (container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+  }
+
+  // ===== HELPER METHODS =====
   
   /**
    * Generate student profile data for table
@@ -668,6 +1064,31 @@ export class ImprovedPDFService {
   }
 
   /**
+   * Calculate subject hours distribution
+   */
+  private static calculateSubjectHours(studyPlan: StudyPlan): Record<string, number> {
+    const subjectHours: Record<string, number> = {};
+    const uniqueSubjects = this.getUniqueSubjects(studyPlan);
+    
+    uniqueSubjects.forEach(subject => {
+      let totalHours = 0;
+      studyPlan.cycles?.forEach(cycle => {
+        cycle.cycleBlocks?.forEach(block => {
+          if (block.subjects?.includes(subject)) {
+            // Estimate hours based on block duration and subject count
+            const blockHours = (block.duration_weeks || 0) * 35; // 35 hours per week
+            const subjectHours = blockHours / (block.subjects?.length || 1);
+            totalHours += subjectHours;
+          }
+        });
+      });
+      subjectHours[subject] = Math.round(totalHours);
+    });
+    
+    return subjectHours;
+  }
+
+  /**
    * Calculate duration string
    */
   private static calculateDuration(startDate: dayjs.Dayjs, targetYear: number): string {
@@ -691,6 +1112,289 @@ export class ImprovedPDFService {
     
     return parts.length > 0 ? parts.join(' ') : '0 days';
   }
+
+  /**
+   * Generate cycles HTML for visual PDF
+   */
+  private static generateCyclesHTML(studyPlan: StudyPlan): string {
+    if (!studyPlan.cycles) return '<p>No cycles available</p>';
+    
+    return studyPlan.cycles.map(cycle => `
+      <div class="cycle-container">
+        <div class="cycle-header">
+          ${cycle.cycleName || cycle.cycleType} (${cycle.cycleDuration || 0} weeks)
+        </div>
+        <div class="cycle-content">
+          ${cycle.cycleBlocks?.map(block => `
+            <div class="block-item">
+              <div class="block-title">${block.block_title || 'Untitled Block'}</div>
+              <div class="block-duration">${block.duration_weeks || 0} weeks</div>
+              <div class="block-subjects">${block.subjects?.join(', ') || 'No subjects'}</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${Math.random() * 100}%"></div>
+              </div>
+            </div>
+          `).join('') || '<p>No blocks in this cycle</p>'}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /**
+   * Get enhanced CSS for visual PDF
+   */
+  private static getEnhancedCSS(): string {
+    return `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #1e293b;
+        background: #f8fafc;
+      }
+      
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        background: white;
+        padding: 0;
+      }
+      
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+      }
+      
+      .header h1 {
+        font-size: 3.5em;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      
+      .header .subtitle {
+        font-size: 1.2em;
+        font-weight: 300;
+        opacity: 0.9;
+      }
+      
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        padding: 30px;
+        margin-bottom: 20px;
+      }
+      
+      .info-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      
+      .info-card h3 {
+        color: #2563eb;
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+      }
+      
+      .info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      
+      .info-label {
+        font-weight: 500;
+        color: #64748b;
+      }
+      
+      .info-value {
+        font-weight: 600;
+        color: #1e293b;
+      }
+      
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding: 0 30px;
+        margin-bottom: 30px;
+      }
+      
+      .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #2563eb;
+      }
+      
+      .stat-card.accent {
+        border-left-color: #06b6d4;
+      }
+      
+      .stat-card.success {
+        border-left-color: #10b981;
+      }
+      
+      .stat-card.warning {
+        border-left-color: #f59e0b;
+      }
+      
+      .stat-number {
+        font-size: 2.5em;
+        font-weight: 800;
+        color: #2563eb;
+        margin-bottom: 5px;
+      }
+      
+      .stat-label {
+        font-size: 0.9em;
+        color: #64748b;
+        font-weight: 500;
+      }
+      
+      .section {
+        margin: 40px 30px;
+      }
+      
+      .section-header {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e2e8f0;
+      }
+      
+      .section-title {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      
+      .charts-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .chart-container {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      
+      .chart-container h3 {
+        color: #2563eb;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+      
+      .cycle-container {
+        margin-bottom: 25px;
+      }
+      
+      .cycle-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px 8px 0 0;
+        font-weight: 600;
+        font-size: 1.1em;
+      }
+      
+      .cycle-content {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+      }
+      
+      .block-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f1f5f9;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 2fr;
+        gap: 15px;
+        align-items: center;
+      }
+      
+      .block-title {
+        font-weight: 600;
+        color: #1e293b;
+      }
+      
+      .block-duration {
+        background: #06b6d4;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        font-weight: 600;
+        text-align: center;
+      }
+      
+      .block-subjects {
+        color: #64748b;
+        font-size: 0.9em;
+      }
+      
+      .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border-radius: 3px;
+      }
+      
+      .footer {
+        background: #0f172a;
+        color: white;
+        padding: 20px 30px;
+        margin-top: 40px;
+      }
+      
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .footer-left {
+        font-size: 0.9em;
+        opacity: 0.8;
+      }
+      
+      .footer-right {
+        font-weight: 600;
+      }
+    </style>`;
+  }
 }
 
-export default ImprovedPDFService;
+export default PDFService;
