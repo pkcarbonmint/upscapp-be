@@ -3,9 +3,15 @@
 /**
  * Document Generation Script for Helios Test Scenarios
  * 
- * This script generates Word documents for all test scenarios defined in
+ * This script generates both Word and PDF documents for all test scenarios defined in
  * the Oct25-Target*.test.ts files, creating sample study plan documents
  * that can be used for testing and demonstration.
+ * 
+ * Features:
+ * - Word document generation using docx library
+ * - PDF document generation using jsPDF with Node.js compatibility
+ * - JSON export for debugging
+ * - Performance monitoring and reporting
  */
 
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType } from 'docx';
@@ -28,6 +34,7 @@ interface DocumentGeneratorOptions {
   generateMarkdown?: boolean;
   generateJson?: boolean;
   generateWeeklySchedules?: boolean;
+  generatePDFs?: boolean; // Generate PDF versions alongside Word documents
   maxScenarios?: number; // Limit number of scenarios for performance testing
 }
 
@@ -37,6 +44,7 @@ class TestDocumentGenerator {
   private generateMarkdown: boolean;
   private generateJson: boolean;
   private generateWeeklySchedules: boolean;
+  private generatePDFs: boolean;
   private maxScenarios: number;
 
   constructor(options: DocumentGeneratorOptions = {}) {
@@ -45,6 +53,7 @@ class TestDocumentGenerator {
     this.generateMarkdown = options.generateMarkdown ?? true;
     this.generateJson = options.generateJson ?? true;
     this.generateWeeklySchedules = options.generateWeeklySchedules ?? false;
+    this.generatePDFs = options.generatePDFs ?? true; // Default to true to generate PDFs
     this.maxScenarios = options.maxScenarios || Infinity;
   }
 
@@ -205,6 +214,15 @@ class TestDocumentGenerator {
         const docSaveTime = Date.now() - docSaveStartTime;
         console.log(`  ⏱️  Document save took: ${docSaveTime}ms`);
 
+        // Generate PDF document if enabled
+        if (this.generatePDFs) {
+          const pdfStartTime = Date.now();
+          await this.generatePDFDocument(scenario.name, result.plan, result.intake);
+          const pdfTime = Date.now() - pdfStartTime;
+          console.log(`  ⏱️  PDF document generation took: ${pdfTime}ms`);
+          console.log(`📊 Generated PDF: ${scenario.name}.pdf`);
+        }
+
         // Generate Weekly Schedule document
         if (this.generateWeeklySchedules) {
           const weeklyStartTime = Date.now();
@@ -316,6 +334,92 @@ class TestDocumentGenerator {
     console.log(`      ⏱️  Word document generation took: ${wordDocTime}ms`);
     
     return result;
+  }
+
+  /**
+   * Generate PDF document from study plan data using a simple Node.js-compatible approach
+   */
+  private async generatePDFDocument(
+    scenarioName: string,
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake
+  ): Promise<void> {
+    const pdfDocStartTime = Date.now();
+    console.log(`      📄 Generating PDF document...`);
+    
+    try {
+      // Create a simple PDF using jsPDF directly (Node.js compatible)
+      // Import jsPDF dynamically since it's already available in dependencies
+      const { jsPDF } = await import('jspdf');
+      const pdf = new jsPDF();
+      
+      // Add title
+      pdf.setFontSize(20);
+      pdf.text(studyPlan.plan_title || 'Study Plan', 20, 20);
+      
+      // Add student name
+      const studentName = studentIntake.personal_details?.full_name || 'Student';
+      pdf.setFontSize(12);
+      pdf.text(`Student: ${studentName}`, 20, 35);
+      
+      // Add target year
+      pdf.text(`Target Year: ${studyPlan.targeted_year || 'TBD'}`, 20, 45);
+      
+      // Add start date
+      pdf.text(`Start Date: ${studentIntake.start_date || 'TBD'}`, 20, 55);
+      
+      // Add cycles information
+      let yPos = 70;
+      pdf.setFontSize(14);
+      pdf.text('Study Cycles:', 20, yPos);
+      yPos += 15;
+      
+      if (studyPlan.cycles && studyPlan.cycles.length > 0) {
+        pdf.setFontSize(10);
+        studyPlan.cycles.forEach((cycle, index) => {
+          const cycleText = `${index + 1}. ${cycle.cycleName || cycle.cycleType} (${cycle.cycleDuration || 0} weeks)`;
+          pdf.text(cycleText, 25, yPos);
+          yPos += 10;
+          
+          if (cycle.cycleBlocks && cycle.cycleBlocks.length > 0) {
+            cycle.cycleBlocks.forEach((block, blockIndex) => {
+              const blockText = `   - ${block.block_title || 'Untitled'} (${block.duration_weeks || 0} weeks)`;
+              pdf.text(blockText, 30, yPos);
+              yPos += 8;
+              if (yPos > 280) { // Page break
+                pdf.addPage();
+                yPos = 20;
+              }
+            });
+          }
+          yPos += 5; // Extra space between cycles
+        });
+      } else {
+        pdf.text('No cycles available', 25, yPos);
+      }
+      
+      // Add footer
+      if (yPos > 260) {
+        pdf.addPage();
+        yPos = 20;
+      }
+      pdf.setFontSize(8);
+      pdf.text(`Generated on ${new Date().toLocaleDateString()} | Helios Study Planner`, 20, 280);
+      
+      // Save PDF to file
+      const outputPath = path.join(this.outputDir, `${scenarioName}.pdf`);
+      const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
+      fs.writeFileSync(outputPath, pdfBuffer);
+      
+      const pdfDocTime = Date.now() - pdfDocStartTime;
+      console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
+      console.log(`      📁 PDF saved: ${path.resolve(outputPath)}`);
+      
+    } catch (error) {
+      console.error(`      ❌ Failed to generate PDF for ${scenarioName}:`, error);
+      // Don't throw error for PDF generation failure, just log and continue
+      console.warn(`      ⚠️  Continuing without PDF for ${scenarioName}`);
+    }
   }
 
   /**
@@ -1049,6 +1153,7 @@ async function main() {
       generateMarkdown: false,
       generateJson: true,
       generateWeeklySchedules: false, // Disabled for performance testing
+      generatePDFs: true, // Enable PDF generation
       maxScenarios: 3 // Limit to 3 scenarios for performance testing
     });
 
