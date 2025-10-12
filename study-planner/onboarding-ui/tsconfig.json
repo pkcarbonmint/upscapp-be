@@ -6,7 +6,9 @@
         "./src/*"
       ],
       "helios-ts": ["../helios-ts/src"],
-      "helios-ts/*": ["../helios-ts/src/*"]
+      "helios-ts/*": ["../helios-ts/src/*"],
+      "shared-ui-library": ["../shared-ui-library/src"],
+      "shared-ui-library/*": ["../shared-ui-library/src/*"]
     },
     "target": "ES2022",
     "useDefineForClassFields": true,
