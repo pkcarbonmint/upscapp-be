@@ -12,6 +12,9 @@ COPY resources/ ./resources/
 RUN pnpm --filter helios-ts build
 RUN pnpm --filter helios-server build
 
+# Install curl for health checks
+RUN apk add --no-cache curl
+
 # Create a non-root user for security
 RUN addgroup -g 1001 -S helios && \
     adduser -S helios -u 1001
@@ -33,4 +36,5 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # Set the command to run the application
-CMD ["node", "helios-server/dist/index.js"]
+WORKDIR /app/helios-server
+CMD ["node", "dist/index.js"]
