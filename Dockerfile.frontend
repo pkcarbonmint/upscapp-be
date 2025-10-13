@@ -20,6 +20,9 @@ COPY --from=workspace-builder /app/onboarding-ui/dist/ /usr/share/nginx/html/onb
 
 # Copy static landing page
 COPY static-landing/ /usr/share/nginx/html/landing/
+
+# Copy shared design system
+COPY shared-design-system/ /usr/share/nginx/html/shared/
 # Copy unified nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 

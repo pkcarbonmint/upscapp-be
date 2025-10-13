@@ -24,6 +24,8 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
     
+    <!-- Shared Design System -->
+    <link rel="stylesheet" href="/shared/index.css">
     <link rel="stylesheet" href="/assets/landing.css">
     
     <!-- Google Analytics -->
@@ -57,45 +59,45 @@
                     Trusted by 1000+ UPSC aspirants
                 </div>
 
-                <h1 class="hero-title">
+                <h1 class="hero-title text-center mb-6">
                     Your Personalized<br>
-                    <span class="highlight">UPSC Study Plan</span><br>
-                    <span class="subtitle">Starts Here</span>
+                    <span class="text-primary">UPSC Study Plan</span><br>
+                    <span class="text-gray-700">Starts Here</span>
                 </h1>
 
-                <p class="hero-description">
+                <p class="hero-description text-xl text-gray-600 text-center mb-8 mx-auto leading-relaxed">
                     Get an AI-powered study timeline that adapts to your schedule, strengths, and target exam year. 
                     Join thousands of successful UPSC candidates.
                 </p>
 
-                <div class="cta-section">
-                    <button class="cta-button primary" onclick="startOnboarding()">
+                <div class="cta-section text-center mb-12">
+                    <button class="btn btn-primary btn-lg hover-lift transition-all" onclick="startOnboarding()">
                         Create My Study Plan
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18 6-6-6-6"/>
                         </svg>
                     </button>
-                    <div class="trust-indicator">
+                    <div class="trust-indicator text-gray-500 text-sm mt-2">
                         ✅ Free personalized plan in 3 minutes
                     </div>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat">
-                        <div class="stat-number">1000+</div>
-                        <div class="stat-label">Students Enrolled</div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 max-w-2xl mx-auto">
+                    <div class="stat text-center animate-fade-in-up">
+                        <div class="text-2xl font-bold text-primary mb-1">1000+</div>
+                        <div class="text-gray-600 text-sm">Students Enrolled</div>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number">95%</div>
-                        <div class="stat-label">Success Rate</div>
+                    <div class="stat text-center animate-fade-in-up">
+                        <div class="text-2xl font-bold text-primary mb-1">95%</div>
+                        <div class="text-gray-600 text-sm">Success Rate</div>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number">3min</div>
-                        <div class="stat-label">Setup Time</div>
+                    <div class="stat text-center animate-fade-in-up">
+                        <div class="text-2xl font-bold text-primary mb-1">3min</div>
+                        <div class="text-gray-600 text-sm">Setup Time</div>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">AI Support</div>
+                    <div class="stat text-center animate-fade-in-up">
+                        <div class="text-2xl font-bold text-primary mb-1">24/7</div>
+                        <div class="text-gray-600 text-sm">AI Support</div>
                     </div>
                 </div>
             </div>
@@ -103,28 +105,43 @@
     </section>
 
     <!-- Features Section -->
-    <section class="features">
+    <section class="py-20 bg-white">
         <div class="container">
-            <div class="section-header">
-                <h2>Why Choose Our Study Planner?</h2>
-                <p>Backed by years of UPSC coaching expertise and powered by AI to give you the edge you need</p>
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Choose Our Study Planner?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Backed by years of UPSC coaching expertise and powered by AI to give you the edge you need</p>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon target">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card hover-lift">
+                    <div class="feature-icon target mb-6">
                         <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="10"/>
                             <circle cx="12" cy="12" r="6"/>
                             <circle cx="12" cy="12" r="2"/>
                         </svg>
                     </div>
-                    <h3>Personalized Timeline</h3>
-                    <p>Get a custom study plan based on your target year, available hours, and current preparation level.</p>
-                    <ul class="feature-benefits">
-                        <li>✓ Adaptive scheduling</li>
-                        <li>✓ Milestone tracking</li>
-                        <li>✓ Progress optimization</li>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Personalized Timeline</h3>
+                    <p class="text-gray-600 mb-4">Get a custom study plan based on your target year, available hours, and current preparation level.</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Adaptive scheduling
+                        </li>
+                        <li class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Milestone tracking
+                        </li>
+                        <li class="flex items-center text-sm text-gray-600">
+                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Progress optimization
+                        </li>
                     </ul>
                 </div>
 
@@ -240,19 +257,19 @@
     </section>
 
     <!-- Final CTA Section -->
-    <section class="final-cta">
+    <section class="py-20 bg-primary text-center">
         <div class="container">
-            <h2>Ready to Transform Your UPSC Preparation?</h2>
-            <p>Join thousands of aspirants who are already using our AI-powered study plans to achieve their dreams.</p>
+            <h2 class="text-4xl font-bold text-white mb-6">Ready to Transform Your UPSC Preparation?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">Join thousands of aspirants who are already using our AI-powered study plans to achieve their dreams.</p>
             
-            <button class="cta-button secondary" onclick="startOnboarding()">
+            <button class="btn btn-secondary btn-lg hover-lift transition-all" onclick="startOnboarding()">
                 Start Your Journey Today
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18 6-6-6-6"/>
                 </svg>
             </button>
             
-            <div class="guarantee">
+            <div class="text-blue-200 text-sm mt-6">
                 100% Free • No Credit Card Required • Setup in 3 Minutes
             </div>
         </div>
