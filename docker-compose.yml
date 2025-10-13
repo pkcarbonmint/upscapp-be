@@ -27,7 +27,6 @@ services:
     build:
       context: .
       dockerfile: study-planner/Dockerfile
-      target: runtime
     restart: always
     ports:
       - "8080:8080"

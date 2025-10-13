@@ -5,6 +5,11 @@ FROM node:22-alpine AS base
 RUN npm install -g pnpm
 
 # Install Chrome dependencies for Puppeteer
+# Enable community repository for additional packages
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+    apk update
+
 RUN apk add --no-cache \
     chromium \
     nss \
@@ -13,21 +18,18 @@ RUN apk add --no-cache \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    at-spi2-atk \
-    atk \
     cups-libs \
     dbus-glib \
     gtk+3.0 \
-    libX11 \
-    libXcomposite \
-    libXcursor \
-    libXdamage \
-    libXext \
-    libXfixes \
-    libXi \
-    libXrandr \
-    libXScrnSaver \
-    libXtst \
+    libx11 \
+    libxcomposite \
+    libxcursor \
+    libxdamage \
+    libxext \
+    libxfixes \
+    libxi \
+    libxrandr \
+    libxtst \
     pango \
     alsa-lib
 

@@ -1,8 +1,7 @@
-import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DragDropProvider, withDragDrop } from '../components/DragDropProvider';
+import { DragDropProvider, useDragDrop } from '../components/DragDropProvider';
 import { StudyCycle, CycleType, CycleIntensity } from '../types/editor';
 
 // Mock component for testing drag and drop
@@ -77,7 +76,6 @@ describe('Drag and Drop Integration', () => {
   });
 
   it('should handle drop events', async () => {
-    const user = userEvent.setup();
 
     render(
       <DragDropProvider onReorder={mockOnReorder}>
@@ -131,7 +129,6 @@ describe('Drag and Drop Integration', () => {
   });
 
   it('should handle multiple drag operations', async () => {
-    const user = userEvent.setup();
 
     render(
       <DragDropProvider onReorder={mockOnReorder}>

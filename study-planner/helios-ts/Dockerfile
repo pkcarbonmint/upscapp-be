@@ -17,16 +17,16 @@ RUN apk add --no-cache \
     cups-libs \
     dbus-glib \
     gtk+3.0 \
-    libX11 \
-    libXcomposite \
-    libXcursor \
-    libXdamage \
-    libXext \
-    libXfixes \
-    libXi \
-    libXrandr \
-    libXScrnSaver \
-    libXtst \
+    libx11 \
+    libxcomposite \
+    libxcursor \
+    libxdamage \
+    libxext \
+    libxfixes \
+    libxi \
+    libxrandr \
+    libxss \
+    libxtst \
     pango \
     alsa-lib
 
@@ -64,16 +64,16 @@ RUN apk add --no-cache \
     cups-libs \
     dbus-glib \
     gtk+3.0 \
-    libX11 \
-    libXcomposite \
-    libXcursor \
-    libXdamage \
-    libXext \
-    libXfixes \
-    libXi \
-    libXrandr \
-    libXScrnSaver \
-    libXtst \
+    libx11 \
+    libxcomposite \
+    libxcursor \
+    libxdamage \
+    libxext \
+    libxfixes \
+    libxi \
+    libxrandr \
+    libxss \
+    libxtst \
     pango \
     alsa-lib
 
