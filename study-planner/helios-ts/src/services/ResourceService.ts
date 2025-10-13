@@ -1,6 +1,8 @@
 import { Resource, BlockResources } from '../types/models';
 import ResourceLoader from '../resources/resourceIndex';
 import type { SubjectResourcesFile } from '../resources/types';
+import { NCERTMaterialsService } from './NCERTMaterialsService';
+import type { CycleType } from '../types/Types';
 
 export interface ResourceQuery {
   subjects?: string[];
@@ -10,6 +12,7 @@ export interface ResourceQuery {
   priority?: string;
   cost?: 'free' | 'budget' | 'premium';
   estimatedHoursMax?: number;
+  cycle: CycleType; // Required cycle type
 }
 
 // Resource interfaces moved to ./resources/types.ts for reusability
@@ -38,6 +41,21 @@ export class ResourceService {
    */
   static clearCache(): void {
     ResourceLoader.clearCache();
+    NCERTMaterialsService.clearCache();
+  }
+
+  /**
+   * Check if NCERT materials are available for a topic (useful for C1 cycle planning)
+   */
+  static async hasNCERTMaterialsForTopic(topicCode: string): Promise<boolean> {
+    return await NCERTMaterialsService.hasMaterialsForTopic(topicCode);
+  }
+
+  /**
+   * Get NCERT materials for a topic (direct access for C1 cycle tasks)
+   */
+  static async getNCERTMaterialsForTopic(topicCode: string): Promise<Resource[]> {
+    return await NCERTMaterialsService.getResourcesForC1Task(topicCode);
   }
 
   /**
@@ -72,7 +90,8 @@ export class ResourceService {
 
     const subjectResources = subjectFile.subject_level_resources;
     
-    return {
+    // Get regular resources
+    const regularResources = {
       primary_books: this.getResourcesByIds(subjectResources.primary_books, subjectFile),
       video_content: this.getResourcesByIds(subjectResources.video_content, subjectFile),
       practice_resources: this.getResourcesByIds(subjectResources.practice_resources, subjectFile),
@@ -81,6 +100,31 @@ export class ResourceService {
       expert_recommendations: this.getResourcesByIds(subjectResources.expert_recommendations, subjectFile),
       supplementary_materials: this.getResourcesByIds(subjectResources.supplementary_materials, subjectFile)
     };
+
+    // Check if primary_books contains generic "NCERT" resource and replace with specific NCERT materials
+    const hasGenericNCERT = regularResources.primary_books.some(book => 
+      book.resource_title === 'NCERT' || book.resource_title.toLowerCase().includes('ncert')
+    );
+
+    if (hasGenericNCERT) {
+      // Get all NCERT materials for this subject's topics
+      const ncertMaterials: Resource[] = [];
+      const topicCodes = Object.keys(subjectFile.topic_resources);
+      
+      for (const topicCode of topicCodes) {
+        try {
+          const topicNCERTMaterials = await NCERTMaterialsService.getResourcesForC1Task(topicCode);
+          ncertMaterials.push(...topicNCERTMaterials);
+        } catch (error) {
+          console.warn(`Failed to load NCERT materials for topic ${topicCode}:`, error);
+        }
+      }
+
+      // Replace primary_books with specific NCERT materials
+      regularResources.primary_books = ncertMaterials;
+    }
+
+    return regularResources;
   }
 
   /**
@@ -91,13 +135,29 @@ export class ResourceService {
     revision: Resource[];
     practice: Resource[];
     expert: Resource[];
+    ncert?: Resource[]; // Add NCERT materials for C1 cycle
   }> {
     // Extract subject code from topic code (e.g., H01/02 -> H01)
     const subjectCode = topicCode.split('/')[0];
     const subjectFile = await this.loadSubjectResourceFile(subjectCode);
     
+    const result = {
+      study: [] as Resource[],
+      revision: [] as Resource[],
+      practice: [] as Resource[],
+      expert: [] as Resource[],
+      ncert: [] as Resource[]
+    };
+
+    // Get NCERT materials for this topic (always available for C1 cycle)
+    try {
+      result.ncert = await NCERTMaterialsService.getResourcesForC1Task(topicCode);
+    } catch (error) {
+      console.warn(`Failed to load NCERT materials for topic ${topicCode}:`, error);
+    }
+    
     if (!subjectFile || !subjectFile.topic_resources[topicCode]) {
-      return { study: [], revision: [], practice: [], expert: [] };
+      return result;
     }
 
     const topicResources = subjectFile.topic_resources[topicCode].resources;
@@ -106,16 +166,43 @@ export class ResourceService {
       study: this.getResourcesByIds(topicResources.study || [], subjectFile),
       revision: this.getResourcesByIds(topicResources.revision || [], subjectFile),
       practice: this.getResourcesByIds(topicResources.practice || [], subjectFile),
-      expert: this.getResourcesByIds(topicResources.expert || [], subjectFile)
+      expert: this.getResourcesByIds(topicResources.expert || [], subjectFile),
+      ncert: result.ncert
     };
   }
 
   /**
    * Get resources for specific task types
    */
-  static async getResourcesForTaskType(taskType: string, subjectCode?: string): Promise<Resource[]> {
+  static async getResourcesForTaskType(taskType: string, cycle: CycleType, subjectCode?: string, topicCode?: string): Promise<Resource[]> {
     const results: Resource[] = [];
     
+    // Handle C1 cycle tasks - use NCERT materials
+    if (cycle === 'C1') {
+      if (topicCode) {
+        return await NCERTMaterialsService.getResourcesForC1Task(topicCode);
+      } else if (subjectCode) {
+        // Get all topics for the subject and collect NCERT materials
+        const subjectFile = await this.loadSubjectResourceFile(subjectCode);
+        if (subjectFile) {
+          const topicCodes = Object.keys(subjectFile.topic_resources);
+          for (const topicCode of topicCodes) {
+            const ncertResources = await NCERTMaterialsService.getResourcesForC1Task(topicCode);
+            results.push(...ncertResources);
+          }
+        }
+      } else {
+        // Get NCERT materials for all available topics
+        const availableTopicCodes = await NCERTMaterialsService.getAvailableTopicCodes();
+        for (const topicCode of availableTopicCodes) {
+          const ncertResources = await NCERTMaterialsService.getResourcesForC1Task(topicCode);
+          results.push(...ncertResources);
+        }
+      }
+      return results;
+    }
+    
+    // Handle other cycles and task types using existing logic
     if (subjectCode) {
       const subjectFile = await this.loadSubjectResourceFile(subjectCode);
       if (subjectFile) {
@@ -132,7 +219,7 @@ export class ResourceService {
       // Get resources from all subjects for the task type
       const availableSubjects = await this.getAvailableSubjects();
       for (const subjectCode of availableSubjects) {
-        const subjectResources = await this.getResourcesForTaskType(taskType, subjectCode);
+        const subjectResources = await this.getResourcesForTaskType(taskType, cycle, subjectCode);
         results.push(...subjectResources);
       }
     }
@@ -195,8 +282,9 @@ export class ResourceService {
   /**
    * Get resources by budget tier
    */
-  static async getResourcesByBudgetTier(_tier: 'free' | 'budget' | 'premium'): Promise<Resource[]> {
+  static async getResourcesByBudgetTier(_tier: 'free' | 'budget' | 'premium', cycle: CycleType): Promise<Resource[]> {
     return await this.searchResources({
+      cycle,
       // This would need cost filtering logic based on tier
       // For now, return free resources as example
     });
@@ -248,9 +336,11 @@ export class ResourceService {
    */
   static async suggestResourcesForBlock(
     subjects: string[], 
+    _cycle: CycleType,
     _blockDurationWeeks: number,
     _taskType?: string,
-    _budgetTier?: 'free' | 'budget' | 'premium'
+    _budgetTier?: 'free' | 'budget' | 'premium',
+    topicCodes?: string[]
   ): Promise<BlockResources> {
     const suggestions: BlockResources = {
       primary_books: [],
@@ -262,9 +352,10 @@ export class ResourceService {
       expert_recommendations: []
     };
 
+    // For other cycles and task types, use existing logic
     for (const subjectCode of subjects) {
       const subjectResources = await this.getResourcesForSubject(subjectCode);
-      
+
       // Merge resources from all subjects
       suggestions.primary_books.push(...subjectResources.primary_books);
       suggestions.video_content.push(...subjectResources.video_content);
@@ -272,6 +363,20 @@ export class ResourceService {
       suggestions.current_affairs_sources.push(...subjectResources.current_affairs_sources);
       suggestions.revision_materials.push(...subjectResources.revision_materials);
       suggestions.expert_recommendations.push(...subjectResources.expert_recommendations);
+    }
+    // if we have a resource titled 'NCERT', replace it with corresponding NCERT 
+    // materials
+    const hasNCERT = suggestions.primary_books.find(book => book.resource_title === 'NCERT');
+
+    if (hasNCERT && topicCodes) {
+      for (const topicCode of topicCodes) {
+        const ncertResources = await NCERTMaterialsService.getResourcesForC1Task(topicCode);
+        suggestions.primary_books.push(...ncertResources);
+      }
+      // Remove 'NCERT' resource
+      suggestions.primary_books = suggestions.primary_books.filter(
+        (book) => book.resource_title !== 'NCERT'
+      );
     }
 
     return suggestions;

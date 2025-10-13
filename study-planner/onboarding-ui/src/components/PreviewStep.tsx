@@ -4,17 +4,7 @@ import TimelineView from './TimelineView';
 import ListView from './ListView';
 import TableView from './TableView';
 import { apiService } from '../services/api';
-let PDFService: typeof import('helios-ts')['PDFService'] | undefined;
-const helioslibProm = import('helios-ts');
-
-async function loadPDFService() {
-  if (!PDFService) {
-    const helioslib = await helioslibProm;
-    PDFService = helioslib.PDFService;
-  }
-  return PDFService;
-}
-// Removed DocumentService import - now using server-side generation
+// Removed PDFService and DocumentService imports - now using server-side generation
 
 // Type definitions for transformed cycle data
 interface TransformedCycle {
@@ -235,8 +225,8 @@ const PreviewStep: React.FC<PreviewStepProps> = ({ formData, onUpdate }) => {
           alert(`Failed to download DOCX. Status: ${response.status}. Please try again.`);
         }
       } else {
-        // For PDF, use client-side PDFService
-        console.log('Generating PDF using client-side PDFService');
+        // For PDF, use server-side PDF generation via helios-server
+        console.log('Generating PDF using server-side HighFidelityPDFService');
         
         try {
           const studyPlan = formData.preview.raw_helios_data;
@@ -249,15 +239,35 @@ const PreviewStep: React.FC<PreviewStepProps> = ({ formData, onUpdate }) => {
           const { transformToStudentIntake } = await import('../services/heliosService');
           const studentIntake = await transformToStudentIntake(formData);
           
-          // Generate PDF using PDFService
-          const PDFService = await loadPDFService();
-          await PDFService.generateStructuredPDF(
-            studyPlan,
-            studentIntake,
-            `study-plan-${studyPlanId}.pdf`
-          );
+          // Generate PDF using server-side endpoint
+          const response = await fetch('/api/studyplanner/onboarding/helios/plan/export/pdf', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              studyPlan,
+              studentIntake,
+              filename: `study-plan-${studyPlanId}.pdf`
+            }),
+          });
           
-          console.log('PDF generated and downloaded successfully');
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `study-plan-${studyPlanId}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            console.log('PDF generated and downloaded successfully');
+          } else {
+            const errorText = await response.text();
+            console.error(`Failed to download PDF:`, response.status, errorText);
+            alert(`Failed to download PDF. Status: ${response.status}. Please try again.`);
+          }
         } catch (error) {
           console.error('Failed to generate PDF:', error);
           alert(`Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`);

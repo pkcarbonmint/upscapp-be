@@ -75,7 +75,7 @@ const DOCUMENT_STYLES = {
 
 interface TableData {
   headers: string[];
-  rows: string[][];
+  rows: (string | Paragraph[])[][];
   style?: string;
   rowColors?: string[]; // Optional array of colors for each row
 }
@@ -1093,18 +1093,18 @@ export class DocumentService {
    */
   private static generateCycleBlocksTableData(cycle: StudyCycle): TableData {
     const headers = ['Block', 'Time Frame', 'Resources'];
-    const rows: string[][] = [];
+    const rows: (string | Paragraph[])[][] = [];
     const rowColors: string[] = [];
 
     cycle.cycleBlocks?.forEach((block, blockIndex) => {
       const blockDates = this.calculateBlockDates(cycle, block, blockIndex);
       const durationText = `${blockDates.start} - ${blockDates.end}\n${block.duration_weeks} week(s)`;
       const resourceSummary = this.summarizeBlockResources(block.block_resources);
-      
+      const resourceBullets = this.createResourceBullets(resourceSummary);
       rows.push([
         block.block_title || 'Untitled',
         durationText,
-        resourceSummary.join(', ')
+        resourceBullets
       ]);
       
       // Add color based on cycle type
@@ -1336,20 +1336,25 @@ Good luck with your UPSC preparation!`;
       const rowColor = tableData.rowColors?.[rowIndex];
       
       rows.push(new TableRow({
-        children: row.map(cell => 
-            new TableCell({ 
-            children: [new Paragraph({
-              children: [new TextRun({ 
-                text: cell,
-                size: DOCUMENT_STYLES.sizes.body,
-                color: DOCUMENT_STYLES.colors.text,
-                font: DOCUMENT_STYLES.font
-              })],
-              spacing: { 
-                before: cellSpacing, 
-                after: cellSpacing 
-              }
-            })],
+        children: row.map(cell => {
+          // Handle both string and Paragraph[] cells
+          const cellContent = Array.isArray(cell) 
+            ? cell // Already Paragraph[]
+            : [new Paragraph({
+                children: [new TextRun({ 
+                  text: cell as string,
+                  size: DOCUMENT_STYLES.sizes.body,
+                  color: DOCUMENT_STYLES.colors.text,
+                  font: DOCUMENT_STYLES.font
+                })],
+                spacing: { 
+                  before: cellSpacing, 
+                  after: cellSpacing 
+                }
+              })];
+          
+          return new TableCell({ 
+            children: cellContent,
             margins: {
               top: cellPadding,
               bottom: cellPadding,
@@ -1359,8 +1364,8 @@ Good luck with your UPSC preparation!`;
             shading: rowColor ? {
               fill: rowColor
             } : undefined
-          })
-        )
+          });
+        })
       }));
     });
 
@@ -1411,65 +1416,71 @@ Good luck with your UPSC preparation!`;
 
 
   /**
+   * Create bullet paragraphs from resource summary strings
+   */
+  private static createResourceBullets(resourceNames: string[]): Paragraph[] {
+    if (resourceNames.length === 0) {
+      return [new Paragraph({
+        children: [new TextRun({ text: 'No resources' })],
+        style: 'ResourceItem'
+      })];
+    }
+
+    return resourceNames.map(name => 
+      new Paragraph({
+        children: [new TextRun({ text: `• ${name}` })],
+        style: 'ResourceItem'
+      })
+    );
+  }
+
+  /**
    * Summarize block resources for table display - shows actual resource names
    */
-  private static summarizeBlockResources(blockResources?: BlockResources): string[] {
-    if (!blockResources) {
-      return ['No resources'];
-    }
-
-    const resourceNames: string[] = [];
+  private static summarizeBlockResources({
+    primary_books,
+    supplementary_materials,
+    current_affairs_sources,
+    practice_resources,
+    video_content,
+    revision_materials,
+    expert_recommendations,
+  }: BlockResources): string[] {
     
-    // Add primary books
-    if (blockResources.primary_books && blockResources.primary_books.length > 0) {
-      resourceNames.push(...blockResources.primary_books.map(book => book.resource_title));
-    }
+    return [
+      ...primary_books,
+      ...supplementary_materials,
+      ...current_affairs_sources,
+      ...practice_resources,
+      ...video_content,
+      ...revision_materials,
+      ...expert_recommendations,      
+    ]
+    .map(resource => resource.resource_title);
     
-    // Add supplementary materials
-    if (blockResources.supplementary_materials && blockResources.supplementary_materials.length > 0) {
-      resourceNames.push(...blockResources.supplementary_materials.map(mat => mat.resource_title));
-    }
+    // const resourceNames: string[] = [];
+    // if (blockResources.primary_books && blockResources.primary_books.length > 0) {
+    //   blockResources.primary_books.forEach(book => {
+    //     resourceNames.push(`${book.resource_title}`);
+    //   });
+    // }
     
-    // Add video content
-    if (blockResources.video_content && blockResources.video_content.length > 0) {
-      resourceNames.push(...blockResources.video_content.map(video => video.resource_title));
-    }
+    // if (blockResources.supplementary_materials && blockResources.supplementary_materials.length > 0) {
+    //   blockResources.supplementary_materials.forEach(mat => {
+    //     resourceNames.push(`${mat.resource_title}`);
+    //   });
+    // }
     
-    // Add practice resources
-    if (blockResources.practice_resources && blockResources.practice_resources.length > 0) {
-      resourceNames.push(...blockResources.practice_resources.map(practice => practice.resource_title));
-    }
+    // if (blockResources.current_affairs_sources && blockResources.current_affairs_sources.length > 0) {
+    //   blockResources.current_affairs_sources.forEach(ca => {
+    //     resourceNames.push(`${ca.resource_title}`);
+    //   });
+    // }
     
-    // Add current affairs sources
-    if (blockResources.current_affairs_sources && blockResources.current_affairs_sources.length > 0) {
-      resourceNames.push(...blockResources.current_affairs_sources.map(ca => ca.resource_title));
-    }
-
-    // Add revision materials
-    if (blockResources.revision_materials && blockResources.revision_materials.length > 0) {
-      resourceNames.push(...blockResources.revision_materials.map(rev => rev.resource_title));
-    }
-
-    // Add expert recommendations
-    if (blockResources.expert_recommendations && blockResources.expert_recommendations.length > 0) {
-      resourceNames.push(...blockResources.expert_recommendations.map(exp => exp.resource_title));
-    }
-
-    // Remove duplicates and limit to reasonable length for table display
-    const uniqueNames = [...new Set(resourceNames)];
+    // if (resourceNames.length === 0) {
+    //   return ['No resources available'];
+    // }
     
-    if (uniqueNames.length === 0) {
-      return ['Resources available'];
-    }
-    
-    // If too many resources, show first few with count
-    if (uniqueNames.length > 5) {
-      const firstFive = uniqueNames.slice(0, 5);
-      firstFive.push(`(+${uniqueNames.length - 5} more)`);
-      return firstFive;
-    }
-    
-    return uniqueNames;
   }
 
   /**

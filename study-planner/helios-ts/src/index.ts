@@ -165,11 +165,8 @@ export async function quickStart(
   return result;
 }
 
-// Export PDFService for comprehensive PDF generation (structured + visual)
-export { PDFService } from './services/PDFService';
-
-// Note: HighFidelityPDFService is NOT exported to prevent frontend bundling
-// It uses Puppeteer which is Node.js only and would break browser builds
-
-// Keep DocumentService for Word document generation
+// Export DocumentService for Word document generation
 export { DocumentService } from './services/DocumentService';
+
+// Note: PDFService and HighFidelityPDFService are NOT exported to prevent frontend bundling
+// They use Node.js-only dependencies (Puppeteer, fs, etc.) that would break browser builds
