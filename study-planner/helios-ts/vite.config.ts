@@ -23,7 +23,32 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      external: ['firebase/app', 'firebase/auth'],
+      external: [
+        'firebase/app', 
+        'firebase/auth',
+        // Node.js built-in modules
+        'fs', 
+        'path', 
+        'fs/promises',
+        'child_process',
+        'os',
+        'util',
+        'crypto',
+        'stream',
+        'http',
+        'https',
+        'net',
+        'dns',
+        'tls',
+        'events',
+        'assert',
+        // Puppeteer and related packages (Node.js only)
+        'puppeteer',
+        'puppeteer-core',
+        'sharp',
+        // Pattern to match all node: imports
+        /^node:/
+      ],
       // Configure dynamic imports for code splitting
       output: {
         exports: 'named',

@@ -168,5 +168,8 @@ export async function quickStart(
 // Export PDFService for comprehensive PDF generation (structured + visual)
 export { PDFService } from './services/PDFService';
 
+// Export HighFidelityPDFService for superior quality PDF generation using Puppeteer
+export { HighFidelityPDFService } from './services/HighFidelityPDFService';
+
 // Keep DocumentService for Word document generation
 export { DocumentService } from './services/DocumentService';
