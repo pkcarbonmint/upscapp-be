@@ -8,7 +8,8 @@
  * Both services have identical interfaces for easy swapping
  */
 
-import { PDFService, HighFidelityPDFService } from '../src/index';
+import { PDFService } from '../src/index';
+// Dynamic import for HighFidelityPDFService to avoid bundling issues
 import type { StudyPlan, StudentIntake } from '../src/types/models';
 
 // Sample study plan data
@@ -199,6 +200,9 @@ async function demonstratePDFGeneration() {
     // ===== NEW HIGH-FIDELITY PUPPETEER-BASED SERVICE =====
     console.log('\n🎨 Testing HighFidelityPDFService (Puppeteer-based)...');
     
+    // Dynamically import HighFidelityPDFService to avoid bundling issues
+    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
+    
     console.log('📋 Generating high-fidelity structured PDF...');
     await HighFidelityPDFService.generateStructuredPDF(
       sampleStudyPlan, 
@@ -275,6 +279,8 @@ export const PDFGenerationExamples = {
    * Generate structured PDF using high-fidelity service (Puppeteer-based)
    */
   async generateHighFidelityStructuredPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
+    // Dynamically import HighFidelityPDFService to avoid bundling issues
+    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
     // Uses Puppeteer with high-quality HTML/CSS rendering
     // Good for: Superior aesthetics, modern design, precise typography
     await HighFidelityPDFService.generateStructuredPDF(studyPlan, studentIntake, filename);
@@ -293,6 +299,8 @@ export const PDFGenerationExamples = {
    * Generate visual PDF with charts using high-fidelity service
    */
   async generateHighFidelityVisualPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
+    // Dynamically import HighFidelityPDFService to avoid bundling issues
+    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
     // Uses Puppeteer with native browser chart rendering
     // Good for: Crisp charts, advanced CSS effects, premium presentation
     await HighFidelityPDFService.generateVisualPDF(studyPlan, studentIntake, filename);
@@ -302,6 +310,8 @@ export const PDFGenerationExamples = {
    * Easy swapping between services - both have identical interfaces
    */
   async generateWithEasySwapping(studyPlan: StudyPlan, studentIntake: StudentIntake, useHighFidelity = true) {
+    // Dynamically import HighFidelityPDFService to avoid bundling issues
+    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
     // Choose service based on requirements
     const pdfService = useHighFidelity ? HighFidelityPDFService : PDFService;
     
@@ -331,6 +341,7 @@ export const PDFGenerationExamples = {
     
     // High-fidelity service - slower, higher quality
     console.time('HighFidelityPDFService');
+    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
     await HighFidelityPDFService.generateStructuredPDF(studyPlan, studentIntake, 'premium-quality.pdf');
     console.timeEnd('HighFidelityPDFService');
     

@@ -5,6 +5,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PDFService } from '../services/PDFService';
+// Dynamic import for HighFidelityPDFService to avoid bundling issues
 
 // Mock jsPDF and autoTable
 const mockPDF = {

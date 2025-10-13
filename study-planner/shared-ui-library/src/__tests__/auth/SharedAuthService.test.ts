@@ -1,12 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { SharedAuthService } from '../../auth/SharedAuthService';
 import { mockFetch, mockLocalStorage, mockLocation, createMockUser } from '../mocks/testUtils';
-import type { LoginCredentials, User } from '../../auth/types';
+import type { LoginCredentials } from '../../auth/types';
 
 // Mock dependencies
 const mockFetchFn = vi.fn();
-const mockStorageFn = vi.fn();
-const mockLocationFn = vi.fn();
 
 describe('SharedAuthService', () => {
   let authService: SharedAuthService;

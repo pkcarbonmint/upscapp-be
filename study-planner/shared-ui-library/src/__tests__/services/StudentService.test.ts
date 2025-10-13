@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { StudentService } from '../../services/StudentService';
-import { mockFetch, mockLocalStorage, createMockStudent, createMockUser } from '../mocks/testUtils';
+import { mockFetch, mockLocalStorage, createMockStudent } from '../mocks/testUtils';
 import type { StudentCreationData, StudentCreationResponse } from '../../auth/types';
 
 describe('StudentService', () => {

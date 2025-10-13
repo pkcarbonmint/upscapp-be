@@ -319,6 +319,61 @@ app.post('/plan/export/docx', async (req, res) => {
   }
 });
 
+// PDF export endpoint using HighFidelityPDFService
+app.post('/plan/export/pdf', async (req, res) => {
+  try {
+    const { studyPlan, studentIntake, filename } = req.body;
+    
+    if (!studyPlan || !studentIntake) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: studyPlan and studentIntake are required' 
+      });
+    }
+    
+    // Dynamically import HighFidelityPDFService to avoid bundling issues
+    const { HighFidelityPDFService } = await import('helios-ts/src/services/HighFidelityPDFService');
+    
+    // Generate PDF using HighFidelityPDFService
+    await HighFidelityPDFService.generateStructuredPDF(
+      studyPlan,
+      studentIntake,
+      filename || `study-plan-${studyPlan.study_plan_id || 'export'}.pdf`
+    );
+    
+    // The PDF is saved to generated-docs directory by HighFidelityPDFService
+    const outputDir = path.join(process.cwd(), 'generated-docs');
+    const pdfFilename = filename || `study-plan-${studyPlan.study_plan_id || 'export'}.pdf`;
+    const pdfPath = path.join(outputDir, pdfFilename);
+    
+    // Check if file exists and send it
+    if (fs.existsSync(pdfPath)) {
+      const pdfBuffer = fs.readFileSync(pdfPath);
+      
+      // Set response headers for file download
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${pdfFilename}"`);
+      res.setHeader('Content-Length', pdfBuffer.length);
+      
+      // Send the PDF buffer
+      res.send(pdfBuffer);
+      
+      // Clean up the file after sending
+      fs.unlinkSync(pdfPath);
+    } else {
+      res.status(500).json({ 
+        error: 'PDF file was not generated successfully' 
+      });
+    }
+    
+  } catch (error) {
+    console.error('PDF export error:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate PDF', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    });
+  }
+});
+
 // Error handling middleware
 app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Unhandled error:', error);
@@ -344,6 +399,7 @@ app.listen(PORT, () => {
   console.log(`   POST /plan/generate - Generate study plan`);
   console.log(`   POST /plan/review - Review study plan`);
   console.log(`   POST /plan/export/docx - Export study plan as DOCX`);
+  console.log(`   POST /plan/export/pdf - Export study plan as PDF (high-fidelity)`);
   console.log(`   POST /bot/conversation - Telegram bot conversation`);
 });
 

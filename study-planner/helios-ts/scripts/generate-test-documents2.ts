@@ -27,6 +27,7 @@ import dayjs from 'dayjs';
 import * as path from 'path';
 import * as fs from 'fs';
 import { LogEntry } from '../src/types/Types';
+// Dynamic import for HighFidelityPDFService to avoid bundling issues
 
 interface DocumentGeneratorOptions {
   outputDir?: string;
@@ -346,12 +347,10 @@ class TestDocumentGenerator {
   ): Promise<void> {
     const pdfDocStartTime = Date.now();
     console.log(`      📄 Generating PDF document...`);
-    
-    // Use PDFService with Sharp for SVG to PNG conversion
-    const { PDFService } = await import('../src/services/PDFService');
-    
+    // Dynamically import HighFidelityPDFService to avoid bundling issues
+    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
     // Generate PDF with visual timeline (SVG converted to PNG)
-    await PDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
+    await HighFidelityPDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
     
     const pdfDocTime = Date.now() - pdfDocStartTime;
     console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);

@@ -1,3 +1,5 @@
+import type { User } from '../../auth/types';
+
 // Mock localStorage for testing
 export class MockLocalStorage {
   private store: Record<string, string> = {};
