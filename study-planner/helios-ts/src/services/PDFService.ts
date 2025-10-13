@@ -305,7 +305,7 @@ export class PDFService {
       const { DocumentService } = await import('./DocumentService');
       const timelineSVG = DocumentService.generateTimelineSVG(studyPlan);
       if (timelineSVG) {
-        currentY = await this.addTimelineSVGToPDF(pdf, timelineSVG, currentY, studyPlan);
+        currentY = await this.addTimelineSVGToPDF(pdf, timelineSVG, currentY);
       }
     } catch (error) {
       console.warn('Failed to add timeline SVG:', error);
@@ -677,66 +677,46 @@ export class PDFService {
           // Create a comprehensive resources table with full details
           const resourceTableData: string[][] = [];
           
-          // Primary Books
+          // Collect all resource names in a simple list
+          const resourceNames: string[] = [];
+          
           if (resources.primary_books && resources.primary_books.length > 0) {
             resources.primary_books.forEach(book => {
-              const timeFrame = book.duration_weeks ? `${book.duration_weeks} week(s)` : 'Ongoing';
-              const fullDetails = `${timeFrame} | ${this.formatResourceCost(book.resource_cost)} | ${book.resource_priority}`;
-              resourceTableData.push([
-                'Primary Book',
-                book.resource_title,
-                fullDetails,
-                book.resource_description || 'Essential reading'
-              ]);
+              resourceNames.push(`• ${book.resource_title}`);
             });
           }
           
-          // Current Affairs Sources
           if (resources.current_affairs_sources && resources.current_affairs_sources.length > 0) {
             resources.current_affairs_sources.forEach(ca => {
-              const timeFrame = ca.duration_weeks ? `${ca.duration_weeks} week(s)` : 'Daily';
-              const fullDetails = `${timeFrame} | ${this.formatResourceCost(ca.resource_cost)} | ${ca.resource_priority}`;
-              resourceTableData.push([
-                'Current Affairs',
-                ca.resource_title,
-                fullDetails,
-                ca.resource_description || 'Daily updates'
-              ]);
+              resourceNames.push(`• ${ca.resource_title}`);
             });
           }
           
-          // Practice Resources
           if (resources.practice_resources && resources.practice_resources.length > 0) {
             resources.practice_resources.forEach(practice => {
-              const timeFrame = practice.duration_weeks ? `${practice.duration_weeks} week(s)` : 'As needed';
-              const fullDetails = `${timeFrame} | ${this.formatResourceCost(practice.resource_cost)} | ${practice.resource_priority}`;
-              resourceTableData.push([
-                'Practice Material',
-                practice.resource_title,
-                fullDetails,
-                practice.resource_description || 'Practice questions'
-              ]);
+              resourceNames.push(`• ${practice.resource_title}`);
             });
           }
           
-          // Video Content
           if (resources.video_content && resources.video_content.length > 0) {
             resources.video_content.forEach(video => {
-              const timeFrame = video.duration_weeks ? `${video.duration_weeks} week(s)` : 'Self-paced';
-              const fullDetails = `${timeFrame} | ${this.formatResourceCost(video.resource_cost)} | ${video.resource_priority}`;
-              resourceTableData.push([
-                'Video Content',
-                video.resource_title,
-                fullDetails,
-                video.resource_description || 'Video lectures'
-              ]);
+              resourceNames.push(`• ${video.resource_title}`);
             });
+          }
+          
+          if (resourceNames.length > 0) {
+            resourceTableData.push([
+              'Resources',
+              resourceNames.join('\n'),
+              '',
+              ''
+            ]);
           }
           
           if (resourceTableData.length > 0) {
             autoTable(pdf, {
               startY: currentY,
-              head: [['Type', 'Resource', 'Details & Cost', 'Description']],
+              head: [['Subject', 'Resources']],
               body: resourceTableData,
               theme: 'striped',
               styles: {
@@ -751,10 +731,8 @@ export class PDFService {
                 fontStyle: 'bold'
               },
               columnStyles: {
-                0: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[0] },
-                1: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[1] },
-                2: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[2] },
-                3: { cellWidth: DOCUMENT_STYLES.table.resourceTable.columnWidths[3] }
+                0: { cellWidth: 50, fontStyle: 'bold' },
+                1: { cellWidth: 120, overflow: 'linebreak', halign: 'left', valign: 'top' }
               },
               margin: DOCUMENT_STYLES.table.margins,
               tableWidth: 'wrap'
@@ -1118,7 +1096,7 @@ export class PDFService {
   /**
    * Add Timeline SVG to PDF as an image using Node.js compatible approach
    */
-  private static async addTimelineSVGToPDF(pdf: jsPDF, svgString: string, startY: number, studyPlan?: StudyPlan): Promise<number> {
+  private static async addTimelineSVGToPDF(pdf: jsPDF, svgString: string, startY: number): Promise<number> {
     try {
       // For Node.js environment, convert SVG to PNG and embed as image
       if (typeof window === 'undefined') {
@@ -1229,7 +1207,7 @@ export class PDFService {
     pdf.setTextColor(...DOCUMENT_STYLES.colors.text);
     pdf.setFont('helvetica', 'normal');
     
-    studyPlan.cycles.forEach((cycle, index) => {
+    studyPlan.cycles.forEach((cycle) => {
       if (currentY > 280) return; // Prevent overflow
       
       // Get subjects from cycle blocks
@@ -1263,67 +1241,6 @@ export class PDFService {
     return currentY + 10;
   }
 
-  /**
-   * Parse timeline data from SVG string
-   */
-  private static parseTimelineFromSVG(svgString: string): Array<{cycle: string, subjects: string[], period: string}> {
-    const timelineData: Array<{cycle: string, subjects: string[], period: string}> = [];
-    
-    try {
-      // Extract text elements from SVG
-      const textMatches = svgString.match(/<text[^>]*>([^<]+)<\/text>/g);
-      if (textMatches) {
-        const cycles = new Map<string, {subjects: string[], period: string}>();
-        
-        textMatches.forEach(match => {
-          const textContent = match.replace(/<[^>]*>/g, '').trim();
-          
-          // Look for cycle patterns (C1, C2, etc.)
-          const cycleMatch = textContent.match(/(C\d+)/);
-          if (cycleMatch) {
-            const cycle = cycleMatch[1];
-            if (!cycles.has(cycle)) {
-              cycles.set(cycle, {subjects: [], period: ''});
-            }
-          }
-          
-          // Look for subject patterns
-          const subjectMatch = textContent.match(/(History|Geography|Polity|Economy|Society|Environment|Science|Governance|International|Security)/i);
-          if (subjectMatch) {
-            // Find the most recent cycle for this subject
-            const lastCycle = Array.from(cycles.keys()).pop();
-            if (lastCycle) {
-              cycles.get(lastCycle)!.subjects.push(subjectMatch[1]);
-            }
-          }
-          
-          // Look for period patterns
-          const periodMatch = textContent.match(/(\d{4}-\d{2}-\d{2})\s*to\s*(\d{4}-\d{2}-\d{2})/);
-          if (periodMatch) {
-            const lastCycle = Array.from(cycles.keys()).pop();
-            if (lastCycle) {
-              cycles.get(lastCycle)!.period = `${periodMatch[1]} to ${periodMatch[2]}`;
-            }
-          }
-        });
-        
-        // Convert map to array
-        cycles.forEach((data, cycle) => {
-          if (data.subjects.length > 0 || data.period) {
-            timelineData.push({
-              cycle,
-              subjects: data.subjects,
-              period: data.period
-            });
-          }
-        });
-      }
-    } catch (error) {
-      console.warn('Failed to parse timeline from SVG:', error);
-    }
-    
-    return timelineData;
-  }
 
   /**
    * Get unique subjects from cycle blocks
@@ -1361,16 +1278,10 @@ export class PDFService {
         'Student Type', pd.student_archetype || 'Not provided',
         'Graduation Stream', pd.graduation_stream || 'Not provided'
       ]);
-      if (pd.date_of_birth) {
+      if (pd.college_university) {
         rows.push([
-          'Date of Birth', pd.date_of_birth,
-          'Gender', pd.gender || 'Not provided'
-        ]);
-      }
-      if (pd.occupation) {
-        rows.push([
-          'Occupation', pd.occupation,
-          'Work Experience', pd.work_experience || 'Not provided'
+          'College/University', pd.college_university,
+          'Year of Passing', pd.year_of_passing?.toString() || 'Not provided'
         ]);
       }
     }
@@ -1380,18 +1291,16 @@ export class PDFService {
       const pb = studentIntake.preparation_background;
       rows.push([
         'Preparing Since', pb.preparing_since || 'Not provided',
-        'Number of Attempts', (pb.number_of_attempts || 0).toString()
+        'Number of Attempts', pb.number_of_attempts || 'Not provided'
       ]);
       rows.push([
         'Highest Stage Reached', pb.highest_stage_per_attempt || 'Not provided',
         'Previous Prelims Score', pb.last_attempt_gs_prelims_score > 0 ? pb.last_attempt_gs_prelims_score.toString() : 'N/A'
       ]);
-      if (pb.previous_optional_subjects && pb.previous_optional_subjects.length > 0) {
-        rows.push([
-          'Previous Optional', pb.previous_optional_subjects.join(', '),
-          'Coaching Experience', pb.coaching_experience || 'Self-study'
-        ]);
-      }
+      rows.push([
+        'CSAT Score', pb.last_attempt_csat_score > 0 ? pb.last_attempt_csat_score.toString() : 'N/A',
+        'Wrote Mains', pb.wrote_mains_in_last_attempt || 'Not provided'
+      ]);
     }
     
     // Study Strategy
@@ -1435,20 +1344,12 @@ export class PDFService {
       'Plan Start Date', studentIntake.start_date || 'Not provided'
     ]);
     
-    // Optional Subject and Language Preferences
-    if (studentIntake.optional_subject_selection) {
-      const oss = studentIntake.optional_subject_selection;
+    // Optional Subject
+    if (studentIntake.optional_subject) {
+      const os = studentIntake.optional_subject;
       rows.push([
-        'Optional Subject', oss.selected_optional_subject || 'Not selected',
-        'Optional Confidence', oss.optional_subject_confidence || 'Not assessed'
-      ]);
-    }
-    
-    if (studentIntake.language_preferences) {
-      const lp = studentIntake.language_preferences;
-      rows.push([
-        'Exam Medium', lp.exam_medium || 'English',
-        'Essay Language', lp.essay_language || 'English'
+        'Optional Subject', os.optional_subject_name || 'Not selected',
+        'Optional Status', os.optional_status || 'Not assessed'
       ]);
     }
     
@@ -1517,66 +1418,52 @@ export class PDFService {
   }
 
   /**
-   * Summarize block resources for table display - with proper text wrapping
+   * Summarize block resources for table display - simple bulleted list
    */
   private static summarizeBlockResources(blockResources?: BlockResources): string {
     if (!blockResources) {
       return 'No resources';
     }
 
-    const resourceDetails: string[] = [];
+    const resourceNames: string[] = [];
     
-    // Add primary books with full details
+    // Collect all resource names
     if (blockResources.primary_books && blockResources.primary_books.length > 0) {
       blockResources.primary_books.forEach(book => {
-        const timeFrame = book.duration_weeks ? ` (${book.duration_weeks} weeks)` : '';
-        const cost = book.resource_cost ? ` - ${this.formatResourceCost(book.resource_cost)}` : '';
-        resourceDetails.push(`${book.resource_title}${timeFrame}${cost}`);
+        resourceNames.push(`• ${book.resource_title}`);
       });
     }
     
-    // Add supplementary materials with details
     if (blockResources.supplementary_materials && blockResources.supplementary_materials.length > 0) {
       blockResources.supplementary_materials.forEach(mat => {
-        const timeFrame = mat.duration_weeks ? ` (${mat.duration_weeks} weeks)` : '';
-        const cost = mat.resource_cost ? ` - ${this.formatResourceCost(mat.resource_cost)}` : '';
-        resourceDetails.push(`${mat.resource_title}${timeFrame}${cost}`);
+        resourceNames.push(`• ${mat.resource_title}`);
       });
     }
     
-    // Add current affairs sources
     if (blockResources.current_affairs_sources && blockResources.current_affairs_sources.length > 0) {
       blockResources.current_affairs_sources.forEach(ca => {
-        const timeFrame = ca.duration_weeks ? ` (${ca.duration_weeks} weeks)` : '';
-        const cost = ca.resource_cost ? ` - ${this.formatResourceCost(ca.resource_cost)}` : '';
-        resourceDetails.push(`${ca.resource_title}${timeFrame}${cost}`);
+        resourceNames.push(`• ${ca.resource_title}`);
       });
     }
     
-    // Add practice resources
     if (blockResources.practice_resources && blockResources.practice_resources.length > 0) {
       blockResources.practice_resources.forEach(practice => {
-        const timeFrame = practice.duration_weeks ? ` (${practice.duration_weeks} weeks)` : '';
-        const cost = practice.resource_cost ? ` - ${this.formatResourceCost(practice.resource_cost)}` : '';
-        resourceDetails.push(`${practice.resource_title}${timeFrame}${cost}`);
+        resourceNames.push(`• ${practice.resource_title}`);
       });
     }
     
-    // Add video content
     if (blockResources.video_content && blockResources.video_content.length > 0) {
       blockResources.video_content.forEach(video => {
-        const timeFrame = video.duration_weeks ? ` (${video.duration_weeks} weeks)` : '';
-        const cost = video.resource_cost ? ` - ${this.formatResourceCost(video.resource_cost)}` : '';
-        resourceDetails.push(`${video.resource_title}${timeFrame}${cost}`);
+        resourceNames.push(`• ${video.resource_title}`);
       });
     }
     
-    if (resourceDetails.length === 0) {
+    if (resourceNames.length === 0) {
       return 'Resources available';
     }
     
     // Join with line breaks and truncate if too long
-    const fullText = resourceDetails.join('\n');
+    const fullText = resourceNames.join('\n');
     const maxLength = 200; // Adjust based on column width
     
     if (fullText.length > maxLength) {
@@ -1607,23 +1494,6 @@ export class PDFService {
     return subject?.subjectName || subjectCode;
   }
 
-  /**
-   * Format resource cost for display
-   */
-  private static formatResourceCost(resourceCost?: any): string {
-    if (!resourceCost) return 'Free';
-    
-    switch (resourceCost.type) {
-      case 'Free':
-        return 'Free';
-      case 'Paid':
-        return `₹${resourceCost.amount || 'N/A'}`;
-      case 'Subscription':
-        return `${resourceCost.plan || 'Subscription'} Sub`;
-      default:
-        return 'Free';
-    }
-  }
 
   /**
    * Calculate total weeks across all cycles

@@ -7,8 +7,8 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       rollupTypes: true,
-      // Use test-specific tsconfig to suppress unused variable warnings in test files
-      tsconfigPath: './tsconfig.test.json',
+      // Use main tsconfig for build
+      tsconfigPath: './tsconfig.json',
     }),
   ],
   build: {
