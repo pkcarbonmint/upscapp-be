@@ -1,5 +1,8 @@
 // Main export file for shared-ui-library
 
+// Styles - Import first to ensure they're available
+import './styles/index.css';
+
 // Auth exports
 export * from './auth/types';
 export { SharedAuthService, sharedAuthService } from './auth/SharedAuthService';

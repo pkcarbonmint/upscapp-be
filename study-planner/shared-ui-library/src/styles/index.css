@@ -1,0 +1,4 @@
+/* Shared Design System - Import all components */
+@import './base.css';
+@import './mobile.css';
+@import './animations.css';
