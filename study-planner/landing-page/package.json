@@ -1,0 +1,28 @@
+{
+  "name": "landing-page",
+  "version": "1.0.0",
+  "description": "Static landing page for La Mentora Study Planner",
+  "main": "dist/index.html",
+  "scripts": {
+    "build": "npm run copy-assets && npm run process-html",
+    "copy-assets": "mkdir -p dist && cp -r src/assets dist/ && cp -r ../shared-ui-library/src/styles dist/shared",
+    "process-html": "cp src/index.html dist/index.html",
+    "dev": "npm run build && cd dist && python3 -m http.server 8080",
+    "clean": "rm -rf dist"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "landing-page",
+    "upsc",
+    "study-planner",
+    "static-site"
+  ],
+  "author": "Laex Team",
+  "license": "MIT",
+  "devDependencies": {
+    "postcss": "^8.4.0",
+    "postcss-cli": "^10.0.0"
+  }
+}
