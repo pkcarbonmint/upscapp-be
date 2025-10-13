@@ -598,7 +598,7 @@ async function getResourcesForStudyTask(studyTaskDef: StudyTaskDef, studentProfi
     const { NCERTMaterialsService } = await import('../services/NCERTMaterialsService');
     
     // For C1 (NCERT Foundation) cycle, use NCERT materials
-    if (studentProfile?.archetype?.archetype === 'C1' || studyTaskDef.study_subject === 'C1') {
+    if (studentProfile?.archetype === 'C1' || studyTaskDef.study_subject === 'C1' || studyTaskDef.study_archetype === 'C1') {
       const subjectCode = studyTaskDef.study_subject;
       const availableTopics = await NCERTMaterialsService.getAvailableTopicCodes();
       
