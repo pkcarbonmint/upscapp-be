@@ -476,13 +476,13 @@ async function createEnhancedWeeklyPlan(
     start_date: new Date().toISOString().split('T')[0]
   });
   
-  // Create mock archetype
+  // Create mock archetype with cycle type information
   const mockArchetype = {
-    archetype: 'Balanced',
+    archetype: cycleType, // Pass the actual cycle type (e.g., 'C1')
     timeCommitment: 'FullTime' as const,
     weeklyHoursMin: 40,
     weeklyHoursMax: 60,
-    description: 'Balanced study approach',
+    description: `${cycleType} study approach`,
     defaultPacing: 'Balanced' as const,
     defaultApproach: 'SingleSubject' as const
   };

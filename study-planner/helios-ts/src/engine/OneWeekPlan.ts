@@ -246,7 +246,7 @@ async function generateStudyTasks(
         // Create study task definition for resource fetching
         const studyTaskDef: StudyTaskDef = {
           study_subject: subjectCodeText,
-          study_topic: topic.topicName,
+          study_topic: topic.topicCode, // Use topicCode instead of topicName for better matching
           study_duration_minutes: topicDurationMinutes,
           study_archetype: archetype,
           study_confidence: subjectConfidence
@@ -260,7 +260,8 @@ async function generateStudyTasks(
           `Study: ${topic.topicName}`,
           topicDurationMinutes,
           topic.resourceLink,
-          taskResources
+          taskResources,
+          topic.topicCode // Pass the topic code for resource matching
         );
       })
     );
@@ -371,7 +372,8 @@ async function createStudyTask(
   title: string,
   durationMinutes: number,
   resourceLink?: string,
-  taskResources?: Resource[]
+  taskResources?: Resource[],
+  topicCode?: string
 ): Promise<Task> {
   const taskId = `task-${uuidv4()}`;
   return {
@@ -382,7 +384,8 @@ async function createStudyTask(
     details_link: resourceLink,
     currentAffairsType: undefined, // Not a CA task
     task_resources: taskResources,
-    taskType: 'study'
+    taskType: 'study',
+    topicCode: topicCode // Include topic code for NCERT materials matching
   };
 }
 
@@ -587,11 +590,54 @@ function createStudentProfile(archetype: any, studentIntake: StudentIntake): any
 }
 
 /**
- * Get resources for study task (mock implementation)
+ * Get resources for study task with NCERT materials support for C1 cycle
  */
-async function getResourcesForStudyTask(_studyTaskDef: StudyTaskDef, _studentProfile: any): Promise<Resource[] | undefined> {
-  // Mock implementation - in real code this would fetch actual resources
-  return undefined;
+async function getResourcesForStudyTask(studyTaskDef: StudyTaskDef, studentProfile: any): Promise<Resource[] | undefined> {
+  try {
+    // Import NCERTMaterialsService dynamically to avoid circular dependencies
+    const { NCERTMaterialsService } = await import('../services/NCERTMaterialsService');
+    
+    // For C1 (NCERT Foundation) cycle, use NCERT materials
+    if (studentProfile?.archetype?.archetype === 'C1' || studyTaskDef.study_subject === 'C1') {
+      const subjectCode = studyTaskDef.study_subject;
+      const availableTopics = await NCERTMaterialsService.getAvailableTopicCodes();
+      
+      // If we have a specific topic, try to find exact match first
+      if (studyTaskDef.study_topic) {
+        // Try direct topic code match (e.g., H01/01)
+        const directMatch = availableTopics.find(topicCode => topicCode === studyTaskDef.study_topic);
+        if (directMatch) {
+          return await NCERTMaterialsService.getResourcesForC1Task(directMatch);
+        }
+        
+        // Try to find topic codes that match the subject and could relate to the topic name
+        const subjectTopics = availableTopics.filter(topicCode => topicCode.startsWith(subjectCode + '/'));
+        if (subjectTopics.length > 0) {
+          // For now, return materials from the first matching topic
+          // In the future, this could be enhanced with topic name matching
+          return await NCERTMaterialsService.getResourcesForC1Task(subjectTopics[0]);
+        }
+      }
+      
+      // Fallback: get materials for any topic under this subject
+      const subjectTopics = availableTopics.filter(topicCode => topicCode.startsWith(subjectCode));
+      if (subjectTopics.length > 0) {
+        // Return materials from multiple topics for broader coverage
+        const allMaterials = await Promise.all(
+          subjectTopics.slice(0, 3).map(topicCode => 
+            NCERTMaterialsService.getResourcesForC1Task(topicCode)
+          )
+        );
+        return allMaterials.flat();
+      }
+    }
+    
+    // For non-C1 cycles, return undefined (will use existing resource system)
+    return undefined;
+  } catch (error) {
+    console.warn('Failed to load NCERT materials for study task:', error);
+    return undefined;
+  }
 }
 
 /**
