@@ -44,7 +44,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ["helios-ts", "shared-ui-library"],
-    include: ['react', 'react-dom', 'antd'] // Pre-bundle common dependencies
+    include: ['react', 'react-dom', 'antd', 'jspdf', 'html2canvas', 'chart.js'] // Pre-bundle common dependencies
   },
   build: {
     commonjsOptions: {

@@ -112,7 +112,7 @@ export class MockApiService {
     };
   }
 
-  async verifyOTP(verificationId: string, otpCode: string): Promise<ApiResponse<LoginResponse>> {
+  async verifyOTP(_verificationId: string, otpCode: string): Promise<ApiResponse<LoginResponse>> {
     await this.delay();
     
     if (otpCode === '123456') {
@@ -229,7 +229,7 @@ export class MockApiService {
   }
 
   // Payment service mocks
-  async createPaymentLink(studentId: string, amount: number, description: string): Promise<ApiResponse<PaymentLinkResponse>> {
+  async createPaymentLink(studentId: string, _amount: number, _description: string): Promise<ApiResponse<PaymentLinkResponse>> {
     await this.delay();
     
     const paymentLinkId = `pl_${Date.now()}`;
