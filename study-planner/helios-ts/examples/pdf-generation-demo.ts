@@ -1,11 +1,14 @@
 /**
- * Demo script showing how to use the unified PDF generation
+ * Demo script showing how to use both PDF generation services
  * 
- * This demonstrates the new consolidated PDFService that provides both
- * structured (Word-like) and visual (chart-based) PDF generation.
+ * This demonstrates:
+ * 1. The original PDFService (jsPDF-based)
+ * 2. The new HighFidelityPDFService (Puppeteer-based) 
+ * 
+ * Both services have identical interfaces for easy swapping
  */
 
-import { PDFService } from '../src/index';
+import { PDFService, HighFidelityPDFService } from '../src/index';
 import type { StudyPlan, StudentIntake } from '../src/types/models';
 
 // Sample study plan data
@@ -167,45 +170,87 @@ const sampleStudentIntake: StudentIntake = {
 };
 
 /**
- * Demo function showing different PDF generation options
+ * Demo function showing different PDF generation options for both services
  */
 async function demonstratePDFGeneration() {
-  console.log('🚀 Helios Unified PDF Generation Demo');
-  console.log('=====================================');
+  console.log('🚀 Helios PDF Generation Services Comparison Demo');
+  console.log('================================================');
   
   try {
-    // Option 1: Generate structured PDF (RECOMMENDED - matches Word document format)
-    console.log('📋 Generating structured PDF (matches Word document)...');
+    // ===== ORIGINAL JSPDF-BASED SERVICE =====
+    console.log('\n📄 Testing Original PDFService (jsPDF-based)...');
+    
+    console.log('📋 Generating structured PDF with original service...');
     await PDFService.generateStructuredPDF(
       sampleStudyPlan, 
       sampleStudentIntake, 
-      'demo-structured-study-plan.pdf'
+      'original-structured-study-plan.pdf'
     );
-    console.log('✅ Structured PDF generated successfully!');
+    console.log('✅ Original structured PDF generated successfully!');
     
-    // Option 2: Generate visual PDF with charts and modern design
-    console.log('📊 Generating visual PDF with charts...');
+    console.log('📊 Generating visual PDF with original service...');
     await PDFService.generateVisualPDF(
       sampleStudyPlan,
       sampleStudentIntake,
-      'demo-visual-study-plan.pdf'
+      'original-visual-study-plan.pdf'
     );
-    console.log('✅ Visual PDF generated successfully!');
+    console.log('✅ Original visual PDF generated successfully!');
     
-    // Option 3: Use unified API (defaults to structured)
-    console.log('🎯 Generating PDF using unified API (defaults to structured)...');
+    // ===== NEW HIGH-FIDELITY PUPPETEER-BASED SERVICE =====
+    console.log('\n🎨 Testing HighFidelityPDFService (Puppeteer-based)...');
+    
+    console.log('📋 Generating high-fidelity structured PDF...');
+    await HighFidelityPDFService.generateStructuredPDF(
+      sampleStudyPlan, 
+      sampleStudentIntake, 
+      'high-fidelity-structured-study-plan.pdf'
+    );
+    console.log('✅ High-fidelity structured PDF generated successfully!');
+    
+    console.log('📊 Generating high-fidelity visual PDF...');
+    await HighFidelityPDFService.generateVisualPDF(
+      sampleStudyPlan,
+      sampleStudentIntake,
+      'high-fidelity-visual-study-plan.pdf'
+    );
+    console.log('✅ High-fidelity visual PDF generated successfully!');
+    
+    // ===== UNIFIED API COMPARISON =====
+    console.log('\n🎯 Testing unified APIs (both services have identical interfaces)...');
+    
+    // Original service with unified API
     await PDFService.generateStudyPlanPDF(sampleStudyPlan, sampleStudentIntake, {
-      filename: 'demo-unified-default.pdf'
+      type: 'structured',
+      filename: 'original-unified-structured.pdf'
     });
-    console.log('✅ Unified API PDF generated successfully!');
+    console.log('✅ Original service unified API - structured');
     
-    // Option 4: Use unified API with visual type
-    console.log('🎨 Generating visual PDF using unified API...');
     await PDFService.generateStudyPlanPDF(sampleStudyPlan, sampleStudentIntake, {
       type: 'visual',
-      filename: 'demo-unified-visual.pdf'
+      filename: 'original-unified-visual.pdf'
     });
-    console.log('✅ Unified visual PDF generated successfully!');
+    console.log('✅ Original service unified API - visual');
+    
+    // High-fidelity service with unified API  
+    await HighFidelityPDFService.generateStudyPlanPDF(sampleStudyPlan, sampleStudentIntake, {
+      type: 'structured',
+      filename: 'high-fidelity-unified-structured.pdf'
+    });
+    console.log('✅ High-fidelity service unified API - structured');
+    
+    await HighFidelityPDFService.generateStudyPlanPDF(sampleStudyPlan, sampleStudentIntake, {
+      type: 'visual', 
+      filename: 'high-fidelity-unified-visual.pdf'
+    });
+    console.log('✅ High-fidelity service unified API - visual');
+    
+    console.log('\n🎉 All PDF generation tests completed successfully!');
+    console.log('📂 Check your generated-docs folder for all the PDFs');
+    
+    console.log('\n📊 Summary:');
+    console.log('- Original PDFService: 4 PDFs generated (good for quick generation)');
+    console.log('- HighFidelityPDFService: 4 PDFs generated (superior quality, modern aesthetics)');
+    console.log('- Both services have identical interfaces for easy swapping');
     
   } catch (error) {
     console.error('❌ PDF generation failed:', error);
@@ -213,59 +258,85 @@ async function demonstratePDFGeneration() {
 }
 
 /**
- * Usage examples for different scenarios
+ * Usage examples for different scenarios showing both services
  */
 export const PDFGenerationExamples = {
   
   /**
-   * Generate structured PDF (RECOMMENDED - matches Word documents)
+   * Generate structured PDF using original service (jsPDF-based)
    */
-  async generateStructuredPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
-    // This creates a PDF with:
-    // - Title and subtitle
-    // - Study plan overview with cycle descriptions
-    // - Student profile table
-    // - Study blocks tables for each cycle (color-coded)
-    // - Resources section
-    // - Professional formatting matching Word documents
+  async generateOriginalStructuredPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
+    // Uses jsPDF with autoTable for structured layout
+    // Good for: Quick generation, smaller file sizes, broad compatibility
     await PDFService.generateStructuredPDF(studyPlan, studentIntake, filename);
   },
   
   /**
-   * Generate visual PDF with charts and modern design
+   * Generate structured PDF using high-fidelity service (Puppeteer-based)
    */
-  async generateVisualPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
-    // This creates a PDF with:
-    // - Beautiful HTML/CSS design
-    // - Interactive charts converted to images
-    // - Modern visual presentation
-    // - Statistics cards and progress bars
+  async generateHighFidelityStructuredPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
+    // Uses Puppeteer with high-quality HTML/CSS rendering
+    // Good for: Superior aesthetics, modern design, precise typography
+    await HighFidelityPDFService.generateStructuredPDF(studyPlan, studentIntake, filename);
+  },
+  
+  /**
+   * Generate visual PDF with charts using original service
+   */
+  async generateOriginalVisualPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
+    // Uses jsPDF with html2canvas for chart rendering
+    // Good for: Interactive charts, moderate visual quality
     await PDFService.generateVisualPDF(studyPlan, studentIntake, filename);
   },
   
   /**
-   * Use unified API - defaults to structured PDF
+   * Generate visual PDF with charts using high-fidelity service
    */
-  async generateDefaultPDF(studyPlan: StudyPlan, studentIntake: StudentIntake) {
-    // This automatically generates structured PDF (recommended)
-    await PDFService.generateStudyPlanPDF(studyPlan, studentIntake);
+  async generateHighFidelityVisualPDF(studyPlan: StudyPlan, studentIntake: StudentIntake, filename?: string) {
+    // Uses Puppeteer with native browser chart rendering
+    // Good for: Crisp charts, advanced CSS effects, premium presentation
+    await HighFidelityPDFService.generateVisualPDF(studyPlan, studentIntake, filename);
   },
   
   /**
-   * Use unified API with specific type and options
+   * Easy swapping between services - both have identical interfaces
    */
-  async generateWithOptions(studyPlan: StudyPlan, studentIntake: StudentIntake) {
-    // Generate structured PDF with custom filename
-    await PDFService.generateStudyPlanPDF(studyPlan, studentIntake, {
-      type: 'structured',
-      filename: 'my-custom-plan.pdf'
-    });
+  async generateWithEasySwapping(studyPlan: StudyPlan, studentIntake: StudentIntake, useHighFidelity = true) {
+    // Choose service based on requirements
+    const pdfService = useHighFidelity ? HighFidelityPDFService : PDFService;
     
-    // Generate visual PDF with custom filename
-    await PDFService.generateStudyPlanPDF(studyPlan, studentIntake, {
-      type: 'visual', 
-      filename: 'my-visual-plan.pdf'
+    // Generate structured PDF (recommended for professional documents)
+    await pdfService.generateStructuredPDF(studyPlan, studentIntake, 'professional-plan.pdf');
+    
+    // Generate visual PDF (recommended for presentations)
+    await pdfService.generateVisualPDF(studyPlan, studentIntake, 'presentation-plan.pdf');
+    
+    // Use unified API
+    await pdfService.generateStudyPlanPDF(studyPlan, studentIntake, {
+      type: 'structured',
+      filename: 'unified-plan.pdf'
     });
+  },
+  
+  /**
+   * Performance comparison - choose based on your needs
+   */
+  async performanceComparison(studyPlan: StudyPlan, studentIntake: StudentIntake) {
+    console.log('⚡ Performance Comparison:');
+    
+    // Original service - faster, smaller files
+    console.time('Original PDFService');
+    await PDFService.generateStructuredPDF(studyPlan, studentIntake, 'fast-generation.pdf');
+    console.timeEnd('Original PDFService');
+    
+    // High-fidelity service - slower, higher quality
+    console.time('HighFidelityPDFService');
+    await HighFidelityPDFService.generateStructuredPDF(studyPlan, studentIntake, 'premium-quality.pdf');
+    console.timeEnd('HighFidelityPDFService');
+    
+    console.log('📊 Choose based on your priorities:');
+    console.log('- Original: Speed, compatibility, smaller files');
+    console.log('- HighFidelity: Quality, aesthetics, modern design');
   }
 };
 
