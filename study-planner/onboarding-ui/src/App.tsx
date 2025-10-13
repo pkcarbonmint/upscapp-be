@@ -20,7 +20,6 @@ import PreviewStep from './components/PreviewStep';
 import PaymentStep from './components/PaymentStep';
 import FinalStep from './components/FinalStep';
 import ThemeDebugger from './components/ThemeDebugger';
-import LandingPage from './components/LandingPage';
 
 // Initial data matching Elm app
 const initialBackground: IWFBackground = {
@@ -135,6 +134,10 @@ function App() {
   const handleGetStarted = () => {
     setShowIntro(false)
     analytics.track('onboarding_started')
+  }
+
+  const handleShareApp = () => {
+    console.log('Share app clicked')
   }
 
   const getStepTitle = (step: Step): string => {
@@ -464,7 +467,66 @@ function App() {
   }
 
   if (showIntro) {
-    return <LandingPage onGetStarted={handleGetStarted} />
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header userName={getUserName()} />
+        <div className="flex-1 flex items-start justify-center px-4 pt-16 pb-8">
+          <div className="w-full max-w-4xl bg-white border border-gray-200 p-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 text-center">
+              Welcome to La Mentora
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 text-center mb-6">
+              Get a personalized UPSC study plan that adapts to your schedule, strengths, and target exam year.
+            </p>
+            
+            <div className="mb-8 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-gray-700">
+                  Personalized plan aligned to your target year and schedule
+                </span>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-gray-700">
+                  AI guidance and expert heuristics to prioritize what matters
+                </span>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                <span className="text-gray-700">
+                  Quick setup — get a study blueprint in under 5 minutes
+                </span>
+              </div>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <Button 
+                onClick={handleGetStarted}
+                size="lg"
+                className="px-6 py-6 text-base h-12 min-h-[48px]"
+              >
+                Get Started
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+              
+              <div className="text-gray-500 text-sm sm:text-base">
+                Takes less than 5 minutes
+              </div>
+              
+              <div className="pt-6">
+                <button 
+                  onClick={handleShareApp}
+                  className="text-xs sm:text-sm text-gray-400 hover:text-gray-600 underline transition-colors"
+                >
+                  Share with friends
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

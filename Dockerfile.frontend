@@ -17,6 +17,9 @@ FROM nginx:alpine
 # Copy built files from workspace builder
 COPY --from=workspace-builder /app/faculty-ui/dist/ /usr/share/nginx/html/faculty/
 COPY --from=workspace-builder /app/onboarding-ui/dist/ /usr/share/nginx/html/onboarding/
+
+# Copy static landing page
+COPY static-landing/ /usr/share/nginx/html/landing/
 # Copy unified nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
