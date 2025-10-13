@@ -13,13 +13,16 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: {
+        index: resolve(__dirname, 'src/index.ts'),
+        server: resolve(__dirname, 'src/server.ts'),
+      },
       name: 'HeliosTS',
       formats: ['es', 'cjs'],
-      fileName: (format) => {
-        if (format === 'es') return 'index.esm.js';
-        if (format === 'cjs') return 'index.cjs.js';
-        return 'index.js';
+      fileName: (format, entryName) => {
+        if (format === 'es') return `${entryName}.esm.js`;
+        if (format === 'cjs') return `${entryName}.cjs.js`;
+        return `${entryName}.js`;
       },
     },
     rollupOptions: {

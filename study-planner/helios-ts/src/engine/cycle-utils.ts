@@ -189,7 +189,17 @@ export async function createBlocksForSubjects(
     // Get resources for this subject
     let blockResources;
     try {
-      blockResources = await ResourceService.getResourcesForSubject(subject.subjectCode);
+      if (cycleType === 'C1') {
+        // For C1 cycles, use NCERT materials
+        blockResources = await ResourceService.suggestResourcesForBlock(
+          [subject.subjectCode], 
+          cycleType,
+          blockDurationWeeks
+        );
+      } else {
+        // For other cycles, use regular resources
+        blockResources = await ResourceService.getResourcesForSubject(subject.subjectCode);
+      }
     } catch (error) {
       console.warn(`Failed to load resources for subject ${subject.subjectCode}:`, error);
       blockResources = {
@@ -751,7 +761,17 @@ async function createSingleSubjectBlock(
   // Get resources (lines 118-132)
   let blockResources;
   try {
-    blockResources = await ResourceService.getResourcesForSubject(subject.subjectCode);
+    if (cycleType === 'C1') {
+      // For C1 cycles, use NCERT materials
+      blockResources = await ResourceService.suggestResourcesForBlock(
+        [subject.subjectCode], 
+        cycleType,
+        blockDurationWeeks
+      );
+    } else {
+      // For other cycles, use regular resources
+      blockResources = await ResourceService.getResourcesForSubject(subject.subjectCode);
+    }
   } catch (error) {
     console.warn(`Failed to load resources for subject ${subject.subjectCode}:`, error);
     blockResources = {

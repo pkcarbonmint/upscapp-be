@@ -24,9 +24,9 @@ cleanup() {
     echo ""
     echo "🛑 Stopping services..."
     kill $FRONTEND_PID 2>/dev/null || true
-    kill $BACKEND_PID 2>/dev/null || true
-    cd .. && docker-compose down
-    echo "✅ All services stopped"
+    # kill $BACKEND_PID 2>/dev/null || true
+    # cd .. && docker-compose down
+    # echo "✅ All services stopped"
     exit 0
 }
 

@@ -10,6 +10,11 @@
       "import": "./dist/index.esm.js",
       "require": "./dist/index.cjs.js",
       "types": "./dist/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.esm.js",
+      "require": "./dist/server.cjs.js",
+      "types": "./dist/server.d.ts"
     }
   },
   "files": [

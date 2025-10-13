@@ -335,7 +335,7 @@ app.post('/plan/export/pdf', async (req, res) => {
     }
     
     // Dynamically import HighFidelityPDFService to avoid bundling issues
-    const { HighFidelityPDFService } = await import('helios-ts/src/services/HighFidelityPDFService');
+    const { HighFidelityPDFService } = await import('helios-ts/server');
     
     // Generate PDF using HighFidelityPDFService
     await HighFidelityPDFService.generateStructuredPDF(

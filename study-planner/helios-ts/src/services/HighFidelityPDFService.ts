@@ -505,13 +505,15 @@ export class HighFidelityPDFService {
     const blocksHTML = (cycle.cycleBlocks || []).map(block => {
       const blockDates = this.calculateBlockDates(cycle, block, 0);
       const durationText = `${blockDates.start} - ${blockDates.end}\n${block.duration_weeks || 0} week(s)`;
-      const resourceSummary = this.summarizeBlockResources(block.block_resources);
-      
+      const resourceSummary: string[] = this.summarizeBlockResources(block.block_resources);
+      const resourceBullets = resourceSummary.map(resource => `<li>${resource}</li>`).join('\n');
       return `
         <tr style="background-color: ${cycleColor.bg};">
           <td>${block.block_title || 'Untitled'}</td>
           <td class="duration-cell">${durationText}</td>
-          <td class="resources-cell">${resourceSummary}</td>
+          <td class="resources-cell">
+            <ul class="resource-list">${resourceBullets}</ul>
+          </td>
         </tr>
       `;
     }).join('');
@@ -577,10 +579,10 @@ export class HighFidelityPDFService {
         resourcesHTML += `
         <div class="subject-resources">
             <h4>${subjectName}</h4>
-            <div class="resource-list">
-                ${resourceNames.slice(0, 5).join('<br>')}
-                ${resourceNames.length > 5 ? '<br>... and more resources available' : ''}
-            </div>
+            <ul class="resource-list">
+              <li>${resourceNames.join('</li><li>')}
+              </li>
+            </ul>
         </div>`;
         
       } catch (error) {
@@ -1354,43 +1356,50 @@ export class HighFidelityPDFService {
   /**
    * Summarize block resources for table display
    */
-  private static summarizeBlockResources(blockResources?: BlockResources): string {
-    if (!blockResources) {
-      return 'No resources specified';
-    }
-
-    const resourceNames: string[] = [];
+  private static summarizeBlockResources({
+    primary_books,
+    supplementary_materials,
+    current_affairs_sources,
+    practice_resources,
+    video_content,
+    revision_materials,
+    expert_recommendations,
+  }: BlockResources): string[] {
     
-    if (blockResources.primary_books && blockResources.primary_books.length > 0) {
-      blockResources.primary_books.forEach(book => {
-        resourceNames.push(`• ${book.resource_title}`);
-      });
-    }
+    return [
+      ...primary_books,
+      ...supplementary_materials,
+      ...current_affairs_sources,
+      ...practice_resources,
+      ...video_content,
+      ...revision_materials,
+      ...expert_recommendations,      
+    ]
+    .map(resource => resource.resource_title);
     
-    if (blockResources.supplementary_materials && blockResources.supplementary_materials.length > 0) {
-      blockResources.supplementary_materials.forEach(mat => {
-        resourceNames.push(`• ${mat.resource_title}`);
-      });
-    }
+    // const resourceNames: string[] = [];
+    // if (blockResources.primary_books && blockResources.primary_books.length > 0) {
+    //   blockResources.primary_books.forEach(book => {
+    //     resourceNames.push(`${book.resource_title}`);
+    //   });
+    // }
     
-    if (blockResources.current_affairs_sources && blockResources.current_affairs_sources.length > 0) {
-      blockResources.current_affairs_sources.forEach(ca => {
-        resourceNames.push(`• ${ca.resource_title}`);
-      });
-    }
+    // if (blockResources.supplementary_materials && blockResources.supplementary_materials.length > 0) {
+    //   blockResources.supplementary_materials.forEach(mat => {
+    //     resourceNames.push(`${mat.resource_title}`);
+    //   });
+    // }
     
-    if (resourceNames.length === 0) {
-      return 'Comprehensive resources available';
-    }
+    // if (blockResources.current_affairs_sources && blockResources.current_affairs_sources.length > 0) {
+    //   blockResources.current_affairs_sources.forEach(ca => {
+    //     resourceNames.push(`${ca.resource_title}`);
+    //   });
+    // }
     
-    const fullText = resourceNames.join('\n');
-    const maxLength = 150;
+    // if (resourceNames.length === 0) {
+    //   return ['No resources available'];
+    // }
     
-    if (fullText.length > maxLength) {
-      return fullText.substring(0, maxLength) + '\n... and more';
-    }
-    
-    return fullText;
   }
 
   /**
