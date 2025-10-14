@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { determineCycleSchedule } from '../engine/cycle-scheduler';
 import { makeLogger } from '../services/Log';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
-import { loadAllSubjects } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 import dayjs from 'dayjs';
 import { Block, DailyPlan, StudentIntake, StudyPlan, Task, WeeklyPlan, createStudentIntake } from '../types/models';
 import { CycleType } from '../types/Types';
@@ -215,7 +215,7 @@ describe('CycleSchedulerScenarios', () => {
 			);
 
 			// Get all subjects
-			const allSystemSubjects = loadAllSubjects().map(s => s.subjectCode);
+			const allSystemSubjects = (await ConfigService.loadAllSubjects()).map(s => s.subjectCode);
 
 			// Collect all subjects covered across cycles
 			const coveredSubjects = new Set<string>();

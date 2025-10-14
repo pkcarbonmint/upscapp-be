@@ -2,7 +2,7 @@ import { Block, WeeklyPlan, DailyPlan, StudentIntake } from '../types/models';
 import { CycleType, SubjectApproach } from '../types/Types';
 import { Subject, getTopicEstimatedHours } from '../types/Subjects';
 import { ResourceService } from '../services/ResourceService';
-import { SubjectLoader } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 import { createPlanForOneWeek, Config } from './OneWeekPlan';
 import { makeLogger } from '../services/Log';
 import { selectBestArchetype } from '../services/ArchetypeSelector';
@@ -497,7 +497,7 @@ async function createEnhancedWeeklyPlan(
   const config = createConfigFromCycleType(cycleType, intake);
   
   // Convert topic hours to subject format for OneWeekPlan.ts
-  const subject = SubjectLoader.getSubjectByCode(subjectCode);
+  const subject = await ConfigService.getSubjectByCode(subjectCode);
   if (!subject) {
     console.warn(`Subject ${subjectCode} not found, falling back to basic plan`);
     return createBasicWeeklyPlan(durationWeeks, subjectCode);

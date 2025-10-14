@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 
 // This will be the home for the ported PrepModeEngine logic
 
-import { getPrepModeProgression } from '../engine/PrepModeEngine';
+import { ConfigService } from '../services/ConfigService';
 
 describe('PrepModeEngine', () => {
 
@@ -61,10 +61,10 @@ describe('PrepModeEngine', () => {
     shouldReject: false,
   };
 
-  it('generates correct PrepMode progression for Oct 2025 Full-Time Professional', () => {
+  it('generates correct PrepMode progression for Oct 2025 Full-Time Professional', async () => {
     const weeklyHours = 40;
     console.log(`FULL-TIME-TEST: weeklyHours=${weeklyHours}`);
-    const actualModes = getPrepModeProgression(
+    const actualModes = await ConfigService.getPrepModeProgression(
       oct2025FullTime.planDate,
       oct2025FullTime.targetYear,
       oct2025FullTime.studentArchetype,
@@ -73,9 +73,9 @@ describe('PrepModeEngine', () => {
     expect(actualModes).toEqual(oct2025FullTime.expectedPrepModes);
   });
 
-  it('generates correct PrepMode progression for Oct 2025 Working Professional', () => {
+  it('generates correct PrepMode progression for Oct 2025 Working Professional', async () => {
     const weeklyHours = 25;
-    const actualModes = getPrepModeProgression(
+    const actualModes = await ConfigService.getPrepModeProgression(
       oct2025Working.planDate,
       oct2025Working.targetYear,
       oct2025Working.studentArchetype,

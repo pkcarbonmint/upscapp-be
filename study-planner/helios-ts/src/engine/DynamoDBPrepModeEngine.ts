@@ -1,10 +1,18 @@
 import type { PrepMode } from '../types/Types';
 import type { Archetype } from '../types/models';
 import type { PrepModeConfigFile, ExamSchedule, PrelimThresholds, MainsThresholds } from '../types/config';
-import * as prepModeConfigData from '../config/prep_modes.json';
+import { loadPrepModeConfig } from '../services/DynamoDBSubjectLoader';
 import dayjs from 'dayjs';
 
-const prepModeConfig: PrepModeConfigFile = prepModeConfigData as any;
+// Cache for config
+let prepModeConfigCache: PrepModeConfigFile | null = null;
+
+async function getPrepModeConfig(): Promise<PrepModeConfigFile> {
+  if (prepModeConfigCache === null) {
+    prepModeConfigCache = await loadPrepModeConfig();
+  }
+  return prepModeConfigCache;
+}
 
 function getArchetypeWeeklyHours(archetype: Archetype): number {
     return archetype.timeCommitment === 'FullTime' ? 45 : 25;
@@ -42,7 +50,8 @@ function determineMainsPrepMode(thresholds: MainsThresholds, daysToMains: number
     return "TooLateMode";
 }
 
-function determinePrepModeForYear(currentDate: dayjs.Dayjs, targetYear: number, archetype: Archetype): PrepMode {
+async function determinePrepModeForYear(currentDate: dayjs.Dayjs, targetYear: number, archetype: Archetype): Promise<PrepMode> {
+    const prepModeConfig = await getPrepModeConfig();
     const examSchedule = prepModeConfig.exam_schedule;
     const thresholds = prepModeConfig.time_thresholds;
     const prelimsDate = getPrelimsDatesForYear(examSchedule, targetYear);
@@ -71,18 +80,18 @@ function parseTargetYear(targetYearText: string): number | null {
     return !isNaN(year) && year >= 2024 && year <= 2030 ? year : null;
 }
 
-export function getPrepModeProgression(
+export async function getPrepModeProgression(
     planDate: dayjs.Dayjs,
     targetYearStr: string | undefined,
     archetype: Archetype,
     weeklyHours: number // Add weeklyHours as a direct parameter
-): PrepMode[] {
+): Promise<PrepMode[]> {
 
-    const initialMode = (() => {
+    const initialMode = await (async () => {
         if (!targetYearStr) return "LongtermFoundation";
         const targetYear = parseTargetYear(targetYearStr);
         if (!targetYear) return "LongtermFoundation";
-        return determinePrepModeForYear(planDate, targetYear, archetype);
+        return await determinePrepModeForYear(planDate, targetYear, archetype);
     })();
 
     if (initialMode === "TooLateMode") return ["TooLateMode"];
@@ -95,6 +104,7 @@ export function getPrepModeProgression(
     if (initialMode === "MediumtermFoundation") {
         const targetYear = parseTargetYear(targetYearStr || '');
         if (targetYear) {
+            const prepModeConfig = await getPrepModeConfig();
             const prelimsDate = getPrelimsDatesForYear(prepModeConfig.exam_schedule, targetYear);
             const daysToPrelims = diffDays(prelimsDate, planDate);
             if (daysToPrelims > prepModeConfig.time_thresholds.foundation.mediumterm_days && weeklyHours > 35) {

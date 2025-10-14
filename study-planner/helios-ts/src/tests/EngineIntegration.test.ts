@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { generateInitialPlan } from '../engine/Engine';
 import { StudentIntake, Archetype, createStudentIntake } from '../types/models';
 import { ConfidenceLevel, TimeCommitment, SubjectApproach, StudyPacing } from '../types/Types';
-import { loadAllSubjects } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 import dayjs from 'dayjs';
 
 describe('Engine Integration Tests', () => {
@@ -58,7 +58,7 @@ describe('Engine Integration Tests', () => {
   describe('Complete Engine Workflow', () => {
     it('should generate a complete study plan with real subjects', async () => {
       // Load real subjects
-      const allSubjects = loadAllSubjects();
+      const allSubjects = await ConfigService.loadAllSubjects();
       expect(allSubjects.length).toBeGreaterThan(0);
       
       // Create a realistic student intake

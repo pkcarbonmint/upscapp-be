@@ -73,12 +73,7 @@ export function loadSubtopics(subjects: Subject[]): LoadSubtopicsResult {
     });
   }).filter(st => st !== undefined);
 
-  // to assign baseline hours to each sub topic:
-  // For each subject:
-    // First count the number of subtopics in each band
-    // calcuate hours/subtopic in each band (50% for A, 30% for B, 15% for C, 5% for D)
-    // Filter subtopics list by subjectCode
-    // Assign baseline hours to each subtopic based on the band and the number of subtopics in that band
+  // Calculate baseline hours for each subtopic
   for (const subject of subjects) {
     const subtopicsForSubject = subtopics.filter(st => st.subject.subjectCode === subject.subjectCode);
     const numSubtopicsInBandA = subtopicsForSubject.filter(st => st.band === 'A').length;
@@ -104,15 +99,13 @@ export function loadSubtopics(subjects: Subject[]): LoadSubtopicsResult {
 }
 
 /**
- * Subject loader service that provides access to all available subjects
- * This replaces the Haskell EmbeddedSubjects module functionality
+ * JSON-based Subject loader service for frontend use
  */
-export class SubjectLoader {
+export class JSONSubjectLoader {
   private static subjects: Subject[] | null = null;
 
   /**
    * Load all subjects from the embedded JSON data
-   * This function is pure and provides the definitive list of subjects for the application
    */
   static loadAllSubjects(): Subject[] {
     if (this.subjects === null) {
@@ -140,22 +133,12 @@ export class SubjectLoader {
         }));
 
       } catch (error) {
-        console.error('❌ Failed to load subjects from embedded data:', error);
+        console.error('❌ Failed to load subjects from embedded JSON data:', error);
         throw error;
       }
     }
 
     return this.subjects;
-
-    function decodeSubtopicBand(band: string): SubtopicBand {
-      switch (band.trim()) {
-        case 'A': return 'A';
-        case 'B': return 'B';
-        case 'C': return 'C';
-        case 'D': return 'D';
-        default: return 'A';
-      }
-    }
   }
 
   /**
@@ -188,10 +171,8 @@ export class SubjectLoader {
 }
 
 /**
- * Convenience function to load all subjects
- * This is the main entry point for subject loading
+ * Convenience function to load all subjects from JSON
  */
 export function loadAllSubjects(): Subject[] {
-  return SubjectLoader.loadAllSubjects();
+  return JSONSubjectLoader.loadAllSubjects();
 }
-

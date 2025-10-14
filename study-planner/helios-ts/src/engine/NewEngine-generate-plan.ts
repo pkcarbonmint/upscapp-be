@@ -4,7 +4,7 @@ import { Logger, LogEntry, SubjectApproach } from '../types/Types';
 import { Config } from './engine-types';
 import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
-import { loadAllSubjects, loadSubtopics } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 import { ResourceService } from '../services/ResourceService';
 import { SubjData } from '../types/Subjects';
 import { PlanResources, ResourceTimeline, BudgetSummary } from '../types/models';
@@ -77,9 +77,9 @@ export async function generateInitialPlan(
    *    enough time for the rest of the subtopics.
    * 
    */
-  const subjects = loadAllSubjects();
+  const subjects = await ConfigService.loadAllSubjects();
   const subjData: SubjData = {
-    subjects, subtopics: loadSubtopics(subjects)
+    subjects, subtopics: await ConfigService.loadSubtopics(subjects)
   }
   // const baselineHourTable = buildBaselineHourTable(logger, subjData);
 

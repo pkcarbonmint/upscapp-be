@@ -5,7 +5,7 @@ import type { Logger } from '../types/Types';
 import type { StudentIntake, Block, BlockResources, Archetype } from '../types/models';
 import type { ExperienceProfile, CoachingProfile, TopicConfidenceMap, ConfidenceProfile } from '../types/HourCalculationTypes';
 import { calculateRequiredHours, calculateRequiredHoursWithTopicConfidence } from './HourCalculation';
-import { getPrepModeProgression } from './PrepModeEngine';
+import { ConfigService } from '../services/ConfigService';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 
@@ -51,7 +51,7 @@ export async function planBlocks(
   
   // Get PrepMode with student's actual weekly hours
   const studentWeeklyHours = safeReadHours(strategy.weekly_study_hours);
-  const prepModeProgression = getPrepModeProgression(
+  const prepModeProgression = await ConfigService.getPrepModeProgression(
     currentDate,
     studentIntake.target_year,
     archetypeDetails,
@@ -154,7 +154,7 @@ export async function planBlocksWithRebalancing(
   
   // Get PrepMode with student's actual weekly hours
   const studentWeeklyHours = safeReadHours(strategy.weekly_study_hours);
-  const prepModeProgression = getPrepModeProgression(
+  const prepModeProgression = await ConfigService.getPrepModeProgression(
     currentDate,
     studentIntake.target_year,
     archetypeDetails,
