@@ -71,9 +71,13 @@ export type { BotRequest, BotResponse } from './types/telegram';
 
 // Services
 export { ConfigService } from './services/ConfigService';
+export { HybridConfigService } from './services/HybridConfigService';
 
-// Backward compatibility exports
-export const loadAllSubjects = ConfigService.loadAllSubjects;
+// Import for use in exports
+import { HybridConfigService } from './services/HybridConfigService';
+
+// Backward compatibility exports - now uses hybrid approach
+export const loadAllSubjects = () => HybridConfigService.loadAllSubjects();
 export { makeLogger } from './services/Log';
 export { transformUIToStudentIntake } from './services/DataTransform';
 export { selectBestArchetype } from './services/ArchetypeSelector';
