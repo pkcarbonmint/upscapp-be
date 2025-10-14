@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import type { IWFConfidenceLevelAssessment } from '../types';
 import type { ConfidenceLevel } from 'helios-ts';
 import type { Subject } from 'helios-ts';
+import { validateConfidenceLevel, type ConfidenceLevelValidation, isConfidenceLevelValid } from '../utils/validation';
 import { useTheme } from '../hooks/useTheme';
 
 interface ConfidenceLevelStepProps {
   data: IWFConfidenceLevelAssessment;
   onUpdate: (updater: (prev: IWFConfidenceLevelAssessment) => IWFConfidenceLevelAssessment) => void;
+  onValidationChange?: (isValid: boolean, errors: string[]) => void;
+  forceShowErrors?: boolean;
 }
 
 interface SubjectGroup {
@@ -120,10 +123,39 @@ const StarRating: React.FC<StarRatingProps> = ({ currentStars, onStarClick }) =>
   );
 };
 
-export const ConfidenceLevelStep: React.FC<ConfidenceLevelStepProps> = ({ data, onUpdate }) => {
+export const ConfidenceLevelStep: React.FC<ConfidenceLevelStepProps> = ({ 
+  data, 
+  onUpdate, 
+  onValidationChange, 
+  forceShowErrors = false 
+}) => {
   const { getClasses } = useTheme();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [_subjectGroups, setSubjectGroups] = useState<SubjectGroup[]>([]);
+  const [validation, setValidation] = useState<ConfidenceLevelValidation>(() => validateConfidenceLevel(data));
+  const [showErrors, setShowErrors] = useState(forceShowErrors);
+
+  // Update validation when data changes
+  useEffect(() => {
+    const newValidation = validateConfidenceLevel(data);
+    setValidation(newValidation);
+    
+    if (onValidationChange) {
+      const isValid = isConfidenceLevelValid(newValidation);
+      const errors = Object.values(newValidation)
+        .filter(result => !result.isValid)
+        .map(result => result.error!)
+        .filter(Boolean);
+      onValidationChange(isValid, errors);
+    }
+  }, [data, onValidationChange]);
+
+  // Update showErrors when forceShowErrors changes
+  useEffect(() => {
+    if (forceShowErrors) {
+      setShowErrors(true);
+    }
+  }, [forceShowErrors]);
 
   // Load subjects from helios-ts
   useEffect(() => {
@@ -175,8 +207,38 @@ export const ConfidenceLevelStep: React.FC<ConfidenceLevelStepProps> = ({ data, 
     );
   }
 
+  // Show validation errors when present
+  const hasErrors = showErrors && !isConfidenceLevelValid(validation);
+  const validationErrors = Object.values(validation)
+    .filter(result => !result.isValid)
+    .map(result => result.error!)
+    .filter(Boolean);
+
   return (
     <div className="max-w-4xl mx-auto p-2 sm:p-4">
+      {/* Error Summary */}
+      {hasErrors && (
+        <div className={`mb-6 p-4 ${getClasses('errorBackground')} ${getClasses('errorBorder')} border rounded-lg shadow-sm`}>
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <div className={`w-6 h-6 flex items-center justify-center ${getClasses('errorIcon')}`}>
+                <i className="fas fa-exclamation text-xs"></i>
+              </div>
+            </div>
+            <div className="ml-3">
+              <h3 className={`text-sm font-semibold ${getClasses('errorText')}`}>
+                Required Information Missing:
+              </h3>
+              <ul className={`text-sm ${getClasses('errorText')} mt-2 list-disc list-inside space-y-1`}>
+                {validationErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Introduction Note */}
       <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex items-start">
@@ -198,7 +260,7 @@ export const ConfidenceLevelStep: React.FC<ConfidenceLevelStepProps> = ({ data, 
           <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
           <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
             <i className={`fas fa-book mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Subjects
+            Subjects <span className={getClasses('requiredIndicator')}>*</span>
           </h3>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

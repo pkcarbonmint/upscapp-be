@@ -6,6 +6,25 @@ import { loadAllSubjects } from '../services/SubjectLoader';
 import dayjs from 'dayjs';
 
 describe('Engine Integration Tests', () => {
+  // Helper to create base student data
+  const createBaseStudentData = () => ({
+    personal_details: {
+      full_name: 'Test Student',
+      email: 'test@example.com',
+      phone_number: '+911234567890',
+      present_location: 'Delhi, India',
+      student_archetype: 'Full-Time Professional',
+      graduation_stream: 'Engineering',
+      college_university: 'Test University',
+      year_of_passing: 2023
+    },
+    preparation_background: {
+      preparing_since: '6 months',
+      number_of_attempts: '0',
+      highest_stage_per_attempt: 'N/A'
+    }
+  });
+
   // Test configuration
   const mockConfig = {
     block_duration_clamp: {
@@ -62,7 +81,23 @@ describe('Engine Integration Tests', () => {
           catch_up_day_preference: 'sunday'
         },
         target_year: '2026',
-        start_date: '2024-01-01'
+        start_date: '2024-01-01',
+        // Now required fields
+        personal_details: {
+          full_name: 'Test Student',
+          email: 'test@example.com',
+          phone_number: '+911234567890',
+          present_location: 'Delhi, India',
+          student_archetype: 'Full-Time Professional',
+          graduation_stream: 'Engineering',
+          college_university: 'Test University',
+          year_of_passing: 2023
+        },
+        preparation_background: {
+          preparing_since: '6 months',
+          number_of_attempts: '0',
+          highest_stage_per_attempt: 'N/A'
+        }
       });
 
       // Generate the study plan
@@ -153,7 +188,22 @@ describe('Engine Integration Tests', () => {
           catch_up_day_preference: 'sunday'
         },
         target_year: nextYear.toString(),
-        start_date: '2024-01-01'
+        start_date: '2024-01-01',
+        personal_details: {
+          full_name: 'Test Student Next Year',
+          email: 'test@example.com',
+          phone_number: '+911234567890',
+          present_location: 'Delhi, India',
+          student_archetype: 'Full-Time Professional',
+          graduation_stream: 'Engineering',
+          college_university: 'Test University',
+          year_of_passing: 2023
+        },
+        preparation_background: {
+          preparing_since: '6 months',
+          number_of_attempts: '0',
+          highest_stage_per_attempt: 'N/A'
+        }
       });
 
       const resultNextYear = await generateInitialPlan(
@@ -214,7 +264,8 @@ describe('Engine Integration Tests', () => {
           catch_up_day_preference: 'sunday'
         },
         target_year: '2026',
-        start_date: '2024-01-01'
+        start_date: '2024-01-01',
+        ...createBaseStudentData()
       });
 
       const result = await generateInitialPlan(
@@ -252,7 +303,8 @@ describe('Engine Integration Tests', () => {
           catch_up_day_preference: 'sunday'
         },
         target_year: '2026',
-        start_date: '2024-01-01'
+        start_date: '2024-01-01',
+        ...createBaseStudentData()
       });
 
       const result = await generateInitialPlan(
@@ -289,7 +341,8 @@ describe('Engine Integration Tests', () => {
           catch_up_day_preference: 'sunday'
         },
         target_year: '2025', // Short term
-        start_date: '2024-01-01'
+        start_date: '2024-01-01',
+        ...createBaseStudentData()
       });
 
       const longTermIntake: StudentIntake = createStudentIntake({
@@ -340,7 +393,8 @@ describe('Engine Integration Tests', () => {
           catch_up_day_preference: 'sunday'
         },
         target_year: undefined,
-        start_date: '2024-01-01'
+        start_date: '2024-01-01',
+        ...createBaseStudentData()
       } as any);
 
       const result = await generateInitialPlan(
@@ -370,7 +424,8 @@ describe('Engine Integration Tests', () => {
           catch_up_day_preference: 'sunday'
         },
         target_year: '2026',
-        start_date: '2024-01-01'
+        start_date: '2024-01-01',
+        ...createBaseStudentData()
       });
 
       const result = await generateInitialPlan(
