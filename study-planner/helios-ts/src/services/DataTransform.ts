@@ -35,6 +35,7 @@ export function transformUIToStudentIntake(wizardData: UIWizardData): StudentInt
 
   // Build StudentIntake using createStudentIntake helper
   const intake: StudentIntake = createStudentIntake({
+    subject_approach: 'DualSubject',
     subject_confidence: subjectConfidence,
     study_strategy: studyStrategy,
     target_year: prep?.target_year,

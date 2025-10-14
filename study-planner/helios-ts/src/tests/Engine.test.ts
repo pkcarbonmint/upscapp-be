@@ -12,6 +12,7 @@ import { TopicConfidenceMap } from '../types/HourCalculationTypes';
 
 describe('Engine', () => {
   const mockStudentIntake: StudentIntake = createStudentIntake({
+    subject_approach: 'DualSubject',
     subject_confidence: {
       'H01': 'Strong' as ConfidenceLevel,
       'G01': 'Moderate' as ConfidenceLevel,
@@ -116,7 +117,7 @@ describe('Engine', () => {
         'user-123',
         mockConfig,
         mockArchetype,
-        intakeWithoutTargetYear
+        intakeWithoutTargetYear as any
       );
       
       expect(result.plan).toBeDefined();

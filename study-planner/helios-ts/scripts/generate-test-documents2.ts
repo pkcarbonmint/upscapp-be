@@ -39,6 +39,27 @@ interface DocumentGeneratorOptions {
   maxScenarios?: number; // Limit number of scenarios for performance testing
 }
 
+
+const startDates :  string [] = [
+  '2025-03-01', // T1
+  '2025-12-10', // T2
+  '2026-03-10', // T3
+  '2026-06-10', // T4
+  '2026-09-10', // T5
+  '2026-10-10', // T6
+  '2026-11-10', // T7
+  '2026-12-15', // T8
+  '2026-12-16', // T9
+  '2027-02-01', // T10
+  '2027-02-28', // T11
+  '2027-03-01', // T12
+  '2027-03-15', // T13
+  '2027-04-15', // T14
+  '2027-04-20', // T15
+]
+// .slice(0,2)
+;
+
 class TestDocumentGenerator {
   private outputDir: string;
   private includeResources: boolean;
@@ -78,7 +99,7 @@ class TestDocumentGenerator {
     }
     return 'Memory usage not available';
   }
-
+  
   /**
    * Generate documents for all test scenarios
    */
@@ -92,24 +113,6 @@ class TestDocumentGenerator {
     await this.ensureOutputDirectory();
     console.log(`⏱️  Directory setup took: ${Date.now() - dirStartTime}ms`);
     // Define test scenarios for different target years
-    const scenarioSetupStartTime = Date.now();
-    const startDates :  string [] = [
-      '2025-03-01', // T1
-      '2025-12-10', // T2
-      '2026-03-10', // T3
-      '2026-06-10', // T4
-      '2026-09-10', // T5
-      '2026-10-10', // T6
-      '2026-11-10', // T7
-      '2026-12-15', // T8
-      '2026-12-16', // T9
-      '2027-02-01', // T10
-      '2027-02-28', // T11
-      '2027-03-01', // T12
-      '2027-03-15', // T13
-      '2027-04-15', // T14
-      '2027-04-20', // T15
-    ];
 
     const scenarios = startDates.map((startDate, i) => ({
       name: `T${i + 1}`,
@@ -978,76 +981,9 @@ Financial Planning Tips:
     };
   }
 
-  private getBalancedDualSubjectIntake(targetYear: string = '2026'): Omit<StudentIntake, 'start_date'> {
-    return {
-      subject_confidence: {
-        'H01': 'Moderate',
-        'H02': 'Moderate',
-        'G': 'Moderate'
-      },
-      study_strategy: {
-        study_focus_combo: 'OneGSPlusOptional',
-        weekly_study_hours: '40-50',
-        time_distribution: 'Balanced',
-        study_approach: 'Balanced',
-        revision_strategy: 'Weekly',
-        test_frequency: 'Monthly',
-        seasonal_windows: ['Foundation', 'Revision'],
-        catch_up_day_preference: 'Sunday'
-      },
-      target_year: targetYear
-    };
-  }
-
-  private getSingleSubjectArchetype(): Archetype {
-    return {
-      archetype: 'FocusSingleSubject',
-      timeCommitment: 'PartTime',
-      weeklyHoursMin: 25,
-      weeklyHoursMax: 35,
-      description: 'Student focusing on single subject for intensive preparation',
-      defaultPacing: 'StrongFirst',
-      defaultApproach: 'SingleSubject',
-      specialFocus: ['GS']
-    };
-  }
-
-  private getSingleSubjectIntake(targetYear: string = '2027'): Omit<StudentIntake, 'start_date'> {
-    return {
-      subject_confidence: {
-        'H01': 'VeryStrong',
-        'H02': 'Moderate',
-        'H03': 'Weak'
-      },
-      study_strategy: {
-        study_focus_combo: 'OneGS',
-        weekly_study_hours: '25-35',
-        time_distribution: 'Intensive',
-        study_approach: 'Balanced',
-        revision_strategy: 'Daily',
-        test_frequency: 'BiWeekly',
-        seasonal_windows: ['Foundation'],
-        catch_up_day_preference: 'Saturday'
-      },
-      target_year: targetYear
-    };
-  }
-
-  private getComprehensiveGSArchetype(): Archetype {
-    return {
-      archetype: 'ComprehensiveGS',
-      timeCommitment: 'FullTime',
-      weeklyHoursMin: 45,
-      weeklyHoursMax: 55,
-      description: 'Comprehensive GS preparation with extensive coverage',
-      defaultPacing: 'Balanced',
-      defaultApproach: 'TripleSubject',
-      specialFocus: ['GS', 'Current_Affairs']
-    };
-  }
-
   private makeIntake(targetYear: string, startDate: string): StudentIntake {
     return createStudentIntake({
+      subject_approach: 'DualSubject',
       subject_confidence: {
         'H01': 'VeryStrong',
         'H02': 'VeryStrong',

@@ -44,6 +44,7 @@ describe('Engine Integration Tests', () => {
       
       // Create a realistic student intake
       const studentIntake: StudentIntake = createStudentIntake({
+        subject_approach: 'DualSubject',
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Weak' as ConfidenceLevel,
@@ -136,6 +137,7 @@ describe('Engine Integration Tests', () => {
 
       // Test with next year (should be comprehensive study)
       const intakeNextYear: StudentIntake = createStudentIntake({
+        subject_approach: 'DualSubject',
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -196,6 +198,7 @@ describe('Engine Integration Tests', () => {
       };
 
       const studentIntake: StudentIntake = createStudentIntake({
+        subject_approach: 'SingleSubject',
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -233,6 +236,7 @@ describe('Engine Integration Tests', () => {
 
     it('should adjust study hours when they exceed archetype limits', async () => {
       const studentIntake: StudentIntake = createStudentIntake({
+        subject_approach: 'DualSubject',
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -269,6 +273,7 @@ describe('Engine Integration Tests', () => {
 
     it('should generate different cycle counts based on available time', async () => {
       const shortTermIntake: StudentIntake = createStudentIntake({
+        subject_approach: 'DualSubject',
         subject_confidence: {
           'H01': 'Moderate' as ConfidenceLevel,
           'P01': 'Moderate' as ConfidenceLevel
@@ -336,7 +341,7 @@ describe('Engine Integration Tests', () => {
         },
         target_year: undefined,
         start_date: '2024-01-01'
-      });
+      } as any);
 
       const result = await generateInitialPlan(
         'test-user-no-target-year',
@@ -352,6 +357,7 @@ describe('Engine Integration Tests', () => {
 
     it('should handle empty subject confidence gracefully', async () => {
       const intakeWithoutConfidence: StudentIntake = createStudentIntake({
+        subject_approach: 'DualSubject',
         subject_confidence: {},
         study_strategy: {
           study_focus_combo: 'OneGSPlusOptional',

@@ -9,6 +9,7 @@ import { CycleType } from '../types/Types';
 
 function makeIntake(testCase: { startDate: Date, targetYear: number }) {
 	const intake: StudentIntake = createStudentIntake({
+		subject_approach: 'DualSubject',
 		start_date: testCase.startDate.toISOString().split('T')[0],
 		target_year: testCase.targetYear.toString(),
 		study_strategy: {
@@ -138,6 +139,7 @@ describe('CycleSchedulerScenarios', () => {
 				{} as any,
 				{} as any,
 				createStudentIntake({
+					subject_approach: 'DualSubject',
 					start_date: testCase.startDate.toISOString().split('T')[0],
 					target_year: `${testCase.targetYear}`,
 					study_strategy: {

@@ -56,6 +56,7 @@ describe('T1-T15 Scenarios: Cycle Generation and Date Validation', () => {
    */
   function createTestIntake(startDate: string, targetYear: string): StudentIntake {
     return createStudentIntake({
+      subject_approach: 'DualSubject',
       subject_confidence: {
         'H01': 'VeryStrong',
         'H02': 'VeryStrong', 

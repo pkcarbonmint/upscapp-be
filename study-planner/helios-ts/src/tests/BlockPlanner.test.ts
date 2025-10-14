@@ -68,6 +68,7 @@ describe('BlockPlanner', () => {
   ];
 
   const mockStudentIntake: StudentIntake = createStudentIntake({
+    subject_approach: 'DualSubject',
     subject_confidence: {
       'H01': 'Strong' as ConfidenceLevel,
       'G01': 'Moderate' as ConfidenceLevel,
