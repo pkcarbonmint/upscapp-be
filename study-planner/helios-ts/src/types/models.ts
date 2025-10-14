@@ -226,8 +226,8 @@ export interface StudentIntake {
   // All existing fields remain the same
   subject_confidence: Record<SubjectCode, ConfidenceLevel>;
   study_strategy: StudyStrategy;
-  subject_approach?: SubjectApproach;
-  target_year?: string;
+  subject_approach: SubjectApproach;
+  target_year: string;
   start_date: string;
   personal_details?: PersonalDetails;
   preparation_background?: PreparationBackground;

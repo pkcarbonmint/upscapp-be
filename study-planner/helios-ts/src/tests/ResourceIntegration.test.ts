@@ -31,6 +31,7 @@ describe('Resource Integration Tests', () => {
     // - Target year: 2026
     // - Include subjects that have resources in study-materials.json
     testIntake = createStudentIntake({
+      subject_approach: 'DualSubject',
       subject_confidence: {
         'P': 'Moderate',    // Polity - has resources
         'E': 'Moderate',    // Economy - has resources

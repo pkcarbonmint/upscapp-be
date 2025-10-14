@@ -1012,6 +1012,7 @@ describe('generateInitialPlan', () => {
       
       // Create mock StudentIntake for testing
       const mockStudentIntake = createStudentIntake({
+        subject_approach: 'DualSubject',
         subject_confidence: {},
         study_strategy: {
           study_focus_combo: 'dual_focus' as any,

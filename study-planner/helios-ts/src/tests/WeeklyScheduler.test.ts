@@ -23,6 +23,7 @@ describe('WeeklyScheduler', () => {
       seasonal_windows: [],
       catch_up_day_preference: 'sunday'
     },
+    subject_approach: 'DualSubject',
     target_year: '2025',
     start_date: '2024-01-01'
   });

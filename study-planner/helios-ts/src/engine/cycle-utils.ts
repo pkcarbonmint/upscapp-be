@@ -1,16 +1,55 @@
-import { Block, WeeklyPlan, DailyPlan, StudentIntake, createStudentIntake } from '../types/models';
-import { CycleType } from '../types/Types';
+import { Block, WeeklyPlan, DailyPlan, StudentIntake } from '../types/models';
+import { CycleType, SubjectApproach } from '../types/Types';
 import { Subject, getTopicEstimatedHours } from '../types/Subjects';
 import { ResourceService } from '../services/ResourceService';
 import { SubjectLoader } from '../services/SubjectLoader';
 import { createPlanForOneWeek, Config } from './OneWeekPlan';
 import { makeLogger } from '../services/Log';
+import { selectBestArchetype } from '../services/ArchetypeSelector';
 import dayjs from 'dayjs';
 import assert from 'assert';
 
 // Task ratios are now handled by intake.getTaskTypeRatios(cycleType)
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 
+/**
+ * Determine baseline hours for a subject based on cycle type
+ * @param baselineHours Original baseline hours for the subject
+ * @param cycleType Type of cycle (Foundation, Revision, etc.)
+ * @returns Adjusted baseline hours
+ */
+function determineSubjBaselineFactorForCycle(cycleType: CycleType): number {
+  switch (cycleType) {
+    case 'C1': return 1.0;
+    case 'C2': return 1.0;
+    case 'C3': return 1.0;
+    case 'C4': return 0.8;
+    case 'C5': return 0.6;
+    case 'C6': return 0.8;
+    case 'C7': return 0.6;
+    case 'C8': return 1.0;
+    default:
+      // Use original baseline hours for all other cycle types
+      return 1.0;
+  }
+}
+
+// const numberOfParallelSubjects = determineNumberOfParallelBlocks(cycleType, subjectApproach);
+function determineNumberOfParallelBlocks(cycleType: CycleType, subjectApproach: SubjectApproach): number {
+  const defaultParallel = subjectApproach === 'DualSubject' ? 2 : 3;
+  switch (cycleType) {
+    case 'C1':
+    case 'C2': 
+    case 'C8': 
+    case 'C3':
+    case 'C4':
+    case 'C5':
+    case 'C6':
+    case 'C7':
+      default:
+      return defaultParallel;
+  }
+}
 /**
  * Create blocks for subjects with confidence factors applied and trimming
  */
@@ -31,7 +70,8 @@ export async function createBlocksForSubjects(
   const hoursPerDay = parseInt(intake.study_strategy.weekly_study_hours, 10) / 7; 
   // If parallel approach requested, use our continuous parallel logic
   if (subjectApproach === 'DualSubject' || subjectApproach === 'TripleSubject') {
-    const numberOfParallelSubjects = subjectApproach === 'DualSubject' ? 2 : 3;
+    const numberOfParallelSubjects = determineNumberOfParallelBlocks(cycleType, subjectApproach);
+
     return await createContinuousParallelBlocks(
       subjects,
       numberOfParallelSubjects,
@@ -50,16 +90,13 @@ export async function createBlocksForSubjects(
 
   // Track cumulative weeks for date calculation (existing sequential logic)
   let cumulativeWeeks = 0;
-  console.log("===================================================")
-  console.log(`******
-    Creating blocks for cycle type: 
-    ${cycleType} 
-    period: ${cycleStartDate} to ${cycleEndDate}`);
 
   // Calculate total weighted baseline hours for proportional allocation
   const totalWeightedBaseline = subjects.reduce((sum, subject) => {
     const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
-    return sum + (subject.baselineHours * confidenceMultiplier);
+    const subjBaselineHoursFactorForCycle = determineSubjBaselineFactorForCycle(cycleType);
+    const weightedBaseline = subject.baselineHours * subjBaselineHoursFactorForCycle * confidenceMultiplier;
+    return sum + weightedBaseline;
   }, 0);
 
   console.log(`Total weighted baseline hours: ${totalWeightedBaseline}, Total available hours: ${totalHours}`);
@@ -77,10 +114,6 @@ export async function createBlocksForSubjects(
   const blocks: Block[] = [];
   for (const subject of subjects) {
     // Check if we have enough time left in the cycle for this subject
-    if (cycleDurationWeeks > 0 && cumulativeWeeks >= cycleDurationWeeks) {
-      console.log(`Skipping subject ${subject.subjectName}: no time left in cycle (cumulativeWeeks=${cumulativeWeeks}, cycleDurationWeeks=${cycleDurationWeeks})`);
-      continue;
-    }
     // Get subtopics for this subject from subjData
     let subjectSubtopics: any[] = [];
 
@@ -107,8 +140,9 @@ export async function createBlocksForSubjects(
 
     // Calculate proportional allocation based on baseline hours and confidence
     const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
-    const weightedBaseline = subject.baselineHours * confidenceMultiplier;
-    
+    const subjBaselineHoursFactorForCycle = determineSubjBaselineFactorForCycle(cycleType);
+    const weightedBaseline = subject.baselineHours * subjBaselineHoursFactorForCycle * confidenceMultiplier;
+
     // Allocate this subject's proportional share
     const allocatedHours = Math.max(4, Math.floor(
       (totalHours * weightedBaseline) / totalWeightedBaseline
@@ -127,7 +161,6 @@ export async function createBlocksForSubjects(
       ? trimmedSubtopics.reduce((sum, st) => sum + st.adjustedHours, 0)
       : allocatedHours;
 
-    if (cycleStartDate) {
       const cycleStart = new Date(cycleStartDate);
 
       // Check if we have enough time left in the cycle for this block
@@ -184,7 +217,7 @@ export async function createBlocksForSubjects(
       const actualWeeks = Math.ceil(blockEnd.diff(blockStart, 'day') / 7);
       cumulativeWeeks += actualWeeks;
       console.log(`After block ${subject.subjectName}: actualWeeks=${actualWeeks}, total cumulativeWeeks=${cumulativeWeeks}, cycleDurationWeeks=${cycleDurationWeeks}`);
-    }
+    
 
     // Get resources for this subject
     let blockResources;
@@ -470,31 +503,13 @@ async function createEnhancedWeeklyPlan(
     return createBasicWeeklyPlan(durationWeeks, subjectCode);
   }
   
-  // Create mock student intake for OneWeekPlan.ts
-  const mockStudentIntake = createStudentIntake({
-    subject_confidence: { [subjectCode]: 'Moderate' as const },
-    study_strategy: {
-      study_focus_combo: 'GSPlusOptionalPlusCSAT' as const,
-      weekly_study_hours: '50',
-      time_distribution: 'Balanced',
-      study_approach: 'Balanced' as const,
-      revision_strategy: 'Weekly',
-      test_frequency: 'Weekly',
-      seasonal_windows: ['Foundation', 'Revision', 'Intensive'],
-      catch_up_day_preference: 'Saturday'
-    },
-    start_date: new Date().toISOString().split('T')[0]
-  });
+  // Create archetype using the dedicated selector function
+  const baseArchetype = await selectBestArchetype(intake);
   
-  // Create mock archetype with cycle type information
-  const mockArchetype = {
-    archetype: cycleType, // Pass the actual cycle type (e.g., 'C1')
-    timeCommitment: 'FullTime' as const,
-    weeklyHoursMin: 40,
-    weeklyHoursMax: 60,
-    description: `${cycleType} study approach`,
-    defaultPacing: 'Balanced' as const,
-    defaultApproach: 'SingleSubject' as const
+  // Enhance archetype with cycle type information
+  const archetype = {
+    ...baseArchetype,
+    archetype: cycleType // Override with the actual cycle type (e.g., 'C1')
   };
   
   // Create logger
@@ -507,8 +522,8 @@ async function createEnhancedWeeklyPlan(
       const weekPlan = await createPlanForOneWeek(
         0, // blockIndex
         [subject],
-        mockStudentIntake,
-        mockArchetype,
+        intake,
+        archetype,
         config,
         week,
         durationWeeks,
@@ -599,7 +614,7 @@ async function createContinuousParallelBlocks(
   subjData?: any
 ): Promise<Block[]> {
   
-  console.log(`Creating ${numberOfParallelSubjects} parallel subject blocks for ${subjects.length} subjects`);
+  console.log(`[${cycleType}] Creating ${numberOfParallelSubjects} parallel subject blocks for ${subjects.length} subjects`);
   
   const parallelBlocks: Block[] = [];
   const activeBlockEndDates: Array<{endDate: dayjs.Dayjs, subject: Subject}> = [];
