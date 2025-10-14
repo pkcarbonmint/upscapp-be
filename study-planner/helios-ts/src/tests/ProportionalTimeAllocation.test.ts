@@ -62,7 +62,7 @@ describe('Proportional Time Allocation Verification', () => {
     });
 
     // Load subjects to get baseline_hours
-    subjectsData = await loadAllSubjects();
+    subjectsData = await ConfigService.loadAllSubjects();
   });
 
   describe('Subject-Level Proportional Allocation', () => {

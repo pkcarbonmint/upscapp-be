@@ -1,6 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand, QueryCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
-import type { ExamFocus, LoadSubtopicsResult, Subject, Subtopic, SubtopicBand, TopicPriority } from '../types/Subjects';
+import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import type { ExamFocus, LoadSubtopicsResult, Subject, SubtopicBand, TopicPriority } from '../types/Subjects';
 import type { PrepModeConfigFile } from '../types/config';
 import type { Archetype } from '../types/models';
 
@@ -91,7 +91,7 @@ export async function loadSubtopics(subjects: Subject[]): Promise<LoadSubtopicsR
   const subtopicsData = response.Items || [];
 
   const subtopics = subtopicsData
-    .map((row, i) => {
+    .map((row) => {
       const band = decodeSubtopicBand(row.priority_band);
       const subject = topicCodeToSubject.get(row.topic_code);
       if (!subject) {
@@ -297,7 +297,7 @@ export async function loadArchetypes(): Promise<Archetype[]> {
       const archetypesData = response.Items || [];
 
       archetypesCache = archetypesData.map(archetype => ({
-        name: archetype.archetype_name,
+        archetype: archetype.archetype_name,
         timeCommitment: archetype.time_commitment as 'FullTime' | 'PartTime',
         weeklyHoursMin: archetype.weekly_hours_min,
         weeklyHoursMax: archetype.weekly_hours_max,
@@ -313,7 +313,7 @@ export async function loadArchetypes(): Promise<Archetype[]> {
     }
   }
 
-  return archetypesCache;
+  return archetypesCache || [];
 }
 
 /**

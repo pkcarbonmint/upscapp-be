@@ -7,8 +7,8 @@ import type { Subject } from '../types/Subjects';
 import type { PrepModeConfigFile } from '../types/config';
 import type { Archetype } from '../types/models';
 
-// JSON-based loaders (existing)
-import { NCERTMaterialsService as JSONNCERTMaterialsService } from './NCERTMaterialsService';
+// JSON-based loaders (existing) - keeping for potential fallback
+// import { NCERTMaterialsService as JSONNCERTMaterialsService } from './NCERTMaterialsService';
 
 // DynamoDB-based loaders (new)
 import { 

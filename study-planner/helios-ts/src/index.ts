@@ -71,6 +71,9 @@ export type { BotRequest, BotResponse } from './types/telegram';
 
 // Services
 export { ConfigService } from './services/ConfigService';
+
+// Backward compatibility exports
+export const loadAllSubjects = ConfigService.loadAllSubjects;
 export { makeLogger } from './services/Log';
 export { transformUIToStudentIntake } from './services/DataTransform';
 export { selectBestArchetype } from './services/ArchetypeSelector';

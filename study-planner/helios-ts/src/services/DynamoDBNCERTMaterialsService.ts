@@ -30,11 +30,13 @@ export type NCERTMaterialsMap = Record<string, NCERTMaterial[]>;
  * DynamoDB-based service for managing NCERT materials for foundation cycle (C1) tasks
  */
 export class DynamoDBNCERTMaterialsService {
-  private static materialsCache: NCERTMaterialsMap | null = null;
+  // Note: materialsCache and loadNCERTMaterials are kept for potential future use
+  // private static materialsCache: NCERTMaterialsMap | null = null;
 
   /**
-   * Load NCERT materials from DynamoDB
+   * Load NCERT materials from DynamoDB (currently unused but kept for future caching)
    */
+  /*
   private static async loadNCERTMaterials(): Promise<NCERTMaterialsMap> {
     if (this.materialsCache) {
       return this.materialsCache;
@@ -67,6 +69,7 @@ export class DynamoDBNCERTMaterialsService {
       return {};
     }
   }
+  */
 
   /**
    * Get NCERT materials for a specific topic code
@@ -315,6 +318,7 @@ export class DynamoDBNCERTMaterialsService {
    * Clear the materials cache (useful for testing)
    */
   static clearCache(): void {
-    this.materialsCache = null;
+    // Cache is currently disabled - method kept for API compatibility
+    // this.materialsCache = null;
   }
 }

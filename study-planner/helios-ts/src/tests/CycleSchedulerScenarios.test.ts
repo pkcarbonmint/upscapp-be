@@ -215,7 +215,7 @@ describe('CycleSchedulerScenarios', () => {
 			);
 
 			// Get all subjects
-			const allSystemSubjects = loadAllSubjects().map(s => s.subjectCode);
+			const allSystemSubjects = (await ConfigService.loadAllSubjects()).map(s => s.subjectCode);
 
 			// Collect all subjects covered across cycles
 			const coveredSubjects = new Set<string>();
