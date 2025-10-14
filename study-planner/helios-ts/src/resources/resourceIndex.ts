@@ -1,6 +1,6 @@
 import type { SubjectResourcesFile, StudyMaterial } from './types';
 import type { Subject } from '../types/Subjects';
-import { loadAllSubjects } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 
 /**
  * Resource loading strategy using dynamic imports for optimal code splitting
@@ -19,7 +19,7 @@ class ResourceLoader {
     if (this.initialized) return;
     
     // Use provided subjects or load them automatically
-    const subjectsToUse = subjects || loadAllSubjects();
+    const subjectsToUse = subjects || await ConfigService.loadAllSubjects();
     this.knownSubjects = subjectsToUse.map(subject => subject.subjectCode);
     
     // Load study materials from the JSON file
@@ -69,7 +69,7 @@ class ResourceLoader {
     }
 
     // Convert study materials to SubjectResourcesFile format
-    const resourceData = this.convertStudyMaterialsToResources(subjectCode, studyMaterials);
+    const resourceData = await this.convertStudyMaterialsToResources(subjectCode, studyMaterials);
     
     // Cache the result
     this.cache.set(subjectCode, resourceData);
@@ -108,8 +108,8 @@ class ResourceLoader {
   /**
    * Convert study materials to SubjectResourcesFile format
    */
-  private static convertStudyMaterialsToResources(subjectCode: string, studyMaterials: StudyMaterial[]): SubjectResourcesFile {
-    const allSubjects = loadAllSubjects();
+  private static async convertStudyMaterialsToResources(subjectCode: string, studyMaterials: StudyMaterial[]): Promise<SubjectResourcesFile> {
+    const allSubjects = await ConfigService.loadAllSubjects();
     const subject = allSubjects.find(s => s.subjectCode === subjectCode);
     
     // Get subject info

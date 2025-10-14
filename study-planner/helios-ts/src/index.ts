@@ -70,7 +70,7 @@ export { default as ResourceLoader, initResourceLoader, loadSubjectResources, lo
 export type { BotRequest, BotResponse } from './types/telegram';
 
 // Services
-export { SubjectLoader, loadAllSubjects } from './services/SubjectLoader';
+export { ConfigService } from './services/ConfigService';
 export { makeLogger } from './services/Log';
 export { transformUIToStudentIntake } from './services/DataTransform';
 export { selectBestArchetype } from './services/ArchetypeSelector';
@@ -81,7 +81,7 @@ export { ResourceService } from './services/ResourceService';
 export { heliosClient, api } from './services/helios';
 
 // Import for internal use
-import { loadAllSubjects, loadSubtopics } from './services/SubjectLoader';
+import { ConfigService } from './services/ConfigService';
 import { generateInitialPlan } from './engine/Engine';
 import type { Archetype, StudentIntake } from './types/models';
 
@@ -138,14 +138,14 @@ export const ENGINE_NAME = 'Helios TypeScript Study Plan Engine';
  * Initialize the engine with default configuration
  * This is a convenience function for quick setup
  */
-export function initializeEngine() {
+export async function initializeEngine() {
   console.log(`🚀 ${ENGINE_NAME} v${VERSION} initialized`);
-  console.log('📚 Available subjects:', loadAllSubjects().length);
-  const subjects = loadAllSubjects();
+  const subjects = await ConfigService.loadAllSubjects();
+  console.log('📚 Available subjects:', subjects.length);
   return {
     config: DEFAULT_CONFIG,
     subjects,
-    subtopics: loadSubtopics(subjects),
+    subtopics: await ConfigService.loadSubtopics(subjects),
     version: VERSION
   };
 }

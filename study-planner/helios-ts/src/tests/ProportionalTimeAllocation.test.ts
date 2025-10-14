@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype, Block, StudyCycle } from '../types/models';
 import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
-import { loadAllSubjects } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 import type { Subject } from '../types/Subjects';
 
 describe('Proportional Time Allocation Verification', () => {

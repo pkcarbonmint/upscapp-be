@@ -17,7 +17,7 @@ import {
 import 'chartjs-adapter-date-fns';
 import type { StudyPlan, StudyCycle, Block, BlockResources, StudentIntake } from '../types/models';
 import { ResourceService } from './ResourceService';
-import { SubjectLoader } from './SubjectLoader';
+import { ConfigService } from './ConfigService';
 import dayjs from 'dayjs';
 
 // Register Chart.js components
@@ -665,7 +665,7 @@ export class PDFService {
         }
         
         try {
-          const subjectName = this.getSubjectName(subjectCode);
+          const subjectName = await this.getSubjectName(subjectCode);
           pdf.setFont('helvetica', 'bold');
           pdf.setFontSize(DOCUMENT_STYLES.fonts.body);
           pdf.text(subjectName, 20, currentY);
@@ -1489,8 +1489,8 @@ export class PDFService {
   /**
    * Get subject name from subject code
    */
-  private static getSubjectName(subjectCode: string): string {
-    const subject = SubjectLoader.getSubjectByCode(subjectCode);
+  private static async getSubjectName(subjectCode: string): Promise<string> {
+    const subject = await ConfigService.getSubjectByCode(subjectCode);
     return subject?.subjectName || subjectCode;
   }
 

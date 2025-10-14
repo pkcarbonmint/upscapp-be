@@ -15,6 +15,7 @@ import subjectsData from '../src/config/upsc_subjects.json';
 import subtopicsData from '../src/config/subtopics.json';
 import prepModesData from '../src/config/prep_modes.json';
 import archetypesData from '../src/config/archetypes.json';
+import ncertMaterialsData from '../NCERT-Materials.json';
 
 // Configuration
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
@@ -27,6 +28,7 @@ const TABLES = {
   subtopics: `${TABLE_PREFIX}upsc-subtopics`,
   prepModes: `${TABLE_PREFIX}prep-modes`,
   archetypes: `${TABLE_PREFIX}archetypes`,
+  ncertMaterials: `${TABLE_PREFIX}ncert-materials`,
   config: `${TABLE_PREFIX}study-planner-config`
 };
 
@@ -173,6 +175,37 @@ async function migrateArchetypes(): Promise<void> {
 }
 
 /**
+ * Migrate NCERT materials data
+ */
+async function migrateNCERTMaterials(): Promise<void> {
+  console.log('\n🔄 Migrating NCERT materials...');
+  
+  const materials: any[] = [];
+  let materialIndex = 0;
+  
+  // Convert the nested object structure to flat items
+  for (const [topicCode, topicMaterials] of Object.entries(ncertMaterialsData)) {
+    const subjectCode = topicCode.split('/')[0];
+    
+    for (const material of topicMaterials as any[]) {
+      materials.push({
+        topic_code: topicCode,
+        material_id: `${topicCode}-${materialIndex.toString().padStart(4, '0')}`,
+        subject_code: subjectCode,
+        book_name: material.book_name,
+        chapter_name: material.chapter_name,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+      materialIndex++;
+    }
+  }
+
+  await batchWriteItems(TABLES.ncertMaterials, materials);
+  console.log(`✅ Migrated ${materials.length} NCERT materials`);
+}
+
+/**
  * Migrate configuration data
  */
 async function migrateConfig(): Promise<void> {
@@ -241,6 +274,7 @@ async function main(): Promise<void> {
     await migrateSubtopics();
     await migratePrepModes();
     await migrateArchetypes();
+    await migrateNCERTMaterials();
     await migrateConfig();
     
     console.log('\n🎉 Migration completed successfully!');
@@ -250,6 +284,7 @@ async function main(): Promise<void> {
     console.log(`   • ${subtopicsData.length} subtopics migrated`);
     console.log(`   • ${prepModesData.prep_modes.length} prep modes migrated`);
     console.log(`   • ${archetypesData.archetypes.length} archetypes migrated`);
+    console.log(`   • ${Object.values(ncertMaterialsData).reduce((acc, materials) => acc + materials.length, 0)} NCERT materials migrated`);
     console.log(`   • 7 configuration items migrated`);
     
   } catch (error) {

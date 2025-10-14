@@ -1,6 +1,6 @@
 import type { StudyPlan, StudyCycle, Block, BlockResources, StudentIntake } from '../types/models';
 import { ResourceService } from './ResourceService';
-import { SubjectLoader } from './SubjectLoader';
+import { ConfigService } from './ConfigService';
 import dayjs from 'dayjs';
 import puppeteer, { type PDFOptions, type Browser } from 'puppeteer';
 
@@ -547,7 +547,7 @@ export class HighFidelityPDFService {
     
     for (const subjectCode of uniqueSubjects.slice(0, 10)) { // Limit to prevent overwhelming
       try {
-        const subjectName = this.getSubjectName(subjectCode);
+        const subjectName = await this.getSubjectName(subjectCode);
         const resources = await ResourceService.getResourcesForSubject(subjectCode);
         
         const resourceNames: string[] = [];
@@ -587,7 +587,7 @@ export class HighFidelityPDFService {
         
       } catch (error) {
         console.warn(`Failed to load resources for ${subjectCode}`, error);
-        const subjectName = this.getSubjectName(subjectCode);
+        const subjectName = await this.getSubjectName(subjectCode);
         resourcesHTML += `
         <div class="subject-resources">
             <h4>${subjectName}</h4>
@@ -1418,8 +1418,8 @@ export class HighFidelityPDFService {
   /**
    * Get subject name from subject code
    */
-  private static getSubjectName(subjectCode: string): string {
-    const subject = SubjectLoader.getSubjectByCode(subjectCode);
+  private static async getSubjectName(subjectCode: string): Promise<string> {
+    const subject = await ConfigService.getSubjectByCode(subjectCode);
     return subject?.subjectName || subjectCode;
   }
 

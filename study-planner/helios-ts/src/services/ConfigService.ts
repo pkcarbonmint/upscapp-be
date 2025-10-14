@@ -8,8 +8,7 @@ import type { PrepModeConfigFile } from '../types/config';
 import type { Archetype } from '../types/models';
 
 // JSON-based loaders (existing)
-import { SubjectLoader as JSONSubjectLoader, loadSubtopics as loadSubtopicsFromJSON } from './SubjectLoader';
-import { getPrepModeProgression as getPrepModeProgressionFromJSON } from '../engine/PrepModeEngine';
+import { NCERTMaterialsService as JSONNCERTMaterialsService } from './NCERTMaterialsService';
 
 // DynamoDB-based loaders (new)
 import { 
@@ -19,11 +18,12 @@ import {
   loadArchetypes
 } from './DynamoDBSubjectLoader';
 import { getPrepModeProgression as getPrepModeProgressionFromDynamoDB } from '../engine/DynamoDBPrepModeEngine';
+import { DynamoDBNCERTMaterialsService } from './DynamoDBNCERTMaterialsService';
 
 // Configuration
 export type DataSource = 'json' | 'dynamodb';
 
-const DATA_SOURCE: DataSource = (process.env.DATA_SOURCE as DataSource) || 'json';
+const DATA_SOURCE: DataSource = (process.env.DATA_SOURCE as DataSource) || 'dynamodb';
 
 export class ConfigService {
   /**
@@ -34,73 +34,49 @@ export class ConfigService {
   }
 
   /**
-   * Load all subjects using the configured data source
+   * Load all subjects using DynamoDB
    */
   static async loadAllSubjects(): Promise<Subject[]> {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await DynamoDBSubjectLoader.loadAllSubjects();
-    } else {
-      return JSONSubjectLoader.loadAllSubjects();
-    }
+    return await DynamoDBSubjectLoader.loadAllSubjects();
   }
 
   /**
-   * Load subtopics using the configured data source
+   * Load subtopics using DynamoDB
    */
   static async loadSubtopics(subjects: Subject[]) {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await loadSubtopicsFromDynamoDB(subjects);
-    } else {
-      return loadSubtopicsFromJSON(subjects);
-    }
+    return await loadSubtopicsFromDynamoDB(subjects);
   }
 
   /**
-   * Get subjects by category using the configured data source
+   * Get subjects by category using DynamoDB
    */
   static async getSubjectsByCategory(category: 'Macro' | 'Micro'): Promise<Subject[]> {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await DynamoDBSubjectLoader.getSubjectsByCategory(category);
-    } else {
-      return JSONSubjectLoader.getSubjectsByCategory(category);
-    }
+    return await DynamoDBSubjectLoader.getSubjectsByCategory(category);
   }
 
   /**
-   * Get subjects by exam focus using the configured data source
+   * Get subjects by exam focus using DynamoDB
    */
   static async getSubjectsByExamFocus(examFocus: 'PrelimsOnly' | 'MainsOnly' | 'BothExams'): Promise<Subject[]> {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await DynamoDBSubjectLoader.getSubjectsByExamFocus(examFocus);
-    } else {
-      return JSONSubjectLoader.getSubjectsByExamFocus(examFocus);
-    }
+    return await DynamoDBSubjectLoader.getSubjectsByExamFocus(examFocus);
   }
 
   /**
-   * Get a specific subject by code using the configured data source
+   * Get a specific subject by code using DynamoDB
    */
   static async getSubjectByCode(subjectCode: string): Promise<Subject | undefined> {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await DynamoDBSubjectLoader.getSubjectByCode(subjectCode);
-    } else {
-      return JSONSubjectLoader.getSubjectByCode(subjectCode);
-    }
+    return await DynamoDBSubjectLoader.getSubjectByCode(subjectCode);
   }
 
   /**
-   * Get subjects with current affairs using the configured data source
+   * Get subjects with current affairs using DynamoDB
    */
   static async getSubjectsWithCurrentAffairs(): Promise<Subject[]> {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await DynamoDBSubjectLoader.getSubjectsWithCurrentAffairs();
-    } else {
-      return JSONSubjectLoader.getSubjectsWithCurrentAffairs();
-    }
+    return await DynamoDBSubjectLoader.getSubjectsWithCurrentAffairs();
   }
 
   /**
-   * Get prep mode progression using the configured data source
+   * Get prep mode progression using DynamoDB
    */
   static async getPrepModeProgression(
     planDate: any,
@@ -108,35 +84,21 @@ export class ConfigService {
     archetype: Archetype,
     weeklyHours: number
   ) {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await getPrepModeProgressionFromDynamoDB(planDate, targetYearStr, archetype, weeklyHours);
-    } else {
-      return getPrepModeProgressionFromJSON(planDate, targetYearStr, archetype, weeklyHours);
-    }
+    return await getPrepModeProgressionFromDynamoDB(planDate, targetYearStr, archetype, weeklyHours);
   }
 
   /**
-   * Load prep mode configuration (only available for DynamoDB)
+   * Load prep mode configuration from DynamoDB
    */
-  static async loadPrepModeConfig(): Promise<PrepModeConfigFile | null> {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await loadPrepModeConfig();
-    } else {
-      console.warn('Prep mode config loading is only available with DynamoDB data source');
-      return null;
-    }
+  static async loadPrepModeConfig(): Promise<PrepModeConfigFile> {
+    return await loadPrepModeConfig();
   }
 
   /**
-   * Load archetypes (only available for DynamoDB)
+   * Load archetypes from DynamoDB
    */
-  static async loadArchetypes(): Promise<Archetype[] | null> {
-    if (DATA_SOURCE === 'dynamodb') {
-      return await loadArchetypes();
-    } else {
-      console.warn('Archetypes loading is only available with DynamoDB data source');
-      return null;
-    }
+  static async loadArchetypes(): Promise<Archetype[]> {
+    return await loadArchetypes();
   }
 
   /**
@@ -144,12 +106,8 @@ export class ConfigService {
    */
   static async isDynamoDBAvailable(): Promise<boolean> {
     try {
-      if (DATA_SOURCE === 'dynamodb') {
-        // Try to load a small amount of data to test connectivity
-        await DynamoDBSubjectLoader.loadAllSubjects();
-        return true;
-      }
-      return false;
+      await DynamoDBSubjectLoader.loadAllSubjects();
+      return true;
     } catch (error) {
       console.warn('DynamoDB is not available:', error);
       return false;
@@ -157,7 +115,49 @@ export class ConfigService {
   }
 
   /**
-   * Get health status of the current data source
+   * Get NCERT materials for a topic using DynamoDB
+   */
+  static async getNCERTMaterialsForTopic(topicCode: string) {
+    return await DynamoDBNCERTMaterialsService.getMaterialsForTopic(topicCode);
+  }
+
+  /**
+   * Get NCERT materials for multiple topics using DynamoDB
+   */
+  static async getNCERTMaterialsForTopics(topicCodes: string[]) {
+    return await DynamoDBNCERTMaterialsService.getMaterialsForTopics(topicCodes);
+  }
+
+  /**
+   * Get NCERT resources for C1 task using DynamoDB
+   */
+  static async getNCERTResourcesForC1Task(topicCode: string) {
+    return await DynamoDBNCERTMaterialsService.getResourcesForC1Task(topicCode);
+  }
+
+  /**
+   * Get available topic codes with NCERT materials using DynamoDB
+   */
+  static async getAvailableNCERTTopicCodes() {
+    return await DynamoDBNCERTMaterialsService.getAvailableTopicCodes();
+  }
+
+  /**
+   * Check if NCERT materials are available for a topic using DynamoDB
+   */
+  static async hasNCERTMaterialsForTopic(topicCode: string) {
+    return await DynamoDBNCERTMaterialsService.hasMaterialsForTopic(topicCode);
+  }
+
+  /**
+   * Get NCERT materials by subject using DynamoDB
+   */
+  static async getNCERTMaterialsBySubject() {
+    return await DynamoDBNCERTMaterialsService.getMaterialsBySubject();
+  }
+
+  /**
+   * Get health status of DynamoDB data source
    */
   static async getHealthStatus(): Promise<{
     dataSource: DataSource;
@@ -165,13 +165,8 @@ export class ConfigService {
     error?: string;
   }> {
     try {
-      if (DATA_SOURCE === 'dynamodb') {
-        await DynamoDBSubjectLoader.loadAllSubjects();
-        return { dataSource: 'dynamodb', isHealthy: true };
-      } else {
-        JSONSubjectLoader.loadAllSubjects();
-        return { dataSource: 'json', isHealthy: true };
-      }
+      await DynamoDBSubjectLoader.loadAllSubjects();
+      return { dataSource: 'dynamodb', isHealthy: true };
     } catch (error) {
       return {
         dataSource: DATA_SOURCE,

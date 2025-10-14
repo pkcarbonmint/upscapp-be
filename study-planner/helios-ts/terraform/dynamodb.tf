@@ -178,6 +178,50 @@ resource "aws_dynamodb_table" "archetypes" {
   }
 }
 
+# NCERT Materials Table
+resource "aws_dynamodb_table" "ncert_materials" {
+  name           = "ncert-materials"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "topic_code"
+  range_key      = "material_id"
+
+  attribute {
+    name = "topic_code"
+    type = "S"
+  }
+
+  attribute {
+    name = "material_id"
+    type = "S"
+  }
+
+  attribute {
+    name = "subject_code"
+    type = "S"
+  }
+
+  attribute {
+    name = "book_name"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name     = "SubjectIndex"
+    hash_key = "subject_code"
+  }
+
+  global_secondary_index {
+    name     = "BookIndex"
+    hash_key = "book_name"
+  }
+
+  tags = {
+    Name        = "NCERT Materials"
+    Environment = "production"
+    Project     = "study-planner"
+  }
+}
+
 # Configuration Table (for metadata like exam schedule, thresholds, etc.)
 resource "aws_dynamodb_table" "study_planner_config" {
   name           = "study-planner-config"
@@ -200,12 +244,13 @@ resource "aws_dynamodb_table" "study_planner_config" {
 output "dynamodb_table_names" {
   description = "Names of the created DynamoDB tables"
   value = {
-    subjects    = aws_dynamodb_table.upsc_subjects.name
-    topics      = aws_dynamodb_table.upsc_topics.name
-    subtopics   = aws_dynamodb_table.upsc_subtopics.name
-    prep_modes  = aws_dynamodb_table.prep_modes.name
-    archetypes  = aws_dynamodb_table.archetypes.name
-    config      = aws_dynamodb_table.study_planner_config.name
+    subjects       = aws_dynamodb_table.upsc_subjects.name
+    topics         = aws_dynamodb_table.upsc_topics.name
+    subtopics      = aws_dynamodb_table.upsc_subtopics.name
+    prep_modes     = aws_dynamodb_table.prep_modes.name
+    archetypes     = aws_dynamodb_table.archetypes.name
+    ncert_materials = aws_dynamodb_table.ncert_materials.name
+    config         = aws_dynamodb_table.study_planner_config.name
   }
 }
 
@@ -213,11 +258,12 @@ output "dynamodb_table_names" {
 output "dynamodb_table_arns" {
   description = "ARNs of the created DynamoDB tables"
   value = {
-    subjects    = aws_dynamodb_table.upsc_subjects.arn
-    topics      = aws_dynamodb_table.upsc_topics.arn
-    subtopics   = aws_dynamodb_table.upsc_subtopics.arn
-    prep_modes  = aws_dynamodb_table.prep_modes.arn
-    archetypes  = aws_dynamodb_table.archetypes.arn
-    config      = aws_dynamodb_table.study_planner_config.arn
+    subjects       = aws_dynamodb_table.upsc_subjects.arn
+    topics         = aws_dynamodb_table.upsc_topics.arn
+    subtopics      = aws_dynamodb_table.upsc_subtopics.arn
+    prep_modes     = aws_dynamodb_table.prep_modes.arn
+    archetypes     = aws_dynamodb_table.archetypes.arn
+    ncert_materials = aws_dynamodb_table.ncert_materials.arn
+    config         = aws_dynamodb_table.study_planner_config.arn
   }
 }

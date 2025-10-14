@@ -1,7 +1,7 @@
 import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, Header, Footer, ImageRun, HeadingLevel } from 'docx';
 import type { StudyPlan, StudyCycle, Block, BlockResources, Resource, StudentIntake } from '../types/models';
 import { ResourceService } from './ResourceService';
-import { SubjectLoader } from './SubjectLoader';
+import { ConfigService } from './ConfigService';
 import dayjs from 'dayjs';
 
 // Document structure interfaces
@@ -1135,7 +1135,7 @@ export class DocumentService {
       Array.from(subjects).map(async (subjectCode) => {
         try {
           const subjectResources = await ResourceService.getResourcesForSubject(subjectCode);
-          const subjectName = this.getSubjectName(subjectCode);
+          const subjectName = await this.getSubjectName(subjectCode);
           
           const subjectSections: DocumentSection[] = [
             {
@@ -1203,8 +1203,8 @@ export class DocumentService {
   /**
    * Get subject name from subject code using standard subject table
    */
-  private static getSubjectName(subjectCode: string): string {
-    const subject = SubjectLoader.getSubjectByCode(subjectCode);
+  private static async getSubjectName(subjectCode: string): Promise<string> {
+    const subject = await ConfigService.getSubjectByCode(subjectCode);
     return subject?.subjectName || subjectCode;
   }
 

@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype } from '../types/models';
 import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
-import { loadAllSubjects } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 import dayjs from 'dayjs';
 
 // Test for 2027 target year: generateInitialPlan called 10 times (Oct 2025, Nov 2025, ..., Jul 2027)

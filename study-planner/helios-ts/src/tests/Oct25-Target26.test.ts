@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype } from '../types/models';
 import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
-import { loadAllSubjects } from '../services/SubjectLoader';
+import { ConfigService } from '../services/ConfigService';
 import { ResourceService } from '../services/ResourceService';
 import { DocumentService } from '../services/DocumentService';
 import dayjs from 'dayjs';
