@@ -229,12 +229,12 @@ export interface StudentIntake {
   subject_approach: SubjectApproach;
   target_year: string;
   start_date: string;
-  personal_details?: PersonalDetails;
-  preparation_background?: PreparationBackground;
-  coaching_details?: CoachingDetails;
-  optional_subject?: OptionalSubjectDetails;
-  test_experience?: TestExperience;
-  syllabus_awareness?: SyllabusAwareness;
+  personal_details: PersonalDetails; // Made required - essential for student identification and contact
+  preparation_background: PreparationBackground; // Made required - needed for proper plan generation
+  coaching_details?: CoachingDetails; // Keep optional - not all students have coaching
+  optional_subject?: OptionalSubjectDetails; // Keep optional - only for students with optional subjects
+  test_experience?: TestExperience; // Keep optional - fresher students may not have test experience
+  syllabus_awareness?: SyllabusAwareness; // Keep optional - can be assessed later
 
   // NEW: Calculator instance for all computations
   calculator: StudyPlanCalculator;
@@ -331,13 +331,13 @@ export interface PersonalDetails {
 }
 
 export interface PreparationBackground {
-  preparing_since: string;
-  number_of_attempts: string;
-  highest_stage_per_attempt: string;
-  last_attempt_gs_prelims_score: number;
-  last_attempt_csat_score: number;
-  wrote_mains_in_last_attempt: string;
-  mains_paper_marks: string;
+  preparing_since: string; // Required - how long they've been preparing
+  number_of_attempts: string; // Required - including "0" for freshers
+  highest_stage_per_attempt: string; // Required - "N/A" for freshers
+  last_attempt_gs_prelims_score?: number; // Optional - not applicable for freshers
+  last_attempt_csat_score?: number; // Optional - not applicable for freshers  
+  wrote_mains_in_last_attempt?: string; // Optional - not applicable for freshers
+  mains_paper_marks?: string; // Optional - not applicable for freshers
 }
 
 export interface CoachingDetails {

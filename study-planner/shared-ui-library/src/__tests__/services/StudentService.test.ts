@@ -34,7 +34,9 @@ describe('StudentService', () => {
         college: 'Test University',
         graduation_year: 2023,
         about: 'Aspiring civil servant',
-        target_year: 2026
+        target_year: 2026, // Now required
+        confidence_data: { 'H01': 'Moderate', 'P01': 'Weak' }, // Now required
+        commitment_data: { timeCommitment: 6, studyPreference: 'Balanced' } // Now required
       };
 
       const expectedResponse: StudentCreationResponse = {
@@ -79,7 +81,10 @@ describe('StudentService', () => {
         graduation_stream: '',
         college: '',
         graduation_year: 2023,
-        about: ''
+        about: '',
+        target_year: 2026, // Now required
+        confidence_data: {}, // Now required but empty to test validation
+        commitment_data: {} // Now required but empty to test validation
       };
 
       // Mock failed API response
@@ -361,7 +366,10 @@ describe('StudentService', () => {
         graduation_stream: 'Engineering',
         college: 'Test College',
         graduation_year: 2023,
-        about: 'Test about'
+        about: 'Test about',
+        target_year: 2026, // Now required
+        confidence_data: { 'H01': 'Moderate' }, // Now required
+        commitment_data: { timeCommitment: 6 } // Now required
       };
 
       await expect(studentService.createStudent(studentData)).rejects.toThrow('Network error');

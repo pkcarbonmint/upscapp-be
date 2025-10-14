@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { IWFStudyCommitment, StudyPreference, SubjectApproach } from '../types';
+import { validateCommitment, type CommitmentValidation, isCommitmentValid } from '../utils/validation';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useTheme } from '../hooks/useTheme';
 
 interface CommitmentStepProps {
   data: IWFStudyCommitment;
   onUpdate: (updater: (prev: IWFStudyCommitment) => IWFStudyCommitment) => void;
+  onValidationChange?: (isValid: boolean, errors: string[]) => void;
+  forceShowErrors?: boolean;
 }
 
 interface TimeCommitmentOption {
@@ -50,18 +53,77 @@ const getSubjectApproachLabel = (approach: SubjectApproach): string => {
   }
 };
 
-export const CommitmentStep: React.FC<CommitmentStepProps> = ({ data, onUpdate }) => {
+export const CommitmentStep: React.FC<CommitmentStepProps> = ({ 
+  data, 
+  onUpdate, 
+  onValidationChange, 
+  forceShowErrors = false 
+}) => {
   const { getClasses } = useTheme();
+  const [validation, setValidation] = useState<CommitmentValidation>(() => validateCommitment(data));
+  const [showErrors, setShowErrors] = useState(forceShowErrors);
+
+  // Update validation when data changes
+  useEffect(() => {
+    const newValidation = validateCommitment(data);
+    setValidation(newValidation);
+    
+    if (onValidationChange) {
+      const isValid = isCommitmentValid(newValidation);
+      const errors = Object.values(newValidation)
+        .filter(result => !result.isValid)
+        .map(result => result.error!)
+        .filter(Boolean);
+      onValidationChange(isValid, errors);
+    }
+  }, [data, onValidationChange]);
+
+  // Update showErrors when forceShowErrors changes
+  useEffect(() => {
+    if (forceShowErrors) {
+      setShowErrors(true);
+    }
+  }, [forceShowErrors]);
+  
+  // Show validation errors when present
+  const hasErrors = showErrors && !isCommitmentValid(validation);
+  const validationErrors = Object.values(validation)
+    .filter(result => !result.isValid)
+    .map(result => result.error!)
+    .filter(Boolean);
   
   return (
     <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto p-2 sm:p-4">
+      {/* Error Summary */}
+      {hasErrors && (
+        <div className={`mb-6 p-4 ${getClasses('errorBackground')} ${getClasses('errorBorder')} border rounded-lg shadow-sm`}>
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <div className={`w-6 h-6 flex items-center justify-center ${getClasses('errorIcon')}`}>
+                <i className="fas fa-exclamation text-xs"></i>
+              </div>
+            </div>
+            <div className="ml-3">
+              <h3 className={`text-sm font-semibold ${getClasses('errorText')}`}>
+                Please complete all required fields:
+              </h3>
+              <ul className={`text-sm ${getClasses('errorText')} mt-2 list-disc list-inside space-y-1`}>
+                {validationErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Time Commitment Section */}
       <div className="space-y-4">
         <div className="relative">
           <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
           <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
             <i className={`fas fa-clock mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Daily Study Hours
+            Daily Study Hours <span className={getClasses('requiredIndicator')}>*</span>
           </h3>
         </div>
         <ToggleGroup
@@ -87,7 +149,7 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({ data, onUpdate }
           <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
           <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
             <i className={`fas fa-chart-line mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Study Preference
+            Study Preference <span className={getClasses('requiredIndicator')}>*</span>
           </h3>
         </div>
         <ToggleGroup
@@ -112,7 +174,7 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({ data, onUpdate }
           <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
           <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
             <i className={`fas fa-layer-group mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Subject Approach
+            Subject Approach <span className={getClasses('requiredIndicator')}>*</span>
           </h3>
         </div>
         <ToggleGroup

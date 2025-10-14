@@ -66,9 +66,9 @@ export interface StudentCreationData {
   college: string;
   graduation_year: number;
   about: string;
-  target_year?: number; // Optional since it's set in a later step
-  confidence_data?: Record<string, any>;
-  commitment_data?: Record<string, any>;
+  target_year: number; // Made required - essential for plan generation
+  confidence_data: Record<string, any>; // Made required - needed for subject-specific planning
+  commitment_data: Record<string, any>; // Made required - needed for time allocation and scheduling
 }
 
 export interface StudentCreationResponse {
