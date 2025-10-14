@@ -16,6 +16,16 @@ export interface BackgroundValidation {
   about: ValidationResult;
 }
 
+export interface CommitmentValidation {
+  timeCommitment: ValidationResult;
+  studyPreference: ValidationResult;
+  subjectApproach: ValidationResult;
+}
+
+export interface ConfidenceLevelValidation {
+  hasSelectedLevels: ValidationResult;
+}
+
 // Email validation using RFC 5322 compliant regex
 export const validateEmail = (email: string): ValidationResult => {
   if (!email || email.trim() === '') {
@@ -103,4 +113,41 @@ export const getValidationErrors = (validation: BackgroundValidation): string[] 
     .filter(result => !result.isValid)
     .map(result => result.error!)
     .filter(Boolean);
+};
+
+// Commitment validation functions
+export const validateCommitment = (commitment: any): CommitmentValidation => {
+  return {
+    timeCommitment: commitment.timeCommitment && commitment.timeCommitment > 0
+      ? { isValid: true }
+      : { isValid: false, error: 'Please select your daily study time commitment' },
+    studyPreference: commitment.studyPreference
+      ? { isValid: true }
+      : { isValid: false, error: 'Please select your study preference' },
+    subjectApproach: commitment.subjectApproach
+      ? { isValid: true }
+      : { isValid: false, error: 'Please select your subject approach' }
+  };
+};
+
+// Check if commitment validation passes
+export const isCommitmentValid = (validation: CommitmentValidation): boolean => {
+  return Object.values(validation).every(result => result.isValid);
+};
+
+// Confidence level validation functions
+export const validateConfidenceLevel = (confidenceData: any): ConfidenceLevelValidation => {
+  const hasValidConfidenceLevels = confidenceData && Object.keys(confidenceData).length > 0 
+    && Object.values(confidenceData).some((level: any) => level && level !== '');
+  
+  return {
+    hasSelectedLevels: hasValidConfidenceLevels
+      ? { isValid: true }
+      : { isValid: false, error: 'Please assess your confidence levels for all subjects' }
+  };
+};
+
+// Check if confidence level validation passes
+export const isConfidenceLevelValid = (validation: ConfidenceLevelValidation): boolean => {
+  return Object.values(validation).every(result => result.isValid);
 };

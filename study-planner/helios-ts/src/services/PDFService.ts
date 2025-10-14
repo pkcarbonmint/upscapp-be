@@ -1295,10 +1295,10 @@ export class PDFService {
       ]);
       rows.push([
         'Highest Stage Reached', pb.highest_stage_per_attempt || 'Not provided',
-        'Previous Prelims Score', pb.last_attempt_gs_prelims_score > 0 ? pb.last_attempt_gs_prelims_score.toString() : 'N/A'
+        'Previous Prelims Score', (pb.last_attempt_gs_prelims_score && pb.last_attempt_gs_prelims_score > 0) ? pb.last_attempt_gs_prelims_score.toString() : 'N/A'
       ]);
       rows.push([
-        'CSAT Score', pb.last_attempt_csat_score > 0 ? pb.last_attempt_csat_score.toString() : 'N/A',
+        'CSAT Score', (pb.last_attempt_csat_score && pb.last_attempt_csat_score > 0) ? pb.last_attempt_csat_score.toString() : 'N/A',
         'Wrote Mains', pb.wrote_mains_in_last_attempt || 'Not provided'
       ]);
     }
