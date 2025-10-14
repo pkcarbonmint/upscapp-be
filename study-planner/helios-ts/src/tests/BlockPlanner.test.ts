@@ -85,7 +85,22 @@ describe('BlockPlanner', () => {
       catch_up_day_preference: 'sunday'
     },
     target_year: '2025',
-    start_date: '2024-01-01'
+    start_date: '2024-01-01',
+    personal_details: {
+      full_name: 'Test Student',
+      email: 'test@example.com',
+      phone_number: '+911234567890',
+      present_location: 'Delhi, India',
+      student_archetype: 'Full-Time Professional',
+      graduation_stream: 'Engineering',
+      college_university: 'Test University',
+      year_of_passing: 2023
+    },
+    preparation_background: {
+      preparing_since: '6 months',
+      number_of_attempts: '0',
+      highest_stage_per_attempt: 'N/A'
+    }
   });
 
   const mockArchetype: Archetype = {

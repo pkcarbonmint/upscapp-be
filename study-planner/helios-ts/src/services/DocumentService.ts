@@ -801,9 +801,9 @@ export class DocumentService {
       ]);
       rows.push([
         'Highest Stage', pb.highest_stage_per_attempt || 'Not provided',
-        'Last GS Score', pb.last_attempt_gs_prelims_score > 0 ? pb.last_attempt_gs_prelims_score.toString() : 'N/A'
+        'Last GS Score', (pb.last_attempt_gs_prelims_score && pb.last_attempt_gs_prelims_score > 0) ? pb.last_attempt_gs_prelims_score.toString() : 'N/A'
       ]);
-      if (pb.last_attempt_csat_score > 0) {
+      if (pb.last_attempt_csat_score && pb.last_attempt_csat_score > 0) {
         rows.push([
           'Last CSAT Score', pb.last_attempt_csat_score.toString(),
           '', ''

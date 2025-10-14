@@ -49,7 +49,16 @@ export function transformUIToStudentIntake(wizardData: UIWizardData): StudentInt
       graduation_stream: bg.graduation_stream,
       college_university: bg.college_university,
       year_of_passing: bg.year_of_passing
-    } : undefined,
+    } : {
+      full_name: 'Unknown Student',
+      email: 'unknown@example.com',
+      phone_number: '+911234567890',
+      present_location: 'Unknown Location',
+      student_archetype: 'General',
+      graduation_stream: 'Unknown',
+      college_university: 'Unknown College',
+      year_of_passing: new Date().getFullYear()
+    },
     preparation_background: prep ? {
       preparing_since: prep.preparing_since,
       number_of_attempts: prep.number_of_attempts,
@@ -58,7 +67,11 @@ export function transformUIToStudentIntake(wizardData: UIWizardData): StudentInt
       last_attempt_csat_score: prep.last_attempt_csat_score,
       wrote_mains_in_last_attempt: prep.wrote_mains_in_last_attempt,
       mains_paper_marks: prep.mains_paper_marks
-    } : undefined,
+    } : {
+      preparing_since: 'Just Starting',
+      number_of_attempts: '0',
+      highest_stage_per_attempt: 'N/A'
+    },
     coaching_details: coaching ? {
       prior_coaching: coaching.prior_coaching,
       coaching_institute_name: coaching.coaching_institute_name || 'None',

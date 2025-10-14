@@ -241,8 +241,8 @@ function extractExperienceProfile(studentIntake: StudentIntake): ExperienceProfi
   
   return {
     attempts: safeReadInt(bg.number_of_attempts, 0),
-    lastPrelimScore: bg.last_attempt_gs_prelims_score,
-    lastCSATScore: bg.last_attempt_csat_score
+    lastPrelimScore: bg.last_attempt_gs_prelims_score || 0,
+    lastCSATScore: bg.last_attempt_csat_score || 0
   };
 }
 
