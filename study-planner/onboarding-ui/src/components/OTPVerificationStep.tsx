@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, Phone, Shield } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Phone, Shield } from 'lucide-react';
 import { otpService } from '../services/otpService';
 import { isFeatureEnabled } from '../config/featureFlags';
 import { useTheme } from '../hooks/useTheme';
-import { EnhancedAuth } from 'shared-ui-library';
 import type { IWFOTPVerification } from '../types';
 
 interface OTPVerificationStepProps {
@@ -59,28 +57,28 @@ const OTPVerificationStep: React.FC<OTPVerificationStepProps> = ({
     onValidationChange?.(isValid, errors);
   }, [data.isVerified, error, onValidationChange]);
 
-  // Handle enhanced auth success
-  const handleEnhancedAuthSuccess = (result: any) => {
-    // Update local verification state
-    onUpdate(prev => ({
-      ...prev,
-      isVerified: true,
-      verificationId: 'enhanced-auth-success',
-      otpCode: '******'
-    }));
-    
-    setSuccessMessage('Authentication successful!');
-    setError('');
-    
-    // Pass result to parent component
-    onAuthSuccess?.(result);
-  };
+  // Handle enhanced auth success (currently unused but kept for future use)
+  // const handleEnhancedAuthSuccess = (result: any) => {
+  //   // Update local verification state
+  //   onUpdate(prev => ({
+  //     ...prev,
+  //     isVerified: true,
+  //     verificationId: 'enhanced-auth-success',
+  //     otpCode: '******'
+  //   }));
+  //   
+  //   setSuccessMessage('Authentication successful!');
+  //   setError('');
+  //   
+  //   // Pass result to parent component
+  //   onAuthSuccess?.(result);
+  // };
 
-  // Handle enhanced auth error
-  const handleEnhancedAuthError = (error: string) => {
-    setError(error);
-    setSuccessMessage('');
-  };
+  // Handle enhanced auth error (currently unused but kept for future use)
+  // const handleEnhancedAuthError = (error: string) => {
+  //   setError(error);
+  //   setSuccessMessage('');
+  // };
 
   // Legacy OTP completion (for backward compatibility)
   const handleLegacyAuthComplete = async () => {
@@ -112,11 +110,24 @@ const OTPVerificationStep: React.FC<OTPVerificationStepProps> = ({
   return (
     <div className="max-w-md mx-auto p-4 sm:p-6">
       {useEnhancedAuth ? (
-        // Use new enhanced authentication
-        <EnhancedAuth
-          onSuccess={handleEnhancedAuthSuccess}
-          onError={handleEnhancedAuthError}
-        />
+        // Use new enhanced authentication service
+        <div className={`${getClasses('cardBackground')} ${getClasses('cardBorder')} ${getClasses('cardShadow')} rounded-lg border p-4 sm:p-6`}>
+          <div className="text-center mb-6">
+            <h2 className={`text-lg sm:text-xl font-semibold ${getClasses('headerTitle')} mb-2`}>
+              Enhanced Authentication
+            </h2>
+            <p className={`text-sm sm:text-base ${getClasses('headerSubtitle')}`}>
+              Please use the enhanced authentication service for verification
+            </p>
+          </div>
+          <Button
+            onClick={() => setUseEnhancedAuth(false)}
+            variant="outline"
+            className="w-full"
+          >
+            Back to Standard Authentication
+          </Button>
+        </div>
       ) : (
         // Legacy OTP verification interface
         <div className={`${getClasses('cardBackground')} ${getClasses('cardBorder')} ${getClasses('cardShadow')} rounded-lg border p-4 sm:p-6`}>
