@@ -12,7 +12,7 @@ import { createBlocksForSubjects } from './cycle-utils';
 * - Trim subtopics from D5 down to B1 if needed
 * - Returns undefined if prep starts after December 31st of the year before target year
 */
-export async function planFoundationCycle(
+export async function planC2(
   logger: Logger,
   intake: StudentIntake,
   confidenceMap: Map<string, number>,
