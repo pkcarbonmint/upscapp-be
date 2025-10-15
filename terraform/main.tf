@@ -30,6 +30,35 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+# Local values for RDS configuration
+locals {
+  # Determine RDS endpoint based on deployment method
+  rds_endpoint = var.external_rds_endpoint != "" ? var.external_rds_endpoint : (
+    var.deploy_rds_separately ? (
+      length(module.rds) > 0 ? module.rds[0].db_instance_endpoint : ""
+    ) : (
+      var.enable_rds && length(aws_db_instance.main) > 0 ? aws_db_instance.main[0].endpoint : ""
+    )
+  )
+  
+  # Determine RDS port
+  rds_port = var.external_rds_endpoint != "" ? var.external_rds_port : (
+    var.deploy_rds_separately ? (
+      length(module.rds) > 0 ? module.rds[0].db_instance_port : 5432
+    ) : (
+      var.enable_rds && length(aws_db_instance.main) > 0 ? aws_db_instance.main[0].port : 5432
+    )
+  )
+  
+  # Determine RDS credentials
+  rds_username = var.external_rds_username != "" ? var.external_rds_username : var.rds_username
+  rds_password = var.external_rds_password != "" ? var.external_rds_password : var.rds_password
+  rds_database = var.external_rds_database != "" ? var.external_rds_database : var.rds_database_name
+  
+  # Full database URL
+  database_url = "postgresql://${local.rds_username}:${local.rds_password}@${local.rds_endpoint}:${local.rds_port}/${local.rds_database}"
+}
+
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
@@ -271,6 +300,14 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # GitHub webhook port
+  ingress {
+    from_port   = 9000
+    to_port     = 9000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Allow all outbound traffic
   egress {
     from_port   = 0
@@ -294,9 +331,41 @@ resource "aws_db_subnet_group" "main" {
   }
 }
 
-# RDS Instance (PostgreSQL) - Only deploy if no external RDS is provided
+# RDS Module (for separate deployment)
+module "rds" {
+  count  = var.deploy_rds_separately ? 1 : 0
+  source = "./modules/rds"
+
+  project_name = var.project_name
+  password     = var.rds_password
+
+  # Use existing VPC if available, otherwise create new one
+  vpc_id                     = aws_vpc.main.id
+  allowed_security_group_ids = [aws_security_group.ecs.id, aws_security_group.ec2.id]
+
+  # RDS Configuration
+  allocated_storage         = var.rds_allocated_storage
+  max_allocated_storage     = var.rds_max_allocated_storage
+  engine_version           = var.rds_engine_version
+  instance_class           = var.rds_instance_class
+  database_name            = var.rds_database_name
+  username                 = var.rds_username
+  backup_retention_period  = var.rds_backup_retention_period
+  backup_window            = var.rds_backup_window
+  maintenance_window       = var.rds_maintenance_window
+  skip_final_snapshot      = var.rds_skip_final_snapshot
+  deletion_protection      = var.rds_deletion_protection
+
+  tags = {
+    Environment = var.environment
+    Project     = var.project_name
+    ManagedBy   = "terraform"
+  }
+}
+
+# RDS Instance (PostgreSQL) - Only deploy if not using module and no external RDS is provided
 resource "aws_db_instance" "main" {
-  count = var.enable_rds && var.external_rds_endpoint == "" ? 1 : 0
+  count = !var.deploy_rds_separately && var.enable_rds && var.external_rds_endpoint == "" ? 1 : 0
 
   identifier             = "${var.project_name}-db"
   allocated_storage      = var.rds_allocated_storage
@@ -403,13 +472,18 @@ resource "aws_instance" "docker" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   subnet_id              = aws_subnet.public[0].id
   user_data = base64encode(templatefile("${path.module}/docker-user-data.sh", {
-    project_name = var.project_name
-    strapi_ip    = var.enable_ec2_instances ? aws_instance.strapi[0].private_ip : ""
-    rds_endpoint = var.external_rds_endpoint != "" ? var.external_rds_endpoint : (var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].endpoint : "")
-    rds_port     = var.external_rds_port
-    rds_username = var.external_rds_username != "" ? var.external_rds_username : var.rds_username
-    rds_password = var.external_rds_password != "" ? var.external_rds_password : var.rds_password
-    rds_database = var.external_rds_database != "" ? var.external_rds_database : var.rds_database_name
+    project_name           = var.project_name
+    strapi_ip             = var.enable_ec2_instances ? aws_instance.strapi[0].private_ip : ""
+    rds_endpoint          = local.rds_endpoint
+    rds_port              = local.rds_port
+    rds_username          = local.rds_username
+    rds_password          = local.rds_password
+    rds_database          = local.rds_database
+    github_token          = var.github_token
+    github_repository_url = var.github_repository_url
+    github_branch         = var.github_branch
+    enable_auto_deploy    = var.enable_auto_deploy
+    webhook_secret        = var.webhook_secret
   }))
 
   root_block_device {
@@ -671,8 +745,8 @@ resource "aws_ecs_task_definition" "app" {
 
       environment = [
         for key, value in merge(var.app_environment_variables, {
-          DATABASE_URL      = var.external_rds_endpoint != "" ? "postgresql://${var.external_rds_username}:${var.external_rds_password}@${var.external_rds_endpoint}:${var.external_rds_port}/${var.external_rds_database}" : (var.enable_rds ? "postgresql://${var.rds_username}:${var.rds_password}@${aws_db_instance.main[0].endpoint}:${aws_db_instance.main[0].port}/${var.rds_database_name}" : "")
-          REDIS_URL         = "postgresql://${var.external_rds_username != "" ? var.external_rds_username : var.rds_username}:${var.external_rds_password != "" ? var.external_rds_password : var.rds_password}@${var.external_rds_endpoint != "" ? var.external_rds_endpoint : (var.enable_rds ? aws_db_instance.main[0].endpoint : "")}:${var.external_rds_port}/${var.external_rds_database != "" ? var.external_rds_database : var.rds_database_name}"
+          DATABASE_URL      = local.database_url
+          REDIS_URL         = local.database_url
           HELIOS_SERVER_URL = "http://localhost:8080"
           CMS_BASE_URL      = var.enable_ec2_instances ? "http://${aws_instance.strapi[0].private_ip}:1337" : ""
           }) : {
@@ -813,8 +887,8 @@ resource "aws_ecs_task_definition" "celery" {
 
       environment = [
         for key, value in merge(var.app_environment_variables, {
-          DATABASE_URL = var.external_rds_endpoint != "" ? "postgresql://${var.external_rds_username}:${var.external_rds_password}@${var.external_rds_endpoint}:${var.external_rds_port}/${var.external_rds_database}" : (var.enable_rds ? "postgresql://${var.rds_username}:${var.rds_password}@${aws_db_instance.main[0].endpoint}:${aws_db_instance.main[0].port}/${var.rds_database_name}" : "")
-          REDIS_URL    = "postgresql://${var.external_rds_username != "" ? var.external_rds_username : var.rds_username}:${var.external_rds_password != "" ? var.external_rds_password : var.rds_password}@${var.external_rds_endpoint != "" ? var.external_rds_endpoint : (var.enable_rds ? aws_db_instance.main[0].endpoint : "")}:${var.external_rds_port}/${var.external_rds_database != "" ? var.external_rds_database : var.rds_database_name}"
+          DATABASE_URL = local.database_url
+          REDIS_URL    = local.database_url
           }) : {
           name  = key
           value = tostring(value)

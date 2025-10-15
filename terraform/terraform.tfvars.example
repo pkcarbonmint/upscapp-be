@@ -44,3 +44,16 @@ flower_password = "your-secure-flower-password-here"
 # Optional: Domain Configuration (for Route53)
 # route53_zone_id = "Z1D633PJN98FT9"
 # domain_name     = "your-domain.com"
+
+# GitHub Integration (REQUIRED for automatic deployments)
+github_token          = "your-github-personal-access-token-here"
+github_repository_url = "https://github.com/your-username/your-repository.git"
+github_branch         = "main"
+
+# Optional: Automatic Deployment Configuration
+# enable_auto_deploy = true
+# webhook_secret     = "your-webhook-secret-here"
+
+# Optional: RDS Deployment Method
+# deploy_rds_separately = true  # Set to true to deploy RDS independently
+# rds_module_vpc_cidr   = "10.1.0.0/16"  # CIDR for RDS VPC if deploying separately
