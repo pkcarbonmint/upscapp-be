@@ -37,6 +37,46 @@ const subjectApproachOptions: SubjectApproach[] = [
   'TripleSubject'
 ];
 
+// UPSC Optional Subject options
+const upscOptionalSubjects = [
+  'Agriculture',
+  'Animal Husbandry and Veterinary Science',
+  'Anthropology',
+  'Botany',
+  'Chemistry',
+  'Civil Engineering',
+  'Commerce and Accountancy',
+  'Economics',
+  'Electrical Engineering',
+  'Geography',
+  'Geology',
+  'History',
+  'Law',
+  'Management',
+  'Mathematics',
+  'Mechanical Engineering',
+  'Medical Science',
+  'Philosophy',
+  'Physics',
+  'Political Science and International Relations',
+  'Psychology',
+  'Public Administration',
+  'Sociology',
+  'Statistics',
+  'Zoology'
+];
+
+// Weekly test day options
+const weeklyTestDayOptions = [
+  'Sunday',
+  'Monday', 
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'
+];
+
 const getStudyPreferenceLabel = (pref: StudyPreference): string => {
   switch (pref) {
     case 'WeakSubjectsFirst': return "Weak Subjects First";
@@ -191,6 +231,86 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
+      </div>
+
+      {/* UPSC Optional Subject Section */}
+      <div className="space-y-4">
+        <div className="relative">
+          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
+          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
+            <i className={`fas fa-book-open mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
+            UPSC Optional Subject
+          </h3>
+        </div>
+        <div className="space-y-3">
+          <select
+            value={data.upscOptionalSubject || ''}
+            onChange={(e) => onUpdate(prev => ({ ...prev, upscOptionalSubject: e.target.value || undefined }))}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+          >
+            <option value="">Select Optional Subject (if applicable)</option>
+            {upscOptionalSubjects.map((subject) => (
+              <option key={subject} value={subject}>
+                {subject}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Optional First Preference Section */}
+      <div className="space-y-4">
+        <div className="relative">
+          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
+          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
+            <i className={`fas fa-star mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
+            Optional Subject Priority
+          </h3>
+        </div>
+        <div className="space-y-3">
+          <label className="flex items-center space-x-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={data.optionalFirst || false}
+              onChange={(e) => onUpdate(prev => ({ ...prev, optionalFirst: e.target.checked }))}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+            />
+            <span className="text-sm text-gray-700">
+              Prioritize optional subject in cycles C1, C2, C6, C7, and C8
+            </span>
+          </label>
+          <p className="text-xs text-gray-500 ml-7">
+            When checked, your optional subject will be given priority during these preparation cycles
+          </p>
+        </div>
+      </div>
+
+      {/* Weekly Test Day Preference Section */}
+      <div className="space-y-4">
+        <div className="relative">
+          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
+          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
+            <i className={`fas fa-calendar-check mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
+            Weekly Test Day Preference
+          </h3>
+        </div>
+        <ToggleGroup
+          type="single"
+          value={data.weeklyTestDayPreference || 'Sunday'}
+          onValueChange={(value) => {
+            if (value) onUpdate(prev => ({ ...prev, weeklyTestDayPreference: value }));
+          }}
+          className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2"
+        >
+          {weeklyTestDayOptions.map((day) => (
+            <ToggleGroupItem key={day} value={day} aria-label={day} className="h-auto flex-col min-h-[50px] p-2">
+              <span className="text-sm font-medium">{day}</span>
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+        <p className="text-xs text-gray-500">
+          Choose your preferred day for weekly tests and assessments
+        </p>
       </div>
     </div>
   );
