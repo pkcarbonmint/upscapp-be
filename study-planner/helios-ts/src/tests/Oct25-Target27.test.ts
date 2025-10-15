@@ -42,6 +42,7 @@ const expectedRatios: Record<CycleType, { study: number; practice: number; revis
   'C3': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
   'C4': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
   'C5': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  'C5.b': { study: 0.0, practice: 0.4, revision: 0.6 },   // 0% study, 40% practice, 60% revision
   'C6': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
   'C7': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
   'C8': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
