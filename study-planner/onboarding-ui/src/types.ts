@@ -157,7 +157,18 @@ export interface IWFOTPVerification {
   lastSentAt?: string; // ISO timestamp
 }
 
-export interface IWFPayment {}
+export interface IWFPayment {
+  amount?: number;
+  status?: 'pending' | 'link_generated' | 'attempted' | 'completed' | 'failed';
+  payment_url?: string;
+  payment_link_id?: string;
+  reference_id?: string;
+  purchase_ids?: number[];
+  transaction_id?: string;
+  created_at?: string;
+  attempted_at?: string;
+  completed_at?: string;
+}
 
 export interface IWFFinal {
   submitted: boolean;
