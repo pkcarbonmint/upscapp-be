@@ -14,7 +14,8 @@
     "preview": "vite preview",
     "setup:dev": "cp env.local.example .env.local",
     "docker:backend": "cd .. && docker-compose up app app_db helios app_redis",
-    "start:dev": "./start-dev.sh"
+    "start:dev": "./start-dev.sh",
+    "type-check": "pnpm tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",

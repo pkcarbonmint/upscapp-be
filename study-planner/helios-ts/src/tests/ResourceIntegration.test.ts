@@ -5,6 +5,26 @@ import type { StudentIntake, Archetype } from '../types/models';
 import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
 
+
+const dummyStuff = {
+	preparation_background: {
+		preparing_since: '6 months',
+		number_of_attempts: '0', // Required - including "0" for freshers
+		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
+	},
+	personal_details: {
+		full_name: 'John Doe',
+		email: 'john.doe@example.com',
+		phone_number: '+91-9876543210',
+		present_location: 'Delhi',
+		student_archetype: 'General',
+		graduation_stream: 'Engineering',
+		college_university: 'IIT Delhi',
+		year_of_passing: 2023
+	},
+
+}
+
 describe('Resource Integration Tests', () => {
   let testConfig: Config;
   let testArchetype: Archetype;
@@ -31,6 +51,7 @@ describe('Resource Integration Tests', () => {
     // - Target year: 2026
     // - Include subjects that have resources in study-materials.json
     testIntake = createStudentIntake({
+      ...dummyStuff,
       subject_approach: 'DualSubject',
       subject_confidence: {
         'P': 'Moderate',    // Polity - has resources
