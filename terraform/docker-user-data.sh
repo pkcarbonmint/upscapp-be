@@ -11,19 +11,38 @@ usermod -a -G docker ec2-user
 curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-# Install Git
-yum install -y git
+# Install Git and other utilities
+yum install -y git curl jq
+
+# Install Node.js (for webhook server)
+curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+yum install -y nodejs
 
 # Create application directory
 mkdir -p /opt/app
 cd /opt/app
 
-# Clone the repository (you'll need to provide the actual repository URL)
-# git clone <your-repository-url> .
-
-# For now, we'll create a placeholder structure
-mkdir -p /opt/app
-cd /opt/app
+# Clone the repository if GitHub details are provided
+if [ -n "${github_repository_url}" ] && [ -n "${github_token}" ]; then
+    echo "Cloning repository from ${github_repository_url}..."
+    
+    # Configure git with token for HTTPS authentication
+    git config --global credential.helper store
+    echo "https://${github_token}:@github.com" > ~/.git-credentials
+    
+    # Clone the repository
+    git clone -b ${github_branch} ${github_repository_url} .
+    
+    # Set up git configuration
+    git config --global user.email "ec2-user@aws.com"
+    git config --global user.name "EC2 Auto Deploy"
+    
+    echo "Repository cloned successfully"
+else
+    echo "GitHub repository URL or token not provided, skipping clone"
+    # Create placeholder structure for manual setup
+    mkdir -p /opt/app
+fi
 
 # Create docker-compose.yml for the application
 cat > docker-compose.yml << 'EOF'
@@ -221,17 +240,178 @@ while ! docker info > /dev/null 2>&1; do
     sleep 5
 done
 
+echo "Starting application build and deployment..."
+
 # Run the docker build script if it exists
 if [ -f "./docker-build.sh" ]; then
+    echo "Found docker-build.sh, running custom build script..."
     chmod +x ./docker-build.sh
     ./docker-build.sh
 else
-    echo "docker-build.sh not found, starting with docker-compose"
+    echo "docker-build.sh not found, starting with docker-compose..."
     docker-compose up -d
 fi
+
+echo "Application started successfully"
 EOF
 
 chmod +x /opt/app/start-app.sh
+
+# Create deployment script for updates
+cat > /opt/app/deploy.sh << 'EOF'
+#!/bin/bash
+cd /opt/app
+
+echo "Starting deployment..."
+
+# Pull latest changes if git repository is available
+if [ -d ".git" ]; then
+    echo "Pulling latest changes from repository..."
+    git fetch origin
+    git reset --hard origin/${github_branch}
+    echo "Repository updated to latest ${github_branch}"
+fi
+
+# Stop existing containers
+echo "Stopping existing containers..."
+docker-compose down
+
+# Run build script if available
+if [ -f "./docker-build.sh" ]; then
+    echo "Running docker-build.sh..."
+    chmod +x ./docker-build.sh
+    ./docker-build.sh
+else
+    echo "Running docker-compose build and up..."
+    docker-compose build --no-cache
+    docker-compose up -d
+fi
+
+echo "Deployment completed successfully"
+EOF
+
+chmod +x /opt/app/deploy.sh
+
+# Create webhook server for GitHub integration (if enabled)
+if [ "${enable_auto_deploy}" = "true" ] && [ -n "${webhook_secret}" ]; then
+    echo "Setting up GitHub webhook server..."
+    
+    # Create webhook server
+    cat > /opt/app/webhook-server.js << 'EOF'
+const http = require('http');
+const crypto = require('crypto');
+const { exec } = require('child_process');
+
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+const PORT = process.env.PORT || 9000;
+
+function verifySignature(payload, signature) {
+    if (!WEBHOOK_SECRET) return true; // Skip verification if no secret
+    
+    const expectedSignature = 'sha256=' + crypto
+        .createHmac('sha256', WEBHOOK_SECRET)
+        .update(payload)
+        .digest('hex');
+    
+    return crypto.timingSafeEqual(
+        Buffer.from(signature),
+        Buffer.from(expectedSignature)
+    );
+}
+
+const server = http.createServer((req, res) => {
+    if (req.method === 'POST' && req.url === '/webhook') {
+        let body = '';
+        
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        
+        req.on('end', () => {
+            try {
+                const signature = req.headers['x-hub-signature-256'];
+                
+                if (!verifySignature(body, signature)) {
+                    console.log('Invalid signature');
+                    res.statusCode = 401;
+                    res.end('Unauthorized');
+                    return;
+                }
+                
+                const payload = JSON.parse(body);
+                
+                // Check if this is a push event to the correct branch
+                if (payload.ref === 'refs/heads/${github_branch}') {
+                    console.log('Received push event for ${github_branch} branch, triggering deployment...');
+                    
+                    // Execute deployment script
+                    exec('/opt/app/deploy.sh', (error, stdout, stderr) => {
+                        if (error) {
+                            console.error('Deployment error:', error);
+                        } else {
+                            console.log('Deployment output:', stdout);
+                        }
+                        if (stderr) {
+                            console.error('Deployment stderr:', stderr);
+                        }
+                    });
+                    
+                    res.statusCode = 200;
+                    res.end('Deployment triggered');
+                } else {
+                    console.log('Ignoring push to branch:', payload.ref);
+                    res.statusCode = 200;
+                    res.end('Ignored');
+                }
+            } catch (error) {
+                console.error('Webhook error:', error);
+                res.statusCode = 400;
+                res.end('Bad Request');
+            }
+        });
+    } else if (req.method === 'GET' && req.url === '/health') {
+        res.statusCode = 200;
+        res.end('OK');
+    } else {
+        res.statusCode = 404;
+        res.end('Not Found');
+    }
+});
+
+server.listen(PORT, () => {
+    console.log(`Webhook server listening on port ${PORT}`);
+});
+EOF
+    
+    # Create systemd service for webhook server
+    cat > /etc/systemd/system/webhook-server.service << EOF
+[Unit]
+Description=GitHub Webhook Server
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/app
+ExecStart=/usr/bin/node /opt/app/webhook-server.js
+Environment=WEBHOOK_SECRET=${webhook_secret}
+Environment=PORT=9000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    systemctl enable webhook-server.service
+    systemctl start webhook-server.service
+    
+    echo "Webhook server setup completed"
+fi
+
+# Run initial deployment
+echo "Running initial deployment..."
+/opt/app/start-app.sh
 
 # Log the completion
 echo "Docker setup completed" >> /var/log/user-data.log
