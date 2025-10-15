@@ -286,7 +286,7 @@ variable "certificate_arn" {
 variable "enable_https" {
   description = "Enable HTTPS listener on ALB"
   type        = bool
-  default     = false
+  default     = true
 }
 
 # Domain Configuration
