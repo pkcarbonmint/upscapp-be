@@ -68,6 +68,7 @@ const DOCUMENT_STYLES = {
   'C3': 'FCE4EC', // Very light pink
   'C4': 'FFEBEE', // Very light red
   'C5': 'F3E5F5', // Very light purple
+  'C5.b': 'F3E5F5', // Very light purple
   'C6': 'E1F5FE', // Very light cyan
   'C7': 'FFF3E0', // Very light orange
   'C8': 'F1F8E9', // Very light lime
@@ -388,6 +389,7 @@ export class DocumentService {
       'C3': '#fce4ec', // Very light pink
       'C4': '#ffebee', // Very light red
       'C5': '#f3e5f5', // Very light purple
+      'C5.b': '#f3e5f5', // Very light purple
       'C6': '#e1f5fe', // Very light cyan
       'C7': '#fff3e0', // Very light orange
       'C8': '#f1f8e9', // Very light lime
@@ -400,6 +402,7 @@ export class DocumentService {
       'C3': '#e91e63', // Pink border
       'C4': '#f44336', // Red border
       'C5': '#9c27b0', // Purple border
+      'C5.b': '#9c27b0', // Purple border
       'C6': '#00bcd4', // Cyan border
       'C7': '#ff9800', // Orange border
       'C8': '#8bc34a', // Lime border
@@ -887,6 +890,7 @@ export class DocumentService {
     const c3 = cycles.find(c => c.cycleType === 'C3');
     const c4 = cycles.find(c => c.cycleType === 'C4');
     const c5 = cycles.find(c => c.cycleType === 'C5');
+    const c5b = cycles.find(c => c.cycleType === 'C5.b');
     const c6 = cycles.find(c => c.cycleType === 'C6');
     const c7 = cycles.find(c => c.cycleType === 'C7');
     const c8 = cycles.find(c => c.cycleType === 'C8');
@@ -944,7 +948,7 @@ export class DocumentService {
         type: 'rich_paragraph',
         content: {
           elements: [
-            { text: 'Prelims Revision Cycle', bold: true },
+            { text: 'Prelims Reading Cycle', bold: true },
             { text: ` (${startDate} to ${endDate}, ${duration} weeks): This cycle transitions from foundation building to exam-focused preparation. You'll engage in intensive revision of previously studied material while incorporating practice tests and current affairs integration to align with Prelims requirements.` }
           ]
         },
@@ -956,6 +960,22 @@ export class DocumentService {
       const duration = c5.cycleDuration || 0;
       const startDate = c5.cycleStartDate;
       const endDate = c5.cycleEndDate;
+      sections.push({
+        type: 'rich_paragraph',
+        content: {
+          elements: [
+            { text: 'Prelims Revision Cycle', bold: true },
+            { text: ` (${startDate} to ${endDate}, ${duration} weeks): Intensive revision phase focusing on consolidating knowledge and practice for Prelims examination. This cycle emphasizes thorough review of all topics and systematic practice.` }
+          ]
+        },
+        style: 'BodyText'
+      });
+    }
+
+    if (c5b) {
+      const duration = c5b.cycleDuration || 0;
+      const startDate = c5b.cycleStartDate;
+      const endDate = c5b.cycleEndDate;
       sections.push({
         type: 'rich_paragraph',
         content: {

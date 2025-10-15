@@ -25,6 +25,7 @@ function determineSubjBaselineFactorForCycle(cycleType: CycleType): number {
     case 'C3': return 1.0;
     case 'C4': return 0.8;
     case 'C5': return 0.6;
+    case 'C5.b': return 0.6;
     case 'C6': return 0.8;
     case 'C7': return 0.6;
     case 'C8': return 1.0;
@@ -44,6 +45,7 @@ function determineNumberOfParallelBlocks(cycleType: CycleType, subjectApproach: 
     case 'C3':
     case 'C4':
     case 'C5':
+    case 'C5.b':
     case 'C6':
     case 'C7':
       default:

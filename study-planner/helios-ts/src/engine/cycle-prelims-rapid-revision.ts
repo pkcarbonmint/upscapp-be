@@ -6,10 +6,9 @@ import { SubjData } from '../types/Subjects';
 import { createBlocksForSubjects } from './cycle-utils';
 
 /**
- * Calculate Prelims Rapid Revision start date: April 1 of target year until May 20 of target year
- * - If prep starts after May 10, then the request plan generation is rejected
- * - If prep starts after April 1 but before May 10, then the Prelims RapidRevision cycle is included, 
- *   but hours are proportionately reduced
+ * Calculate Prelims Rapid Revision start date: May 6 of target year until prelims exam date
+ * - If prep starts after May 6, then the Prelims Rapid Revision cycle is included with reduced time
+ * - If prep starts after May 15, then the request plan generation is rejected
  */
 export function calculatePrelimsRapidRevisionStartDate(
   logger: Logger,
@@ -23,37 +22,36 @@ export function calculatePrelimsRapidRevisionStartDate(
 
   // Use provided target year or fall back to prelims revision start date
   const targetYearNum = targetYear ? parseInt(targetYear, 10) : prelimsRevisionStartDate?.year() || startDate.year() + 1;
-  const aprilFirst = dayjs(`${targetYearNum}-04-01`);
-  const mayTenth = dayjs(`${targetYearNum}-05-10`);
-  const mayTwentieth = dayjs(`${targetYearNum}-05-20`);
+  const maySixth = dayjs(`${targetYearNum}-05-06`);
+  const mayFifteenth = dayjs(`${targetYearNum}-05-15`);
 
-  debug('Engine', `Target year: ${targetYearNum}, Rapid revision period: ${aprilFirst.format('YYYY-MM-DD')} to ${mayTwentieth.format('YYYY-MM-DD')}`);
+  debug('Engine', `Target year: ${targetYearNum}, Rapid revision period starts: ${maySixth.format('YYYY-MM-DD')}`);
 
-  // If prep starts after May 10, reject plan generation
-  if (startDate.isAfter(mayTenth)) {
-    info('Engine', 'Plan generation rejected: start date is after May 10 of target year');
-    throw new Error('Plan generation rejected: start date is after May 10 of target year');
+  // If prep starts after May 15, reject plan generation
+  if (startDate.isAfter(mayFifteenth)) {
+    info('Engine', 'Plan generation rejected: start date is after May 15 of target year');
+    throw new Error('Plan generation rejected: start date is after May 15 of target year');
   }
 
-  // If prep starts after April 1 but before May 10, use start date (proportionate reduction)
-  if (startDate.isAfter(aprilFirst) && startDate.isBefore(mayTenth)) {
+  // If prep starts after May 6 but before May 15, use start date (proportionate reduction)
+  if (startDate.isAfter(maySixth) && startDate.isBefore(mayFifteenth)) {
     info('Engine', `Prelims rapid revision cycle starts on ${startDate.format('YYYY-MM-DD')} (proportionate reduction)`);
     return startDate;
   }
 
-  // If prep starts before April 1, use April 1 as start date
-  if (startDate.isBefore(aprilFirst)) {
-    info('Engine', `Prelims rapid revision cycle starts on ${aprilFirst.format('YYYY-MM-DD')}`);
-    return aprilFirst;
+  // If prep starts before May 6, use May 6 as start date
+  if (startDate.isBefore(maySixth)) {
+    info('Engine', `Prelims rapid revision cycle starts on ${maySixth.format('YYYY-MM-DD')}`);
+    return maySixth;
   }
 
-  // If prep starts exactly on April 1, use that date
+  // If prep starts exactly on May 6, use that date
   info('Engine', `Prelims rapid revision cycle starts on ${startDate.format('YYYY-MM-DD')}`);
   return startDate;
 }
 
 /**
- * Plan Prelims Rapid Revision cycle: April 1 of target year until May 20 of target year
+ * Plan Prelims Rapid Revision cycle: May 6 of target year until prelims exam date
  * - Apply confidence factors to baseline hours
  * - Trim subtopics from D5 down to B1 if needed
  * - Returns undefined if no time for this cycle
@@ -97,8 +95,8 @@ export async function planPrelimsRapidRevisionCycle(
     totalHours,
     confidenceMap,
     'Prelims Rapid Revision',
-    'C5',
-    3,
+    'C5.b',
+    4,
     'Prelims Rapid Revision Cycle',
     startDate.format('YYYY-MM-DD'),
     cycleEndDate.format('YYYY-MM-DD'),
@@ -106,11 +104,11 @@ export async function planPrelimsRapidRevisionCycle(
 
   const cycle: StudyCycle = {
     cycleId: `prelims-rapid-revision-${Date.now()}`,
-    cycleType: 'C5',
+    cycleType: 'C5.b',
     cycleIntensity: 'Intensive',
     cycleDuration: durationWeeks,
     cycleStartWeek: 1,
-    cycleOrder: 3,
+    cycleOrder: 4,
     cycleName: 'Prelims Rapid Revision Cycle',
     cycleBlocks: blocks,
     cycleDescription: 'Intensive rapid revision phase for prelims preparation',
@@ -122,4 +120,3 @@ export async function planPrelimsRapidRevisionCycle(
 
   return cycle;
 }
-
