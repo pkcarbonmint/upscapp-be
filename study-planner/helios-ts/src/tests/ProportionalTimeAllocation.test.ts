@@ -7,6 +7,26 @@ import type { Config } from '../engine/engine-types';
 import { loadAllSubjects } from '../services/SubjectLoader';
 import type { Subject } from '../types/Subjects';
 
+
+const dummyStuff = {
+	preparation_background: {
+		preparing_since: '6 months',
+		number_of_attempts: '0', // Required - including "0" for freshers
+		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
+	},
+	personal_details: {
+		full_name: 'John Doe',
+		email: 'john.doe@example.com',
+		phone_number: '+91-9876543210',
+		present_location: 'Delhi',
+		student_archetype: 'General',
+		graduation_stream: 'Engineering',
+		college_university: 'IIT Delhi',
+		year_of_passing: 2023
+	},
+
+}
+
 describe('Proportional Time Allocation Verification', () => {
   let testConfig: Config;
   let testArchetype: Archetype;
@@ -28,6 +48,7 @@ describe('Proportional Time Allocation Verification', () => {
     };
 
     testIntake = createStudentIntake({
+      ...dummyStuff,
       subject_confidence: {
         'H01': 'VeryStrong',  // History-Ancient
         'H02': 'VeryStrong',  // History-Medieval

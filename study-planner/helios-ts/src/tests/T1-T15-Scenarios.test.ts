@@ -5,6 +5,26 @@ import { createStudentIntake } from '../types/models';
 import type { StudentIntake, Archetype, StudyPlan, StudyCycle } from '../types/models';
 import dayjs from 'dayjs';
 
+
+const dummyStuff = {
+	preparation_background: {
+		preparing_since: '6 months',
+		number_of_attempts: '0', // Required - including "0" for freshers
+		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
+	},
+	personal_details: {
+		full_name: 'John Doe',
+		email: 'john.doe@example.com',
+		phone_number: '+91-9876543210',
+		present_location: 'Delhi',
+		student_archetype: 'General',
+		graduation_stream: 'Engineering',
+		college_university: 'IIT Delhi',
+		year_of_passing: 2023
+	},
+
+}
+
 /**
  * Comprehensive unit tests for T1-T15 scenarios to verify cycle generation and dates
  * 
@@ -56,6 +76,7 @@ describe('T1-T15 Scenarios: Cycle Generation and Date Validation', () => {
    */
   function createTestIntake(startDate: string, targetYear: string): StudentIntake {
     return createStudentIntake({
+      ...dummyStuff,
       subject_approach: 'DualSubject',
       subject_confidence: {
         'H01': 'VeryStrong',

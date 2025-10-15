@@ -7,8 +7,28 @@ import dayjs from 'dayjs';
 import { Block, DailyPlan, StudentIntake, StudyPlan, Task, WeeklyPlan, createStudentIntake } from '../types/models';
 import { CycleType } from '../types/Types';
 
+const dummyStuff = {
+	preparation_background: {
+		preparing_since: '6 months',
+		number_of_attempts: '0', // Required - including "0" for freshers
+		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
+	},
+	personal_details: {
+		full_name: 'John Doe',
+		email: 'john.doe@example.com',
+		phone_number: '+91-9876543210',
+		present_location: 'Delhi',
+		student_archetype: 'General',
+		graduation_stream: 'Engineering',
+		college_university: 'IIT Delhi',
+		year_of_passing: 2023
+	},
+
+}
+
 function makeIntake(testCase: { startDate: Date, targetYear: number }) {
 	const intake: StudentIntake = createStudentIntake({
+		...dummyStuff,
 		subject_approach: 'DualSubject',
 		start_date: testCase.startDate.toISOString().split('T')[0],
 		target_year: testCase.targetYear.toString(),
@@ -139,6 +159,7 @@ describe('CycleSchedulerScenarios', () => {
 				{} as any,
 				{} as any,
 				createStudentIntake({
+					...dummyStuff,
 					subject_approach: 'DualSubject',
 					start_date: testCase.startDate.toISOString().split('T')[0],
 					target_year: `${testCase.targetYear}`,

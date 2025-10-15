@@ -202,7 +202,10 @@ function App() {
             graduation_stream: formData.background.graduationStream,
             college: formData.background.collegeUniversity,
             graduation_year: formData.background.yearOfPassing,
-            about: formData.background.about
+            about: formData.background.about,
+            target_year: parseInt(formData.targetYear.targetYear),
+            confidence_data: formData.confidenceLevel,
+            commitment_data: formData.commitment
           };
           
           response = await studentService.createStudent(studentData)

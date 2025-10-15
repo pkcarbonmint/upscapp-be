@@ -8,8 +8,28 @@ import { StudentIntake, createStudentIntake } from '../types/models';
 import { Logger } from '../types/Types';
 import { makeLogger } from '../services/Log';
 
+const dummyStuff = {
+	preparation_background: {
+		preparing_since: '6 months',
+		number_of_attempts: '0', // Required - including "0" for freshers
+		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
+	},
+	personal_details: {
+		full_name: 'John Doe',
+		email: 'john.doe@example.com',
+		phone_number: '+91-9876543210',
+		present_location: 'Delhi',
+		student_archetype: 'General',
+		graduation_stream: 'Engineering',
+		college_university: 'IIT Delhi',
+		year_of_passing: 2023
+	},
+
+}
+
 describe('WeeklyScheduler', () => {
   const mockStudentIntake: StudentIntake = createStudentIntake({
+    ...dummyStuff,
     subject_confidence: {
       'H01': 'Strong'
     },

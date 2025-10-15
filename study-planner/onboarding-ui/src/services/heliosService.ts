@@ -133,6 +133,7 @@ export async function transformToStudentIntake(formData: IntakeWizardFormData): 
   const studentIntake: StudentIntake = createStudentIntake({
     subject_confidence: subjectConfidence,
     study_strategy: studyStrategy,
+    subject_approach: commitment.subjectApproach as any,
     target_year: targetYear.targetYear,
     start_date: targetYear.startDate || new Date().toISOString().split('T')[0], // Fallback to today if not set
     personal_details: {

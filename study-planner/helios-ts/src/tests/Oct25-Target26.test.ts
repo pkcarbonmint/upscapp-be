@@ -11,6 +11,26 @@ import dayjs from 'dayjs';
 import { CycleType } from '../types/Types';
 
 
+
+const dummyStuff = {
+	preparation_background: {
+		preparing_since: '6 months',
+		number_of_attempts: '0', // Required - including "0" for freshers
+		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
+	},
+	personal_details: {
+		full_name: 'John Doe',
+		email: 'john.doe@example.com',
+		phone_number: '+91-9876543210',
+		present_location: 'Delhi',
+		student_archetype: 'General',
+		graduation_stream: 'Engineering',
+		college_university: 'IIT Delhi',
+		year_of_passing: 2023
+	},
+
+}
+
 // Expected ratios per cycle type (from cycle-utils.ts)
 const expectedRatios: Record<CycleType, { study: number; practice: number; revision: number }> = {
   'C1': { study: 0.7, practice: 0.15, revision: 0.15 }, // 70% study, 15% practice, 15% revision
@@ -52,6 +72,7 @@ describe('generateInitialPlan', () => {
     // - Medium confidence in all subjects
     // Using actual subject codes from the system
     testIntake = createStudentIntake({
+      ...dummyStuff,
       subject_confidence: {
         'H01': 'Moderate',  // History-Ancient
         'H02': 'Moderate',  // History-Medieval

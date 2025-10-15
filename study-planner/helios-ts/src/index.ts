@@ -85,32 +85,6 @@ import { loadAllSubjects, loadSubtopics } from './services/SubjectLoader';
 import { generateInitialPlan } from './engine/Engine';
 import type { Archetype, StudentIntake } from './types/models';
 
-// Utility Functions
-export { 
-  sequenceSubjectsWithTargetYear,
-  performMultiLevelSort,
-  performMultiLevelSortWithTopicConfidence,
-  filterBySeason
-} from './engine/Sequencer';
-
-export {
-  calculateRequiredHours,
-  calculateRequiredHoursWithTopicConfidence,
-  getExperienceMultiplier,
-  getConfidenceMultiplier,
-  getCoachingMultiplier,
-  getSpecializationMultiplier
-} from './engine/HourCalculation';
-
-export {
-  planBlocks
-} from './engine/BlockPlanner';
-
-export {
-  scheduleWeeksInAllBlocks,
-  scheduleWeeksInAllCycles
-} from './engine/WeeklyScheduler';
-
 // Default Configuration
 export const DEFAULT_CONFIG = {
   block_duration_clamp: {
