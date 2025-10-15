@@ -34,19 +34,16 @@ output "rds_security_group_id" {
 # RDS Outputs
 output "rds_endpoint" {
   description = "The connection endpoint for the RDS instance"
-  value       = var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].endpoint : (var.external_rds_endpoint != "" ? var.external_rds_endpoint : null)
+  value       = local.rds_endpoint
 }
 
 output "rds_port" {
   description = "The port on which the DB accepts connections"
-  value       = var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].port : var.external_rds_port
+  value       = local.rds_port
 }
 
-output "database_url" {
-  description = "The full database URL for the application"
-  value       = var.external_rds_endpoint != "" ? "postgresql://${var.external_rds_username}:${var.external_rds_password}@${var.external_rds_endpoint}:${var.external_rds_port}/${var.external_rds_database}" : (var.enable_rds && var.external_rds_endpoint == "" ? "postgresql://${var.rds_username}:${var.rds_password}@${aws_db_instance.main[0].endpoint}:${aws_db_instance.main[0].port}/${var.rds_database_name}" : null)
-  sensitive   = true
-}
+# Database URL output removed due to Terraform sensitive variable limitations
+# Users can construct the URL using the individual outputs above
 
 
 # ECR Repository Outputs

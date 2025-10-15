@@ -30,6 +30,13 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+# Local values for conditional logic
+locals {
+  use_external_rds = var.external_rds_endpoint != ""
+  rds_endpoint = local.use_external_rds ? var.external_rds_endpoint : (var.enable_rds ? try(aws_db_instance.main[0].endpoint, "") : "")
+  rds_port     = local.use_external_rds ? var.external_rds_port : (var.enable_rds ? try(aws_db_instance.main[0].port, 5432) : 5432)
+}
+
 # VPC
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
@@ -340,11 +347,11 @@ resource "aws_instance" "docker" {
   user_data = base64encode(templatefile("${path.module}/docker-user-data.sh", {
     project_name = var.project_name
     strapi_ip    = var.enable_ec2_instances ? aws_instance.strapi[0].private_ip : ""
-    rds_endpoint = var.external_rds_endpoint != "" ? var.external_rds_endpoint : (var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].endpoint : "")
-    rds_port     = var.external_rds_port
-    rds_username = var.external_rds_username != "" ? var.external_rds_username : var.rds_username
-    rds_password = var.external_rds_password != "" ? var.external_rds_password : var.rds_password
-    rds_database = var.external_rds_database != "" ? var.external_rds_database : var.rds_database_name
+    rds_endpoint = local.rds_endpoint
+    rds_port     = local.rds_port
+    rds_username = coalesce(var.external_rds_username, var.rds_username)
+    rds_password = coalesce(var.external_rds_password, var.rds_password)
+    rds_database = coalesce(var.external_rds_database, var.rds_database_name)
   }))
 
   root_block_device {
