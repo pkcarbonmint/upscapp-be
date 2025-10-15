@@ -64,7 +64,7 @@ variable "rds_max_allocated_storage" {
 variable "rds_engine_version" {
   description = "The engine version to use"
   type        = string
-  default     = "14.9"
+  default     = "15.14"
 }
 
 variable "rds_instance_class" {
@@ -112,7 +112,7 @@ variable "rds_maintenance_window" {
 variable "rds_skip_final_snapshot" {
   description = "Determines whether a final DB snapshot is created before the DB instance is deleted"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "rds_deletion_protection" {
@@ -237,7 +237,7 @@ variable "app_environment_variables" {
   description = "Environment variables for the application"
   type        = map(string)
   default = {
-    ENVIRONMENT = "production"
+    ENVIRONMENT  = "production"
     CORS_ORIGINS = "[\"https://your-domain.com\"]"
   }
 }
@@ -331,4 +331,115 @@ variable "auto_scaling_target_memory" {
   description = "Target memory utilization for auto scaling"
   type        = number
   default     = 80
+}
+
+# Docker Image Configuration
+variable "enable_docker_build" {
+  description = "Enable automatic Docker image building and pushing to ECR"
+  type        = bool
+  default     = false
+}
+
+variable "docker_build_context" {
+  description = "Path to the Docker build context (directory containing Dockerfile)"
+  type        = string
+  default     = "../"
+}
+
+variable "app_dockerfile_path" {
+  description = "Path to the app Dockerfile relative to docker_build_context"
+  type        = string
+  default     = "Dockerfile"
+}
+
+variable "helios_dockerfile_path" {
+  description = "Path to the Helios Dockerfile relative to docker_build_context"
+  type        = string
+  default     = "helios/Dockerfile"
+}
+
+variable "frontend_dockerfile_path" {
+  description = "Path to the Frontend Dockerfile relative to docker_build_context"
+  type        = string
+  default     = "frontend/Dockerfile"
+}
+
+# EC2 Configuration
+variable "enable_ec2_instances" {
+  description = "Enable EC2 instances for Strapi and Docker containers"
+  type        = bool
+  default     = true
+}
+
+variable "strapi_instance_type" {
+  description = "EC2 instance type for Strapi"
+  type        = string
+  default     = "t3.medium"
+}
+
+variable "docker_instance_type" {
+  description = "EC2 instance type for Docker containers"
+  type        = string
+  default     = "t3.large"
+}
+
+variable "strapi_key_name" {
+  description = "Key pair name for Strapi EC2 instance"
+  type        = string
+  default     = ""
+}
+
+variable "docker_key_name" {
+  description = "Key pair name for Docker EC2 instance"
+  type        = string
+  default     = ""
+}
+
+variable "strapi_volume_size" {
+  description = "EBS volume size for Strapi instance (GB)"
+  type        = number
+  default     = 20
+}
+
+variable "docker_volume_size" {
+  description = "EBS volume size for Docker instance (GB)"
+  type        = number
+  default     = 30
+}
+
+variable "strapi_domain" {
+  description = "Domain name for Strapi CMS"
+  type        = string
+  default     = ""
+}
+
+variable "external_rds_endpoint" {
+  description = "External RDS endpoint (if not using Terraform-managed RDS)"
+  type        = string
+  default     = ""
+}
+
+variable "external_rds_port" {
+  description = "External RDS port"
+  type        = number
+  default     = 5432
+}
+
+variable "external_rds_username" {
+  description = "External RDS username"
+  type        = string
+  default     = ""
+}
+
+variable "external_rds_password" {
+  description = "External RDS password"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "external_rds_database" {
+  description = "External RDS database name"
+  type        = string
+  default     = ""
 }

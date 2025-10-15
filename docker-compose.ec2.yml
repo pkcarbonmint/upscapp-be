@@ -1,0 +1,126 @@
+services:
+  # TypeScript Helios Server
+  helios:
+    container_name: helios
+    build:
+      context: .
+      dockerfile: study-planner/Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - upscpro-be
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Python FastAPI Backend
+  app:
+    container_name: app
+    env_file:
+      - docker.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./:/code
+      - ./resources:/code/resources
+    ports:
+      - "8000:8000"
+    networks:
+      - upscpro-be
+    depends_on:
+      helios:
+        condition: service_healthy
+    environment:
+      - HELIOS_SERVER_URL=http://helios:8080
+      - DATABASE_URL=${DATABASE_URL}
+      - ENVIRONMENT=PRODUCTION
+      - CORS_ORIGINS=${CORS_ORIGINS:-["https://your-domain.com"]}
+      - CMS_BASE_URL=${CMS_BASE_URL}
+      - REDIS_URL=${DATABASE_URL}  # Using RDS for Redis functionality
+    cpuset: "0"
+    command: sh -c "alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --port 8000"
+
+  # Unified Frontend Web Server (nginx serving both onboarding and faculty UIs)
+  frontend:
+    container_name: frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+    networks:
+      - upscpro-be
+
+  # Redis replacement using PostgreSQL (for Celery)
+  app_redis:
+    container_name: app_redis
+    image: postgres:14.1
+    hostname: redis
+    environment:
+      - POSTGRES_USER=${RDS_USERNAME}
+      - POSTGRES_PASSWORD=${RDS_PASSWORD}
+      - POSTGRES_DB=${RDS_DATABASE}
+    restart: always
+    ports:
+      - 6379:5432
+    networks:
+      - upscpro-be
+    command: postgres -c 'shared_preload_libraries=pg_stat_statements' -c 'pg_stat_statements.track=all'
+
+  celery_worker:
+    container_name: celery_worker
+    env_file:
+      - docker.env
+    build:
+      context: .
+    restart: always
+    command: celery -A src.tasks.celery_tasks worker -l INFO -E --concurrency=2
+    volumes:
+      - ./:/code
+      - ./resources:/code/resources
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${DATABASE_URL}  # Using RDS for Redis functionality
+    networks:
+      - upscpro-be
+    depends_on:
+      - app
+      - app_redis
+    cpuset: "0"
+
+  celery_flower:
+    container_name: celery_flower
+    env_file:
+      - docker.env
+    build:
+      context: .
+    command: celery -A src.tasks.celery_tasks flower
+    ports:
+      - 5555:5555
+    volumes:
+      - ./:/code
+      - ./resources:/code/resources
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${DATABASE_URL}  # Using RDS for Redis functionality
+    networks:
+      - upscpro-be
+    depends_on:
+      - app
+      - app_redis
+      - celery_worker
+    cpuset: "0"
+
+networks:
+  upscpro-be:
+    driver: bridge

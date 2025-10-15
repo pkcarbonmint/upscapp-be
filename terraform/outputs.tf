@@ -34,30 +34,22 @@ output "ecs_security_group_id" {
 # RDS Outputs
 output "rds_endpoint" {
   description = "The connection endpoint for the RDS instance"
-  value       = var.enable_rds ? aws_db_instance.main[0].endpoint : null
+  value       = var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].endpoint : (var.external_rds_endpoint != "" ? var.external_rds_endpoint : null)
 }
 
 output "rds_port" {
   description = "The port on which the DB accepts connections"
-  value       = var.enable_rds ? aws_db_instance.main[0].port : null
+  value       = var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].port : var.external_rds_port
 }
 
 output "database_url" {
   description = "The full database URL for the application"
-  value       = var.enable_rds ? "postgresql://${var.rds_username}:${var.rds_password}@${aws_db_instance.main[0].endpoint}:${aws_db_instance.main[0].port}/${var.rds_database_name}" : null
+  value       = var.external_rds_endpoint != "" ? "postgresql://${var.external_rds_username}:${var.external_rds_password}@${var.external_rds_endpoint}:${var.external_rds_port}/${var.external_rds_database}" : (var.enable_rds && var.external_rds_endpoint == "" ? "postgresql://${var.rds_username}:${var.rds_password}@${aws_db_instance.main[0].endpoint}:${aws_db_instance.main[0].port}/${var.rds_database_name}" : null)
   sensitive   = true
 }
 
-# Redis Outputs
-output "redis_endpoint" {
-  description = "The connection endpoint for the Redis cluster"
-  value       = var.enable_redis ? aws_elasticache_replication_group.main[0].primary_endpoint_address : null
-}
-
-output "redis_port" {
-  description = "The port on which Redis accepts connections"
-  value       = var.enable_redis ? aws_elasticache_replication_group.main[0].port : null
-}
+# Redis Outputs (removed - using RDS for Redis functionality)
+# Redis functionality is now handled by RDS
 
 # ECR Repository Outputs
 output "ecr_repository_app_url" {
@@ -143,6 +135,62 @@ output "ecs_task_role_arn" {
 output "cloudwatch_log_group_name" {
   description = "Name of the CloudWatch log group"
   value       = aws_cloudwatch_log_group.ecs.name
+}
+
+# EC2 Instance Outputs
+output "strapi_instance_id" {
+  description = "ID of the Strapi EC2 instance"
+  value       = var.enable_ec2_instances ? aws_instance.strapi[0].id : null
+}
+
+output "strapi_instance_public_ip" {
+  description = "Public IP of the Strapi EC2 instance"
+  value       = var.enable_ec2_instances ? aws_instance.strapi[0].public_ip : null
+}
+
+output "strapi_instance_private_ip" {
+  description = "Private IP of the Strapi EC2 instance"
+  value       = var.enable_ec2_instances ? aws_instance.strapi[0].private_ip : null
+}
+
+output "strapi_url" {
+  description = "URL to access Strapi CMS"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.strapi[0].public_ip}:1337" : null
+}
+
+output "docker_instance_id" {
+  description = "ID of the Docker EC2 instance"
+  value       = var.enable_ec2_instances ? aws_instance.docker[0].id : null
+}
+
+output "docker_instance_public_ip" {
+  description = "Public IP of the Docker EC2 instance"
+  value       = var.enable_ec2_instances ? aws_instance.docker[0].public_ip : null
+}
+
+output "docker_instance_private_ip" {
+  description = "Private IP of the Docker EC2 instance"
+  value       = var.enable_ec2_instances ? aws_instance.docker[0].private_ip : null
+}
+
+output "app_url" {
+  description = "URL to access the Python API"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:8000" : null
+}
+
+output "helios_url" {
+  description = "URL to access Helios service"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:8080" : null
+}
+
+output "frontend_url" {
+  description = "URL to access the frontend"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:3000" : null
+}
+
+output "flower_url" {
+  description = "URL to access Celery Flower"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:5555" : null
 }
 
 # General Information
