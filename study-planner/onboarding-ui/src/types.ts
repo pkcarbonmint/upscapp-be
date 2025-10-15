@@ -34,6 +34,10 @@ export interface IWFStudyCommitment {
   performance: Performance;
   studyPreference: StudyPreference;
   subjectApproach: SubjectApproach;
+  // New UPSC fields
+  upscOptionalSubject?: string;
+  optionalFirst?: boolean;
+  weeklyTestDayPreference?: string;
 }
 
 // Import helios-ts types for confidence assessment
