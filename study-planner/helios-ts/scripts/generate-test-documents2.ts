@@ -17,13 +17,11 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType } from 'docx';
 import { generateInitialPlan } from '../src/engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../src/config';
-import type { StudentIntake, Archetype, StudyPlan, StudyCycle } from '../src/types/models';
+import type { StudentIntake, Archetype, StudyPlan } from '../src/types/models';
 import { createStudentIntake } from '../src/types/models';
-import { ResourceService } from '../src/services/ResourceService';
 import { DocumentService } from '../src/services/DocumentService';
 import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
-import dayjs from 'dayjs';
 import * as path from 'path';
 import * as fs from 'fs';
 import { LogEntry } from '../src/types/Types';
@@ -31,12 +29,12 @@ import { LogEntry } from '../src/types/Types';
 
 interface DocumentGeneratorOptions {
   outputDir?: string;
-  includeResources?: boolean;
-  generateMarkdown?: boolean;
-  generateJson?: boolean;
-  generateWeeklySchedules?: boolean;
-  generatePDFs?: boolean; // Generate PDF versions alongside Word documents
-  maxScenarios?: number; // Limit number of scenarios for performance testing
+  includeResources: boolean;
+  generateMarkdown: boolean;
+  generateJson: boolean;
+  generateWeeklySchedules: boolean;
+  generatePDFs: boolean; // Generate PDF versions alongside Word documents
+  maxScenarios: number; // Limit number of scenarios for performance testing
 }
 
 
@@ -60,6 +58,25 @@ const startDates :  string [] = [
 // .slice(0,2)
 ;
 
+const dummyStuff = {
+	preparation_background: {
+		preparing_since: '6 months',
+		number_of_attempts: '0', // Required - including "0" for freshers
+		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
+	},
+	personal_details: {
+		full_name: 'John Doe',
+		email: 'john.doe@example.com',
+		phone_number: '+91-9876543210',
+		present_location: 'Delhi',
+		student_archetype: 'General',
+		graduation_stream: 'Engineering',
+		college_university: 'IIT Delhi',
+		year_of_passing: 2023
+	},
+
+}
+
 class TestDocumentGenerator {
   private outputDir: string;
   private includeResources: boolean;
@@ -69,13 +86,13 @@ class TestDocumentGenerator {
   private generatePDFs: boolean;
   private maxScenarios: number;
 
-  constructor(options: DocumentGeneratorOptions = {}) {
+  constructor(options: DocumentGeneratorOptions) {
     this.outputDir = options.outputDir || './generated-docs';
-    this.includeResources = options.includeResources ?? true;
-    this.generateMarkdown = options.generateMarkdown ?? true;
-    this.generateJson = options.generateJson ?? true;
-    this.generateWeeklySchedules = options.generateWeeklySchedules ?? false;
-    this.generatePDFs = options.generatePDFs ?? true; // Default to true to generate PDFs
+    this.includeResources = options.includeResources;
+    this.generateMarkdown = options.generateMarkdown;
+    this.generateJson = options.generateJson;
+    this.generateWeeklySchedules= options.generateWeeklySchedules;
+    this.generatePDFs = options.generatePDFs; // Default to true to generate PDFs
     this.maxScenarios = options.maxScenarios || Infinity;
   }
 
@@ -983,6 +1000,7 @@ Financial Planning Tips:
 
   private makeIntake(targetYear: string, startDate: string): StudentIntake {
     return createStudentIntake({
+      ...dummyStuff,
       subject_approach: 'DualSubject',
       subject_confidence: {
         'H01': 'VeryStrong',
@@ -1103,7 +1121,7 @@ async function main() {
       includeResources: true,
       generateMarkdown: false,
       generateJson: true,
-      generateWeeklySchedules: false, // Disabled for performance testing
+      generateWeeklySchedules: true, // Disabled for performance testing
       generatePDFs: true, // Enable PDF generation
       maxScenarios: 3 // Limit to 3 scenarios for performance testing
     });
