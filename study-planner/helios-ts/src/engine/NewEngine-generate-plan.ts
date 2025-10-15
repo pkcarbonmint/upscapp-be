@@ -10,8 +10,9 @@ import { SubjData } from '../types/Subjects';
 import { PlanResources, ResourceTimeline, BudgetSummary } from '../types/models';
 import { determineCycleSchedule } from './cycle-scheduler';
 import { planFoundationCycle as planC2FoundationCycle } from './cycle-foundation';
-import { planPrelimsRevisionCycle as planC4PrelimsRevisionCycle } from './cycle-prelims-revision';
-import { planPrelimsRapidRevisionCycle as planC5PrelimsRapidRevisionCycle } from './cycle-prelims-rapid';
+import { planPrelimsReadingCycle as planC4PrelimsReadingCycle } from './cycle-prelims-reading';
+import { planPrelimsRevisionCycle as planC5PrelimsRevisionCycle } from './cycle-prelims-revision';
+import { planPrelimsRapidRevisionCycle as planC5bPrelimsRapidRevisionCycle } from './cycle-prelims-rapid-revision';
 import { planMainsRapidRevisionCycle as planC7MainsRapidRevisionCycle } from './cycle-mains-rapid';
 import { planC1Cycle } from './cycle-c1-ncert';
 import { planC3Cycle } from './cycle-c3-mains-prefoundation';
@@ -55,9 +56,9 @@ export async function generateInitialPlan(
    * 3. Foundation cycle: start date until December 31st of the year before target year. 
    *    If prep starts after December 31st of the year before target year,
    *    then the foundation cycle is not included in the plan
-   * 4. PrelimsRevision cycle: Jan 1 of target year until 31 March of target year. If prep starts after 
-   *    April 1 of target year, then the prelims revision cycle is not included in the plan. If prep
-   *    starts after Jan 1 but before March 31, then the prelims revision cycle is included in the plan, 
+   * 4. PrelimsReading cycle: Jan 1 of target year until 31 March of target year. If prep starts after 
+   *    April 1 of target year, then the prelims reading cycle is not included in the plan. If prep
+   *    starts after Jan 1 but before March 31, then the prelims reading cycle is included in the plan, 
    *    but hours are proportionately reduced.
    * 5. Prelims RapidRevision cycle: April 1 of target year until May 20 of target year. If prep starts after May 10, 
    *    then the request plan generation is rejected. If prep starts after April 1 but before May 10, 
@@ -171,9 +172,11 @@ async function generateCycleForSchedule(
     case 'C3':
       return await planC3Cycle(logger, intake, confidenceMap, startDate, endDate, subjData, subjData.subjects);
     case 'C4':
-      return await planC4PrelimsRevisionCycle(logger, intake, confidenceMap, startDate, endDate, subjData);
+      return await planC4PrelimsReadingCycle(logger, intake, confidenceMap, startDate, endDate, subjData);
     case 'C5':
-      return await planC5PrelimsRapidRevisionCycle(logger, intake, confidenceMap, startDate, endDate, subjData);
+      return await planC5PrelimsRevisionCycle(logger, intake, confidenceMap, startDate, endDate, subjData);
+    case 'C5.b':
+      return await planC5bPrelimsRapidRevisionCycle(logger, intake, confidenceMap, startDate, endDate, subjData);
     case 'C6':
       return await planC6MainsRevisionCycle(logger, intake, confidenceMap, startDate, endDate, subjData);
     case 'C7':
