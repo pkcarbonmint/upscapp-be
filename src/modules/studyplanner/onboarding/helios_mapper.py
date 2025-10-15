@@ -55,7 +55,7 @@ class HeliosDataMapper:
                 "personal_and_academic_details": self._map_personal_details(background),
                 "preparation_background": self._map_preparation_background(target, background),
                 "coaching_and_mentorship": self._map_coaching_details(background),
-                "optional_subject_details": self._map_optional_details(target),
+                "optional_subject_details": self._map_optional_details(target, commitment),
                 "test_series_and_csat": self._map_test_experience(confidence),
                 "syllabus_and_pyq_awareness": self._map_syllabus_awareness(),
                 "subject_confidence": self._map_subject_confidence(confidence),
@@ -107,11 +107,16 @@ class HeliosDataMapper:
             "place_of_preparation": f"{background.get('city', 'Home')}"
         }
     
-    def _map_optional_details(self, target: Dict[str, Any]) -> Dict[str, Any]:
-        """Map target data to UIOptionalDetails"""
+    def _map_optional_details(self, target: Dict[str, Any], commitment: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Map target and commitment data to UIOptionalDetails"""
+        # Get optional subject from either target or commitment (new field)
+        optional_subject = target.get("optional_subject", "")
+        if not optional_subject and commitment:
+            optional_subject = commitment.get("upscOptionalSubject", "")
+            
         return {
-            "optional_subject": target.get("optional_subject", ""),
-            "optional_status": "Decided" if target.get("optional_subject") else "Not decided",
+            "optional_subject": optional_subject,
+            "optional_status": "Decided" if optional_subject else "Not decided",
             "optional_taken_from": "Self study"  # Default assumption
         }
     
@@ -206,6 +211,9 @@ class HeliosDataMapper:
             "high": "Flexible approach"
         }
         
+        # Get weekly test day preference (default to Sunday)
+        test_day_preference = commitment.get("weeklyTestDayPreference", "Sunday")
+        
         return {
             "study_focus_combo": "GS + Optional",
             "weekly_study_hours": str(commitment.get("weekly_hours", 40)),
@@ -214,7 +222,11 @@ class HeliosDataMapper:
             "revision_strategy": "Weekly",
             "test_frequency": "Bi-weekly",
             "seasonal_windows": ["Summer", "Winter"],
-            "catch_up_day_preference": "Sunday"
+            "catch_up_day_preference": test_day_preference,
+            # New UPSC fields
+            "optional_first_preference": commitment.get("optionalFirst", False),
+            "upsc_optional_subject": commitment.get("upscOptionalSubject", ""),
+            "weekly_test_day_preference": test_day_preference
         }
     
     def validate_uiwizard_data(self, uiwizard_data: Dict[str, Any]) -> bool:
