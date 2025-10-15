@@ -50,6 +50,7 @@ const CYCLE_TYPE_COLORS = {
   'C3': [252, 228, 236], // Very light pink
   'C4': [255, 235, 238], // Very light red
   'C5': [243, 229, 245], // Very light purple
+  'C5.b': [243, 229, 245], // Very light purple
   'C6': [225, 245, 254], // Very light cyan
   'C7': [255, 243, 224], // Very light orange
   'C8': [241, 248, 233], // Very light lime
@@ -1393,8 +1394,10 @@ export class PDFService {
       case 'C3':
         return `Mains Revision Pre-Prelims Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle prepares you for Mains-specific requirements while maintaining focus on study and analytical thinking skills.`;
       case 'C4':
-        return `Prelims Revision Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle transitions from foundation building to exam-focused preparation with intensive revision and practice tests.`;
+        return `Prelims Reading Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle transitions from foundation building to exam-focused preparation with intensive reading and practice tests.`;
       case 'C5':
+        return `Prelims Revision Cycle (${startDate} to ${endDate}, ${duration} weeks): Intensive revision phase focusing on consolidating knowledge and practice for Prelims examination.`;
+      case 'C5.b':
         return `Prelims Rapid Revision Cycle (${startDate} to ${endDate}, ${duration} weeks): The final sprint before Prelims examination focuses on high-yield topics and intensive practice sessions.`;
       case 'C6':
         return `Mains Revision Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle focuses on comprehensive Mains examination preparation with answer writing practice and essay development.`;

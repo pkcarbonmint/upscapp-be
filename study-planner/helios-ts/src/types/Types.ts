@@ -86,8 +86,9 @@ export type CycleType =
   | "C1" // NCERT Foundation Cycle
   | "C2" // Comprehensive Foundation Cycle
   | "C3" // Mains Revision Pre-Prelims Cycle
-  | "C4" // Prelims Revision Cycle
-  | "C5" // Prelims Rapid Revision Cycle
+  | "C4" // Prelims Reading Cycle
+  | "C5" // Prelims Revision Cycle
+  | "C5.b" // Prelims Rapid Revision Cycle
   | "C6" // Mains Revision Cycle
   | "C7" // Mains Rapid Revision Cycle
   | "C8" // Mains Foundation Cycle

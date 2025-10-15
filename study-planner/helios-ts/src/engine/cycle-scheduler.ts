@@ -123,8 +123,9 @@ function generateScheduleForScenario(
  * C1: Start → +3 months (NCERT Foundation)
  * C2: After C1 → +10 months (Comprehensive Foundation)
  * C3: After C2 → ends Dec 31 before target year (max 2 months, extend if extra time)
- * C4: Jan 1 target year → Mar 31 target year (Prelims Revision)
- * C5: Apr 1 target year → prelims exam date (Rapid Revision)
+ * C4: Jan 1 target year → Mar 31 target year (Prelims Reading)
+ * C5: Apr 1 target year → May 5 target year (Prelims Revision)
+ * C5.b: May 6 target year → prelims exam date (Rapid Revision)
  * C6: May 21 target year → Jul 31 target year (Mains Revision)
  * C7: Aug 1 target year → mains exam date (Rapid Mains)
  */
@@ -154,7 +155,8 @@ function getS1Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
 
   const c4End = dayjs(`${targetYear}-03-31`);
   const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
-  const c5End = prelimsExamDate.subtract(1, 'day'); // Day before prelims
+  const c5End = dayjs(`${targetYear}-05-05`); // C5 ends May 5
+  const c5bEnd = prelimsExamDate.subtract(1, 'day'); // C5.b ends day before prelims
   const c6End = dayjs(`${targetYear}-07-31`);
   const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
@@ -195,6 +197,13 @@ function getS1Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
       priority: 'mandatory'
     },
     {
+      cycleType: 'C5.b',
+      startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
+      endDate: c5bEnd.format('YYYY-MM-DD'),
+      durationMonths: 1,
+      priority: 'mandatory'
+    },
+    {
       cycleType: 'C6',
       startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
       endDate: c6End.format('YYYY-MM-DD'),
@@ -225,7 +234,8 @@ function getS2Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
  * C2: After C1 → Dec 31 before target year (minimum 7 months, shrink from 10 months)
  * C3: SKIP (No C3)
  * C4: Jan-Mar target year
- * C5: Apr-prelims date
+ * C5: Apr 1 - May 5
+ * C5.b: May 6 - prelims date
  * C6: May-Jul target year
  * C7: Aug-mains date
  */
@@ -259,8 +269,15 @@ function getS3Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
     {
       cycleType: 'C5',
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
+      endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
+      durationMonths: 1,
+      priority: 'mandatory'
+    },
+    {
+      cycleType: 'C5.b',
+      startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
-      durationMonths: 2,
+      durationMonths: 1,
       priority: 'mandatory'
     },
     {
@@ -286,7 +303,8 @@ function getS3Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
  * C2: Start → Dec 31 before target year (minimum 7 months)
  * C3: SKIP (No C3)
  * C4: Jan-Mar target year
- * C5: Apr-prelims date
+ * C5: Apr 1 - May 5
+ * C5.b: May 6 - prelims date
  * C6: May-Jul target year
  * C7: Aug-mains date
  */
@@ -313,8 +331,15 @@ function getS4Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
     {
       cycleType: 'C5',
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
+      endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
+      durationMonths: 1,
+      priority: 'mandatory'
+    },
+    {
+      cycleType: 'C5.b',
+      startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
-      durationMonths: 2,
+      durationMonths: 1,
       priority: 'mandatory'
     },
     {
@@ -340,7 +365,8 @@ function getS4Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
  * C2: Start → Dec 31 before target year (minimum 7 months) - fit the blocks in available time.
  * C3: SKIP (No C3)
  * C4: Jan-Mar target year
- * C5: Apr-prelims date
+ * C5: Apr 1 - May 5
+ * C5.b: May 6 - prelims date
  * C6: May-Jul target year
  * C7: Aug-mains date
  * 
@@ -373,13 +399,20 @@ function getS4ASchedule(startDate: Date, targetYear: number, intake?: any): Cycl
     {
       cycleType: 'C5',
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
+      endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
+      durationMonths: 1,
+      priority: 'mandatory'
+    },
+    {
+      cycleType: 'C5.b',
+      startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
-      durationMonths: 2,
+      durationMonths: 1,
       priority: 'mandatory'
     },
     {
       cycleType: 'C6',
-      startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
+      startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5.b ends
       endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
@@ -401,7 +434,8 @@ function getS4ASchedule(startDate: Date, targetYear: number, intake?: any): Cycl
  * C3: SKIP
  * C8: Start → Dec 31 before target year (Mains Foundation)
  * C4: Jan-Mar target_year
- * C5: Apr-prelims date
+ * C5: Apr 1 - May 5
+ * C5.b: May 6 - prelims date
  * C6: May-Jul target year
  * C7: Aug-mains date
  */
@@ -428,13 +462,20 @@ function getS5Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
     {
       cycleType: 'C5',
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
+      endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
+      durationMonths: 1,
+      priority: 'mandatory'
+    },
+    {
+      cycleType: 'C5.b',
+      startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
-      durationMonths: 2,
+      durationMonths: 1,
       priority: 'mandatory'
     },
     {
       cycleType: 'C6',
-      startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
+      startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5.b ends
       endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
@@ -456,7 +497,8 @@ function getS5Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
  * C3: SKIP
  * C8: SKIP
  * C4: Start date → Mar 31 target year (if start is before Jan 1)
- * C5: Apr 1 → prelims exam date (or start date if very late start)
+ * C5: Apr 1 → May 5 (or proportionate if very late start)
+ * C5.b: May 6 → prelims exam date (or proportionate if very late start)
  * C6: May 21 → Jul 31 target year
  * C7: Aug 1 → mains exam date
  */
@@ -465,15 +507,18 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
   const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
-  // For very late starts (Nov/Dec), C5 should start from start date instead of Apr 1
+  // For very late starts (Nov/Dec), C5 and C5.b should start from start date instead of Apr 1
   // 
-  // Pick C4:C5 durations in 3:2 ratio from start date until prelims exam date
+  // Pick C4:C5:C5.b durations in 3:1:1 ratio from start date until prelims exam date
   const daysToExam = prelimsExamDate.diff(start, 'day');
   const c4DurationDays = Math.floor(daysToExam * 3 / 5);  // C4 gets 3/5 of total time
-  const c5DurationDays = Math.floor(daysToExam * 2 / 5);  // C5 gets 2/5 of total time
+  const c5DurationDays = Math.floor(daysToExam * 1 / 5);  // C5 gets 1/5 of total time
+  const c5bDurationDays = Math.floor(daysToExam * 1 / 5); // C5.b gets 1/5 of total time
   const c4StartDate = start;
   const c4EndDate = c4StartDate.add(c4DurationDays, 'day');
   const c5StartDate = c4EndDate.add(1, 'day');  // C5 starts day after C4 ends
+  const c5EndDate = c5StartDate.add(c5DurationDays, 'day');
+  const c5bStartDate = c5EndDate.add(1, 'day'); // C5.b starts day after C5 ends
 
   const schedules: CycleSchedule[] = [];
 
@@ -489,14 +534,22 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   schedules.push({
     cycleType: 'C5',
     startDate: c5StartDate.format('YYYY-MM-DD'),
-    endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
+    endDate: c5EndDate.format('YYYY-MM-DD'),
     durationMonths: Math.ceil(c5DurationDays / 30),
     priority: 'mandatory'
   });
 
   schedules.push({
+    cycleType: 'C5.b',
+    startDate: c5bStartDate.format('YYYY-MM-DD'),
+    endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
+    durationMonths: Math.ceil(c5bDurationDays / 30),
+    priority: 'mandatory'
+  });
+
+  schedules.push({
     cycleType: 'C6',
-    startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
+    startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5.b ends
     endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
     durationMonths: 2,
     priority: 'mandatory'
@@ -520,7 +573,8 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
  * C3: SKIP
  * C8: SKIP
  * C4: SKIP
- * C5: Start date → prelims exam date
+ * C5: Start date → May 5 (if time allows)
+ * C5.b: May 6 → prelims exam date
  * C6: May 21 → Jul 31 target year
  * C7: Aug 1 → mains exam date
  */
@@ -529,12 +583,25 @@ function getS7Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   const prelimsExamDate = intake ? dayjs(intake.getPrelimsExamDate()) : dayjs(`${targetYear}-05-20`);
   const mainsExamDate = intake ? dayjs(intake.getMainsExamDate()) : dayjs(`${targetYear}-08-20`);
 
+  // Split available time equally between C5 and C5.b
+  const daysToExam = prelimsExamDate.diff(start, 'day');
+  const c5DurationDays = Math.floor(daysToExam / 2);
+  const c5EndDate = start.add(c5DurationDays, 'day');
+  const c5bStartDate = c5EndDate.add(1, 'day');
+
   return [
     {
       cycleType: 'C5',
       startDate: start.format('YYYY-MM-DD'),
+      endDate: c5EndDate.format('YYYY-MM-DD'),
+      durationMonths: Math.ceil(c5DurationDays / 30),
+      priority: 'mandatory'
+    },
+    {
+      cycleType: 'C5.b',
+      startDate: c5bStartDate.format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
-      durationMonths: 1,
+      durationMonths: Math.ceil((daysToExam - c5DurationDays) / 30),
       priority: 'mandatory'
     },
     {

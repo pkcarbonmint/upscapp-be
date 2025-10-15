@@ -66,6 +66,7 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
     'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0 },
     'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1 },
     'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 },
+    'C5.b': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 },
     'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1 },
     'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1 },
     'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0 }
@@ -262,7 +263,7 @@ export interface StudentIntake {
   getMainsExamDate(): Date;
 
   /**
-   * Get C4 (Prelims Revision) start date - Jan 1 of target year
+   * Get C4 (Prelims Reading) start date - Jan 1 of target year
    */
   getC4StartDate(): Date;
 
@@ -304,7 +305,7 @@ export interface StudentIntake {
   getFoundationCycleEndDate(): Date;
 
   /**
-   * Get prelims revision period boundaries
+   * Get prelims reading period boundaries
    */
   getPrelimsRevisionPeriod(): { start: Date; end: Date };
 
