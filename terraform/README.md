@@ -1,6 +1,6 @@
 # UPSC App Infrastructure Setup
 
-This Terraform configuration sets up a complete AWS infrastructure for the UPSC application with minimal configuration required.
+This Terraform configuration sets up a complete AWS infrastructure for the UPSC application using EC2 instances with minimal configuration required.
 
 ## 🚀 Quick Start (Environment Variables Only)
 
@@ -10,8 +10,8 @@ You can deploy the entire infrastructure using only AWS environment variables. N
 
 1. **AWS Account** with appropriate permissions
 2. **Terraform** installed (>= 1.0)
-3. **Docker** (for building images - required if using automatic Docker build)
-4. **AWS CLI** (optional - only needed for manual Docker image pushing)
+3. **Docker** (for running containers on EC2)
+4. **AWS CLI** (optional - for managing key pairs)
 
 ### One-Command Setup
 
@@ -57,35 +57,31 @@ terraform apply
 The infrastructure includes:
 
 - **VPC** with public/private subnets across 2 AZs
-- **RDS PostgreSQL** database (db.t3.micro)
-- **ElastiCache Redis** cluster (cache.t3.micro)
-- **ECS Fargate** cluster with 4 services:
-  - Main application (backend API)
-  - Helios service
-  - Frontend (web UI)
-  - Celery worker (background tasks)
-- **Application Load Balancer** with intelligent routing
+- **RDS PostgreSQL** database (db.t3.micro) - optional if external RDS provided
+- **Two EC2 instances**:
+  - Strapi EC2 instance (t3.medium) - runs Strapi CMS
+  - Docker EC2 instance (t3.large) - runs all application containers
 - **ECR repositories** for Docker images
 - **CloudWatch** logging and monitoring
 - **Security groups** with proper access controls
 
 ## 🔐 Security
 
-- All services run in private subnets
-- Database and Redis are not publicly accessible
-- Load balancer handles all external traffic
-- Security groups restrict access between services
+- Database runs in private subnets (if using Terraform-managed RDS)
+- EC2 instances run in public subnets with security groups
+- Security groups restrict access to necessary ports only
+- EBS volumes are encrypted
 - All passwords are configurable via terraform.tfvars
 
 ## 💰 Cost Estimation
 
 **Monthly costs (approximate):**
-- RDS db.t3.micro: ~$15-20
-- ElastiCache cache.t3.micro: ~$15-20
-- ECS Fargate (4 services): ~$20-50
-- Load Balancer: ~$20-25
-- NAT Gateway: ~$45
-- **Total: ~$115-160/month**
+- RDS db.t3.micro: ~$15-20 (if using Terraform-managed RDS)
+- EC2 t3.medium (Strapi): ~$30-35
+- EC2 t3.large (Docker): ~$60-70
+- NAT Gateway: ~$45 (if enabled)
+- **Total: ~$105-125/month** (with Terraform RDS)
+- **Total: ~$90-105/month** (with external RDS)
 
 *Costs vary by region and usage. Use AWS Calculator for precise estimates.*
 
@@ -139,30 +135,35 @@ docker push <ecr-frontend-url>:latest
 
 ## 🌐 Access Your Application
 
-- **Frontend**: `http://<alb-dns-name>/`
-- **API**: `http://<alb-dns-name>/api/`
-- **Helios**: `http://<alb-dns-name>/helios/`
-- **API Docs**: `http://<alb-dns-name>/docs`
+- **Strapi CMS**: `http://<strapi-instance-ip>:1337`
+- **API**: `http://<docker-instance-ip>:8000`
+- **Helios**: `http://<docker-instance-ip>:8080`
+- **Frontend**: `http://<docker-instance-ip>:3000`
+- **API Docs**: `http://<docker-instance-ip>:8000/docs`
 
-Get the ALB URL:
+Get the instance IPs:
 ```bash
-terraform output alb_url
+terraform output strapi_instance_public_ip
+terraform output docker_instance_public_ip
+terraform output app_url
+terraform output helios_url
+terraform output frontend_url
+terraform output strapi_url
 ```
 
 ## 📊 Monitoring
 
-- **CloudWatch Logs**: `/ecs/upscpro`
-- **ECS Console**: Monitor running services
-- **Load Balancer**: Health checks and traffic metrics
+- **CloudWatch Logs**: Instance logs and Docker container logs
+- **EC2 Console**: Monitor instance status and metrics
+- **Docker**: Use `docker ps` and `docker logs` on instances
 
 ## 🔄 Common Operations
 
 ### Scale Services
-Edit `terraform.tfvars`:
-```hcl
-ecs_app_count = 3  # Scale to 3 app instances
-```
-Then run: `terraform apply`
+To scale, you can:
+1. Use larger EC2 instance types in `terraform.tfvars`
+2. Add more EC2 instances manually
+3. Use Docker Compose scaling on the Docker instance
 
 ### Update Images
 ```bash
@@ -191,26 +192,41 @@ aws_region   = "us-west-2"
 environment  = "production"
 project_name = "upscpro"
 
+# EC2 Configuration
+enable_ec2_instances = true
+strapi_key_name = "your-strapi-key"  # Create in AWS console
+docker_key_name = "your-docker-key"  # Create in AWS console
+
 # REQUIRED: Change these passwords!
-rds_password = "YourSecurePassword123!"
-redis_password = "YourRedisPassword123!"
-flower_password = "YourFlowerPassword123!"
+rds_password = "YourSecurePassword123!"  # If using Terraform RDS
+
+# External RDS (optional - if you have existing RDS)
+external_rds_endpoint = ""  # Leave empty to create new RDS
+external_rds_username = ""
+external_rds_password = ""
+external_rds_database = ""
 ```
 
 ### Optional Variables
 ```hcl
-# Resource Sizing
-ecs_app_cpu     = 512   # CPU units (1 vCPU = 1024)
-ecs_app_memory  = 1024  # Memory in MiB
-ecs_app_count   = 1     # Number of containers
+# EC2 Instance Types
+strapi_instance_type = "t3.medium"
+docker_instance_type = "t3.large"
+
+# Storage
+strapi_volume_size = 20  # GB
+docker_volume_size = 30  # GB
 
 # Database
 rds_instance_class = "db.t3.micro"
 rds_allocated_storage = 20
 
 # Enable/Disable Services
-enable_rds   = true
-enable_redis = true
+enable_rds = true
+enable_ec2_instances = true
+
+# Strapi Domain
+strapi_domain = ""  # Optional custom domain
 
 # Custom Environment Variables
 app_environment_variables = {
@@ -236,21 +252,26 @@ app_environment_variables = {
    terraform force-unlock <lock-id>
    ```
 
-3. **ECS Service Not Starting**
-   - Check CloudWatch logs: `/ecs/upscpro`
-   - Verify Docker images are pushed to ECR
-   - Check security group rules
+3. **EC2 Instance Not Starting**
+   - Check EC2 console for instance status
+   - Review user data logs: `/var/log/user-data.log`
+   - Verify security group rules
 
-4. **Database Connection Issues**
-   - Verify RDS is in private subnets
-   - Check security group allows ECS → RDS (port 5432)
+4. **Docker Containers Not Running**
+   - SSH to Docker instance and check: `docker ps`
+   - Check container logs: `docker logs <container-name>`
+   - Verify Docker daemon is running: `systemctl status docker`
+
+5. **Database Connection Issues**
+   - Verify RDS endpoint is correct
+   - Check security group allows EC2 → RDS (port 5432)
    - Confirm database credentials in terraform.tfvars
 
 ### Getting Help
 
-- Check AWS ECS Console for service status
+- Check AWS EC2 Console for instance status
+- SSH to instances to debug issues
 - Review CloudWatch logs for application errors
-- Verify all ECR repositories have images pushed
 - Ensure security groups allow necessary traffic
 
 ## 📁 File Structure

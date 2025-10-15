@@ -21,14 +21,14 @@ output "private_subnet_ids" {
 }
 
 # Security Group Outputs
-output "alb_security_group_id" {
-  description = "ID of the ALB security group"
-  value       = aws_security_group.alb.id
+output "ec2_security_group_id" {
+  description = "ID of the EC2 security group"
+  value       = aws_security_group.ec2.id
 }
 
-output "ecs_security_group_id" {
-  description = "ID of the ECS security group"
-  value       = aws_security_group.ecs.id
+output "rds_security_group_id" {
+  description = "ID of the RDS security group"
+  value       = aws_security_group.rds.id
 }
 
 # RDS Outputs
@@ -48,8 +48,6 @@ output "database_url" {
   sensitive   = true
 }
 
-# Redis Outputs (removed - using RDS for Redis functionality)
-# Redis functionality is now handled by RDS
 
 # ECR Repository Outputs
 output "ecr_repository_app_url" {
@@ -67,75 +65,10 @@ output "ecr_repository_frontend_url" {
   value       = aws_ecr_repository.frontend.repository_url
 }
 
-# ECS Outputs
-output "ecs_cluster_id" {
-  description = "ID of the ECS cluster"
-  value       = aws_ecs_cluster.main.id
-}
 
-output "ecs_cluster_arn" {
-  description = "ARN of the ECS cluster"
-  value       = aws_ecs_cluster.main.arn
-}
 
-output "ecs_cluster_name" {
-  description = "Name of the ECS cluster"
-  value       = aws_ecs_cluster.main.name
-}
 
-# Load Balancer Outputs
-output "alb_dns_name" {
-  description = "The DNS name of the load balancer"
-  value       = aws_lb.main.dns_name
-}
 
-output "alb_zone_id" {
-  description = "The canonical hosted zone ID of the load balancer"
-  value       = aws_lb.main.zone_id
-}
-
-output "alb_arn" {
-  description = "The ARN of the load balancer"
-  value       = aws_lb.main.arn
-}
-
-output "alb_url" {
-  description = "The URL of the load balancer"
-  value       = "http://${aws_lb.main.dns_name}"
-}
-
-# Target Group Outputs
-output "target_group_app_arn" {
-  description = "ARN of the app target group"
-  value       = aws_lb_target_group.app.arn
-}
-
-output "target_group_helios_arn" {
-  description = "ARN of the helios target group"
-  value       = aws_lb_target_group.helios.arn
-}
-
-output "target_group_frontend_arn" {
-  description = "ARN of the frontend target group"
-  value       = aws_lb_target_group.frontend.arn
-}
-
-# IAM Role Outputs
-output "ecs_task_execution_role_arn" {
-  description = "ARN of the ECS task execution role"
-  value       = aws_iam_role.ecs_task_execution_role.arn
-}
-
-output "ecs_task_role_arn" {
-  description = "ARN of the ECS task role"
-  value       = aws_iam_role.ecs_task_role.arn
-}
-
-# CloudWatch Log Group Output
-output "cloudwatch_log_group_name" {
-  description = "Name of the CloudWatch log group"
-  value       = aws_cloudwatch_log_group.ecs.name
-}
 
 # EC2 Instance Outputs
 output "strapi_instance_id" {
@@ -188,10 +121,6 @@ output "frontend_url" {
   value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:3000" : null
 }
 
-output "flower_url" {
-  description = "URL to access Celery Flower"
-  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:5555" : null
-}
 
 # General Information
 output "aws_region" {
