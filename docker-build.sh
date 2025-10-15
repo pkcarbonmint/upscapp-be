@@ -80,9 +80,9 @@ fi
 
 # Build with docker-compose
 log_info "Building services with docker-compose..."
-echo "Command: docker-compose build $NO_CACHE $PARALLEL $BUILD_ARGS $SERVICES"
+echo "Command: docker compose build $NO_CACHE $PARALLEL $BUILD_ARGS $SERVICES"
 
-if docker-compose build $NO_CACHE $PARALLEL $BUILD_ARGS $SERVICES; then
+if docker compose build $NO_CACHE $PARALLEL $BUILD_ARGS $SERVICES; then
     log_success "All services built successfully with interface validation"
     
     # Extract validation reports if possible
@@ -91,7 +91,7 @@ if docker-compose build $NO_CACHE $PARALLEL $BUILD_ARGS $SERVICES; then
     
     # Try to extract reports from built images
     for service in app helios frontend; do
-        if docker-compose images | grep -q "$service"; then
+        if docker compose images | grep -q "$service"; then
             log_info "Service $service built successfully"
         fi
     done
@@ -100,7 +100,7 @@ if docker-compose build $NO_CACHE $PARALLEL $BUILD_ARGS $SERVICES; then
     log_success "🚀 Build completed successfully!"
     echo "   Base image: study-planner:base"
     echo "   All services have passed interface compatibility validation"
-    echo "   Ready to start with: docker-compose up"
+    echo "   Ready to start with: docker compose up"
     
 else
     log_error "Docker build failed"
