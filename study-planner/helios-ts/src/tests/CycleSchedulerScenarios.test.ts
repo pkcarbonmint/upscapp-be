@@ -273,8 +273,9 @@ describe('CycleSchedulerScenarios', () => {
 				'C1': { study: 1.0, practice: 0, revision: 0 },         // NCERT Foundation
 				'C2': { study: 0.7, practice: 0.15, revision: 0.15 },  // Comprehensive Foundation
 				'C3': { study: 1.0, practice: 0, revision: 0 },       // Mains Revision Pre-Prelims Cycle
-				'C4': { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Revision
-				'C5': { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Rapid Revision
+				'C4': { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Reading
+				'C5': { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Revision
+				'C5.b': { study: 0.0, practice: 0.4, revision: 0.6 }, // Prelims Rapid Revision
 				'C6': { study: 0.0, practice: 0.4, revision: 0.6 },   // Mains Revision
 				'C7': { study: 0.0, practice: 0.4, revision: 0.6 },   // Mains Rapid Revision
 				'C8': { study: 0.8, practice: 0.1, revision: 0.1 },   // Mains Foundation
