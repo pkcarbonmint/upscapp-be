@@ -220,6 +220,10 @@ export interface StudyStrategy {
   test_frequency: string;
   seasonal_windows: string[];
   catch_up_day_preference: string;
+  // New UPSC fields
+  optional_first_preference?: boolean;
+  upsc_optional_subject?: string;
+  weekly_test_day_preference?: string;
 }
 
 export interface StudentIntake {
@@ -622,6 +626,10 @@ export interface UIStudyStrategy {
   test_frequency: string;
   seasonal_windows: string[];
   catch_up_day_preference: string;
+  // New UPSC fields
+  optional_first_preference?: boolean;
+  upsc_optional_subject?: string;
+  weekly_test_day_preference?: string;
 }
 
 // From src/Types/Logging.hs
