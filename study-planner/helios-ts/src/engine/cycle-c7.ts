@@ -131,7 +131,7 @@ export async function planMainsRevisionCycle(
  * - Trim subtopics from D5 down to B1 if needed
  * - Returns undefined if no time for this cycle
  */
-export async function planMainsRapidRevisionCycle(
+export async function planC7(
   logger: Logger,
   // @ts-ignore
   intake: StudentIntake,

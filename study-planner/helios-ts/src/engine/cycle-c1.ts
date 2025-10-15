@@ -12,7 +12,7 @@ import { createBlocksForSubjects } from './cycle-utils';
  * - 1.0, 0, 0 task ratio (study only)
  * - Returns undefined if prep starts too late
  */
-export async function planC1Cycle(
+export async function planC1(
   logger: Logger,
   //@ts-ignore
   intake: StudentIntake,

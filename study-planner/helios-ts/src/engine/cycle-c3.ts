@@ -12,7 +12,7 @@ import { createBlocksForSubjects } from './cycle-utils';
  * - 1.0, 0, 0 task ratio (study only - building mains knowledge base)
  * - Returns undefined if no time for this cycle
  */
-export async function planC3Cycle(
+export async function planC3(
   logger: Logger,
   // @ts-ignore
   intake: StudentIntake,

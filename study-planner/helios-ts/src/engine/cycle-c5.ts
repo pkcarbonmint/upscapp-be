@@ -57,7 +57,7 @@ export function calculatePrelimsRevisionStartDate(
  * - Trim subtopics from D5 down to B1 if needed
  * - Returns undefined if no time for this cycle
  */
-export async function planPrelimsRevisionCycle(
+export async function planC5(
   logger: Logger,
   intake: StudentIntake,
   confidenceMap: Map<string, number>,

@@ -13,7 +13,7 @@ import { createBlocksForSubjects } from './cycle-utils';
  * - 1.0, 0, 0 task ratio (study only like C1)
  * - Returns undefined if no time for this cycle
  */
-export async function planC8Cycle(
+export async function planC8(
   logger: Logger,
   // @ts-ignore
   intake: StudentIntake,
