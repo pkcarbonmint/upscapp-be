@@ -59,7 +59,7 @@ terraform plan
 # Ask for confirmation
 echo ""
 echo "⚠️  This will create AWS resources that will incur costs."
-echo "💰 Estimated monthly cost: $50-200 (depending on usage)"
+echo "💰 Estimated monthly cost: $90-125 (depending on usage and RDS choice)"
 echo ""
 read -p "Do you want to proceed with the deployment? (yes/no): " -r
 if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
@@ -79,9 +79,17 @@ echo ""
 echo "📊 Important Information:"
 echo "========================"
 
-# Get load balancer URL
-ALB_URL=$(terraform output -raw alb_url 2>/dev/null || echo "Not available")
-echo "🌐 Application URL: $ALB_URL"
+# Get EC2 instance URLs
+STRAPI_URL=$(terraform output -raw strapi_url 2>/dev/null || echo "Not available")
+APP_URL=$(terraform output -raw app_url 2>/dev/null || echo "Not available")
+HELIOS_URL=$(terraform output -raw helios_url 2>/dev/null || echo "Not available")
+FRONTEND_URL=$(terraform output -raw frontend_url 2>/dev/null || echo "Not available")
+
+echo "🌐 Application URLs:"
+echo "   Strapi CMS: $STRAPI_URL"
+echo "   Python API: $APP_URL"
+echo "   Helios: $HELIOS_URL"
+echo "   Frontend: $FRONTEND_URL"
 
 # Get ECR repository URLs
 echo ""
@@ -100,19 +108,21 @@ echo "🗄️  Database Information:"
 RDS_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null || echo "Not available")
 echo "   Endpoint: $RDS_ENDPOINT"
 
-# Get Redis info
+# Get EC2 instance IPs
 echo ""
-echo "🔴 Redis Information:"
-REDIS_ENDPOINT=$(terraform output -raw redis_endpoint 2>/dev/null || echo "Not available")
-echo "   Endpoint: $REDIS_ENDPOINT"
+echo "💻 EC2 Instance Information:"
+STRAPI_IP=$(terraform output -raw strapi_instance_public_ip 2>/dev/null || echo "Not available")
+DOCKER_IP=$(terraform output -raw docker_instance_public_ip 2>/dev/null || echo "Not available")
+echo "   Strapi Instance IP: $STRAPI_IP"
+echo "   Docker Instance IP: $DOCKER_IP"
 
 echo ""
 echo "📝 Next Steps:"
 echo "============="
-echo "1. Build and push your Docker images to the ECR repositories above"
-echo "2. Your application will be available at: $ALB_URL"
-echo "3. Monitor your services in the AWS ECS Console"
-echo "4. Check logs in CloudWatch: /ecs/upscpro"
+echo "1. Your applications are automatically deployed on EC2 instances"
+echo "2. Access your services using the URLs above"
+echo "3. Monitor your instances in the AWS EC2 Console"
+echo "4. SSH to instances for debugging (if key pairs configured)"
 echo ""
 echo "🐳 Docker Image Options:"
 echo "   Option 1: Enable automatic Docker build in terraform.tfvars:"
