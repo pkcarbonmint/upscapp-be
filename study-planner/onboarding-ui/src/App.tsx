@@ -58,7 +58,10 @@ const initialFormData: IntakeWizardFormData = {
       scienceTech: ""
     },
     studyPreference: "WeakSubjectsFirst",
-    subjectApproach: "DualSubject"
+    subjectApproach: "DualSubject",
+    upscOptionalSubject: undefined,
+    optionalFirst: false,
+    weeklyTestDayPreference: "Sunday"
   },
   confidenceLevel: {} as IWFConfidenceLevelAssessment,
   preview: {
