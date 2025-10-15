@@ -1,10 +1,147 @@
-# UPSC App Infrastructure Setup
+# Infrastructure as Code with Terraform
 
-This Terraform configuration sets up a complete AWS infrastructure for the UPSC application with minimal configuration required.
+This directory contains Terraform configuration for deploying a complete application infrastructure on AWS with advanced features including separate RDS deployment and GitHub integration.
 
-## 🚀 Quick Start (Environment Variables Only)
+## 🚀 New Features
 
-You can deploy the entire infrastructure using only AWS environment variables. No manual AWS configuration needed!
+### 1. Separate RDS Deployment
+- **Independent RDS Module**: Deploy RDS separately from other infrastructure
+- **Flexible Integration**: Use with existing VPC or create new one
+- **Modular Design**: Reusable RDS module with comprehensive configuration options
+
+### 2. GitHub Integration & Auto-Deployment
+- **Automatic Code Checkout**: EC2 instances automatically clone your repository
+- **Webhook-based Deployment**: Automatic builds triggered by GitHub pushes
+- **Manual Build Triggers**: Scripts to manually trigger builds on remote instances
+- **Branch-specific Deployment**: Deploy from specific branches
+
+## 📁 Structure
+
+```
+terraform/
+├── main.tf                     # Main infrastructure configuration
+├── variables.tf                # Input variables
+├── outputs.tf                  # Output values
+├── terraform.tfvars.example    # Example configuration
+├── docker-user-data.sh         # EC2 user data with GitHub integration
+├── strapi-user-data.sh         # Strapi EC2 setup
+├── trigger-build.sh            # Manual build trigger script
+├── DEPLOYMENT_GUIDE.md         # Comprehensive deployment guide
+├── modules/
+│   └── rds/                    # Separate RDS module
+│       ├── main.tf
+│       ├── variables.tf
+│       ├── outputs.tf
+│       └── README.md
+└── examples/
+    └── rds-separate-deployment.tf  # Example RDS-only deployment
+```
+
+## 🛠 Quick Start
+
+### 1. Configure Variables
+```bash
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your values
+```
+
+### 2. Deploy Infrastructure
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+### 3. Deploy RDS Separately (Optional)
+```bash
+# Deploy RDS first
+terraform plan -target=module.rds
+terraform apply -target=module.rds
+
+# Then deploy remaining infrastructure
+terraform apply
+```
+
+## 🔧 Key Configuration Options
+
+### GitHub Integration
+```hcl
+github_token          = "ghp_your_token_here"
+github_repository_url = "https://github.com/user/repo.git"
+github_branch         = "main"
+enable_auto_deploy    = true
+webhook_secret        = "your-webhook-secret"
+```
+
+### RDS Deployment Options
+```hcl
+# Option 1: Deploy RDS with module (recommended)
+deploy_rds_separately = true
+
+# Option 2: Use existing RDS
+external_rds_endpoint = "your-rds-endpoint.amazonaws.com"
+external_rds_username = "your-username"
+external_rds_password = "your-password"
+
+# Option 3: Deploy RDS inline (default)
+enable_rds = true
+rds_password = "your-password"
+```
+
+## 📊 Deployment Methods
+
+| Method | Use Case | Benefits |
+|--------|----------|----------|
+| **All-in-One** | Simple deployments | Single command deployment |
+| **Separate RDS** | Production environments | Independent RDS lifecycle management |
+| **External RDS** | Existing infrastructure | Reuse existing database |
+
+## 🔗 Integration Features
+
+### Automatic Deployment Pipeline
+1. **Code Push** → GitHub Repository
+2. **Webhook Trigger** → EC2 Instance (port 9000)
+3. **Git Pull** → Latest code fetched
+4. **Docker Build** → `docker-build.sh` executed
+5. **Service Restart** → New containers deployed
+
+### Manual Build Triggers
+```bash
+# Trigger build remotely
+./trigger-build.sh
+
+# Or with specific instance
+./trigger-build.sh 1.2.3.4 ~/.ssh/key.pem
+```
+
+## 📋 Prerequisites
+
+- AWS CLI configured with appropriate permissions
+- Terraform >= 1.0 installed
+- GitHub Personal Access Token (for private repos)
+- SSH Key Pair created in AWS
+
+## 🔍 Monitoring & Troubleshooting
+
+### Service URLs
+```bash
+terraform output app_url          # Main application
+terraform output frontend_url     # Frontend interface
+terraform output webhook_url      # GitHub webhook endpoint
+terraform output strapi_url       # CMS interface
+```
+
+### Logs and Monitoring
+```bash
+# SSH to instance
+ssh -i key.pem ec2-user@$(terraform output -raw docker_instance_public_ip)
+
+# Monitor webhook server
+sudo journalctl -u webhook-server -f
+
+# Monitor containers
+sudo docker-compose logs -f
+```
 
 ### Prerequisites
 

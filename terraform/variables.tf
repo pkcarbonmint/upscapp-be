@@ -44,7 +44,7 @@ variable "enable_nat_gateway" {
 
 # RDS Configuration
 variable "enable_rds" {
-  description = "Enable RDS PostgreSQL database"
+  description = "Enable RDS PostgreSQL database (ignored if deploy_rds_separately is true)"
   type        = bool
   default     = true
 }
@@ -442,4 +442,50 @@ variable "external_rds_database" {
   description = "External RDS database name"
   type        = string
   default     = ""
+}
+
+# GitHub Integration
+variable "github_token" {
+  description = "GitHub personal access token for cloning repositories"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "github_repository_url" {
+  description = "GitHub repository URL (HTTPS format)"
+  type        = string
+  default     = ""
+}
+
+variable "github_branch" {
+  description = "GitHub branch to checkout"
+  type        = string
+  default     = "main"
+}
+
+variable "enable_auto_deploy" {
+  description = "Enable automatic deployment on code changes"
+  type        = bool
+  default     = false
+}
+
+variable "webhook_secret" {
+  description = "Secret for GitHub webhook validation"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+# RDS Module Configuration
+variable "deploy_rds_separately" {
+  description = "Deploy RDS using separate module (allows independent deployment)"
+  type        = bool
+  default     = false
+}
+
+variable "rds_module_vpc_cidr" {
+  description = "CIDR block for RDS module VPC (only used if deploy_rds_separately is true and no existing VPC)"
+  type        = string
+  default     = "10.1.0.0/16"
 }
