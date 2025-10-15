@@ -9,6 +9,10 @@ terraform {
       source  = "hashicorp/null"
       version = "~> 3.0"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 }
 
@@ -178,15 +182,16 @@ resource "aws_security_group" "alb" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Allow HTTP when no SSL certificate is provided
   ingress {
-    from_port   = 443
-    to_port     = 443
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -270,42 +275,41 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Strapi port
+  # Only allow internal access to Docker services from ALB/ECS
   ingress {
-    from_port   = 1337
-    to_port     = 1337
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Docker containers ports
-  ingress {
-    from_port   = 8000
-    to_port     = 8000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 1337
+    to_port         = 1337
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 8000
+    to_port         = 8000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
   ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
-  # GitHub webhook port
   ingress {
-    from_port   = 9000
-    to_port     = 9000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  # GitHub webhook port - only accessible from ALB
+  ingress {
+    from_port       = 9000
+    to_port         = 9000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
   # Allow all outbound traffic
@@ -445,7 +449,7 @@ resource "aws_instance" "strapi" {
   instance_type          = var.strapi_instance_type
   key_name               = var.strapi_key_name != "" ? var.strapi_key_name : null
   vpc_security_group_ids = [aws_security_group.ec2.id]
-  subnet_id              = aws_subnet.public[0].id
+  subnet_id              = aws_subnet.private[0].id
   user_data = base64encode(templatefile("${path.module}/strapi-user-data.sh", {
     strapi_domain = var.strapi_domain
   }))
@@ -470,7 +474,7 @@ resource "aws_instance" "docker" {
   instance_type          = var.docker_instance_type
   key_name               = var.docker_key_name != "" ? var.docker_key_name : null
   vpc_security_group_ids = [aws_security_group.ec2.id]
-  subnet_id              = aws_subnet.public[0].id
+  subnet_id              = aws_subnet.private[0].id
   user_data = base64encode(templatefile("${path.module}/docker-user-data.sh", {
     project_name           = var.project_name
     strapi_ip             = var.enable_ec2_instances ? aws_instance.strapi[0].private_ip : ""
@@ -545,54 +549,94 @@ resource "aws_lb" "main" {
   }
 }
 
+# SSL Certificate using AWS Certificate Manager
+resource "aws_acm_certificate" "main" {
+  count = var.domain_name != "" ? 1 : 0
+
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "${var.project_name}-ssl-cert"
+  }
+}
+
+# Create a self-signed certificate for ALB testing
+resource "tls_private_key" "alb_test" {
+  count = var.domain_name == "" && var.certificate_arn == "" && var.enable_https ? 1 : 0
+  
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "tls_self_signed_cert" "alb_test" {
+  count = var.domain_name == "" && var.certificate_arn == "" && var.enable_https ? 1 : 0
+
+  private_key_pem = tls_private_key.alb_test[0].private_key_pem
+
+  subject {
+    common_name  = "*.elb.amazonaws.com"
+    organization = "Amazon Web Services"
+  }
+
+  validity_period_hours = 8760 # 1 year
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+}
+
+resource "aws_acm_certificate" "alb_test" {
+  count = var.domain_name == "" && var.certificate_arn == "" && var.enable_https ? 1 : 0
+
+  certificate_body  = tls_self_signed_cert.alb_test[0].cert_pem
+  private_key       = tls_private_key.alb_test[0].private_key_pem
+
+  tags = {
+    Name = "${var.project_name}-alb-test-cert"
+  }
+}
+
+# Route53 DNS validation records for the certificate
+resource "aws_route53_record" "cert_validation" {
+  for_each = var.domain_name != "" && var.route53_zone_id != "" ? {
+    for dvo in aws_acm_certificate.main[0].domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  } : {}
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = var.route53_zone_id
+}
+
+# Certificate validation
+resource "aws_acm_certificate_validation" "main" {
+  count = var.domain_name != "" && var.route53_zone_id != "" ? 1 : 0
+
+  certificate_arn         = aws_acm_certificate.main[0].arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
+
+  timeouts {
+    create = "5m"
+  }
+}
+
 # ALB Target Groups
-resource "aws_lb_target_group" "app" {
-  name        = "${var.project_name}-app-tg"
-  port        = 8000
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
+# App target group removed - not exposed through ALB
 
-  health_check {
-    enabled             = true
-    healthy_threshold   = 2
-    interval            = 30
-    matcher             = "200"
-    path                = "/healthcheck"
-    port                = "traffic-port"
-    protocol            = "HTTP"
-    timeout             = 5
-    unhealthy_threshold = 2
-  }
-
-  tags = {
-    Name = "${var.project_name}-app-tg"
-  }
-}
-
-resource "aws_lb_target_group" "helios" {
-  name        = "${var.project_name}-helios-tg"
-  port        = 8080
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
-
-  health_check {
-    enabled             = true
-    healthy_threshold   = 2
-    interval            = 30
-    matcher             = "200"
-    path                = "/health"
-    port                = "traffic-port"
-    protocol            = "HTTP"
-    timeout             = 5
-    unhealthy_threshold = 2
-  }
-
-  tags = {
-    Name = "${var.project_name}-helios-tg"
-  }
-}
+# Helios target group removed - not exposed through ALB
 
 resource "aws_lb_target_group" "frontend" {
   name        = "${var.project_name}-frontend-tg"
@@ -620,6 +664,24 @@ resource "aws_lb_target_group" "frontend" {
 
 # ALB Listeners
 resource "aws_lb_listener" "main" {
+  count = var.domain_name != "" || var.certificate_arn != "" || var.enable_https ? 1 : 0
+  
+  load_balancer_arn = aws_lb.main.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn   = var.domain_name != "" ? aws_acm_certificate.main[0].arn : (var.certificate_arn != "" ? var.certificate_arn : aws_acm_certificate.alb_test[0].arn)
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend.arn
+  }
+}
+
+# HTTP listener for when no SSL certificate is provided
+resource "aws_lb_listener" "http" {
+  count = var.domain_name == "" && var.certificate_arn == "" && !var.enable_https ? 1 : 0
+  
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "HTTP"
@@ -630,37 +692,7 @@ resource "aws_lb_listener" "main" {
   }
 }
 
-resource "aws_lb_listener_rule" "app" {
-  listener_arn = aws_lb_listener.main.arn
-  priority     = 100
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/api/*", "/docs", "/redoc", "/healthcheck"]
-    }
-  }
-}
-
-resource "aws_lb_listener_rule" "helios" {
-  listener_arn = aws_lb_listener.main.arn
-  priority     = 200
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.helios.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/helios/*", "/health"]
-    }
-  }
-}
+# Removed app and helios listener rules - only frontend is exposed
 
 # IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_task_execution_role" {
@@ -935,11 +967,7 @@ resource "aws_ecs_service" "app" {
     assign_public_ip = false
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.app.arn
-    container_name   = "app"
-    container_port   = 8000
-  }
+  # Load balancer removed - app service not exposed through ALB
 
   depends_on = [aws_lb_listener.main]
 

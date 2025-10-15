@@ -113,23 +113,24 @@ output "alb_arn" {
 }
 
 output "alb_url" {
-  description = "The URL of the load balancer"
-  value       = "http://${aws_lb.main.dns_name}"
+  description = "The URL of the load balancer (frontend only)"
+  value       = var.domain_name != "" ? "https://${var.domain_name}" : (var.certificate_arn != "" || var.enable_https ? "https://${aws_lb.main.dns_name}" : "http://${aws_lb.main.dns_name}")
+}
+
+# SSL Certificate Outputs
+output "ssl_certificate_arn" {
+  description = "ARN of the SSL certificate"
+  value       = var.domain_name != "" ? aws_acm_certificate.main[0].arn : null
+}
+
+output "ssl_certificate_status" {
+  description = "Status of the SSL certificate"
+  value       = var.domain_name != "" ? aws_acm_certificate.main[0].status : null
 }
 
 # Target Group Outputs
-output "target_group_app_arn" {
-  description = "ARN of the app target group"
-  value       = aws_lb_target_group.app.arn
-}
-
-output "target_group_helios_arn" {
-  description = "ARN of the helios target group"
-  value       = aws_lb_target_group.helios.arn
-}
-
 output "target_group_frontend_arn" {
-  description = "ARN of the frontend target group"
+  description = "ARN of the frontend target group (only exposed service)"
   value       = aws_lb_target_group.frontend.arn
 }
 
@@ -167,8 +168,8 @@ output "strapi_instance_private_ip" {
 }
 
 output "strapi_url" {
-  description = "URL to access Strapi CMS"
-  value       = var.enable_ec2_instances ? "http://${aws_instance.strapi[0].public_ip}:1337" : null
+  description = "Strapi CMS is now private - accessible only through internal network"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.strapi[0].private_ip}:1337 (private)" : null
 }
 
 output "docker_instance_id" {
@@ -187,28 +188,28 @@ output "docker_instance_private_ip" {
 }
 
 output "app_url" {
-  description = "URL to access the Python API"
-  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:8000" : null
+  description = "Python API is now private - accessible only through frontend"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].private_ip}:8000 (private)" : null
 }
 
 output "helios_url" {
-  description = "URL to access Helios service"
-  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:8080" : null
+  description = "Helios service is now private - accessible only through frontend"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].private_ip}:8080 (private)" : null
 }
 
 output "frontend_url" {
-  description = "URL to access the frontend"
-  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:3000" : null
+  description = "URL to access the frontend (via ALB)"
+  value       = var.domain_name != "" ? "https://${var.domain_name}" : (var.certificate_arn != "" || var.enable_https ? "https://${aws_lb.main.dns_name}" : "http://${aws_lb.main.dns_name}")
 }
 
 output "flower_url" {
-  description = "URL to access Celery Flower"
-  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:5555" : null
+  description = "Celery Flower is now private - accessible only through internal network"
+  value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].private_ip}:5555 (private)" : null
 }
 
 output "webhook_url" {
-  description = "URL for GitHub webhook (if auto-deploy is enabled)"
-  value       = var.enable_ec2_instances && var.enable_auto_deploy ? "http://${aws_instance.docker[0].public_ip}:9000/webhook" : null
+  description = "GitHub webhook is now private - accessible only through internal network"
+  value       = var.enable_ec2_instances && var.enable_auto_deploy ? "http://${aws_instance.docker[0].private_ip}:9000/webhook (private)" : null
 }
 
 # GitHub Integration Outputs
@@ -217,7 +218,7 @@ output "github_integration_info" {
   value = {
     repository_configured = var.github_repository_url != ""
     auto_deploy_enabled   = var.enable_auto_deploy
-    webhook_endpoint      = var.enable_ec2_instances && var.enable_auto_deploy ? "http://${aws_instance.docker[0].public_ip}:9000/webhook" : null
+    webhook_endpoint      = var.enable_ec2_instances && var.enable_auto_deploy ? "http://${aws_instance.docker[0].private_ip}:9000/webhook (private)" : null
     branch                = var.github_branch
   }
 }
