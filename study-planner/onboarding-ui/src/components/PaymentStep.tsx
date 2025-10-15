@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import type { IntakeWizardFormData } from '../types';
-import { paymentService } from 'shared-ui-library';
+import { paymentService, enhancedAuthService } from 'shared-ui-library';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, CreditCard, Loader2 } from 'lucide-react';
+import { ExternalLink, CreditCard, Loader2, RefreshCw } from 'lucide-react';
 
 interface PaymentStepProps {
   formData: IntakeWizardFormData;
@@ -11,32 +11,48 @@ interface PaymentStepProps {
 
 const PaymentStep: React.FC<PaymentStepProps> = ({ formData, onUpdate }) => {
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
-  const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+  const [paymentData, setPaymentData] = useState<{
+    paymentUrl?: string;
+    paymentLinkId?: string;
+    referenceId?: string;
+    purchaseIds?: number[];
+  } | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [paymentAmount] = useState(() => paymentService.calculatePaymentAmount('basic'));
 
-  // Get student ID from form data
-  const studentId = formData.final?.studentId || 'temp-student-id';
+  // Get current user data
+  const currentUser = enhancedAuthService.getCurrentUser();
+  const studentId = currentUser?.id || parseInt(formData.final?.studentId || '1');
 
   const generatePaymentLink = async () => {
     setIsGeneratingLink(true);
     setPaymentError(null);
     
     try {
-      const paymentUrl = await paymentService.generateRazorpayLink(
+      const studentDetails = {
+        name: formData.background?.fullName || currentUser?.full_name || 'Student',
+        email: formData.background?.email || currentUser?.email || 'student@example.com',
+        phone: formData.background?.phoneNumber || currentUser?.phone_number || '+911234567890'
+      };
+
+      const result = await paymentService.initiatePayment(
         studentId,
+        1, // Default product ID
         paymentAmount,
-        'UPSC Study Plan - Premium Access'
+        studentDetails
       );
       
-      setPaymentUrl(paymentUrl);
+      setPaymentData(result);
       
       // Update form data with payment info
       onUpdate({
         payment: {
           amount: paymentAmount,
           status: 'link_generated',
-          payment_url: paymentUrl,
+          payment_url: result.paymentUrl,
+          payment_link_id: result.paymentLinkId,
+          reference_id: result.referenceId,
           created_at: new Date().toISOString()
         }
       });
@@ -49,9 +65,9 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ formData, onUpdate }) => {
   };
 
   const handlePaymentClick = () => {
-    if (paymentUrl) {
+    if (paymentData?.paymentUrl) {
       // Open payment link in new tab
-      window.open(paymentUrl, '_blank');
+      window.open(paymentData.paymentUrl, '_blank');
       
       // Mark payment as attempted
       onUpdate({
@@ -61,6 +77,50 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ formData, onUpdate }) => {
           attempted_at: new Date().toISOString()
         }
       });
+    }
+  };
+
+  const checkPaymentStatus = async () => {
+    if (!paymentData?.referenceId || !paymentData?.paymentLinkId) return;
+    
+    setIsCheckingStatus(true);
+    
+    try {
+      const status = await paymentService.checkPaymentStatus(
+        paymentData.referenceId,
+        paymentData.paymentLinkId,
+        "LAEX Education",
+        1
+      );
+      
+      if (status.status === 'COMPLETED') {
+        // Complete the payment flow
+        await paymentService.completePaymentFlow(
+          studentId,
+          paymentData.purchaseIds || []
+        );
+        
+        onUpdate({
+          payment: {
+            ...formData.payment,
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+            transaction_id: status.txId
+          }
+        });
+      } else {
+        onUpdate({
+          payment: {
+            ...formData.payment,
+            status: status.status.toLowerCase() as any
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+      setPaymentError('Failed to check payment status');
+    } finally {
+      setIsCheckingStatus(false);
     }
   };
 
@@ -75,6 +135,9 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ formData, onUpdate }) => {
       }
     });
   };
+
+  const isPaymentCompleted = formData.payment?.status === 'completed';
+  const isPaymentPending = formData.payment?.status === 'attempted' || formData.payment?.status === 'pending';
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
@@ -119,97 +182,140 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ formData, onUpdate }) => {
         </div>
       </div>
 
-      {/* Payment Options */}
-      <div className="border rounded-lg p-6">
-        {!paymentUrl ? (
-          <div className="text-center space-y-4">
-            <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto">
-              <CreditCard className="w-8 h-8 text-blue-600" />
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Secure Payment Gateway</h4>
-              <p className="text-sm text-gray-600 mb-4">
-                Pay securely using UPI, Credit/Debit Cards, or Net Banking
-              </p>
-            </div>
-            
-            <Button
-              onClick={generatePaymentLink}
-              disabled={isGeneratingLink}
-              className="px-8 py-3"
-              size="lg"
-            >
-              {isGeneratingLink ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating Payment Link...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Proceed to Payment
-                </>
-              )}
-            </Button>
-          </div>
-        ) : (
+      {/* Payment Status Display */}
+      {isPaymentCompleted && (
+        <div className="border rounded-lg p-6 bg-green-50 border-green-200">
           <div className="text-center space-y-4">
             <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto">
-              <ExternalLink className="w-8 h-8 text-green-600" />
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
             </div>
             <div>
-              <h4 className="font-semibold mb-2">Payment Link Ready</h4>
-              <p className="text-sm text-gray-600 mb-4">
-                Click below to open the secure payment page
+              <h4 className="font-semibold mb-2 text-green-800">Payment Successful!</h4>
+              <p className="text-sm text-green-700">
+                Your payment has been processed successfully. You now have full access to your study plan.
               </p>
             </div>
-            
-            <div className="flex gap-3 justify-center">
+          </div>
+        </div>
+      )}
+
+      {/* Payment Options */}
+      {!isPaymentCompleted && (
+        <div className="border rounded-lg p-6">
+          {!paymentData ? (
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto">
+                <CreditCard className="w-8 h-8 text-blue-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">Secure Payment Gateway</h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  Pay securely using UPI, Credit/Debit Cards, or Net Banking through Razorpay
+                </p>
+              </div>
+              
               <Button
-                onClick={handlePaymentClick}
+                onClick={generatePaymentLink}
+                disabled={isGeneratingLink}
                 className="px-8 py-3"
                 size="lg"
               >
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Open Payment Page
+                {isGeneratingLink ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Payment Link...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Proceed to Payment
+                  </>
+                )}
               </Button>
+            </div>
+          ) : (
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto">
+                <ExternalLink className="w-8 h-8 text-green-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2">Payment Link Ready</h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  Click below to open the secure Razorpay payment page
+                </p>
+              </div>
               
-              {process.env.NODE_ENV === 'development' && (
+              <div className="flex gap-3 justify-center flex-wrap">
                 <Button
-                  onClick={simulatePaymentSuccess}
-                  variant="outline"
-                  className="px-6 py-3"
+                  onClick={handlePaymentClick}
+                  className="px-8 py-3"
                   size="lg"
                 >
-                  Simulate Success (Dev)
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Open Payment Page
                 </Button>
-              )}
+                
+                {isPaymentPending && (
+                  <Button
+                    onClick={checkPaymentStatus}
+                    disabled={isCheckingStatus}
+                    variant="outline"
+                    className="px-6 py-3"
+                    size="lg"
+                  >
+                    {isCheckingStatus ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Checking...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Check Status
+                      </>
+                    )}
+                  </Button>
+                )}
+                
+                {process.env.NODE_ENV === 'development' && (
+                  <Button
+                    onClick={simulatePaymentSuccess}
+                    variant="outline"
+                    className="px-6 py-3"
+                    size="lg"
+                  >
+                    Simulate Success (Dev)
+                  </Button>
+                )}
+              </div>
+              
+              <p className="text-xs text-gray-500">
+                Complete your payment on the secure Razorpay page and return here to continue
+              </p>
             </div>
-            
-            <p className="text-xs text-gray-500">
-              Complete your payment on the secure payment page and return here to continue
-            </p>
-          </div>
-        )}
-        
-        {paymentError && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{paymentError}</p>
-            <Button
-              onClick={generatePaymentLink}
-              variant="outline"
-              size="sm"
-              className="mt-2"
-            >
-              Try Again
-            </Button>
-          </div>
-        )}
-      </div>
+          )}
+          
+          {paymentError && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{paymentError}</p>
+              <Button
+                onClick={generatePaymentLink}
+                variant="outline"
+                size="sm"
+                className="mt-2"
+              >
+                Try Again
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Security Note */}
       <div className="text-center text-xs text-gray-500">
-        <p>🔒 Your payment is protected by bank-grade encryption</p>
+        <p>🔒 Your payment is protected by Razorpay's bank-grade encryption</p>
         <p>We do not store any payment information on our servers</p>
       </div>
     </div>

@@ -40,6 +40,7 @@ export interface OTPVerification {
 export interface LoginResponse {
   user: User;
   token: string;
+  refresh_token?: string;
 }
 
 export interface OTPResponse {
