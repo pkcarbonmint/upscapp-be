@@ -34,18 +34,31 @@ output "ecs_security_group_id" {
 # RDS Outputs
 output "rds_endpoint" {
   description = "The connection endpoint for the RDS instance"
-  value       = var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].endpoint : (var.external_rds_endpoint != "" ? var.external_rds_endpoint : null)
+  value       = local.rds_endpoint
 }
 
 output "rds_port" {
   description = "The port on which the DB accepts connections"
-  value       = var.enable_rds && var.external_rds_endpoint == "" ? aws_db_instance.main[0].port : var.external_rds_port
+  value       = local.rds_port
 }
 
 output "database_url" {
   description = "The full database URL for the application"
-  value       = var.external_rds_endpoint != "" ? "postgresql://${var.external_rds_username}:${var.external_rds_password}@${var.external_rds_endpoint}:${var.external_rds_port}/${var.external_rds_database}" : (var.enable_rds && var.external_rds_endpoint == "" ? "postgresql://${var.rds_username}:${var.rds_password}@${aws_db_instance.main[0].endpoint}:${aws_db_instance.main[0].port}/${var.rds_database_name}" : null)
+  value       = local.database_url
   sensitive   = true
+}
+
+# RDS Module Outputs (if using separate RDS module)
+output "rds_module_outputs" {
+  description = "Outputs from the RDS module (if deployed separately)"
+  value = var.deploy_rds_separately && length(module.rds) > 0 ? {
+    db_instance_id       = module.rds[0].db_instance_id
+    db_instance_arn      = module.rds[0].db_instance_arn
+    db_instance_endpoint = module.rds[0].db_instance_endpoint
+    db_instance_port     = module.rds[0].db_instance_port
+    security_group_id    = module.rds[0].security_group_id
+    connection_info      = module.rds[0].connection_info
+  } : null
 }
 
 # Redis Outputs (removed - using RDS for Redis functionality)
@@ -191,6 +204,22 @@ output "frontend_url" {
 output "flower_url" {
   description = "URL to access Celery Flower"
   value       = var.enable_ec2_instances ? "http://${aws_instance.docker[0].public_ip}:5555" : null
+}
+
+output "webhook_url" {
+  description = "URL for GitHub webhook (if auto-deploy is enabled)"
+  value       = var.enable_ec2_instances && var.enable_auto_deploy ? "http://${aws_instance.docker[0].public_ip}:9000/webhook" : null
+}
+
+# GitHub Integration Outputs
+output "github_integration_info" {
+  description = "Information about GitHub integration setup"
+  value = {
+    repository_configured = var.github_repository_url != ""
+    auto_deploy_enabled   = var.enable_auto_deploy
+    webhook_endpoint      = var.enable_ec2_instances && var.enable_auto_deploy ? "http://${aws_instance.docker[0].public_ip}:9000/webhook" : null
+    branch                = var.github_branch
+  }
 }
 
 # General Information
