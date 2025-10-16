@@ -409,19 +409,19 @@
     },
     {
         "topicCode": "E17",
-        "subtopic": "Economic  reforms",
+        "subtopic": "Economic reforms",
         "priorityBand": "A",
         "exam": "overlap"
     },
     {
         "topicCode": "E18",
-        "subtopic": "Economic  survey  &  Budget",
+        "subtopic": "Economic survey & Budget",
         "priorityBand": "A",
         "exam": "overlap"
     },
     {
         "topicCode": "E20",
-        "subtopic": "Economy  related  -  Acts,  Schemes, Policies,  Indices;",
+        "subtopic": "Economy related - Acts, Schemes, Policies, Indices;",
         "priorityBand": "B",
         "exam": "overlap"
     },
@@ -631,7 +631,7 @@
     },
     {
         "topicCode": "B14",
-        "subtopic": "Environmental  Impact  Assessment",
+        "subtopic": "Environmental Impact Assessment",
         "priorityBand": "A",
         "exam": "mains"
     },
@@ -1627,13 +1627,13 @@
     },
     {
         "topicCode": "GO6",
-        "subtopic": "World  Geography  -  Physical  and  world Map  related",
+        "subtopic": "World Geography - Physical and world Map related",
         "priorityBand": "B",
         "exam": "prelims"
     },
     {
         "topicCode": "GO11",
-        "subtopic": "Population  and  Migration",
+        "subtopic": "Population and Migration",
         "priorityBand": "B",
         "exam": "mains"
     },
@@ -1711,13 +1711,13 @@
     },
     {
         "topicCode": "H01/08",
-        "subtopic": "Sangam  age",
+        "subtopic": "Sangam age",
         "priorityBand": "A",
         "exam": "Overlap"
     },
     {
         "topicCode": "H01/09",
-        "subtopic": "Post-gupta  and  Harshavardana",
+        "subtopic": "Post-gupta and Harshavardana",
         "priorityBand": "B",
         "exam": "Prelims"
     },
@@ -1969,19 +1969,19 @@
     },
     {
         "topicCode": "H02/01",
-        "subtopic": "Advent  of  Islam",
+        "subtopic": "Advent of Islam",
         "priorityBand": "B",
         "exam": "Prelims"
     },
     {
         "topicCode": "H02/03",
-        "subtopic": "Imperial  Cholas",
+        "subtopic": "Imperial Cholas",
         "priorityBand": "B",
         "exam": "Overlap"
     },
     {
         "topicCode": "H02/07",
-        "subtopic": "Vijayanagar  Empire",
+        "subtopic": "Vijayanagar Empire",
         "priorityBand": "A",
         "exam": "Overlap"
     },
@@ -2029,19 +2029,19 @@
     },
     {
         "topicCode": "H03/12",
-        "subtopic": "Role  of  women  in  Freedom  struggle",
+        "subtopic": "Role of women in Freedom struggle",
         "priorityBand": "A",
         "exam": "Mains"
     },
     {
         "topicCode": "H03/13",
-        "subtopic": "Communism  and  communalism",
+        "subtopic": "Communism and communalism",
         "priorityBand": "C",
         "exam": "Mains"
     },
     {
         "topicCode": "H03/14",
-        "subtopic": "Important  personalities  of  INM;  Governor Generals  and  Viceroys",
+        "subtopic": "Important personalities of INM; Governor Generals and Viceroys",
         "priorityBand": "B",
         "exam": "Prelims"
     },
@@ -2701,7 +2701,7 @@
     },
     {
         "topicCode": "C06",
-        "subtopic": "Left wing Extremism  ",
+        "subtopic": "Left wing Extremism ",
         "priorityBand": "A",
         "exam": "mains"
     },
@@ -3625,19 +3625,19 @@
     },
     {
         "topicCode": "T11",
-        "subtopic": "Achievements  of  India  in  the  field  of Science  and  Technology",
+        "subtopic": "Achievements of India in the field of Science and Technology",
         "priorityBand": "A",
         "exam": "mains"
     },
     {
         "topicCode": "T12",
-        "subtopic": "Indigenization  and  Development  of Technologies",
+        "subtopic": "Indigenization and Development of Technologies",
         "priorityBand": "A",
         "exam": "mains"
     },
     {
         "topicCode": "T13",
-        "subtopic": "S  &  T  initiatives  -  India  &  Global",
+        "subtopic": "S & T initiatives - India & Global",
         "priorityBand": "B",
         "exam": "mains"
     },
