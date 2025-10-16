@@ -27,8 +27,8 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest",
-    "generate-docs": "node --max-old-space-size=8192 --import tsx scripts/generate-test-documents2.ts",
-    "generate-docs-dry": "node --max-old-space-size=8192 --import tsx scripts/generate-test-documents2.ts --dry-run",
+    "generate-docs": "node --max-old-space-size=8192 --import tsx scripts/generate-test-documents.ts",
+    "generate-docs-dry": "node --max-old-space-size=8192 --import tsx scripts/generate-test-documents.ts --dry-run",
     "compare-cycles": "node --max-old-space-size=8192 --import tsx scripts/compare-cycle-dates.ts",
     "compare-docs": "node --max-old-space-size=8192 --import tsx scripts/compare-existing-docs.ts"
   },

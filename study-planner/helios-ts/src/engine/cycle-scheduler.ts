@@ -139,11 +139,11 @@ function getS1Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   const c2Start = c1End.add(1, 'day');
 
   // Calculate how much time we have total from C1 end to Dec 31 before target year
-  const totalAvailableTime = yearEnd.diff(c2Start, 'month', true);
+  const availableMonthsBeforeC4 = yearEnd.diff(c2Start, 'month', true);
 
   // C3 should get max 2 months, so C2 gets the rest
   const c3MaxDurationMonths = 2;
-  const c2TargetDurationMonths = Math.max(7, totalAvailableTime - c3MaxDurationMonths); // Minimum 7 months for C2
+  const c2TargetDurationMonths = Math.max(7, availableMonthsBeforeC4 - c3MaxDurationMonths); // Minimum 7 months for C2
 
   const finalC2End = c2Start.add(c2TargetDurationMonths, 'month').endOf('month');
   const c2DurationMonths = Math.ceil(finalC2End.diff(c2Start, 'month', true));

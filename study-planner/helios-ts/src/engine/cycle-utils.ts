@@ -96,6 +96,15 @@ export async function createBlocksForSubjects(
   // Track cumulative weeks for date calculation (existing sequential logic)
   let cumulativeWeeks = 0;
 
+  // Calculate cycle duration in weeks for validation
+  let cycleDurationWeeks = 0;
+  if (cycleStartDate && cycleEndDate) {
+    const start = dayjs(cycleStartDate);
+    const end = dayjs(cycleEndDate);
+    cycleDurationWeeks = Math.ceil(end.diff(start, 'day') / 7);
+    console.log(`Cycle duration: ${cycleDurationWeeks} weeks (${cycleDurationWeeks * 7} days)`);
+  }
+
   // Calculate total weighted baseline hours for proportional allocation
   const totalWeightedBaseline = subjects.reduce((sum, subject) => {
     const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
@@ -105,16 +114,6 @@ export async function createBlocksForSubjects(
   }, 0);
 
   console.log(`Total weighted baseline hours: ${totalWeightedBaseline}, Total available hours: ${totalHours}`);
-  
-  // Calculate cycle duration in weeks for validation
-  let cycleDurationWeeks = 0;
-  if (cycleStartDate && cycleEndDate) {
-    const start = dayjs(cycleStartDate);
-    const end = dayjs(cycleEndDate);
-    cycleDurationWeeks = Math.ceil(end.diff(start, 'day') / 7);
-    console.log(`Cycle duration: ${cycleDurationWeeks} weeks (${cycleDurationWeeks * 7} days)`);
-  }
-  
   
   const blocks: Block[] = [];
   for (const subject of subjects) {
@@ -156,8 +155,12 @@ export async function createBlocksForSubjects(
     console.log(`Subject ${subject.subjectCode} (${subject.subjectName}): baseline=${subject.baselineHours}, confidence=${confidenceMultiplier}, weighted=${weightedBaseline}, allocated=${allocatedHours} hours`);
     const trimmedSubtopics = trimSubtopicsToFit(adjustedSubtopics, allocatedHours);
 
-    // Calculate block duration in weeks
-    const blockDurationWeeks = Math.ceil(allocatedHours / (hoursPerDay * 7)); // 8 hours/day, 7 days/week
+    // Calculate block duration in weeks - ensure it fills remaining cycle time
+    const remainingWeeks = cycleDurationWeeks - cumulativeWeeks;
+    const calculatedDurationWeeks = Math.ceil(allocatedHours / (hoursPerDay * 7));
+    
+    // Use the larger of calculated duration or remaining weeks to ensure continuous coverage
+    const blockDurationWeeks = Math.max(calculatedDurationWeeks, Math.max(1, remainingWeeks));
 
     // Calculate block dates if cycle start date is provided
     let blockStartDate: string | undefined;
@@ -595,6 +598,7 @@ function createBasicWeeklyPlan(durationWeeks: number, subjectCode: string): Week
 /**
  * Create blocks with continuous parallel execution
  * Always maintains the specified number of active parallel subjects
+ * Ensures continuous coverage throughout the entire cycle duration
  */
 async function createContinuousParallelBlocks(
   subjects: Subject[],
@@ -614,26 +618,39 @@ async function createContinuousParallelBlocks(
   
   logger.logInfo('CycleUtils', `Creating ${numberOfParallelSubjects} parallel subject blocks for ${subjects.length} subjects`);
   
-  const parallelBlocks: Block[] = [];
-  const activeBlockEndDates: Array<{endDate: dayjs.Dayjs, subject: Subject}> = [];
-  
-  // Initialize with first N blocks (all start on same date)
-  const initialBlocks = subjects.slice(0, numberOfParallelSubjects);
   const cycleStart = dayjs(cycleStartDate);
+  const cycleEnd = dayjs(cycleEndDate);
+  const totalCycleDays = cycleEnd.diff(cycleStart, 'day') + 1;
+  const totalCycleWeeks = Math.ceil(totalCycleDays / 7);
   
-  // Calculate total weighted baseline hours for parallel allocation too
+  logger.logInfo('CycleUtils', `Cycle duration: ${totalCycleDays} days (${totalCycleWeeks} weeks)`);
+  
+  // Calculate total weighted baseline hours for parallel allocation
   const totalWeightedBaseline = subjects.reduce((sum, subject) => {
     const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
     return sum + (subject.baselineHours * confidenceMultiplier);
   }, 0);
   
-  for (let i = 0; i < initialBlocks.length; i++) {
-    const subject = initialBlocks[i];
+  // Calculate hours per subject based on proportional allocation
+  const subjectHoursMap = new Map<string, number>();
+  subjects.forEach(subject => {
     const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
     const weightedBaseline = subject.baselineHours * confidenceMultiplier;
     const allocatedHours = Math.max(4, Math.floor(
       (totalHours * weightedBaseline) / totalWeightedBaseline
     ));
+    subjectHoursMap.set(subject.subjectCode, allocatedHours);
+  });
+  
+  const parallelBlocks: Block[] = [];
+  const activeBlockEndDates: Array<{endDate: dayjs.Dayjs, subject: Subject, blockIndex: number}> = [];
+  
+  // Initialize with first N blocks (all start on same date)
+  const initialBlocks = subjects.slice(0, numberOfParallelSubjects);
+  
+  for (let i = 0; i < initialBlocks.length; i++) {
+    const subject = initialBlocks[i];
+    const allocatedHours = subjectHoursMap.get(subject.subjectCode) || 4;
     
     // Create single subject block using existing logic
     const block = await createSingleSubjectBlock(
@@ -654,23 +671,22 @@ async function createContinuousParallelBlocks(
     parallelBlocks.push(block);
     activeBlockEndDates.push({
       endDate: dayjs(block.block_end_date!),
-      subject
+      subject,
+      blockIndex: i
     });
   }
   
   // Schedule remaining subjects: as soon as ANY block ends, start the next one
   const remainingSubjects = subjects.slice(numberOfParallelSubjects);
-  for (const subject of remainingSubjects) {
+  for (let i = 0; i < remainingSubjects.length; i++) {
+    const subject = remainingSubjects[i];
+    
     // Find the earliest ending block
     const earliestEnding = activeBlockEndDates.reduce((earliest, current) => 
       current.endDate.isBefore(earliest.endDate) ? current : earliest
     );
     
-    const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
-    const weightedBaseline = subject.baselineHours * confidenceMultiplier;
-    const allocatedHours = Math.max(4, Math.floor(
-      (totalHours * weightedBaseline) / totalWeightedBaseline
-    ));
+    const allocatedHours = subjectHoursMap.get(subject.subjectCode) || 4;
     
     // Create block starting when earliest block ends
     const nextStartDate = earliestEnding.endDate.add(1, 'day').format('YYYY-MM-DD');
@@ -695,12 +711,12 @@ async function createContinuousParallelBlocks(
     const endDateIndex = activeBlockEndDates.indexOf(earliestEnding);
     activeBlockEndDates[endDateIndex] = {
       endDate: dayjs(block.block_end_date!),
-      subject
+      subject,
+      blockIndex: numberOfParallelSubjects + i
     };
   }
   
   // Apply same rescheduling logic as sequential version
-  const cycleEnd = dayjs(cycleEndDate);
   const rescheduledBlocks = rescheduleOutofBoundsBlocks(cycleStart, cycleEnd, parallelBlocks);
   
   return rescheduledBlocks
@@ -708,6 +724,7 @@ async function createContinuousParallelBlocks(
     .filter(block => block && block.actual_hours && block.actual_hours > 0)
     .sort((a, b) => dayjs(a.block_start_date).diff(dayjs(b.block_start_date)));
 }
+
 
 /**
  * Create a single subject block using existing block creation logic
