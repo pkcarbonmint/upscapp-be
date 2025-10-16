@@ -12,6 +12,5 @@ export * from './index';
 export { PDFService } from './services/PDFService';
 export { DocumentService } from './services/DocumentService';
 export { HighFidelityPDFService } from './services/HighFidelityPDFService';
-export { CalendarStylePDFService } from './services/CalendarStylePDFService';
 
 
