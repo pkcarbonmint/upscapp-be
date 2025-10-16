@@ -1,6 +1,6 @@
 
 import { TaskEffortSplit } from "../engine/engine-types";
-import type {
+import {
   ConfidenceLevel,
   SubjectCode,
   SubjectCombo,
@@ -40,6 +40,54 @@ export interface StudyPlanCalculator {
   getTargetYear(targetYear?: string): number;
 }
 
+const BASE_TASK_RATIOS: Record<CycleType, TaskEffortSplit> = {
+  'C1': { study: 1.0, practice: 0, revision: 0, test: 0, gs_optional_ratio: 1 },
+  'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05, gs_optional_ratio: 1 },
+  'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0, gs_optional_ratio: 1 },
+  'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
+  'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
+  'C5.b': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
+  'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1, gs_optional_ratio: 1 },
+  'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1, gs_optional_ratio: 1  },
+  'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0, gs_optional_ratio: 1 }
+};
+
+function getTaskEffortSplit(cycleType: CycleType, intake: StudentIntake): TaskEffortSplit {
+  // Get base ratios for the cycle type
+  let baseRatios = BASE_TASK_RATIOS[cycleType];
+  switch(cycleType) {
+    case CycleType.C1:
+    case CycleType.C2:
+    case CycleType.C3:
+    case CycleType.C6:
+    case CycleType.C7:
+        // If optional first, 60% optional else 50:50
+      return (intake.study_strategy.optional_first_preference) ?
+         {
+          ...baseRatios,
+          gs_optional_ratio: 40/60
+        }
+      : baseRatios;
+
+    // GS ONLY
+    case CycleType.C4:
+    case CycleType.C5:
+    case CycleType.C5B:
+      return (intake.study_strategy.optional_first_preference) ?
+         {
+          ...baseRatios,
+          gs_optional_ratio: 99.99/100 // i.e. no optional
+        }
+      : baseRatios;
+    case CycleType.C8:
+      return baseRatios;
+    default:
+      throw new Error(`Unknown cycle type: ${cycleType}`);
+  }
+
+
+}
+
 // Implementation of study plan calculations
 export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
   // Constants moved from hardcoded values
@@ -62,17 +110,6 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
   };
   
   // Task type ratios for different cycles
-  private readonly BASE_TASK_RATIOS: Record<CycleType, TaskEffortSplit> = {
-    'C1': { study: 1.0, practice: 0, revision: 0, test: 0, gs_optional_ratio: 1 },
-    'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05, gs_optional_ratio: 1 },
-    'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0, gs_optional_ratio: 1 },
-    'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
-    'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
-    'C5.b': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
-    'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1, gs_optional_ratio: 1 },
-    'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1, gs_optional_ratio: 1  },
-    'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0, gs_optional_ratio: 1 }
-  };
 
   getDailyStudyHours(weeklyHours: string): number {
     // Handle ranges like "45-55" by taking the average
@@ -150,7 +187,7 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
   }
 
   getTaskTypeRatios(cycleType: CycleType, timeDistribution?: string): TaskEffortSplit {
-    let ratios = this.BASE_TASK_RATIOS[cycleType];
+    let ratios = BASE_TASK_RATIOS[cycleType];
 
     // Adjust based on time_distribution preference
     if (timeDistribution === 'PracticeHeavy') {
@@ -173,9 +210,7 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
   }
 
   getTaskEffortSplit(cycleType: CycleType, intake: StudentIntake): TaskEffortSplit {
-    // Get base ratios for the cycle type
-    const baseRatios = this.getTaskTypeRatios(cycleType, intake.study_strategy.time_distribution);
-    return baseRatios;
+    return getTaskEffortSplit(cycleType, intake);
   }
 
   getConfidenceFactor(level: ConfidenceLevel): number {
@@ -310,7 +345,7 @@ export interface StudentIntake {
    * @param cycleType The cycle type (C1, C2, etc.)
    * @returns Task effort split ratios for study, practice, revision, and test
    */
-  getTaskEffortSplit(cycleType: CycleType): TaskEffortSplit;
+  getTaskEffortSplit(cycleType: CycleType, intake: StudentIntake): TaskEffortSplit;
 
   /**
    * Get confidence factor for different confidence levels
