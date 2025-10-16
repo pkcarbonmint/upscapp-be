@@ -544,7 +544,7 @@ async function createEnhancedWeeklyPlan(
  */
 function createConfigFromCycleType(cycleType: CycleType, intake: StudentIntake): Config {
   
-  const taskEffortSplit = intake.getTaskEffortSplit(cycleType);
+  const taskEffortSplit = intake.getTaskEffortSplit(cycleType, intake);
   
   return {
     daily_hour_limits: {
