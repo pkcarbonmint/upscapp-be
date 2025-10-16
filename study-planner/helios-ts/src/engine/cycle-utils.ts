@@ -21,15 +21,15 @@ const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
  */
 function determineSubjBaselineFactorForCycle(cycleType: CycleType): number {
   switch (cycleType) {
-    case 'C1': return 1.0;
-    case 'C2': return 1.0;
-    case 'C3': return 1.0;
-    case 'C4': return 0.8;
-    case 'C5': return 0.6;
-    case 'C5.b': return 0.6;
-    case 'C6': return 0.8;
-    case 'C7': return 0.6;
-    case 'C8': return 1.0;
+    case CycleType.C1: return 1.0;
+    case CycleType.C2: return 1.0;
+    case CycleType.C3: return 1.0;
+    case CycleType.C4: return 0.8;
+    case CycleType.C5: return 0.6;
+    case CycleType.C5B: return 0.6;
+    case CycleType.C6: return 0.8;
+    case CycleType.C7: return 0.6;
+    case CycleType.C8: return 1.0;
     default:
       // Use original baseline hours for all other cycle types
       return 1.0;
@@ -40,15 +40,15 @@ function determineSubjBaselineFactorForCycle(cycleType: CycleType): number {
 function determineNumberOfParallelBlocks(cycleType: CycleType, subjectApproach: SubjectApproach): number {
   const defaultParallel = subjectApproach === 'DualSubject' ? 2 : 3;
   switch (cycleType) {
-    case 'C1':
-    case 'C2': 
-    case 'C8': 
-    case 'C3':
-    case 'C4':
-    case 'C5':
-    case 'C5.b':
-    case 'C6':
-    case 'C7':
+    case CycleType.C1:
+    case CycleType.C2: 
+    case CycleType.C8: 
+    case CycleType.C3:
+    case CycleType.C4:
+    case CycleType.C5:
+    case CycleType.C5B:
+    case CycleType.C6:
+    case CycleType.C7:
       default:
       return defaultParallel;
   }

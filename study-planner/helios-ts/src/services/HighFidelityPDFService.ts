@@ -1,4 +1,5 @@
 import type { StudyPlan, StudyCycle, Block, BlockResources, StudentIntake } from '../types/models';
+import { CycleType } from '../types/Types';
 import { ResourceService } from './ResourceService';
 import { SubjectLoader } from './SubjectLoader';
 import dayjs from 'dayjs';
@@ -1323,23 +1324,23 @@ export class HighFidelityPDFService {
     const endDate = cycle.cycleEndDate || 'TBD';
     
     switch (cycle.cycleType) {
-      case 'C1':
+      case CycleType.C1:
         return `NCERT Foundation Cycle (${startDate} to ${endDate}, ${duration} weeks): This initial cycle focuses exclusively on NCERT textbooks to build fundamental concepts across all subjects.`;
-      case 'C2':
+      case CycleType.C2:
         return `Foundation Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle establishes a solid conceptual foundation across all subjects through systematic study of core topics.`;
-      case 'C3':
+      case CycleType.C3:
         return `Mains Revision Pre-Prelims Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle prepares you for Mains-specific requirements while maintaining focus on study and analytical thinking skills.`;
-      case 'C4':
+      case CycleType.C4:
         return `Prelims Reading Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle transitions from foundation building to exam-focused preparation with intensive reading and practice tests.`;
-      case 'C5':
+      case CycleType.C5:
         return `Prelims Revision Cycle (${startDate} to ${endDate}, ${duration} weeks): Intensive revision phase focusing on consolidating knowledge and practice for Prelims examination.`;
-      case 'C5.b':
+      case CycleType.C5B:
         return `Prelims Rapid Revision Cycle (${startDate} to ${endDate}, ${duration} weeks): The final sprint before Prelims examination focuses on high-yield topics and intensive practice sessions.`;
-      case 'C6':
+      case CycleType.C6:
         return `Mains Revision Cycle (${startDate} to ${endDate}, ${duration} weeks): This cycle focuses on comprehensive Mains examination preparation with answer writing practice and essay development.`;
-      case 'C7':
+      case CycleType.C7:
         return `Mains Rapid Revision Phase (${startDate} to ${endDate}, ${duration} weeks): Post-Prelims preparation shifts focus to Mains examination with intensive answer writing practice.`;
-      case 'C8':
+      case CycleType.C8:
         return `Mains Foundation Cycle (${startDate} to ${endDate}, ${duration} weeks): This specialized cycle provides comprehensive Mains preparation with focus on analytical thinking and answer writing skills.`;
       default:
         return `Study Cycle (${startDate} to ${endDate}, ${duration} weeks): Focused preparation phase designed to optimize learning outcomes.`;

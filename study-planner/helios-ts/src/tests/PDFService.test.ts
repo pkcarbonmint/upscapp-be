@@ -5,6 +5,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PDFService } from '../services/PDFService';
+import { CycleType } from '../types/Types';
 // Dynamic import for HighFidelityPDFService to avoid bundling issues
 
 // Mock jsPDF and autoTable
@@ -154,7 +155,7 @@ describe('PDFService - Unified PDF Generation', () => {
         {
           cycleId: 'cycle-1',
           cycleName: 'Foundation Building Phase',
-          cycleType: 'C1',
+          cycleType: CycleType.C1,
           cycleDuration: 16,
           cycleStartDate: '2024-01-01',
           cycleEndDate: '2024-04-21',
@@ -210,7 +211,7 @@ describe('PDFService - Unified PDF Generation', () => {
         {
           cycleId: 'cycle-2',
           cycleName: 'Prelims Revision Intensive',
-          cycleType: 'C4',
+          cycleType: CycleType.C4,
           cycleDuration: 8,
           cycleStartDate: '2024-04-22',
           cycleEndDate: '2024-06-17',

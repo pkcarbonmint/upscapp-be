@@ -4,6 +4,7 @@ import { DEFAULT_CONFIG } from '../config';
 import { createStudentIntake } from '../types/models';
 import type { StudentIntake, Archetype, StudyPlan, StudyCycle } from '../types/models';
 import dayjs from 'dayjs';
+import { CycleType } from '../types/Types';
 
 
 const dummyStuff = {
@@ -146,53 +147,53 @@ describe('T1-T15 Scenarios: Cycle Generation and Date Validation', () => {
     if (monthsAvailable >= 20) {
       // S1 scenario: Should have C1, C2, C3, C4, C5, C6, C7
       expect(cycles.length).toBeGreaterThanOrEqual(6);
-      expect(cycleTypes).toContain('C1');
-      expect(cycleTypes).toContain('C2');
-      expect(cycleTypes).toContain('C4'); // Prelims Revision
-      expect(cycleTypes).toContain('C5'); // Prelims Rapid
-      expect(cycleTypes).toContain('C6'); // Mains Revision  
-      expect(cycleTypes).toContain('C7'); // Mains Rapid
+      expect(cycleTypes).toContain(CycleType.C1);
+      expect(cycleTypes).toContain(CycleType.C2);
+      expect(cycleTypes).toContain(CycleType.C4); // Prelims Revision
+      expect(cycleTypes).toContain(CycleType.C5); // Prelims Rapid
+      expect(cycleTypes).toContain(CycleType.C6); // Mains Revision  
+      expect(cycleTypes).toContain(CycleType.C7); // Mains Rapid
       
       if (monthsAvailable >= 22) {
-        expect(cycleTypes).toContain('C3'); // Mains Pre-Prelims
+        expect(cycleTypes).toContain(CycleType.C3); // Mains Pre-Prelims
       }
     } else if (monthsAvailable >= 14) {
       // S2 scenario: Should have C1, C2, C4, C5, C6, C7
       expect(cycles.length).toBeGreaterThanOrEqual(5);
-      expect(cycleTypes).toContain('C1');
-      expect(cycleTypes).toContain('C2');
-      expect(cycleTypes).toContain('C4');
-      expect(cycleTypes).toContain('C5');
-      expect(cycleTypes).toContain('C6');
-      expect(cycleTypes).toContain('C7');
+      expect(cycleTypes).toContain(CycleType.C1);
+      expect(cycleTypes).toContain(CycleType.C2);
+      expect(cycleTypes).toContain(CycleType.C4);
+      expect(cycleTypes).toContain(CycleType.C5);
+      expect(cycleTypes).toContain(CycleType.C6);
+      expect(cycleTypes).toContain(CycleType.C7);
     } else if (monthsAvailable >= 8) {
       // S3 scenario: Should have C2, C4, C5, C6, C7
       expect(cycles.length).toBeGreaterThanOrEqual(4);
-      expect(cycleTypes).toContain('C2');
-      expect(cycleTypes).toContain('C4');
-      expect(cycleTypes).toContain('C5');
-      expect(cycleTypes).toContain('C6');
-      expect(cycleTypes).toContain('C7');
+      expect(cycleTypes).toContain(CycleType.C2);
+      expect(cycleTypes).toContain(CycleType.C4);
+      expect(cycleTypes).toContain(CycleType.C5);
+      expect(cycleTypes).toContain(CycleType.C6);
+      expect(cycleTypes).toContain(CycleType.C7);
     } else if (monthsAvailable >= 5) {
       // S4 scenario: Should have C8, C4, C5, C6, C7
       expect(cycles.length).toBeGreaterThanOrEqual(4);
-      expect(cycleTypes).toContain('C8'); // Mains Foundation
-      expect(cycleTypes).toContain('C4');
-      expect(cycleTypes).toContain('C5');
-      expect(cycleTypes).toContain('C6');
-      expect(cycleTypes).toContain('C7');
+      expect(cycleTypes).toContain(CycleType.C8); // Mains Foundation
+      expect(cycleTypes).toContain(CycleType.C4);
+      expect(cycleTypes).toContain(CycleType.C5);
+      expect(cycleTypes).toContain(CycleType.C6);
+      expect(cycleTypes).toContain(CycleType.C7);
     } else if (monthsAvailable >= 2) {
       // S5 scenario: Should have C4, C5, C6, C7
       expect(cycles.length).toBeGreaterThanOrEqual(3);
-      expect(cycleTypes).toContain('C4');
-      expect(cycleTypes).toContain('C5');
-      expect(cycleTypes).toContain('C6');
-      expect(cycleTypes).toContain('C7');
+      expect(cycleTypes).toContain(CycleType.C4);
+      expect(cycleTypes).toContain(CycleType.C5);
+      expect(cycleTypes).toContain(CycleType.C6);
+      expect(cycleTypes).toContain(CycleType.C7);
     } else {
       // S6 scenario: Should have at least revision cycles
       expect(cycles.length).toBeGreaterThanOrEqual(2);
-      expect(cycleTypes).toContain('C5');
-      expect(cycleTypes).toContain('C7');
+      expect(cycleTypes).toContain(CycleType.C5);
+      expect(cycleTypes).toContain(CycleType.C7);
     }
     
     return cycles;
@@ -270,10 +271,10 @@ describe('T1-T15 Scenarios: Cycle Generation and Date Validation', () => {
         const targetYear = parseInt(scenario.targetYear);
         
         // Find specific cycles and validate their constraints
-        const c4Cycle = cycles.find(c => c.cycleType === 'C4');
-        const c5Cycle = cycles.find(c => c.cycleType === 'C5');
-        const c6Cycle = cycles.find(c => c.cycleType === 'C6');
-        const c7Cycle = cycles.find(c => c.cycleType === 'C7');
+        const c4Cycle = cycles.find(c => c.cycleType === CycleType.C4);
+        const c5Cycle = cycles.find(c => c.cycleType === CycleType.C5);
+        const c6Cycle = cycles.find(c => c.cycleType === CycleType.C6);
+        const c7Cycle = cycles.find(c => c.cycleType === CycleType.C7);
         
         // C4 (Prelims Revision) should start Jan 1 of target year (if present)
         if (c4Cycle) {
