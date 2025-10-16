@@ -1,3 +1,10 @@
+export interface TaskEffortSplit {
+  study: number;
+  revision: number;
+  practice: number;
+  test: number;
+  gs_optional_ratio: number;
+}
 
 // Configuration interface
 export interface Config {
@@ -10,12 +17,7 @@ export interface Config {
     catch_up_day: number;
     test_day: number;
   };
-  task_effort_split: {
-    study: number;
-    revision: number;
-    practice: number;
-    test: number;
-  };
+  task_effort_split: TaskEffortSplit;
 }
 
 // Feedback types

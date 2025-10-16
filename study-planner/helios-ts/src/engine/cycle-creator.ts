@@ -37,7 +37,8 @@ export async function createStudyCycle(
   // Use the configured block creator function
   const blocks = await config.blockCreator(
     intake, filteredSubjects, totalHours, confidenceMap, config,
-    startDate, endDate, subjData
+    startDate, endDate, subjData,
+    logger
   );
 
   const cycle: StudyCycle = {

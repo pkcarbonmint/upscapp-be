@@ -379,7 +379,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Webhook server listening on port 9000`);
+    console.log(`Webhook server listening on port ${PORT}`);
 });
 EOF
     

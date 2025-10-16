@@ -24,8 +24,7 @@ import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
 import * as path from 'path';
 import * as fs from 'fs';
-import { LogEntry } from '../src/types/Types';
-// Dynamic import for HighFidelityPDFService to avoid bundling issues
+import { LogEntry, Logger } from '../src/types/Types';
 
 interface DocumentGeneratorOptions {
   outputDir?: string;
@@ -301,19 +300,22 @@ class TestDocumentGenerator {
     this.forceGC();
   }
 
+
   /**
    * Generate study plan data for a test scenario (shared by both formats)
    */
   private async generateStudyPlanData(scenario: any): Promise<{ plan: StudyPlan; logs: LogEntry[]; intake: StudentIntake }> {
     const planGenStartTime = Date.now();
     console.log(`    🔄 Starting plan generation for ${scenario.name}...`);
-    
+    const logs: LogEntry[] = [];
+    const logger = makeLogger(logs);
     // Generate the study plan
     const result = await generateInitialPlan(
       'test-user-' + scenario.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
       scenario.config,
       scenario.archetype,
-      scenario.intake
+      scenario.intake,
+      logger
     );
 
     const planGenTime = Date.now() - planGenStartTime;
@@ -321,6 +323,27 @@ class TestDocumentGenerator {
     console.log(`    📊 Generated ${result.plan.cycles?.length || 0} cycles`);
 
     return { ...result, intake: scenario.intake };
+  
+  
+    function makeLogger(_logs?: LogEntry[]): Logger {
+      return {
+        logInfo(source: string, message: string) {
+        },
+    
+        logWarn(source: string, message: string) {
+        },
+    
+        logDebug(source: string, message: string) {
+        },
+    
+        getLogs() {
+          return [];
+        },
+    
+        clear() {
+        }
+      }
+    }
   }
 
   /**
@@ -1121,8 +1144,8 @@ async function main() {
       includeResources: true,
       generateMarkdown: false,
       generateJson: true,
-      generateWeeklySchedules: true, // Disabled for performance testing
-      generatePDFs: true, // Enable PDF generation
+      generateWeeklySchedules: false, // Disabled for performance testing
+      generatePDFs: false, // Enable PDF generation
       maxScenarios: 3 // Limit to 3 scenarios for performance testing
     });
 

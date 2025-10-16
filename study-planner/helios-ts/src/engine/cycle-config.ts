@@ -1,5 +1,5 @@
 import { CycleIntensity, StudentIntake } from '../types/models';
-import { CycleType } from '../types/Types';
+import { CycleType, Logger } from '../types/Types';
 import { Subject, SubjData } from '../types/Subjects';
 import { Block } from '../types/models';
 import dayjs from 'dayjs';
@@ -22,7 +22,8 @@ export interface CycleConfig {
     config: CycleConfig,
     startDate: dayjs.Dayjs,
     endDate: dayjs.Dayjs,
-    subjData: SubjData
+    subjData: SubjData,
+    logger: Logger
   ) => Promise<Block[]>;
 }
 
@@ -35,7 +36,8 @@ async function createStandardBlocks(
   config: CycleConfig,
   startDate: dayjs.Dayjs,
   endDate: dayjs.Dayjs,
-  subjData: SubjData
+  subjData: SubjData,
+  logger: Logger
 ): Promise<Block[]> {
   // Generate blockPrefix from cycleName (remove "Cycle" suffix if present)
   const blockPrefix = config.cycleName.replace(/\s+Cycle$/, '');
@@ -43,7 +45,8 @@ async function createStandardBlocks(
   return await createBlocksForSubjects(
     intake, filteredSubjects, totalHours, confidenceMap, blockPrefix,
     config.cycleType, config.cycleOrder, config.cycleName,
-    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData
+    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData,
+    logger
   );
 }
 
@@ -55,7 +58,8 @@ async function createGSOptionalSplitBlocks(
   config: CycleConfig,
   startDate: dayjs.Dayjs,
   endDate: dayjs.Dayjs,
-  subjData: SubjData
+  subjData: SubjData,
+  logger: Logger
 ): Promise<Block[]> {
   const gsSubjects = filteredSubjects.filter(s => s.category === 'Macro');
   const optionalSubjects = filteredSubjects.filter(s => s.category === 'Micro');
@@ -66,13 +70,15 @@ async function createGSOptionalSplitBlocks(
   const gsBlocks = await createBlocksForSubjects(
     intake, gsSubjects, gsHours, confidenceMap, 'GS Foundation',
     config.cycleType, config.cycleOrder, config.cycleName,
-    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData
+    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData,
+    logger
   );
   
   const optionalBlocks = await createBlocksForSubjects(
     intake, optionalSubjects, optionalHours, confidenceMap, 'Optional Foundation',
     config.cycleType, config.cycleOrder, config.cycleName,
-    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData
+    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData,
+    logger
   );
   
   return [...gsBlocks, ...optionalBlocks];

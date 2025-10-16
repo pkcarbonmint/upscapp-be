@@ -180,9 +180,9 @@ export class WeeklyScheduleService {
               let taskType: keyof typeof TASK_TYPE_COLORS = 'study';
               if (task.currentAffairsType) {
                 taskType = 'current_affairs';
-              } else if (task.title2.toLowerCase().includes('revision')) {
+              } else if (task.title.toLowerCase().includes('revision')) {
                 taskType = 'revision';
-              } else if (task.title2.toLowerCase().includes('practice') || task.title2.toLowerCase().includes('test')) {
+              } else if (task.title.toLowerCase().includes('practice') || task.title.toLowerCase().includes('test')) {
                 taskType = 'practice';
               }
               
@@ -190,7 +190,7 @@ export class WeeklyScheduleService {
                     day: dayName,
                     time: '', // No fixed time
                     subject: block.subjects?.[0] || 'General Studies',
-                    task: task.title2,
+                    task: task.title,
                     type: taskType,
                     duration: `${task.duration_minutes}m`,
                     resources

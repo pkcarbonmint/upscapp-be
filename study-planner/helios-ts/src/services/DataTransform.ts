@@ -24,7 +24,8 @@ export function transformUIToStudentIntake(wizardData: UIWizardData): StudentInt
     revision_strategy: strategy.revision_strategy,
     test_frequency: strategy.test_frequency,
     seasonal_windows: strategy.seasonal_windows,
-    catch_up_day_preference: strategy.catch_up_day_preference
+    catch_up_day_preference: strategy.catch_up_day_preference,
+    optional_first_preference: strategy.optional_first_preference,
   };
   if (!start_date) {
     throw new Error("start_date is required");
