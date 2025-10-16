@@ -633,22 +633,17 @@ describe('generateInitialPlan', () => {
 
               // Count different task types
               const studyTasks = tasks.filter(task =>
-                task.title2.toLowerCase().includes('study') ||
+                task.title.toLowerCase().includes('study') ||
                 task.humanReadableId.toLowerCase().includes('study')
               );
               const practiceTasks = tasks.filter(task =>
-                task.title2.toLowerCase().includes('practice') ||
+                task.title.toLowerCase().includes('practice') ||
                 task.humanReadableId.toLowerCase().includes('practice')
               );
               const revisionTasks = tasks.filter(task => 
-                task.title2.toLowerCase().includes('revision') || 
+                task.title.toLowerCase().includes('revision') || 
                 task.humanReadableId.toLowerCase().includes('revision')
               );
-              // Additional task types for future use
-              // const testTasks = tasks.filter(task => 
-              //   task.title2.toLowerCase().includes('test') || 
-              //   task.humanReadableId.toLowerCase().includes('test')
-              // );
 
               // Verify ratios are within expected range (±30% tolerance for flexibility)
               if (expectedRatios[cycle.cycleType]) {

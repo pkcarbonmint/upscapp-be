@@ -1,13 +1,14 @@
 import { Block, WeeklyPlan, DailyPlan, StudentIntake } from '../types/models';
-import { CycleType, SubjectApproach } from '../types/Types';
+import { CycleType, Logger, SubjectApproach } from '../types/Types';
 import { Subject, getTopicEstimatedHours } from '../types/Subjects';
 import { ResourceService } from '../services/ResourceService';
 import { SubjectLoader } from '../services/SubjectLoader';
-import { createPlanForOneWeek, Config } from './OneWeekPlan';
+import { createPlanForOneWeek } from './OneWeekPlan';
 import { makeLogger } from '../services/Log';
 import { selectBestArchetype } from '../services/ArchetypeSelector';
 import dayjs from 'dayjs';
 import assert from 'assert';
+import { Config } from './engine-types';
 
 // Task ratios are now handled by intake.getTaskTypeRatios(cycleType)
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
@@ -67,6 +68,7 @@ export async function createBlocksForSubjects(
   cycleStartDate: string,
   cycleEndDate: string,
   subjData: any,
+  logger: Logger
 ): Promise<Block[]> {
   const subjectApproach = intake.subject_approach;
   const hoursPerDay = parseInt(intake.study_strategy.weekly_study_hours, 10) / 7; 
@@ -86,7 +88,8 @@ export async function createBlocksForSubjects(
       cycleStartDate,
       cycleEndDate,
       intake,
-      subjData
+      subjData,
+      logger
     );
   }
 
@@ -381,11 +384,6 @@ const rescheduleOutofBoundsBlocks = (cycleStart: dayjs.Dayjs, cycleEnd: dayjs.Da
       block.block_start_date = currentStart.format('YYYY-MM-DD');
       block.block_end_date = newEndDate.format('YYYY-MM-DD');
       
-      // const afterStart = dayjs(block.block_start_date).format('YYYY-MM-DD');
-      // const afterEnd = dayjs(block.block_end_date).format('YYYY-MM-DD');
-      
-      // console.log(`Block ${block.block_title} moved from ${beforeStart} - ${beforeEnd} to ${afterStart} - ${afterEnd}`);
-      
       // Move to next available slot
       currentStart = newEndDate.add(1, 'day');
     }
@@ -495,27 +493,12 @@ async function createEnhancedWeeklyPlan(
   _topicHoursMap: Map<string, number>,
   intake: StudentIntake
 ): Promise<WeeklyPlan[]> {
-  // Create config from cycle type ratios
-  const config = createConfigFromCycleType(cycleType, intake);
   
   // Convert topic hours to subject format for OneWeekPlan.ts
   const subject = SubjectLoader.getSubjectByCode(subjectCode);
   if (!subject) {
-    console.warn(`Subject ${subjectCode} not found, falling back to basic plan`);
-    return createBasicWeeklyPlan(durationWeeks, subjectCode);
+    return Promise.reject(new Error(`Subject ${subjectCode} not found`));
   }
-  
-  // Create archetype using the dedicated selector function
-  const baseArchetype = await selectBestArchetype(intake);
-  
-  // Enhance archetype with cycle type information
-  const archetype = {
-    ...baseArchetype,
-    archetype: cycleType // Override with the actual cycle type (e.g., 'C1')
-  };
-  
-  // Create logger
-  const logger = makeLogger([]);
   
   // Generate weeks using OneWeekPlan.ts
   const weeklyPlans: WeeklyPlan[] = [];
@@ -525,11 +508,11 @@ async function createEnhancedWeeklyPlan(
         0, // blockIndex
         [subject],
         intake,
-        archetype,
-        config,
+        await getArchetype(),
+        createConfigFromCycleType(cycleType, intake),
         week,
         durationWeeks,
-        logger
+        makeLogger([])
       );
       weeklyPlans.push(weekPlan);
     } catch (error) {
@@ -542,6 +525,18 @@ async function createEnhancedWeeklyPlan(
   }
   
   return weeklyPlans;
+
+
+  // Create archetype using the dedicated selector function
+  async function getArchetype() {
+    const baseArchetype = await selectBestArchetype(intake);
+    // Enhance archetype with cycle type information
+    const archetype = {
+      ...baseArchetype,
+      archetype: cycleType // Override with the actual cycle type (e.g., 'C1')
+    };
+    return archetype;
+  };
 }
 
 /**
@@ -549,7 +544,7 @@ async function createEnhancedWeeklyPlan(
  */
 function createConfigFromCycleType(cycleType: CycleType, intake: StudentIntake): Config {
   
-  const ratio = intake.getTaskTypeRatios(cycleType);
+  const taskEffortSplit = intake.getTaskEffortSplit(cycleType);
   
   return {
     daily_hour_limits: {
@@ -557,7 +552,11 @@ function createConfigFromCycleType(cycleType: CycleType, intake: StudentIntake):
       catch_up_day: 0, // Catchup day should be empty - for student to catch up on missed work
       test_day: Math.max(6, Math.floor(intake.getDailyStudyHours() * 0.75)) // 75% of daily hours for test days
     },
-    task_effort_split: ratio
+    task_effort_split: taskEffortSplit,
+    block_duration_clamp: {
+      min_weeks: 2,
+      max_weeks: 8
+    }
   };
 }
 
@@ -576,7 +575,7 @@ function createBasicWeeklyPlan(durationWeeks: number, subjectCode: string): Week
         tasks: [{
           task_id: `study-${subjectCode}-w${week}-d${day}`,
           humanReadableId: `Study ${subjectCode} W${week}D${day}`,
-          title2: `${subjectCode} - Study Session`,
+          title: `${subjectCode} - Study Session`,
           duration_minutes: 240, // 4 hours default
           topicCode: subjectCode,
           taskType: 'study'
@@ -592,10 +591,6 @@ function createBasicWeeklyPlan(durationWeeks: number, subjectCode: string): Week
   
   return weeklyPlans;
 }
-
-// Legacy function removed - using createEnhancedWeeklyPlan instead
-
-// Legacy function removed - using OneWeekPlan.ts for task generation
 
 /**
  * Create blocks with continuous parallel execution
@@ -613,10 +608,11 @@ async function createContinuousParallelBlocks(
   cycleStartDate: string,
   cycleEndDate: string,
   intake: StudentIntake,
-  subjData?: any
+  subjData: any,
+  logger: Logger
 ): Promise<Block[]> {
   
-  console.log(`[${cycleType}] Creating ${numberOfParallelSubjects} parallel subject blocks for ${subjects.length} subjects`);
+  logger.logInfo('CycleUtils', `Creating ${numberOfParallelSubjects} parallel subject blocks for ${subjects.length} subjects`);
   
   const parallelBlocks: Block[] = [];
   const activeBlockEndDates: Array<{endDate: dayjs.Dayjs, subject: Subject}> = [];
@@ -651,7 +647,8 @@ async function createContinuousParallelBlocks(
       cycleOrder,
       cycleName,
       cycleEndDate,
-      intake
+      intake,
+      logger
     );
     
     parallelBlocks.push(block);
@@ -688,7 +685,8 @@ async function createContinuousParallelBlocks(
       cycleOrder,
       cycleName,
       cycleEndDate,
-      intake
+      intake,
+      logger
     );
     
     parallelBlocks.push(block);
@@ -725,7 +723,9 @@ async function createSingleSubjectBlock(
   cycleOrder: number,
   cycleName: string,
   cycleEndDate: string,
-  intake: StudentIntake
+  intake: StudentIntake,
+  // @ts-ignore
+  logger: Logger
 ): Promise<Block> {
   
   // Get subtopics for this subject (from existing logic lines 32-43)

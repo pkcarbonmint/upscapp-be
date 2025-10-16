@@ -1,4 +1,5 @@
 
+import { TaskEffortSplit } from "../engine/engine-types";
 import type {
   ConfidenceLevel,
   SubjectCode,
@@ -31,6 +32,7 @@ export interface StudyPlanCalculator {
   getC7StartDate(targetYear: string): Date;
   getGSOptionalRatio(studyApproach: StudyPacing): { gs: number; optional: number };
   getTaskTypeRatios(cycleType: CycleType, timeDistribution?: string): { study: number; practice: number; revision: number; test: number };
+  getTaskEffortSplit(cycleType: CycleType, intake: StudentIntake): TaskEffortSplit;
   getConfidenceFactor(level: ConfidenceLevel): number;
   getFoundationCycleEndDate(targetYear: string): Date;
   getPrelimsRevisionPeriod(targetYear: string): { start: Date; end: Date };
@@ -60,41 +62,48 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
   };
   
   // Task type ratios for different cycles
-  private readonly BASE_TASK_RATIOS: Record<CycleType, { study: number; practice: number; revision: number; test: number }> = {
-    'C1': { study: 1.0, practice: 0, revision: 0, test: 0 },
-    'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05 },
-    'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0 },
-    'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1 },
-    'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 },
-    'C5.b': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 },
-    'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1 },
-    'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1 },
-    'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0 }
+  private readonly BASE_TASK_RATIOS: Record<CycleType, TaskEffortSplit> = {
+    'C1': { study: 1.0, practice: 0, revision: 0, test: 0, gs_optional_ratio: 1 },
+    'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05, gs_optional_ratio: 1 },
+    'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0, gs_optional_ratio: 1 },
+    'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
+    'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
+    'C5.b': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
+    'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1, gs_optional_ratio: 1 },
+    'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1, gs_optional_ratio: 1  },
+    'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0, gs_optional_ratio: 1 }
   };
 
   getDailyStudyHours(weeklyHours: string): number {
+    // Handle ranges like "45-55" by taking the average
+    if (weeklyHours.includes('-')) {
+      const [min, max] = weeklyHours.split('-').map(h => parseInt(h.trim()));
+      if (!isNaN(min) && !isNaN(max)) {
+        const averageHours = (min + max) / 2;
+        return Math.round(averageHours / 7);
+      }
+    }
+    
+    // Handle single numbers
     const hours = parseInt(weeklyHours) || this.DEFAULT_WEEKLY_HOURS;
     return Math.round(hours / 7);
   }
 
   getWeeklyStudyHours(weeklyHours: string): number {
-    return parseInt(weeklyHours) || this.DEFAULT_WEEKLY_HOURS;
-  }
-
-  getPrelimsExamDate(targetYear: string, coachingInstitute?: string): Date {
-    const year = parseInt(targetYear || this.DEFAULT_TARGET_YEAR);
-    
-    // Customize based on coaching institute if available
-    if (coachingInstitute) {
-      const institute = coachingInstitute.toLowerCase();
-      if (institute.includes('vajiram')) {
-        return new Date(`${year}-05-25`); // Earlier date
-      }
-      if (institute.includes('vision')) {
-        return new Date(`${year}-05-30`); // Later date
+    // Handle ranges like "45-55" by taking the average
+    if (weeklyHours.includes('-')) {
+      const [min, max] = weeklyHours.split('-').map(h => parseInt(h.trim()));
+      if (!isNaN(min) && !isNaN(max)) {
+        return Math.round((min + max) / 2);
       }
     }
     
+    // Handle single numbers
+    return parseInt(weeklyHours) || this.DEFAULT_WEEKLY_HOURS;
+  }
+
+  getPrelimsExamDate(targetYear: string): Date {
+    const year = parseInt(targetYear || this.DEFAULT_TARGET_YEAR);
     // Default based on year
     if (year === 2026) {
       return new Date(`${year}-${this.PRELIMS_EXAM_DATE_2026}`);
@@ -102,19 +111,9 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
     return new Date(`${year}-${this.PRELIMS_EXAM_DATE_DEFAULT}`);
   }
 
-  getMainsExamDate(targetYear: string, coachingInstitute?: string): Date {
+  getMainsExamDate(targetYear: string): Date {
     const year = parseInt(targetYear || this.DEFAULT_TARGET_YEAR);
-    
-    // Customize based on coaching institute if available
-    if (coachingInstitute) {
-      const institute = coachingInstitute.toLowerCase();
-      if (institute.includes('vajiram')) {
-        return new Date(`${year}-08-15`); // Earlier date
-      }
-      if (institute.includes('vision')) {
-        return new Date(`${year}-08-25`); // Later date
-      }
-    }
+
     
     return new Date(`${year}-${this.MAINS_EXAM_DATE_DEFAULT}`);
   }
@@ -150,7 +149,7 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
     }
   }
 
-  getTaskTypeRatios(cycleType: CycleType, timeDistribution?: string): { study: number; practice: number; revision: number; test: number } {
+  getTaskTypeRatios(cycleType: CycleType, timeDistribution?: string): TaskEffortSplit {
     let ratios = this.BASE_TASK_RATIOS[cycleType];
 
     // Adjust based on time_distribution preference
@@ -158,17 +157,25 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
       ratios = {
         ...ratios,
         practice: Math.min(0.6, ratios.practice + 0.2),
-        study: Math.max(0.1, ratios.study - 0.1)
+        study: Math.max(0.1, ratios.study - 0.1),
+        gs_optional_ratio: 1
       };
     } else if (timeDistribution === 'RevisionHeavy') {
       ratios = {
         ...ratios,
         revision: Math.min(0.6, ratios.revision + 0.2),
-        study: Math.max(0.1, ratios.study - 0.1)
+        study: Math.max(0.1, ratios.study - 0.1),
+        gs_optional_ratio: 1
       };
     }
 
     return ratios;
+  }
+
+  getTaskEffortSplit(cycleType: CycleType, intake: StudentIntake): TaskEffortSplit {
+    // Get base ratios for the cycle type
+    const baseRatios = this.getTaskTypeRatios(cycleType, intake.study_strategy.time_distribution);
+    return baseRatios;
   }
 
   getConfidenceFactor(level: ConfidenceLevel): number {
@@ -298,6 +305,14 @@ export interface StudentIntake {
   getTaskTypeRatios(cycleType: CycleType): { study: number; practice: number; revision: number; test: number };
 
   /**
+   * Get task effort split based on cycle type and intake properties
+   * This combines cycle type with intake-specific adjustments
+   * @param cycleType The cycle type (C1, C2, etc.)
+   * @returns Task effort split ratios for study, practice, revision, and test
+   */
+  getTaskEffortSplit(cycleType: CycleType): TaskEffortSplit;
+
+  /**
    * Get confidence factor for different confidence levels
    * Move hardcoded factors from buildConfidenceMap function
    */
@@ -376,7 +391,7 @@ export interface SyllabusAwareness {
 export interface Task {
   task_id: string; // UUID
   humanReadableId: string;
-  title2: string;
+  title: string;
   duration_minutes: number;
   details_link?: string;
   currentAffairsType?: CurrentAffairsTaskType;
@@ -631,9 +646,9 @@ export interface UIStudyStrategy {
   seasonal_windows: string[];
   catch_up_day_preference: string;
   // New UPSC fields
-  optional_first_preference?: boolean;
-  upsc_optional_subject?: string;
-  weekly_test_day_preference?: string;
+  optional_first_preference: boolean;
+  upsc_optional_subject: string;
+  weekly_test_day_preference: number; // 0-6, where 0=Monday, 6=Sunday
 }
 
 // From src/Types/Logging.hs
@@ -710,7 +725,7 @@ export interface BudgetSummary {
 
 // Helper function to create StudentIntake with calculator
 export function createStudentIntake(
-  data: Omit<StudentIntake, 'calculator' | 'getDailyStudyHours' | 'getWeeklyStudyHours' | 'getPrelimsExamDate' | 'getMainsExamDate' | 'getC4StartDate' | 'getC5StartDate' | 'getC6StartDate' | 'getC7StartDate' | 'getGSOptionalRatio' | 'getTaskTypeRatios' | 'getConfidenceFactor' | 'getFoundationCycleEndDate' | 'getPrelimsRevisionPeriod' | 'getMainsRevisionPeriod' | 'getTargetYear'>, 
+  data: Omit<StudentIntake, 'calculator' | 'getDailyStudyHours' | 'getWeeklyStudyHours' | 'getPrelimsExamDate' | 'getMainsExamDate' | 'getC4StartDate' | 'getC5StartDate' | 'getC6StartDate' | 'getC7StartDate' | 'getGSOptionalRatio' | 'getTaskTypeRatios' | 'getTaskEffortSplit' | 'getConfidenceFactor' | 'getFoundationCycleEndDate' | 'getPrelimsRevisionPeriod' | 'getMainsRevisionPeriod' | 'getTargetYear'>, 
   calculator?: StudyPlanCalculator
 ): StudentIntake {
   const calc = calculator || new StudyPlanCalculatorImpl();
@@ -765,6 +780,10 @@ export function createStudentIntake(
 
     getTaskTypeRatios(cycleType: CycleType): { study: number; practice: number; revision: number; test: number } {
       return this.calculator.getTaskTypeRatios(cycleType, this.study_strategy.time_distribution);
+    },
+
+    getTaskEffortSplit(cycleType: CycleType): TaskEffortSplit {
+      return this.calculator.getTaskEffortSplit(cycleType, this);
     },
 
     getConfidenceFactor(level: ConfidenceLevel): number {

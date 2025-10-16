@@ -4,21 +4,7 @@ import type { Subject, ExamFocus } from '../types/Subjects';
 import { getTopicEstimatedHours } from '../types/Subjects';
 import type { ConfidenceLevel, Logger } from '../types/Types';
 import { v4 as uuidv4 } from 'uuid';
-
-// Configuration interfaces
-export interface Config {
-  daily_hour_limits: {
-    regular_day: number;
-    catch_up_day: number;
-    test_day: number;
-  };
-  task_effort_split: {
-    study: number;
-    revision: number;
-    practice: number;
-    test: number;
-  };
-}
+import { Config } from './engine-types';
 
 // Task definition interfaces
 export interface StudyTaskDef {
@@ -379,7 +365,7 @@ async function createStudyTask(
   return {
     task_id: taskId,
     humanReadableId: '', // Will be set later
-    title2: title,
+    title: title,
     duration_minutes: durationMinutes,
     details_link: resourceLink,
     currentAffairsType: undefined, // Not a CA task
@@ -402,7 +388,7 @@ async function createTask(
   return {
     task_id: taskId,
     humanReadableId: '', // Will be set later
-    title2: title,
+    title: title,
     duration_minutes: durationMinutes,
     details_link: resourceLink,
     currentAffairsType: undefined, // Not a CA task
