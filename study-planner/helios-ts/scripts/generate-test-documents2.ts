@@ -390,10 +390,10 @@ class TestDocumentGenerator {
   ): Promise<void> {
     const pdfDocStartTime = Date.now();
     console.log(`      📄 Generating PDF document...`);
-    // Dynamically import HighFidelityPDFService to avoid bundling issues
-    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
-    // Generate PDF with visual timeline (SVG converted to PNG)
-    await HighFidelityPDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
+    // Dynamically import CalendarStylePDFService to avoid bundling issues
+    const { CalendarStylePDFService } = await import('../src/services/CalendarStylePDFService');
+    // Generate PDF with calendar-style layout matching calendar-example.html
+    await CalendarStylePDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
     
     const pdfDocTime = Date.now() - pdfDocStartTime;
     console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
