@@ -3,7 +3,7 @@ import {
   scheduleWeeksInAllBlocks,
   scheduleWeeksInAllCycles
 } from '../engine/WeeklyScheduler';
-import { Block, StudyCycle } from '../types/models';
+import { Block, CycleIntensity, StudyCycle } from '../types/models';
 import { StudentIntake, createStudentIntake } from '../types/models';
 import { Logger } from '../types/Types';
 import { makeLogger } from '../services/Log';
@@ -99,7 +99,7 @@ describe('WeeklyScheduler', () => {
       cycleName: 'Foundation Cycle',
       cycleType: 'C2',
       cycleOrder: 1,
-      cycleIntensity: 'Moderate',
+      cycleIntensity: CycleIntensity.Foundation,
       cycleDuration: 12,
       cycleStartWeek: 0,
       cycleBlocks: mockBlocks,

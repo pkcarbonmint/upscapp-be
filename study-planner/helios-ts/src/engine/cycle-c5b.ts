@@ -1,4 +1,4 @@
-import { StudyCycle } from '../types/models';
+import { CycleIntensity, StudyCycle } from '../types/models';
 import { StudentIntake } from '../types/models';
 import { Logger } from '../types/Types';
 import dayjs from 'dayjs';
@@ -105,7 +105,7 @@ export async function planC5b(
   const cycle: StudyCycle = {
     cycleId: `prelims-rapid-revision-${Date.now()}`,
     cycleType: 'C5.b',
-    cycleIntensity: 'Intensive',
+    cycleIntensity: CycleIntensity.PreExam,
     cycleDuration: durationWeeks,
     cycleStartWeek: 1,
     cycleOrder: 4,

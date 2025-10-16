@@ -434,7 +434,7 @@ export interface StudyCycle {
   cycleType: CycleType;
   cycleIntensity: CycleIntensity;
   cycleDuration: number;
-  cycleStartWeek: number;
+  cycleStartWeek?: number;
   cycleOrder: number;
   cycleName: string;
   cycleBlocks: Block[];
@@ -443,10 +443,13 @@ export interface StudyCycle {
   cycleEndDate: string; //Date
 }
 
-export type CycleIntensity =
-  | "Relaxed"
-  | "Moderate"
-  | "Intensive";
+export enum CycleIntensity {
+  Foundation = 'Foundation',
+  Revision = 'Revision',
+  Rapid = 'Rapid',
+  PreExam = 'PreExam'
+}
+
 
 export interface TimelineAnalysis {
   currentYear: number;
