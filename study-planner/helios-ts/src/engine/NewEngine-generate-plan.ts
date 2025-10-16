@@ -1,6 +1,6 @@
 import { StudyPlan, Archetype, StudyCycle } from '../types/models';
 import { StudentIntake } from '../types/models';
-import { Logger, LogEntry, SubjectApproach } from '../types/Types';
+import { Logger, LogEntry, SubjectApproach, CycleType } from '../types/Types';
 import { Config } from './engine-types';
 import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
@@ -9,17 +9,47 @@ import { ResourceService } from '../services/ResourceService';
 import { SubjData } from '../types/Subjects';
 import { PlanResources, ResourceTimeline, BudgetSummary } from '../types/models';
 import { determineCycleSchedule } from './cycle-scheduler';
+import { createStudyCycle } from './cycle-creator';
 
-import { planC1 as planC1 } from './cycle-c1';
-import { planC2 as planC2 } from './cycle-c2';
-import { planC3 as planC3 } from './cycle-c3';
-import { planC4 as planC4 } from './cycle-c4';
-import { planC5 as planC5 } from './cycle-c5';
-import { planC5b as planC5b } from './cycle-c5b';
-import { planC6 as planC6 } from './cycle-c6';
-import { planC7 as planC7 } from './cycle-c7';
-import { planC8 as planC8 } from './cycle-c8';
+const makePlanner = (cycleType: CycleType) => function PlanCycle (
+  logger: Logger,
+  intake: StudentIntake,
+  confidenceMap: Map<string, number>,
+  startDate: dayjs.Dayjs,
+  endDate: dayjs.Dayjs,
+  subjData: SubjData
+): Promise<StudyCycle> {
+  return createStudyCycle(
+    logger, intake, confidenceMap, startDate, endDate, subjData,
+    cycleType
+  );
+}
 
+function getPlannerForCycleType(cycleType: CycleType, logger: Logger) {
+  switch (cycleType) {
+    case 'C1':
+      return makePlanner('C1');
+    case 'C2':
+      return makePlanner('C2');
+    case 'C3':
+      return makePlanner('C3');
+    case 'C4':
+    return makePlanner('C4');
+    case 'C5':
+      return makePlanner('C5');
+    case 'C5.b':
+      return makePlanner('C5.b');
+    case 'C6':
+      return makePlanner('C6');
+    case 'C7':
+      return makePlanner('C7');
+    case 'C8':
+      return makePlanner('C8');
+    default:
+      logger.logWarn('Engine', `Unknown cycle type: ${cycleType}`);
+      return undefined;
+  }
+}
 /**
  * Generate an initial study plan for a student.
  * 
@@ -164,30 +194,12 @@ async function generateCycleForSchedule(
   const startDate = dayjs(schedule.startDate);
   const endDate = dayjs(schedule.endDate);
   const confidenceMap = buildConfidenceMap(logger, intake, subjData);
-  
-  switch (schedule.cycleType) {
-    case 'C1':
-      return await planC1(logger, intake, confidenceMap, startDate, endDate, subjData, subjData.subjects);
-    case 'C2':
-      return await planC2(logger, intake, confidenceMap, startDate, subjData, subjData.subjects);
-    case 'C3':
-      return await planC3(logger, intake, confidenceMap, startDate, endDate, subjData, subjData.subjects);
-    case 'C4':
-      return await planC4(logger, intake, confidenceMap, startDate, endDate, subjData);
-    case 'C5':
-      return await planC5(logger, intake, confidenceMap, startDate, endDate, subjData);
-    case 'C5.b':
-      return await planC5b(logger, intake, confidenceMap, startDate, endDate, subjData);
-    case 'C6':
-      return await planC6(logger, intake, confidenceMap, startDate, endDate, subjData);
-    case 'C7':
-      return await planC7(logger, intake, confidenceMap, startDate, endDate, subjData);
-    case 'C8':
-      return await planC8(logger, intake, confidenceMap, startDate, endDate, subjData, subjData.subjects);
-    default:
-      logger.logWarn('Engine', `Unknown cycle type: ${schedule.cycleType}`);
-      return undefined;
+  const planner = getPlannerForCycleType(schedule.cycleType, logger);
+  if (!planner) {
+    logger.logWarn('Engine', `No planner found for cycle type: ${schedule.cycleType}`);
+    return undefined;
   }
+  return await planner(logger, intake, confidenceMap, startDate, endDate, subjData);
 }
 
 async function sanityCheckPlan(plan: StudyPlan, intake: StudentIntake): Promise<void> {
@@ -234,32 +246,6 @@ async function sanityCheckPlan(plan: StudyPlan, intake: StudentIntake): Promise<
   }
 
 }
-
-/**
- * Build baseline hour table - maps subject codes to baseline hours.
- * This is common for all students and provides the foundation for hour calculations.
- * If baselineHours is undefined or 0, calculates bottom-up from subtopics.
- */
-// function buildBaselineHourTable(_logger: Logger, subjects: Subject[]): Map<string, number> {
-//   return new Map(
-//     subjects.map(subject => {
-//       const baselineHours = (subject.baselineHours === undefined || subject.baselineHours === 0) 
-//         ? calculateBaselineHoursFromSubtopics(subject)
-//         : subject.baselineHours;
-//       return [subject.subjectCode, baselineHours];
-//     })
-//   );
-// }
-
-/**
- * Calculate baseline hours from subtopics by summing up all subtopic baseline hours
- */
-// function calculateBaselineHoursFromSubtopics(subject: Subject): number {
-//   return subject.topics
-//     .map(topic => topic.subtopics || [])
-//     .flat()
-//     .reduce((total, subtopic) => total + subtopic.baselineHours, 0);
-// }
 
 /**
  * Build confidence map from intake data - maps subtopic codes to confidence factors
