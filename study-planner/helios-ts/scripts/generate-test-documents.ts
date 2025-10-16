@@ -14,7 +14,7 @@
  * - Performance monitoring and reporting
  */
 
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType } from 'docx';
+import { Document, Packer } from 'docx';
 import { generateInitialPlan } from '../src/engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../src/config';
 import type { StudentIntake, Archetype, StudyPlan } from '../src/types/models';
@@ -24,6 +24,7 @@ import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
 import * as path from 'path';
 import * as fs from 'fs';
+import { createWriteStream } from 'fs';
 import { LogEntry, Logger } from '../src/types/Types';
 
 interface CliArgs {
@@ -118,12 +119,10 @@ function filterScenarios(allScenarios: any[], selectedScenarios?: string[]): any
 
 interface DocumentGeneratorOptions {
   outputDir?: string;
-  includeResources: boolean;
   generateMarkdown: boolean;
   generateJson: boolean;
   generateWeeklySchedules: boolean;
   generatePDFs: boolean; // Generate PDF versions alongside Word documents
-  maxScenarios: number; // Limit number of scenarios for performance testing
 }
 
 
@@ -168,21 +167,17 @@ const dummyStuff = {
 
 class TestDocumentGenerator {
   private outputDir: string;
-  private includeResources: boolean;
   private generateMarkdown: boolean;
   private generateJson: boolean;
   private generateWeeklySchedules: boolean;
   private generatePDFs: boolean;
-  private maxScenarios: number;
 
   constructor(options: DocumentGeneratorOptions) {
     this.outputDir = options.outputDir || './generated-docs';
-    this.includeResources = options.includeResources;
     this.generateMarkdown = options.generateMarkdown;
     this.generateJson = options.generateJson;
     this.generateWeeklySchedules= options.generateWeeklySchedules;
     this.generatePDFs = options.generatePDFs; // Default to true to generate PDFs
-    this.maxScenarios = options.maxScenarios || Infinity;
   }
 
   /**
@@ -419,13 +414,13 @@ class TestDocumentGenerator {
   
     function makeLogger(_logs?: LogEntry[]): Logger {
       return {
-        logInfo(source: string, message: string) {
+        logInfo() {
         },
     
-        logWarn(source: string, message: string) {
+        logWarn() {
         },
     
-        logDebug(source: string, message: string) {
+        logDebug() {
         },
     
         getLogs() {
@@ -473,7 +468,7 @@ class TestDocumentGenerator {
   }
 
   /**
-   * Generate PDF document using PDFService with SVG to PNG conversion
+   * Generate PDF document using streaming method for better memory efficiency
    */
   private async generatePDFDocument(
     scenarioName: string,
@@ -481,97 +476,49 @@ class TestDocumentGenerator {
     studentIntake: StudentIntake
   ): Promise<void> {
     const pdfDocStartTime = Date.now();
-    console.log(`      📄 Generating PDF document...`);
+    console.log(`      📄 Generating PDF document with streaming...`);
+    
+    try {
     // Dynamically import CalendarPDFService to avoid bundling issues
     const { CalendarPDFService } = await import('../src/services/CalendarPDFService');
-    // Generate PDF with visual timeline (SVG converted to PNG)
-    await CalendarPDFService.generateStudyPlanPDF(studyPlan, studentIntake, { filename: `${scenarioName}.pdf` });
-    await CalendarPDFService.generateHTML(studyPlan, studentIntake, { filename: `${scenarioName}.html` });
-    
-    const pdfDocTime = Date.now() - pdfDocStartTime;
-    console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
-    console.log(`      📁 PDF generated: ${scenarioName}.pdf (with visual timeline)`);
-  }
-
-
-  /**
-   * Fallback simple PDF generation for Node.js compatibility
-   */
-  private async generateSimplePDFDocument(
-    scenarioName: string,
-    studyPlan: StudyPlan,
-    studentIntake: StudentIntake
-  ): Promise<void> {
-    try {
-      // Create a simple PDF using jsPDF directly (Node.js compatible)
-      const { jsPDF } = await import('jspdf');
-      const pdf = new jsPDF();
       
-      // Add title
-      pdf.setFontSize(20);
-      pdf.text(studyPlan.plan_title || 'Study Plan', 20, 20);
+      // Create output file path
+      const outputPath = path.join(this.outputDir, `${scenarioName}.pdf`);
       
-      // Add student name
-      const studentName = studentIntake.personal_details?.full_name || 'Student';
-      pdf.setFontSize(12);
-      pdf.text(`Student: ${studentName}`, 20, 35);
+      // Create write stream for PDF output
+      const pdfWriteStream = createWriteStream(outputPath);
       
-      // Add target year
-      pdf.text(`Target Year: ${studyPlan.targeted_year || 'TBD'}`, 20, 45);
+      // Generate PDF using streaming method
+      await CalendarPDFService.generateStudyPlanPDFToStream(
+        studyPlan, 
+        studentIntake, 
+        pdfWriteStream, 
+        { filename: `${scenarioName}.pdf` }
+      );
       
-      // Add start date
-      pdf.text(`Start Date: ${studentIntake.start_date || 'TBD'}`, 20, 55);
+      // Also generate HTML for debugging (this still uses the old method)
+      await CalendarPDFService.generateHTML(studyPlan, studentIntake, { filename: `${scenarioName}.html` });
       
-      // Add cycles information
-      let yPos = 70;
-      pdf.setFontSize(14);
-      pdf.text('Study Cycles:', 20, yPos);
-      yPos += 15;
-      
-      if (studyPlan.cycles && studyPlan.cycles.length > 0) {
-        pdf.setFontSize(10);
-        studyPlan.cycles.forEach((cycle, index) => {
-          const cycleText = `${index + 1}. ${cycle.cycleName || cycle.cycleType} (${cycle.cycleDuration || 0} weeks)`;
-          pdf.text(cycleText, 25, yPos);
-          yPos += 10;
-          
-          if (cycle.cycleBlocks && cycle.cycleBlocks.length > 0) {
-            cycle.cycleBlocks.forEach((block, blockIndex) => {
-              const blockText = `   - ${block.block_title || 'Untitled'} (${block.duration_weeks || 0} weeks)`;
-              pdf.text(blockText, 30, yPos);
-              yPos += 8;
-              if (yPos > 280) { // Page break
-                pdf.addPage();
-                yPos = 20;
-              }
-            });
-          }
-          yPos += 5; // Extra space between cycles
-        });
-      } else {
-        pdf.text('No cycles available', 25, yPos);
-      }
-      
-      // Add footer
-      if (yPos > 260) {
-        pdf.addPage();
-        yPos = 20;
-      }
-      pdf.setFontSize(8);
-      pdf.text(`Generated on ${new Date().toLocaleDateString()} | Helios Study Planner`, 20, 280);
-      
-      // Save PDF to file
-      const outputPath = path.join(this.outputDir, `${scenarioName}-simple.pdf`);
-      const pdfBuffer = Buffer.from(pdf.output('arraybuffer'));
-      fs.writeFileSync(outputPath, pdfBuffer);
-      
-      console.log(`      📁 Simple PDF saved: ${path.resolve(outputPath)}`);
+      const pdfDocTime = Date.now() - pdfDocStartTime;
+      console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
+      console.log(`      📁 PDF generated with streaming: ${scenarioName}.pdf (${path.resolve(outputPath)})`);
       
     } catch (error) {
-      console.error(`      ❌ Failed to generate simple PDF for ${scenarioName}:`, error);
-      console.warn(`      ⚠️  Continuing without PDF for ${scenarioName}`);
+      console.error(`      ❌ Failed to generate PDF with streaming for ${scenarioName}:`, error);
+      console.log(`      🔄 Falling back to non-streaming method...`);
+      
+      // Fallback to the original method if streaming fails
+      const { CalendarPDFService } = await import('../src/services/CalendarPDFService');
+      await CalendarPDFService.generateStudyPlanPDF(studyPlan, studentIntake, { filename: `${scenarioName}.pdf` });
+      await CalendarPDFService.generateHTML(studyPlan, studentIntake, { filename: `${scenarioName}.html` });
+      
+      const pdfDocTime = Date.now() - pdfDocStartTime;
+      console.log(`      ⏱️  PDF document generation (fallback) took: ${pdfDocTime}ms`);
+      console.log(`      📁 PDF generated (fallback): ${scenarioName}.pdf`);
     }
   }
+
+
 
   /**
    * Generate collage document with all scenarios
@@ -653,7 +600,7 @@ ${JSON.stringify(studyPlan.cycles, null, 2)}
         if (cycle.cycleBlocks && cycle.cycleBlocks.length > 0) {
           markdown += `**Blocks Detail**:\n`;
           cycle.cycleBlocks.forEach((block: any, blockIndex: number) => {
-            const blockDates = this.calculateBlockDates(cycle, block, blockIndex);
+            const blockDates = this.calculateBlockDates(cycle, block, 0);
             markdown += `- Block ${blockIndex + 1}: ${block.block_title || 'Untitled'}
   - Duration: ${block.duration_weeks || 0} weeks
   - Dates: ${blockDates.start} - ${blockDates.end}
@@ -746,320 +693,9 @@ ${studyPlan.cycles?.map(cycle =>
     console.log(`   📁 Location: ${path.resolve(filePath)}`);
   }
 
-  /**
-   * Create executive summary section
-   */
-  private createExecutiveSummarySection(studyPlan: StudyPlan): Paragraph {
-    const summary = `This study plan provides a comprehensive roadmap designed for ${studyPlan.targeted_year || studyPlan.created_for_target_year || 'UPSC'} exam preparation.
-    
-Total Duration: ${this.calculateTotalWeeks(studyPlan)} weeks
-Total Blocks: ${this.countTotalBlocks(studyPlan)}
-Study Cycles: ${this.countStudyCycles(studyPlan)}
 
-The plan strategically organizes your study journey through multiple cycles, each tailored to maximize learning efficiency and retention.`;
 
-    return new Paragraph({
-      text: summary,
-      spacing: { before: 300, after: 300 }
-    });
-  }
 
-  /**
-   * Create plan overview table
-   */
-  private createPlanOverviewTable(studyPlan: StudyPlan): Table {
-    const rows = [
-      new TableRow({
-        children: [
-          new TableCell({ children: [new Paragraph('Metric')] }),
-          new TableCell({ children: [new Paragraph('Value')] })
-        ]
-      }),
-      new TableRow({
-        children: [
-          new TableCell({ children: [new Paragraph('Study Plan ID')] }),
-          new TableCell({ children: [new Paragraph(studyPlan.study_plan_id || 'Generated')] })
-        ]
-      })
-    ];
-
-    // Add more rows with plan data
-    rows.push(
-      new TableRow({
-        children: [
-          new TableCell({ children: [new Paragraph('Target Year')] }),
-          new TableCell({ children: [new Paragraph(String(studyPlan.targeted_year) || studyPlan.created_for_target_year || 'Not specified')] })
-        ]
-      })
-    );
-
-    const table = new Table({
-      rows,
-      width: {
-        size: 100,
-        type: WidthType.PERCENTAGE
-      }
-    });
-
-    return table;
-  }
-
-  /**
-   * Create blocks table for a cycle
-   */
-  private createBlocksTable(cycle: any): Table {
-    const rows = [
-      new TableRow({
-        children: [
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: 'Block Title', bold: true })]
-            })]
-          }),
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: 'Duration', bold: true })]
-            })]
-          }),
-          new TableCell({
-            children: [new Paragraph({
-              children: [new TextRun({ text: 'Resources', bold: true })]
-            })]
-          })
-        ]
-      })
-    ];
-
-    // Add data rows for each block
-    cycle.cycleBlocks.forEach((block: any, blockIndex: number) => {
-      const blockDates = this.calculateBlockDates(cycle, block, blockIndex);
-      const durationText = `${block.duration_weeks} week(s)\n${blockDates.start} - ${blockDates.end}`;
-
-      // Summarize resources (limit to first 3 for brevity)
-      const resourceSummary = this.summarizeBlockResources(block.block_resources);
-
-      rows.push(
-        new TableRow({
-          children: [
-            new TableCell({
-              children: [new Paragraph(block.block_title || 'Untitled')],
-              width: { size: 40, type: WidthType.PERCENTAGE }
-            }),
-            new TableCell({
-              children: [new Paragraph(durationText)],
-              width: { size: 25, type: WidthType.PERCENTAGE }
-            }),
-            new TableCell({
-              children: [new Paragraph(resourceSummary)],
-              width: { size: 35, type: WidthType.PERCENTAGE }
-            })
-          ]
-        })
-      );
-    });
-
-    const table = new Table({
-      rows,
-      width: {
-        size: 100,
-        type: WidthType.PERCENTAGE
-      },
-      borders: {
-        top: { style: 'single', size: 1 },
-        bottom: { style: 'single', size: 1 },
-        left: { style: 'single', size: 1 },
-        right: { style: 'single', size: 1 },
-        insideHorizontal: { style: 'single', size: 1 },
-        insideVertical: { style: 'single', size: 1 }
-      }
-    });
-
-    return table;
-  }
-
-  /**
-   * Summarize block resources for table display
-   */
-  private summarizeBlockResources(blockResources: any): string {
-    if (!blockResources) {
-      return 'No resources';
-    }
-
-    const summaries: string[] = [];
-
-    if (blockResources.primary_books && blockResources.primary_books.length > 0) {
-      summaries.push(`${blockResources.primary_books.length} Books`);
-    }
-
-    if (blockResources.video_content && blockResources.video_content.length > 0) {
-      summaries.push(`${blockResources.video_content.length} Videos`);
-    }
-
-    if (blockResources.practice_resources && blockResources.practice_resources.length > 0) {
-      summaries.push(`${blockResources.practice_resources.length} Practice`);
-    }
-
-    if (blockResources.current_affairs_sources && blockResources.current_affairs_sources.length > 0) {
-      summaries.push(`${blockResources.current_affairs_sources.length} Current Affairs`);
-    }
-
-    return summaries.length > 0 ? summaries.join(', ') : 'Resources available';
-  }
-
-  /**
-   * Create resource summary section
-   */
-  private createResourceSummarySection(studyPlan: StudyPlan): Paragraph {
-    if (!studyPlan.curated_resources) {
-      return new Paragraph('No resource data available.');
-    }
-
-    const resources = studyPlan.curated_resources;
-    const summary = `
-Resource Summary:
-
-Essential Resources: ${resources.essential_resources?.length || 0} items
-Recommended Timeline: ${Object.keys(resources.recommended_timeline || {}).length} milestones
-
-Budget Overview:
-- Essential Cost: ₹${resources.budget_summary?.essential_cost || 0}
-- Optional Cost: ₹${resources.budget_summary?.optional_cost || 0}
-- Free Alternatives: ${resources.budget_summary?.free_alternatives || 0} options
-`;
-
-    return new Paragraph({
-      text: summary,
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 400, after: 200 }
-    });
-  }
-
-  /**
-   * Create detailed cycles sections
-   */
-  private createDetailedCyclesSections(studyPlan: StudyPlan): (Paragraph | Table)[] {
-    if (!studyPlan.cycles || studyPlan.cycles.length === 0) {
-      return [new Paragraph('No cycles available in this study plan.')];
-    }
-
-    const sections: (Paragraph | Table)[] = [];
-
-    // Add heading for cycles section
-    sections.push(
-      new Paragraph({
-        text: 'Study Plan Structure',
-        heading: HeadingLevel.HEADING_2,
-        spacing: { before: 400 }
-      })
-    );
-
-    // Process each cycle
-    studyPlan.cycles.forEach((cycle, index: number) => {
-      sections.push(
-        new Paragraph({
-          text: `Cycle ${index + 1}: ${cycle.cycleName || cycle.cycleType}`,
-          heading: HeadingLevel.HEADING_3,
-          spacing: { before: 300 }
-        })
-      );
-
-      if (cycle.cycleBlocks && cycle.cycleBlocks.length > 0) {
-        const cycleStartDate = cycle.cycleStartDate ? new Date(cycle.cycleStartDate).toLocaleDateString() : 'TBD';
-        const cycleEndDate = cycle.cycleEndDate ? new Date(cycle.cycleEndDate).toLocaleDateString() : 'TBD';
-        const cycleSummary = `Duration: ${this.calculateCycleDuration(cycle)} weeks | Blocks: ${cycle.cycleBlocks.length} | Dates: ${cycleStartDate} - ${cycleEndDate}`;
-        sections.push(
-          new Paragraph({
-            text: cycleSummary,
-            spacing: { after: 200 }
-          })
-        );
-
-        // Add blocks table
-        if (cycle.cycleBlocks && cycle.cycleBlocks.length > 0) {
-          sections.push(
-            new Paragraph({
-              text: 'Blocks Summary',
-              heading: HeadingLevel.HEADING_4,
-              spacing: { before: 300, after: 200 }
-            })
-          );
-
-          const blocksTable = this.createBlocksTable(cycle);
-          sections.push(blocksTable);
-        }
-      }
-    });
-
-    return sections;
-  }
-
-  /**
-   * Create study strategy section
-   */
-  private createStudyStrategySection(studyPlan: StudyPlan): Paragraph {
-    const strategy = `
-Recommended Study Strategy:
-
-Phase 1: Foundation Building (Weeks 1-8)
-- Focus on understanding core concepts
-- Establish daily study routines
-- Build subject-matter familiarity
-
-Phase 2: Intensive Practice (Weeks 9-16)
-- Implement active learning techniques
-- Regular practice tests and assessments
-- Strengthen weak areas
-
-Phase 3: Consolidation (Weeks 17-20)
-- Comprehensive revision cycles
-- Mock examinations
-- Final preparation and confidence building
-
-Study Tips:
-• Maintain consistent daily study schedule
-• Practice with past papers regularly
-• Focus on application-based learning
-• Stay updated with current affairs
-• Regular self-assessment and adjustment
-`;
-
-    return new Paragraph({
-      text: strategy,
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 400, after: 200 }
-    });
-  }
-
-  /**
-   * Create resource budget section
-   */
-  private createResourceBudgetSection(curatedResources: any): Paragraph {
-    const budget = `
-Resource Budget Breakdown:
-
-ESSENTIAL RESOURCES:
-Total Cost: ₹${curatedResources.budget_summary?.total_cost || 0}
-
-Investment Distribution:
-• Core Study Materials: ₹${curatedResources.budget_summary?.essential_cost || 0}
-• Supplementary Materials: ₹${curatedResources.budget_summary?.optional_cost || 0}
-
-Cost-Free Options:
-• Free Alternatives Available: ${curatedResources.budget_summary?.free_alternatives || 0} resources
-• Additional free resources recommended based on budget constraints
-
-Financial Planning Tips:
-• Essential resources should take priority in your budget
-• Consider subscription costs for premium content
-• Free alternatives can complement paid resources effectively
-`;
-
-    return new Paragraph({
-      text: budget,
-      heading: HeadingLevel.HEADING_2,
-      spacing: { before: 400, after: 200 }
-    });
-  }
 
   /**
    * Save document to file
@@ -1154,7 +790,7 @@ Financial Planning Tips:
   /**
    * Calculate block start and end dates based on cycle dates and block position
    */
-  private calculateBlockDates(cycle: any, block: any, blockIndex: number): { start: string; end: string } {
+  private calculateBlockDates(cycle: any, block: any, _blockIndex: number): { start: string; end: string } {
     if (!cycle.cycleStartDate) {
       return { start: 'TBD', end: 'TBD' };
     }
@@ -1163,7 +799,7 @@ Financial Planning Tips:
 
     // Calculate the start date by adding weeks from previous blocks
     let cumulativeWeeks = 0;
-    for (let i = 0; i < blockIndex; i++) {
+    for (let i = 0; i < _blockIndex; i++) {
       cumulativeWeeks += cycle.cycleBlocks[i]?.duration_weeks || 0;
     }
 
@@ -1206,9 +842,6 @@ Financial Planning Tips:
     return 0;
   }
 
-  private countStudyCycles(studyPlan: StudyPlan): number {
-    return studyPlan.cycles?.length || 0;
-  }
 
   private calculateTotalSubjects(studyPlan: StudyPlan): number {
     if (!studyPlan.cycles) return 0;
@@ -1243,12 +876,10 @@ async function main() {
     
     const generator = new TestDocumentGenerator({
       outputDir: './generated-docs',
-      includeResources: true,
       generateMarkdown: false,
       generateJson: true,
       generateWeeklySchedules: false, // Disabled for performance testing
-      generatePDFs: true, // Enable PDF generation
-      maxScenarios: Infinity // Remove limit when scenarios are explicitly selected
+      generatePDFs: true // Enable PDF generation
     });
 
     await generator.generateAllTestDocuments(cliArgs.scenarios);
