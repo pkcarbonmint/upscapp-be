@@ -231,24 +231,24 @@
             <!-- Features Overview -->
             <div class="feature-grid">
                 <div class="feature-card">
-                    <h3>📊 Calendar-Focused Design</h3>
+                    <h3>📅 Real Calendar Grids</h3>
                     <ul>
-                        <li>Timeline visualizations</li>
-                        <li>Monthly calendar views</li>
-                        <li>Weekly schedule layouts</li>
-                        <li>Gantt-style charts</li>
-                        <li>Color-coded cycles</li>
+                        <li>Monthly calendar with date cells</li>
+                        <li>Weekly calendar views</li>
+                        <li>Study events on actual dates</li>
+                        <li>Color-coded study cycles</li>
+                        <li>Print-ready calendar layouts</li>
                     </ul>
                 </div>
                 
                 <div class="feature-card">
-                    <h3>🎯 High-Quality Output</h3>
+                    <h3>🗓️ Calendar Features</h3>
                     <ul>
-                        <li>Puppeteer-powered rendering</li>
-                        <li>Vector-quality graphics</li>
-                        <li>Professional typography</li>
-                        <li>Print-optimized layouts</li>
-                        <li>Interactive charts</li>
+                        <li>Study blocks mapped to dates</li>
+                        <li>7-day weekly grids</li>
+                        <li>Calendar legend for cycles</li>
+                        <li>Today highlighting</li>
+                        <li>Event overflow indicators</li>
                     </ul>
                 </div>
                 
@@ -412,42 +412,46 @@ await pdfService.generateStructuredPDF(studyPlan, studentIntake);
                 
                 <div class="feature-grid">
                     <div class="feature-card">
-                        <h3>📊 Timeline Visualizations</h3>
+                        <h3>📅 Monthly Calendar Grid</h3>
                         <ul>
-                            <li>Gantt-style cycle timeline</li>
-                            <li>Interactive timeline markers</li>
-                            <li>Color-coded cycle phases</li>
-                            <li>Duration and milestone tracking</li>
+                            <li>Traditional 7×6 date grid</li>
+                            <li>Study events on actual dates</li>
+                            <li>Color-coded study cycles</li>
+                            <li>Today date highlighting</li>
+                            <li>Multi-event date handling</li>
                         </ul>
                     </div>
                     
                     <div class="feature-card">
-                        <h3>🗓️ Calendar Views</h3>
+                        <h3>📋 Weekly Calendar View</h3>
                         <ul>
-                            <li>Monthly calendar grid</li>
-                            <li>Weekly schedule breakdown</li>
-                            <li>Daily study block details</li>
-                            <li>Event and milestone markers</li>
+                            <li>7-day weekly grid layout</li>
+                            <li>Daily study session details</li>
+                            <li>Subject allocation per day</li>
+                            <li>Time-based event mapping</li>
+                            <li>Week-by-week progression</li>
                         </ul>
                     </div>
                     
                     <div class="feature-card">
-                        <h3>📈 Enhanced Charts</h3>
+                        <h3>🎨 Calendar Legend</h3>
                         <ul>
-                            <li>Subject time distribution</li>
-                            <li>Cycle duration comparison</li>
-                            <li>Progress tracking charts</li>
-                            <li>Resource allocation graphs</li>
+                            <li>Color-coded cycle types</li>
+                            <li>Study phase identification</li>
+                            <li>Visual cycle mapping</li>
+                            <li>Legend for all phases</li>
+                            <li>Easy reference guide</li>
                         </ul>
                     </div>
                     
                     <div class="feature-card">
-                        <h3>🎯 Smart Layout</h3>
+                        <h3>🖨️ Print-Optimized</h3>
                         <ul>
-                            <li>Calendar-optimized spacing</li>
-                            <li>Print-friendly page breaks</li>
-                            <li>Responsive grid layouts</li>
-                            <li>Professional typography</li>
+                            <li>A4 page-friendly layouts</li>
+                            <li>Calendar page breaks</li>
+                            <li>High-contrast printing</li>
+                            <li>Professional formatting</li>
+                            <li>Wall calendar ready</li>
                         </ul>
                     </div>
                 </div>
@@ -667,11 +671,11 @@ await pdfService.generateStructuredPDF(studyPlan, studentIntake);
         }
 
         function showDocumentation() {
-            alert('📚 Documentation: The CalendarPDFService provides the same interface as PDFService and HighFidelityPDFService but with specialized calendar-focused layouts, timeline visualizations, and scheduling views. Perfect for creating calendar-based study plans and schedule presentations.');
+            alert('📚 Documentation: The CalendarPDFService generates REAL calendar grids with actual dates, just like a wall calendar or planner. It maps study cycles and blocks to specific calendar dates, creating monthly grids (7×6 layout) and weekly views (7-day grids) with color-coded events. Perfect for printable study calendars and date-based planning.');
         }
 
         function showSourceCode() {
-            alert('💻 Source Code: The CalendarPDFService is implemented in src/services/CalendarPDFService.ts and uses Puppeteer for high-quality PDF generation with calendar-specific HTML templates and CSS styling.');
+            alert('💻 Source Code: The CalendarPDFService creates actual calendar grids using HTML tables and CSS Grid. It calculates calendar dates, maps study events to specific dates, and generates traditional calendar layouts with proper date cells, weekly grids, and color-coded study phases.');
         }
 
         // Initialize demo

@@ -18,6 +18,22 @@ const CALENDAR_CYCLE_COLORS = {
   'C8': { bg: '#F1F8E9', border: '#8BC34A', text: '#33691E' }, // Light Green
 } as const;
 
+// Interface for calendar events
+interface CalendarEvent {
+  title: string;
+  startDate: dayjs.Dayjs;
+  endDate: dayjs.Dayjs;
+  type: 'cycle' | 'block';
+  cycleType?: string;
+  color: {
+    bg: string;
+    border: string;
+    text: string;
+  };
+  subjects: string[];
+  duration?: number;
+}
+
 /**
  * Calendar-focused PDF generation service using Puppeteer
  * Specialized for calendar views, timeline visualizations, and schedule-based PDFs
@@ -663,93 +679,293 @@ export class CalendarPDFService {
     </div>`;
   }
 
-  // ===== CALENDAR-SPECIFIC VISUALIZATION METHODS =====
+  // ===== ACTUAL CALENDAR GENERATION METHODS =====
 
-  private static generateMonthlyCalendarView(studyPlan: StudyPlan, calendarData: any): string {
-    // Generate a simplified monthly calendar view showing cycle phases
+  /**
+   * Map study plan cycles and blocks to calendar events with actual dates
+   */
+  private static mapStudyPlanToCalendarEvents(studyPlan: StudyPlan): CalendarEvent[] {
+    const events: CalendarEvent[] = [];
     const cycles = studyPlan.cycles || [];
-    const currentYear = studyPlan.targeted_year || new Date().getFullYear() + 1;
     
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    
-    const monthsHTML = months.map((month, index) => {
-      const monthCycles = cycles.filter(cycle => {
-        if (!cycle.cycleStartDate) return false;
-        const cycleMonth = dayjs(cycle.cycleStartDate).month();
-        return cycleMonth === index;
-      });
-      
-      const monthEventsHTML = monthCycles.map(cycle => {
-        const cycleColor = CALENDAR_CYCLE_COLORS[cycle.cycleType as keyof typeof CALENDAR_CYCLE_COLORS] || 
-                          { bg: '#F5F5F5', border: '#9E9E9E', text: '#424242' };
+    cycles.forEach(cycle => {
+      if (cycle.cycleStartDate && cycle.cycleEndDate) {
+        // Add cycle as an event
+        events.push({
+          title: cycle.cycleName || cycle.cycleType || 'Study Cycle',
+          startDate: dayjs(cycle.cycleStartDate),
+          endDate: dayjs(cycle.cycleEndDate),
+          type: 'cycle',
+          cycleType: cycle.cycleType,
+          color: CALENDAR_CYCLE_COLORS[cycle.cycleType as keyof typeof CALENDAR_CYCLE_COLORS] || 
+                 { bg: '#F5F5F5', border: '#9E9E9E', text: '#424242' },
+          subjects: this.getUniqueSubjectsFromCycle(cycle.cycleBlocks)
+        });
         
-        return `
-          <div class="calendar-month-event" style="background-color: ${cycleColor.bg}; border-left: 3px solid ${cycleColor.border};">
-            <div class="calendar-event-title">${cycle.cycleName || cycle.cycleType}</div>
-            <div class="calendar-event-duration">${cycle.cycleDuration || 0}w</div>
-          </div>
-        `;
-      }).join('');
+        // Add individual blocks as events
+        cycle.cycleBlocks?.forEach(block => {
+          if (block.block_start_date && block.block_end_date) {
+            events.push({
+              title: block.block_title || 'Study Block',
+              startDate: dayjs(block.block_start_date),
+              endDate: dayjs(block.block_end_date),
+              type: 'block',
+              cycleType: cycle.cycleType,
+              color: CALENDAR_CYCLE_COLORS[cycle.cycleType as keyof typeof CALENDAR_CYCLE_COLORS] || 
+                     { bg: '#F5F5F5', border: '#9E9E9E', text: '#424242' },
+              subjects: block.subjects || [],
+              duration: block.duration_weeks || 1
+            });
+          }
+        });
+      }
+    });
+    
+    return events.sort((a, b) => a.startDate.valueOf() - b.startDate.valueOf());
+  }
+
+  /**
+   * Generate actual monthly calendar grids with date cells
+   */
+  private static generateMonthlyCalendarGrids(studyPlan: StudyPlan, events: CalendarEvent[]): string {
+    const startDate = dayjs(studyPlan.cycles?.[0]?.cycleStartDate || new Date());
+    const endDate = dayjs(studyPlan.cycles?.[studyPlan.cycles.length - 1]?.cycleEndDate || new Date().setFullYear(new Date().getFullYear() + 1));
+    
+    const months: string[] = [];
+    let currentMonth = startDate.startOf('month');
+    
+    while (currentMonth.isBefore(endDate) || currentMonth.isSame(endDate, 'month')) {
+      months.push(this.generateSingleMonthCalendar(currentMonth, events));
+      currentMonth = currentMonth.add(1, 'month');
+    }
+    
+    return months.join('');
+  }
+
+  /**
+   * Generate a single month calendar grid with actual dates
+   */
+  private static generateSingleMonthCalendar(month: dayjs.Dayjs, events: CalendarEvent[]): string {
+    const monthName = month.format('MMMM YYYY');
+    const firstDay = month.startOf('month');
+    const lastDay = month.endOf('month');
+    const startCalendar = firstDay.startOf('week'); // Start from Sunday
+    const endCalendar = lastDay.endOf('week'); // End on Saturday
+    
+    // Generate calendar header
+    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const headerHTML = weekDays.map(day => 
+      `<div class="calendar-day-header">${day}</div>`
+    ).join('');
+    
+    // Generate calendar days
+    const daysHTML: string[] = [];
+    let currentDay = startCalendar;
+    
+    while (currentDay.isBefore(endCalendar) || currentDay.isSame(endCalendar, 'day')) {
+      const isCurrentMonth = currentDay.isSame(month, 'month');
+      const dayEvents = events.filter(event => 
+        currentDay.isBetween(event.startDate, event.endDate, 'day', '[]')
+      );
       
-      return `
-        <div class="calendar-month">
-          <div class="calendar-month-header">
-            <h4>${month} ${currentYear}</h4>
-          </div>
-          <div class="calendar-month-events">
-            ${monthEventsHTML || '<div class="calendar-no-events">No scheduled activities</div>'}
+      const dayClass = [
+        'calendar-day',
+        isCurrentMonth ? 'current-month' : 'other-month',
+        dayEvents.length > 0 ? 'has-events' : '',
+        currentDay.isSame(dayjs(), 'day') ? 'today' : ''
+      ].filter(Boolean).join(' ');
+      
+      const eventsHTML = dayEvents.slice(0, 3).map(event => 
+        `<div class="calendar-event" style="background-color: ${event.color.bg}; border-left: 2px solid ${event.color.border};">
+          <span class="event-title">${event.title}</span>
+          ${event.subjects.length > 0 ? `<span class="event-subjects">${event.subjects.slice(0, 2).join(', ')}</span>` : ''}
+        </div>`
+      ).join('');
+      
+      const moreEventsHTML = dayEvents.length > 3 ? 
+        `<div class="more-events">+${dayEvents.length - 3} more</div>` : '';
+      
+      daysHTML.push(`
+        <div class="${dayClass}">
+          <div class="calendar-date-number">${currentDay.date()}</div>
+          <div class="calendar-events">
+            ${eventsHTML}
+            ${moreEventsHTML}
           </div>
         </div>
-      `;
-    }).join('');
+      `);
+      
+      currentDay = currentDay.add(1, 'day');
+    }
     
     return `
-    <div class="calendar-monthly-view">
-        ${monthsHTML}
+    <div class="monthly-calendar">
+      <div class="calendar-month-title">
+        <h2>${monthName}</h2>
+      </div>
+      <div class="calendar-grid">
+        <div class="calendar-header-row">
+          ${headerHTML}
+        </div>
+        <div class="calendar-days-grid">
+          ${daysHTML.join('')}
+        </div>
+      </div>
     </div>`;
   }
 
-  private static generateWeeklyScheduleView(studyPlan: StudyPlan): string {
-    const cycles = studyPlan.cycles || [];
+  /**
+   * Generate weekly calendar view with time slots
+   */
+  private static generateWeeklyCalendarView(studyPlan: StudyPlan, events: CalendarEvent[]): string {
+    const startDate = dayjs(studyPlan.cycles?.[0]?.cycleStartDate || new Date());
+    const endDate = dayjs(studyPlan.cycles?.[studyPlan.cycles.length - 1]?.cycleEndDate || new Date().setFullYear(new Date().getFullYear() + 1));
     
-    const weeklyScheduleHTML = cycles.slice(0, 6).map((cycle, cycleIndex) => {
-      const cycleColor = CALENDAR_CYCLE_COLORS[cycle.cycleType as keyof typeof CALENDAR_CYCLE_COLORS] || 
-                        { bg: '#F5F5F5', border: '#9E9E9E', text: '#424242' };
+    const weeks: string[] = [];
+    let currentWeek = startDate.startOf('week');
+    let weekCount = 0;
+    
+    while (currentWeek.isBefore(endDate) && weekCount < 12) { // Limit to 12 weeks for PDF
+      weeks.push(this.generateSingleWeekView(currentWeek, events, weekCount + 1));
+      currentWeek = currentWeek.add(1, 'week');
+      weekCount++;
+    }
+    
+    return `<div class="weekly-calendars">${weeks.join('')}</div>`;
+  }
+
+  /**
+   * Generate a single week view with daily schedule
+   */
+  private static generateSingleWeekView(weekStart: dayjs.Dayjs, events: CalendarEvent[], weekNumber: number): string {
+    const weekEnd = weekStart.endOf('week');
+    const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    const daysHTML = weekDays.map((dayName, index) => {
+      const currentDay = weekStart.add(index, 'day');
+      const dayEvents = events.filter(event => 
+        currentDay.isBetween(event.startDate, event.endDate, 'day', '[]')
+      );
       
-      const blocksHTML = (cycle.cycleBlocks || []).slice(0, 4).map((block, blockIndex) => {
-        const weekNumber = blockIndex + 1;
-        const subjects = block.subjects?.slice(0, 3).join(', ') || 'No subjects';
-        
-        return `
-          <div class="weekly-schedule-block" style="background-color: ${cycleColor.bg};">
-            <div class="weekly-block-week">Week ${weekNumber}</div>
-            <div class="weekly-block-title">${block.block_title || 'Study Block'}</div>
-            <div class="weekly-block-subjects">${subjects}</div>
-            <div class="weekly-block-duration">${block.duration_weeks || 1} week</div>
-          </div>
-        `;
-      }).join('');
+      const eventsHTML = dayEvents.map(event => 
+        `<div class="week-event" style="background-color: ${event.color.bg}; border-left: 3px solid ${event.color.border};">
+          <div class="week-event-title">${event.title}</div>
+          <div class="week-event-subjects">${event.subjects.slice(0, 3).join(', ')}</div>
+        </div>`
+      ).join('');
       
       return `
-        <div class="weekly-schedule-cycle" style="border-left: 4px solid ${cycleColor.border};">
-          <div class="weekly-cycle-header">
-            <h4 style="color: ${cycleColor.text};">${cycle.cycleName || cycle.cycleType}</h4>
-            <span class="weekly-cycle-duration">${cycle.cycleDuration || 0} weeks</span>
+        <div class="week-day">
+          <div class="week-day-header">
+            <div class="week-day-name">${dayName}</div>
+            <div class="week-day-date">${currentDay.format('MMM DD')}</div>
           </div>
-          <div class="weekly-schedule-blocks">
-            ${blocksHTML}
+          <div class="week-day-events">
+            ${eventsHTML || '<div class="no-events">No study sessions</div>'}
           </div>
         </div>
       `;
     }).join('');
     
     return `
-    <div class="weekly-schedule-container">
-        ${weeklyScheduleHTML}
+    <div class="weekly-calendar">
+      <div class="week-header">
+        <h3>Week ${weekNumber}: ${weekStart.format('MMM DD')} - ${weekEnd.format('MMM DD, YYYY')}</h3>
+      </div>
+      <div class="week-grid">
+        ${daysHTML}
+      </div>
     </div>`;
+  }
+
+  /**
+   * Generate calendar legend for cycle types
+   */
+  private static generateCalendarLegend(): string {
+    const legendItems = Object.entries(CALENDAR_CYCLE_COLORS).map(([cycleType, colors]) => 
+      `<div class="legend-item">
+        <div class="legend-color" style="background-color: ${colors.bg}; border-left: 4px solid ${colors.border};"></div>
+        <span class="legend-label">${this.getCycleTypeName(cycleType)}</span>
+      </div>`
+    ).join('');
+    
+    return legendItems;
+  }
+
+  /**
+   * Get human-readable cycle type name
+   */
+  private static getCycleTypeName(cycleType: string): string {
+    const names: Record<string, string> = {
+      'C1': 'NCERT Foundation',
+      'C2': 'Foundation Building', 
+      'C3': 'Mains Preparation',
+      'C4': 'Prelims Reading',
+      'C5': 'Prelims Revision',
+      'C5.b': 'Prelims Final Sprint',
+      'C6': 'Mains Revision',
+      'C7': 'Mains Rapid Revision',
+      'C8': 'Mains Foundation'
+    };
+    return names[cycleType] || cycleType;
+  }
+
+  /**
+   * Generate study block summary table
+   */
+  private static generateStudyBlockSummary(studyPlan: StudyPlan): string {
+    const cycles = studyPlan.cycles || [];
+    
+    const summaryRows = cycles.map(cycle => {
+      const cycleColor = CALENDAR_CYCLE_COLORS[cycle.cycleType as keyof typeof CALENDAR_CYCLE_COLORS] || 
+                        { bg: '#F5F5F5', border: '#9E9E9E', text: '#424242' };
+      
+      const blocksCount = cycle.cycleBlocks?.length || 0;
+      const subjects = this.getUniqueSubjectsFromCycle(cycle.cycleBlocks);
+      
+      return `
+        <tr style="background-color: ${cycleColor.bg};">
+          <td style="border-left: 4px solid ${cycleColor.border}; font-weight: 600;">
+            ${cycle.cycleName || cycle.cycleType}
+          </td>
+          <td>${cycle.cycleStartDate ? dayjs(cycle.cycleStartDate).format('MMM DD, YYYY') : 'TBD'}</td>
+          <td>${cycle.cycleEndDate ? dayjs(cycle.cycleEndDate).format('MMM DD, YYYY') : 'TBD'}</td>
+          <td>${cycle.cycleDuration || 0} weeks</td>
+          <td>${blocksCount} blocks</td>
+          <td>${subjects.join(', ')}</td>
+        </tr>
+      `;
+    }).join('');
+    
+    return `
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Cycle</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Duration</th>
+          <th>Blocks</th>
+          <th>Subjects</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${summaryRows}
+      </tbody>
+    </table>`;
+  }
+
+  /**
+   * Get unique subjects from cycle blocks
+   */
+  private static getUniqueSubjectsFromCycle(cycleBlocks?: Block[]): string[] {
+    const subjects = new Set<string>();
+    cycleBlocks?.forEach(block => {
+      if (block.subjects) {
+        block.subjects.forEach(subject => subjects.add(subject));
+      }
+    });
+    return Array.from(subjects);
   }
 
   private static generateCalendarChartScript(
@@ -1243,284 +1459,367 @@ export class CalendarPDFService {
       
       body {
         font-family: 'Inter', sans-serif;
-        font-size: 11px;
-        line-height: 1.6;
+        font-size: 10px;
+        line-height: 1.4;
         color: #1e293b;
-        background: #f8fafc;
-        padding: 8px;
+        background: white;
+        padding: 5px;
         margin: 0;
       }
       
       .calendar-page {
-        width: 210mm;
-        min-height: 297mm;
+        width: 100%;
         background: white;
-        padding: 0;
       }
       
+      /* Calendar Header */
       .calendar-header {
         background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
         color: white;
-        padding: 25px 20px;
+        padding: 20px;
         text-align: center;
+        margin-bottom: 15px;
       }
       
       .calendar-header h1 {
-        font-size: 2.2em;
+        font-size: 24px;
         font-weight: 800;
-        margin-bottom: 6px;
-        letter-spacing: -0.02em;
-      }
-      
-      .calendar-header .calendar-subtitle {
-        font-size: 1.0em;
-        font-weight: 300;
-        opacity: 0.95;
-      }
-      
-      .calendar-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        padding: 20px;
-        margin-bottom: 15px;
-      }
-      
-      .calendar-stat-card {
-        background: white;
-        border-radius: 8px;
-        padding: 15px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border-left: 3px solid #2196F3;
-      }
-      
-      .calendar-stat-card.primary { border-left-color: #2196F3; }
-      .calendar-stat-card.secondary { border-left-color: #6C757D; }
-      .calendar-stat-card.success { border-left-color: #4CAF50; }
-      .calendar-stat-card.warning { border-left-color: #FF9800; }
-      
-      .stat-icon {
-        font-size: 1.5em;
         margin-bottom: 5px;
       }
       
-      .stat-number {
-        font-size: 1.8em;
-        font-weight: 800;
-        color: #2196F3;
+      .calendar-subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        opacity: 0.9;
         margin-bottom: 3px;
       }
       
-      .stat-label {
-        font-size: 0.8em;
-        color: #64748b;
-        font-weight: 500;
-      }
-      
-      .calendar-section {
-        margin: 25px 20px;
-      }
-      
-      .calendar-section-header {
-        margin-bottom: 15px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid #e2e8f0;
-      }
-      
-      .calendar-section-title {
-        font-size: 1.3em;
-        font-weight: 700;
-        color: #0f172a;
-      }
-      
-      .calendar-charts-row {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 15px;
-        margin-bottom: 15px;
-      }
-      
-      .calendar-chart-container {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 15px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      
-      .calendar-chart-container h3 {
-        color: #2196F3;
-        font-weight: 600;
-        margin-bottom: 12px;
-        text-align: center;
-        font-size: 1.0em;
-      }
-      
-      .calendar-chart-container canvas {
-        max-width: 100% !important;
-      }
-      
-      .calendar-monthly-view {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        margin-bottom: 20px;
-      }
-      
-      .calendar-month {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        overflow: hidden;
-      }
-      
-      .calendar-month-header {
-        background: #2196F3;
-        color: white;
-        padding: 8px 10px;
-        text-align: center;
-      }
-      
-      .calendar-month-header h4 {
-        font-size: 0.9em;
-        font-weight: 600;
-      }
-      
-      .calendar-month-events {
-        padding: 8px;
-        min-height: 80px;
-      }
-      
-      .calendar-month-event {
-        margin-bottom: 5px;
-        padding: 4px 6px;
-        border-radius: 4px;
-        font-size: 0.8em;
-      }
-      
-      .calendar-event-title {
-        font-weight: 600;
-        margin-bottom: 2px;
-      }
-      
-      .calendar-event-duration {
-        font-size: 0.7em;
+      .calendar-period {
+        font-size: 12px;
+        font-weight: 300;
         opacity: 0.8;
       }
       
-      .calendar-no-events {
-        font-size: 0.8em;
-        color: #9ca3af;
-        font-style: italic;
-        text-align: center;
-        padding: 20px 5px;
-      }
-      
-      .weekly-schedule-container {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-      
-      .weekly-schedule-cycle {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
-      }
-      
-      .weekly-cycle-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #f1f5f9;
-      }
-      
-      .weekly-cycle-header h4 {
-        font-size: 1.1em;
-        font-weight: 600;
-        margin: 0;
-      }
-      
-      .weekly-cycle-duration {
-        background: #6C757D;
-        color: white;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-size: 0.8em;
-        font-weight: 600;
-      }
-      
-      .weekly-schedule-blocks {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
-      
-      .weekly-schedule-block {
+      /* Calendar Legend */
+      .calendar-legend {
+        margin: 15px 0;
         padding: 10px;
+        background: #f8f9fa;
         border-radius: 6px;
-        border: 1px solid #e9ecef;
       }
       
-      .weekly-block-week {
-        background: #495057;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 0.7em;
-        font-weight: 600;
-        display: inline-block;
-        margin-bottom: 5px;
+      .calendar-legend h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+        color: #1976D2;
       }
       
-      .weekly-block-title {
-        font-size: 0.9em;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 4px;
+      .legend-items {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
       }
       
-      .weekly-block-subjects {
-        font-size: 0.8em;
-        color: #64748b;
-        margin-bottom: 3px;
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
       
-      .weekly-block-duration {
-        font-size: 0.8em;
-        color: #059669;
+      .legend-color {
+        width: 16px;
+        height: 12px;
+        border-radius: 2px;
+      }
+      
+      .legend-label {
+        font-size: 9px;
         font-weight: 500;
       }
       
-      .calendar-footer {
-        background: #0f172a;
+      /* Monthly Calendar Grids */
+      .monthly-calendars {
+        margin-bottom: 20px;
+      }
+      
+      .monthly-calendar {
+        margin-bottom: 25px;
+        page-break-inside: avoid;
+      }
+      
+      .calendar-month-title {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      
+      .calendar-month-title h2 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1976D2;
+      }
+      
+      .calendar-grid {
+        border: 2px solid #1976D2;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .calendar-header-row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background: #1976D2;
+      }
+      
+      .calendar-day-header {
+        padding: 8px 4px;
+        text-align: center;
+        font-weight: 600;
         color: white;
-        padding: 15px 20px;
-        margin-top: 25px;
+        font-size: 10px;
+        border-right: 1px solid #0D47A1;
       }
       
-      .calendar-footer-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.85em;
+      .calendar-day-header:last-child {
+        border-right: none;
       }
       
-      .calendar-footer-left { opacity: 0.8; }
-      .calendar-footer-right { font-weight: 600; }
+      .calendar-days-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+      }
       
+      .calendar-day {
+        min-height: 80px;
+        border-right: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 3px;
+        position: relative;
+        background: white;
+      }
+      
+      .calendar-day:nth-child(7n) {
+        border-right: none;
+      }
+      
+      .calendar-day.other-month {
+        background: #f5f5f5;
+        color: #9e9e9e;
+      }
+      
+      .calendar-day.today {
+        background: #fff3e0;
+        border: 2px solid #ff9800;
+      }
+      
+      .calendar-day.has-events {
+        background: #f8f9ff;
+      }
+      
+      .calendar-date-number {
+        font-size: 11px;
+        font-weight: 600;
+        text-align: right;
+        margin-bottom: 2px;
+        color: #333;
+      }
+      
+      .other-month .calendar-date-number {
+        color: #bbb;
+      }
+      
+      .calendar-events {
+        font-size: 7px;
+        line-height: 1.2;
+      }
+      
+      .calendar-event {
+        margin-bottom: 1px;
+        padding: 1px 2px;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      
+      .event-title {
+        font-weight: 600;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      
+      .event-subjects {
+        font-size: 6px;
+        opacity: 0.8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      
+      .more-events {
+        font-size: 6px;
+        color: #666;
+        font-style: italic;
+        margin-top: 1px;
+      }
+      
+      /* Weekly Calendar View */
+      .weekly-detail-section {
+        margin: 20px 0;
+      }
+      
+      .weekly-detail-section h2 {
+        font-size: 16px;
+        color: #1976D2;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      
+      .weekly-calendars {
+        display: grid;
+        gap: 15px;
+      }
+      
+      .weekly-calendar {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
+        page-break-inside: avoid;
+      }
+      
+      .week-header {
+        background: #e3f2fd;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      
+      .week-header h3 {
+        font-size: 12px;
+        color: #1976D2;
+        font-weight: 600;
+      }
+      
+      .week-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+      }
+      
+      .week-day {
+        border-right: 1px solid #e0e0e0;
+        min-height: 60px;
+      }
+      
+      .week-day:last-child {
+        border-right: none;
+      }
+      
+      .week-day-header {
+        background: #f5f5f5;
+        padding: 4px;
+        text-align: center;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      
+      .week-day-name {
+        font-size: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+      
+      .week-day-date {
+        font-size: 7px;
+        color: #666;
+      }
+      
+      .week-day-events {
+        padding: 3px;
+        font-size: 7px;
+      }
+      
+      .week-event {
+        margin-bottom: 2px;
+        padding: 2px 3px;
+        border-radius: 2px;
+        line-height: 1.2;
+      }
+      
+      .week-event-title {
+        font-weight: 600;
+        margin-bottom: 1px;
+      }
+      
+      .week-event-subjects {
+        font-size: 6px;
+        opacity: 0.8;
+      }
+      
+      .no-events {
+        font-size: 7px;
+        color: #999;
+        font-style: italic;
+        text-align: center;
+        padding: 10px 2px;
+      }
+      
+      /* Study Summary */
+      .study-summary {
+        margin: 20px 0;
+      }
+      
+      .study-summary h2 {
+        font-size: 16px;
+        color: #1976D2;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      
+      .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 9px;
+        margin-top: 10px;
+      }
+      
+      .summary-table th {
+        background: #1976D2;
+        color: white;
+        padding: 6px 4px;
+        text-align: left;
+        font-weight: 600;
+        border: 1px solid #0D47A1;
+      }
+      
+      .summary-table td {
+        padding: 5px 4px;
+        border: 1px solid #e0e0e0;
+        vertical-align: top;
+        line-height: 1.3;
+      }
+      
+      .summary-table tr:nth-child(even) {
+        background: #f9f9f9;
+      }
+      
+      /* Print Optimization */
       @page {
         size: A4;
-        margin: 15mm;
+        margin: 12mm;
       }
       
       @media print {
-        body { print-color-adjust: exact; }
+        body { 
+          print-color-adjust: exact; 
+          -webkit-print-color-adjust: exact;
+        }
+        
+        .monthly-calendar {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        
+        .weekly-calendar {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
       }
     </style>`;
   }
@@ -1542,28 +1841,6 @@ export class CalendarPDFService {
     }));
   }
 
-  /**
-   * Generate calendar view data for monthly/weekly displays
-   */
-  private static generateCalendarViewData(studyPlan: StudyPlan): any {
-    const cycles = studyPlan.cycles || [];
-    const events: any[] = [];
-    
-    cycles.forEach(cycle => {
-      if (cycle.cycleStartDate && cycle.cycleEndDate) {
-        events.push({
-          title: cycle.cycleName || cycle.cycleType,
-          start: cycle.cycleStartDate,
-          end: cycle.cycleEndDate,
-          type: cycle.cycleType,
-          duration: cycle.cycleDuration,
-          blocks: cycle.cycleBlocks?.length || 0
-        });
-      }
-    });
-    
-    return { events };
-  }
 
   /**
    * Generate student profile data for table - enhanced to match DOCX version
