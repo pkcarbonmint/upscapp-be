@@ -33,15 +33,15 @@ const dummyStuff = {
 
 // Expected ratios per cycle type (from cycle-utils.ts)
 const expectedRatios: Record<CycleType, { study: number; practice: number; revision: number }> = {
-  'C1': { study: 0.7, practice: 0.15, revision: 0.15 }, // 70% study, 15% practice, 15% revision
-  'C2': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
-  'C3': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
-  'C4': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
-  'C5': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
-  'C5.b': { study: 0.0, practice: 0.4, revision: 0.6 },   // 0% study, 40% practice, 60% revision
-  'C6': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
-  'C7': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
-  'C8': { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  [CycleType.C1]: { study: 0.7, practice: 0.15, revision: 0.15 }, // 70% study, 15% practice, 15% revision
+  [CycleType.C2]: { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  [CycleType.C3]: { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  [CycleType.C4]: { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  [CycleType.C5]: { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  [CycleType.C5B]: { study: 0.0, practice: 0.4, revision: 0.6 },   // 0% study, 40% practice, 60% revision
+  [CycleType.C6]: { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  [CycleType.C7]: { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
+  [CycleType.C8]: { study: 0.0, practice: 0.4, revision: 0.6 },     // 0% study, 40% practice, 60% revision
 };
 
 
@@ -132,7 +132,7 @@ describe('generateInitialPlan', () => {
 
     // Should include foundation cycle since start is before Dec 31, 2025
     const foundationCycle = plan.cycles?.find(cycle =>
-        cycle.cycleType === 'C2'
+        cycle.cycleType === CycleType.C2
     );
 
     if (foundationCycle) {
@@ -167,7 +167,7 @@ describe('generateInitialPlan', () => {
     // Should include prelims revision cycle (Jan 1 - Mar 31, 2026)
     const prelimsRevisionCycle = plan.cycles!.find(cycle =>
       cycle.cycleName.includes('Prelims Revision') ||
-      cycle.cycleType === 'C4'
+      cycle.cycleType === CycleType.C4
     );
     expect(prelimsRevisionCycle).toBeDefined();
 
@@ -465,7 +465,7 @@ describe('generateInitialPlan', () => {
 
     // Find prelims revision cycle
     const prelimsRevisionCycle = plan.cycles?.find(cycle =>
-      cycle.cycleType === 'C4' ||
+      cycle.cycleType === CycleType.C4 ||
       cycle.cycleName.includes('Prelims Revision')
     );
 
@@ -679,7 +679,7 @@ describe('generateInitialPlan', () => {
                   }
 
                   // Verify revision tasks exist for revision cycles
-                  if (cycle.cycleType === 'C4' || cycle.cycleType === 'C5') {
+                  if (cycle.cycleType === CycleType.C4 || cycle.cycleType === CycleType.C5) {
                     expect(revisionTasks.length).toBeGreaterThan(0);
                   }
 
@@ -809,8 +809,8 @@ describe('generateInitialPlan', () => {
     if (plan.cycles) {
       plan.cycles.forEach(cycle => {
         // Only check prelims-related cycles for revision tasks after May 20
-        const isPrelimsCycle = cycle.cycleType === 'C4' || 
-                              cycle.cycleType === 'C5' ||
+        const isPrelimsCycle = cycle.cycleType === CycleType.C4 || 
+                              cycle.cycleType === CycleType.C5 ||
                               cycle.cycleName.includes('Prelims');
         
         if (isPrelimsCycle) {
@@ -864,13 +864,13 @@ describe('generateInitialPlan', () => {
     if (plan.cycles && plan.cycles.length > 0) {
       // Must have at least one foundation cycle
       const foundationCycles = plan.cycles.filter(cycle =>
-        cycle.cycleType === 'C2'
+        cycle.cycleType === CycleType.C2
       );
       expect(foundationCycles.length).toBeGreaterThanOrEqual(1);
 
       // Must have at least one prelims revision cycle
       const prelimsRevisionCycles = plan.cycles.filter(cycle =>
-        cycle.cycleType === 'C4' ||
+        cycle.cycleType === CycleType.C4 ||
         cycle.cycleName.includes('Prelims Revision') ||
         cycle.cycleName.includes('Prelims Rapid')
       );

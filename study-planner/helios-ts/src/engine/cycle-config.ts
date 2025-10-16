@@ -86,7 +86,7 @@ async function createGSOptionalSplitBlocks(
 
 // Cycle Configuration Constants
 const C1_CONFIG: CycleConfig = {
-  cycleType: 'C1',
+  cycleType: CycleType.C1,
   cycleOrder: 1,
   cycleName: 'NCERT Foundation Cycle',
   cycleDescription: 'NCERT-based foundation building phase focusing on basic concepts',
@@ -102,7 +102,7 @@ const C1_CONFIG: CycleConfig = {
 };
 
 const C2_CONFIG: CycleConfig = {
-  cycleType: 'C2',
+  cycleType: CycleType.C2,
   cycleOrder: 1,
   cycleName: 'Foundation Cycle',
   cycleDescription: 'Foundation building phase with comprehensive subject coverage',
@@ -120,7 +120,7 @@ const C2_CONFIG: CycleConfig = {
 };
 
 const C3_CONFIG: CycleConfig = {
-  cycleType: 'C3',
+  cycleType: CycleType.C3,
   cycleOrder: 3,
   cycleName: 'Mains Revision Pre-Prelims Cycle',
   cycleDescription: 'Mains-specific foundation building phase preparing for answer writing',
@@ -136,7 +136,7 @@ const C3_CONFIG: CycleConfig = {
 };
 
 const C4_CONFIG: CycleConfig = {
-  cycleType: 'C4',
+  cycleType: CycleType.C4,
   cycleOrder: 2,
   cycleName: 'Prelims Reading Cycle',
   cycleDescription: 'Intensive reading phase for prelims preparation',
@@ -152,7 +152,7 @@ const C4_CONFIG: CycleConfig = {
 };
 
 const C5_CONFIG: CycleConfig = {
-  cycleType: 'C5',
+  cycleType: CycleType.C5,
   cycleOrder: 3,
   cycleName: 'Prelims Revision Cycle',
   cycleDescription: 'Intensive revision phase for prelims preparation',
@@ -168,7 +168,7 @@ const C5_CONFIG: CycleConfig = {
 };
 
 const C5B_CONFIG: CycleConfig = {
-  cycleType: 'C5.b',
+  cycleType: CycleType.C5B,
   cycleOrder: 4,
   cycleName: 'Prelims Rapid Revision Cycle',
   cycleDescription: 'Intensive rapid revision phase for prelims preparation',
@@ -184,7 +184,7 @@ const C5B_CONFIG: CycleConfig = {
 };
 
 const C6_CONFIG: CycleConfig = {
-  cycleType: 'C6',
+  cycleType: CycleType.C6,
   cycleOrder: 5,
   cycleName: 'Mains Revision Cycle',
   cycleDescription: 'Intensive revision phase for mains preparation',
@@ -200,7 +200,7 @@ const C6_CONFIG: CycleConfig = {
 };
 
 const C7_CONFIG: CycleConfig = {
-  cycleType: 'C7',
+  cycleType: CycleType.C7,
   cycleOrder: 4,
   cycleName: 'Mains Rapid Revision Cycle',
   cycleDescription: 'Intensive rapid revision phase for mains preparation',
@@ -216,7 +216,7 @@ const C7_CONFIG: CycleConfig = {
 };
 
 const C8_CONFIG: CycleConfig = {
-  cycleType: 'C8',
+  cycleType: CycleType.C8,
   cycleOrder: 8,
   cycleName: 'C8 Mains Foundation Cycle',
   cycleDescription: 'Mains-focused foundation work for very late starts, bridge to prelims preparation',
@@ -233,23 +233,23 @@ const C8_CONFIG: CycleConfig = {
 
 export function getCycleConfig(cycleType: CycleType): CycleConfig {
   switch (cycleType) {
-    case 'C1':
+    case CycleType.C1:
       return C1_CONFIG;
-    case 'C2':
+    case CycleType.C2:
       return C2_CONFIG;
-    case 'C3':
+    case CycleType.C3:
       return C3_CONFIG;
-    case 'C4':
+    case CycleType.C4:
       return C4_CONFIG;
-    case 'C5':
+    case CycleType.C5:
       return C5_CONFIG;
-    case 'C5.b':
+    case CycleType.C5B:
       return C5B_CONFIG;
-    case 'C6':
+    case CycleType.C6:
       return C6_CONFIG;
-    case 'C7':
+    case CycleType.C7:
       return C7_CONFIG;
-    case 'C8':
+    case CycleType.C8:
       return C8_CONFIG;
     default:
       throw new Error(`Unknown cycle type: ${cycleType}`);

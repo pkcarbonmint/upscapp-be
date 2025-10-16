@@ -102,43 +102,43 @@ describe('CycleSchedulerScenarios', () => {
 				expect(result.schedules).toHaveLength(7);
 
 				const cycleTypes = result.schedules.map(s => s.cycleType);
-				expect(cycleTypes).toEqual(['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']);
+				expect(cycleTypes).toEqual([CycleType.C1, CycleType.C2, CycleType.C3, CycleType.C4, CycleType.C5, CycleType.C6, CycleType.C7]);
 
 				// Verify cycle dates and durations
 				const c1 = result.schedules[0]; // C1: Start → +3 months
-				expect(c1.cycleType).toBe('C1');
+				expect(c1.cycleType).toBe(CycleType.C1);
 				expect(c1.durationMonths).toBe(3);
 				expect(c1.startDate).toBe(dayjs(testCase.startDate).format('YYYY-MM-DD'));
 				expect(c1.endDate).toBe(dayjs(testCase.startDate).add(3, 'month').subtract(1, 'day').format('YYYY-MM-DD'));
 
 				const c2 = result.schedules[1]; // C2: After C1 → +10 months (should end before C3)
-				expect(c2.cycleType).toBe('C2');
+				expect(c2.cycleType).toBe(CycleType.C2);
 				expect(c2.startDate).toBe(dayjs(testCase.startDate).add(3, 'month').format('YYYY-MM-DD')); // Day after C1 ends
 				// C2 ends before C3 (which ends Dec 31 before target year)
 
 				const c3 = result.schedules[2]; // C3: After C2 → max 2 months
-				expect(c3.cycleType).toBe('C3');
+				expect(c3.cycleType).toBe(CycleType.C3);
 				// C3 starts the day after C2 ends
 				expect(c3.durationMonths).toBeLessThanOrEqual(2);
 				expect(c3.endDate).toBe(`${testCase.targetYear - 1}-12-31`); // C3 ends Dec 31 before target year
 
 				const c4 = result.schedules[3]; // C4: Jan 1 target year → Mar 31 target year
-				expect(c4.cycleType).toBe('C4');
+				expect(c4.cycleType).toBe(CycleType.C4);
 				expect(c4.startDate).toBe(`${testCase.targetYear}-01-01`);
 				expect(c4.endDate).toBe(`${testCase.targetYear}-03-31`);
 
 				const c5 = result.schedules[4]; // C5: Apr 1 target year → prelims exam date
-				expect(c5.cycleType).toBe('C5');
+				expect(c5.cycleType).toBe(CycleType.C5);
 				expect(c5.startDate).toBe(`${testCase.targetYear}-04-01`);
 				expect(c5.endDate).toBe(`${testCase.targetYear}-05-19`);
 
 				const c6 = result.schedules[5]; // C6: May 21 target year → Jul 31 target year
-				expect(c6.cycleType).toBe('C6');
+				expect(c6.cycleType).toBe(CycleType.C6);
 				expect(c6.startDate).toBe(`${testCase.targetYear}-05-21`);
 				expect(c6.endDate).toBe(`${testCase.targetYear}-07-31`);
 
 				const c7 = result.schedules[6]; // C7: Aug 1 target year → mains exam date
-				expect(c7.cycleType).toBe('C7');
+				expect(c7.cycleType).toBe(CycleType.C7);
 				expect(c7.startDate).toBe(`${testCase.targetYear}-08-01`);
 				expect(c7.endDate).toBe(`${testCase.targetYear}-08-20`);
 			});
@@ -210,13 +210,13 @@ describe('CycleSchedulerScenarios', () => {
 
 			// Validate cycle types are correct for S1
 			const cycleTypes = result.plan.cycles?.map(cycle => cycle.cycleType);
-			expect(cycleTypes).toContain('C1'); // NCERT Foundation
-			expect(cycleTypes).toContain('C2'); // Comprehensive Foundation
-			expect(cycleTypes).toContain('C3'); // Mains Revision Pre-Prelims
-			expect(cycleTypes).toContain('C4'); // Prelims Revision
-			expect(cycleTypes).toContain('C5'); // Prelims Rapid Revision
-			expect(cycleTypes).toContain('C6'); // Mains Revision
-			expect(cycleTypes).toContain('C7'); // Mains Rapid Revision
+			expect(cycleTypes).toContain(CycleType.C1); // NCERT Foundation
+			expect(cycleTypes).toContain(CycleType.C2); // Comprehensive Foundation
+			expect(cycleTypes).toContain(CycleType.C3); // Mains Revision Pre-Prelims
+			expect(cycleTypes).toContain(CycleType.C4); // Prelims Revision
+			expect(cycleTypes).toContain(CycleType.C5); // Prelims Rapid Revision
+			expect(cycleTypes).toContain(CycleType.C6); // Mains Revision
+			expect(cycleTypes).toContain(CycleType.C7); // Mains Rapid Revision
 			expect(cycleTypes?.length).toBe(7); // Exactly 7 cycles for S1
 
 			// Timeline analysis should be present
@@ -270,15 +270,15 @@ describe('CycleSchedulerScenarios', () => {
 
 			// Task ratios according to design document
 			const expectedRatios: Record<CycleType, { study: number; practice: number; revision: number }> = {
-				'C1': { study: 1.0, practice: 0, revision: 0 },         // NCERT Foundation
-				'C2': { study: 0.7, practice: 0.15, revision: 0.15 },  // Comprehensive Foundation
-				'C3': { study: 1.0, practice: 0, revision: 0 },       // Mains Revision Pre-Prelims Cycle
-				'C4': { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Reading
-				'C5': { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Revision
-				'C5.b': { study: 0.0, practice: 0.4, revision: 0.6 }, // Prelims Rapid Revision
-				'C6': { study: 0.0, practice: 0.4, revision: 0.6 },   // Mains Revision
-				'C7': { study: 0.0, practice: 0.4, revision: 0.6 },   // Mains Rapid Revision
-				'C8': { study: 0.8, practice: 0.1, revision: 0.1 },   // Mains Foundation
+				[CycleType.C1]: { study: 1.0, practice: 0, revision: 0 },         // NCERT Foundation
+				[CycleType.C2]: { study: 0.7, practice: 0.15, revision: 0.15 },  // Comprehensive Foundation
+				[CycleType.C3]: { study: 1.0, practice: 0, revision: 0 },       // Mains Revision Pre-Prelims Cycle
+				[CycleType.C4]: { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Reading
+				[CycleType.C5]: { study: 0.0, practice: 0.4, revision: 0.6 },   // Prelims Revision
+				[CycleType.C5B]: { study: 0.0, practice: 0.4, revision: 0.6 }, // Prelims Rapid Revision
+				[CycleType.C6]: { study: 0.0, practice: 0.4, revision: 0.6 },   // Mains Revision
+				[CycleType.C7]: { study: 0.0, practice: 0.4, revision: 0.6 },   // Mains Rapid Revision
+				[CycleType.C8]: { study: 0.8, practice: 0.1, revision: 0.1 },   // Mains Foundation
 			};
 
 			result.plan.cycles?.forEach(cycle => {
@@ -341,7 +341,7 @@ describe('CycleSchedulerScenarios', () => {
 
 			// Validate specific S1 sequence: C1 → C2 → C3 → C4 → C5 → C6 → C7
 			const cycleSequence = sortedCycles.map(cycle => cycle.cycleType);
-			const expectedSequence = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7'];
+			const expectedSequence = [CycleType.C1, CycleType.C2, CycleType.C3, CycleType.C4, CycleType.C5, CycleType.C6, CycleType.C7];
 
 			expect(cycleSequence).toEqual(expectedSequence);
 		}, 30000);
@@ -402,7 +402,7 @@ describe('CycleSchedulerScenarios', () => {
 				// Should have same cycles as S1
 				expect(result.schedules).toHaveLength(7);
 				const cycleTypes = result.schedules.map(s => s.cycleType);
-				expect(cycleTypes).toEqual(['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7']);
+				expect(cycleTypes).toEqual([CycleType.C1, CycleType.C2, CycleType.C3, CycleType.C4, CycleType.C5, CycleType.C6, CycleType.C7]);
 			});
 		});
 	});
@@ -440,10 +440,10 @@ describe('CycleSchedulerScenarios', () => {
 				// Should have cycles: C1, C2, C4, C5, C6, C7 (NO C3)
 				expect(result.schedules).toHaveLength(6);
 				const cycleTypes = result.schedules.map(s => s.cycleType);
-				expect(cycleTypes).toEqual(['C1', 'C2', 'C4', 'C5', 'C6', 'C7']);
+				expect(cycleTypes).toEqual([CycleType.C1, CycleType.C2, CycleType.C4, CycleType.C5, CycleType.C6, CycleType.C7]);
 
 				// Verify C2 shrinks from 10 months to available time until Dec 31 (minimum 7 months)
-				const c2 = result.schedules.find(s => s.cycleType === 'C2')!;
+				const c2 = result.schedules.find(s => s.cycleType === CycleType.C2)!;
 				expect(c2.durationMonths).toBeGreaterThanOrEqual(7);
 				expect(c2.durationMonths).toBeLessThan(10);
 				expect(c2.endDate).toBe(`${testCase.targetYear - 1}-12-31`);
@@ -484,11 +484,11 @@ describe('CycleSchedulerScenarios', () => {
 				// Should have cycles: C2, C4, C5, C6, C7 (NO C1, NO C3)
 				expect(result.schedules).toHaveLength(5);
 				const cycleTypes = result.schedules.map(s => s.cycleType);
-				expect(cycleTypes).toEqual(['C2', 'C4', 'C5', 'C6', 'C7']);
+				expect(cycleTypes).toEqual([CycleType.C2, CycleType.C4, CycleType.C5, CycleType.C6, CycleType.C7]);
 
 				// C2 should start from start date and end Dec 31 (minimum 7 months)
 				const c2 = result.schedules[0];
-				expect(c2.cycleType).toBe('C2');
+				expect(c2.cycleType).toBe(CycleType.C2);
 				expect(c2.startDate).toBe(dayjs(testCase.startDate).format('YYYY-MM-DD'));
 				expect(c2.endDate).toBe(`${testCase.targetYear - 1}-12-31`);
 				expect(c2.durationMonths).toBeGreaterThanOrEqual(7);
@@ -528,11 +528,11 @@ describe('CycleSchedulerScenarios', () => {
 				// Should have cycles: C8, C4, C5, C6, C7 (NO C1, C2, C3)
 				expect(result.schedules).toHaveLength(5);
 				const cycleTypes = result.schedules.map(s => s.cycleType);
-				expect(cycleTypes).toEqual(['C8', 'C4', 'C5', 'C6', 'C7']);
+				expect(cycleTypes).toEqual([CycleType.C8, CycleType.C4, CycleType.C5, CycleType.C6, CycleType.C7]);
 
 				// C8 should start from start date and end Dec 31
 				const c8 = result.schedules[0];
-				expect(c8.cycleType).toBe('C8');
+				expect(c8.cycleType).toBe(CycleType.C8);
 				expect(c8.startDate).toBe(dayjs(testCase.startDate).format('YYYY-MM-DD'));
 				expect(c8.endDate).toBe(`${testCase.targetYear - 1}-12-31`);
 			});
@@ -570,11 +570,11 @@ describe('CycleSchedulerScenarios', () => {
 				// Should have cycles: C4, C5, C6, C7 (NO C1, C2, C3, C8)
 				expect(result.schedules).toHaveLength(4);
 				const cycleTypes = result.schedules.map(s => s.cycleType);
-				expect(cycleTypes).toEqual(['C4', 'C5', 'C6', 'C7']);
+				expect(cycleTypes).toEqual([CycleType.C4, CycleType.C5, CycleType.C6, CycleType.C7]);
 
 				// C4 should start from start date
 				const c4 = result.schedules[0];
-				expect(c4.cycleType).toBe('C4');
+				expect(c4.cycleType).toBe(CycleType.C4);
 				expect(c4.startDate).toBe(dayjs(testCase.startDate).format('YYYY-MM-DD'));
 			});
 		});
@@ -611,11 +611,11 @@ describe('CycleSchedulerScenarios', () => {
 				// Should have cycles: C5, C6, C7 (ONLY revision cycles)
 				expect(result.schedules).toHaveLength(3);
 				const cycleTypes = result.schedules.map(s => s.cycleType);
-				expect(cycleTypes).toEqual(['C5', 'C6', 'C7']);
+				expect(cycleTypes).toEqual([CycleType.C5, CycleType.C6, CycleType.C7]);
 
 				// C5 should start from start date
 				const c5 = result.schedules[0];
-				expect(c5.cycleType).toBe('C5');
+				expect(c5.cycleType).toBe(CycleType.C5);
 				expect(c5.startDate).toBe(dayjs(testCase.startDate).format('YYYY-MM-DD'));
 			});
 		});
@@ -780,7 +780,7 @@ describe('CycleSchedulerScenarios', () => {
 					new Date(`${targetYear}-05-20`)
 				);
 
-				const c4 = result.schedules.find(s => s.cycleType === 'C4');
+				const c4 = result.schedules.find(s => s.cycleType === CycleType.C4);
 				expect(c4).toBeDefined();
 				if (scenarioName === 'S6') {
 					// S6 scenarios start C4 from the start date, not Jan 1
@@ -814,7 +814,7 @@ describe('CycleSchedulerScenarios', () => {
 					new Date(`${targetYear}-05-20`)
 				);
 
-				const c5 = result.schedules.find(s => s.cycleType === 'C5');
+				const c5 = result.schedules.find(s => s.cycleType === CycleType.C5);
 				if (c5) { // Only test if C5 exists (not in S6 with late start)
 					if (scenarioName === 'S6' && dayjs(startDate).month() >= 11) {
 						// S6 with very late start should start C5 from start date, not Apr 1
@@ -849,7 +849,7 @@ describe('CycleSchedulerScenarios', () => {
 					new Date(`${targetYear}-05-20`)
 				);
 
-				const c6 = result.schedules.find(s => s.cycleType === 'C6');
+				const c6 = result.schedules.find(s => s.cycleType === CycleType.C6);
 				expect(c6).toBeDefined();
 				expect(c6!.startDate).toBe(`${targetYear}-05-20`);
 			});
@@ -878,7 +878,7 @@ describe('CycleSchedulerScenarios', () => {
 					new Date(`${targetYear}-05-20`)
 				);
 
-				const c7 = result.schedules.find(s => s.cycleType === 'C7');
+				const c7 = result.schedules.find(s => s.cycleType === CycleType.C7);
 				expect(c7).toBeDefined();
 				expect(c7!.startDate).toBe(`${targetYear}-08-01`);
 			});

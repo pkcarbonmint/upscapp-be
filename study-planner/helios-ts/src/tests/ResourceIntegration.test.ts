@@ -4,6 +4,7 @@ import { DEFAULT_CONFIG } from '../config';
 import type { StudentIntake, Archetype } from '../types/models';
 import { createStudentIntake } from '../types/models';
 import type { Config } from '../engine/engine-types';
+import { CycleType } from '../types/Types';
 
 
 const dummyStuff = {
@@ -125,7 +126,7 @@ describe('Resource Integration Tests', () => {
 
     // Check foundation cycle blocks for resource data and structure
     const foundationCycle = plan.cycles!.find(cycle => 
-      cycle.cycleType === 'C2'
+      cycle.cycleType === CycleType.C2
     );
 
     expect(foundationCycle).toBeDefined();

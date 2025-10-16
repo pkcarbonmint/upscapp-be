@@ -27,24 +27,24 @@ const makePlanner = (cycleType: CycleType) => function PlanCycle (
 
 function getPlannerForCycleType(cycleType: CycleType, logger: Logger) {
   switch (cycleType) {
-    case 'C1':
-      return makePlanner('C1');
-    case 'C2':
-      return makePlanner('C2');
-    case 'C3':
-      return makePlanner('C3');
-    case 'C4':
-    return makePlanner('C4');
-    case 'C5':
-      return makePlanner('C5');
-    case 'C5.b':
-      return makePlanner('C5.b');
-    case 'C6':
-      return makePlanner('C6');
-    case 'C7':
-      return makePlanner('C7');
-    case 'C8':
-      return makePlanner('C8');
+    case CycleType.C1:
+      return makePlanner(CycleType.C1);
+    case CycleType.C2:
+      return makePlanner(CycleType.C2);
+    case CycleType.C3:
+      return makePlanner(CycleType.C3);
+    case CycleType.C4:
+    return makePlanner(CycleType.C4);
+    case CycleType.C5:
+      return makePlanner(CycleType.C5);
+    case CycleType.C5B:
+      return makePlanner(CycleType.C5B);
+    case CycleType.C6:
+      return makePlanner(CycleType.C6);
+    case CycleType.C7:
+      return makePlanner(CycleType.C7);
+    case CycleType.C8:
+      return makePlanner(CycleType.C8);
     default:
       logger.logWarn('Engine', `Unknown cycle type: ${cycleType}`);
       return undefined;

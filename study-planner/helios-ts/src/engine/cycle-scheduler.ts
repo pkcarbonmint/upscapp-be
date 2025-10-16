@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { Logger, CycleSchedule, ScenarioResult } from '../types/Types'; // Updated for S4A
+import { Logger, CycleSchedule, ScenarioResult, CycleType } from '../types/Types'; // Updated for S4A
 
 dayjs.extend(isBetween);
 
@@ -162,56 +162,56 @@ function getS1Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
 
   return [
     {
-      cycleType: 'C1',
+      cycleType: CycleType.C1,
       startDate: start.format('YYYY-MM-DD'),
       endDate: c1End.format('YYYY-MM-DD'),
       durationMonths: 3,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C2',
+      cycleType: CycleType.C2,
       startDate: c2Start.format('YYYY-MM-DD'),
       endDate: finalC2End.format('YYYY-MM-DD'),
       durationMonths: c2DurationMonths,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C3',
+      cycleType: CycleType.C3,
       startDate: c3Start.format('YYYY-MM-DD'),
       endDate: c3End.format('YYYY-MM-DD'),
       durationMonths: c3DurationMonths,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C4',
+      cycleType: CycleType.C4,
       startDate: dayjs(`${targetYear}-01-01`).format('YYYY-MM-DD'),
       endDate: c4End.format('YYYY-MM-DD'),
       durationMonths: 3,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5',
+      cycleType: CycleType.C5,
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
       endDate: c5End.format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5.b',
+      cycleType: CycleType.C5B,
       startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: c5bEnd.format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C6',
+      cycleType: CycleType.C6,
       startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
       endDate: c6End.format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C7',
+      cycleType: CycleType.C7,
       startDate: dayjs(`${targetYear}-08-01`).format('YYYY-MM-DD'),
       endDate: mainsExamDate.format('YYYY-MM-DD'),
       durationMonths: 1,
@@ -246,49 +246,49 @@ function getS3Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
 
   return [
     {
-      cycleType: 'C1',
+      cycleType: CycleType.C1,
       startDate: start.format('YYYY-MM-DD'),
       endDate: start.add(3, 'month').subtract(1, 'day').format('YYYY-MM-DD'),
       durationMonths: 3,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C2',
+      cycleType: CycleType.C2,
       startDate: start.add(3, 'month').format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear - 1}-12-31`).format('YYYY-MM-DD'),
       durationMonths: 7, // Shrunken from 10 months
       priority: 'mandatory'
     },
     {
-      cycleType: 'C4',
+      cycleType: CycleType.C4,
       startDate: dayjs(`${targetYear}-01-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-03-31`).format('YYYY-MM-DD'),
       durationMonths: 3,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5',
+      cycleType: CycleType.C5,
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5.b',
+      cycleType: CycleType.C5B,
       startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C6',
+      cycleType: CycleType.C6,
       startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
       endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C7',
+      cycleType: CycleType.C7,
       startDate: dayjs(`${targetYear}-08-01`).format('YYYY-MM-DD'),
       endDate: mainsExamDate.format('YYYY-MM-DD'),
       durationMonths: 1,
@@ -315,42 +315,42 @@ function getS4Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
 
   return [
     {
-      cycleType: 'C2',
+      cycleType: CycleType.C2,
       startDate: start.format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear - 1}-12-31`).format('YYYY-MM-DD'),
       durationMonths: 7, // Minimum required months
       priority: 'mandatory'
     },
     {
-      cycleType: 'C4',
+      cycleType: CycleType.C4,
       startDate: dayjs(`${targetYear}-01-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-03-31`).format('YYYY-MM-DD'),
       durationMonths: 3,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5',
+      cycleType: CycleType.C5,
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5.b',
+      cycleType: CycleType.C5B,
       startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C6',
+      cycleType: CycleType.C6,
       startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
       endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C7',
+      cycleType: CycleType.C7,
       startDate: dayjs(`${targetYear}-08-01`).format('YYYY-MM-DD'),
       endDate: mainsExamDate.format('YYYY-MM-DD'),
       durationMonths: 1,
@@ -383,42 +383,42 @@ function getS4ASchedule(startDate: Date, targetYear: number, intake?: any): Cycl
 
   return [
     {
-      cycleType: 'C2',
+      cycleType: CycleType.C2,
       startDate: start.format('YYYY-MM-DD'),
       endDate: c2End.format('YYYY-MM-DD'),
       durationMonths: Math.ceil(c2DurationMonths),
       priority: 'mandatory'
     },
     {
-      cycleType: 'C4',
+      cycleType: CycleType.C4,
       startDate: dayjs(`${targetYear}-01-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-03-31`).format('YYYY-MM-DD'),
       durationMonths: 3,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5',
+      cycleType: CycleType.C5,
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5.b',
+      cycleType: CycleType.C5B,
       startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C6',
+      cycleType: CycleType.C6,
       startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5.b ends
       endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C7',
+      cycleType: CycleType.C7,
       startDate: dayjs(`${targetYear}-08-01`).format('YYYY-MM-DD'),
       endDate: mainsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
       durationMonths: 1,
@@ -446,42 +446,42 @@ function getS5Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
 
   return [
     {
-      cycleType: 'C8',
+      cycleType: CycleType.C8,
       startDate: start.format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear - 1}-12-31`).format('YYYY-MM-DD'),
       durationMonths: 1, // Whatever time is available
       priority: 'mandatory'
     },
     {
-      cycleType: 'C4',
+      cycleType: CycleType.C4,
       startDate: dayjs(`${targetYear}-01-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-03-31`).format('YYYY-MM-DD'),
       durationMonths: 3,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5',
+      cycleType: CycleType.C5,
       startDate: dayjs(`${targetYear}-04-01`).format('YYYY-MM-DD'),
       endDate: dayjs(`${targetYear}-05-05`).format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5.b',
+      cycleType: CycleType.C5B,
       startDate: dayjs(`${targetYear}-05-06`).format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
       durationMonths: 1,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C6',
+      cycleType: CycleType.C6,
       startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5.b ends
       endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C7',
+      cycleType: CycleType.C7,
       startDate: dayjs(`${targetYear}-08-01`).format('YYYY-MM-DD'),
       endDate: mainsExamDate.format('YYYY-MM-DD'),
       durationMonths: 1,
@@ -524,7 +524,7 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
 
   // Always add C4 for S6 scenarios
   schedules.push({
-    cycleType: 'C4',
+    cycleType: CycleType.C4,
     startDate: c4StartDate.format('YYYY-MM-DD'),
     endDate: c4EndDate.format('YYYY-MM-DD'),
     durationMonths: Math.ceil(c4DurationDays / 30),
@@ -532,7 +532,7 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   });
 
   schedules.push({
-    cycleType: 'C5',
+    cycleType: CycleType.C5,
     startDate: c5StartDate.format('YYYY-MM-DD'),
     endDate: c5EndDate.format('YYYY-MM-DD'),
     durationMonths: Math.ceil(c5DurationDays / 30),
@@ -540,7 +540,7 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   });
 
   schedules.push({
-    cycleType: 'C5.b',
+    cycleType: CycleType.C5B,
     startDate: c5bStartDate.format('YYYY-MM-DD'),
     endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
     durationMonths: Math.ceil(c5bDurationDays / 30),
@@ -548,7 +548,7 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   });
 
   schedules.push({
-    cycleType: 'C6',
+    cycleType: CycleType.C6,
     startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5.b ends
     endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
     durationMonths: 2,
@@ -556,7 +556,7 @@ function getS6Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
   });
 
   schedules.push({
-    cycleType: 'C7',
+    cycleType: CycleType.C7,
     startDate: dayjs(`${targetYear}-08-01`).format('YYYY-MM-DD'),
     endDate: mainsExamDate.format('YYYY-MM-DD'),
     durationMonths: 1,
@@ -591,28 +591,28 @@ function getS7Schedule(startDate: Date, targetYear: number, intake?: any): Cycle
 
   return [
     {
-      cycleType: 'C5',
+      cycleType: CycleType.C5,
       startDate: start.format('YYYY-MM-DD'),
       endDate: c5EndDate.format('YYYY-MM-DD'),
       durationMonths: Math.ceil(c5DurationDays / 30),
       priority: 'mandatory'
     },
     {
-      cycleType: 'C5.b',
+      cycleType: CycleType.C5B,
       startDate: c5bStartDate.format('YYYY-MM-DD'),
       endDate: prelimsExamDate.subtract(1, 'day').format('YYYY-MM-DD'),
       durationMonths: Math.ceil((daysToExam - c5DurationDays) / 30),
       priority: 'mandatory'
     },
     {
-      cycleType: 'C6',
+      cycleType: CycleType.C6,
       startDate: prelimsExamDate.format('YYYY-MM-DD'), // Start after C5 ends
       endDate: dayjs(`${targetYear}-07-31`).format('YYYY-MM-DD'),
       durationMonths: 2,
       priority: 'mandatory'
     },
     {
-      cycleType: 'C7',
+      cycleType: CycleType.C7,
       startDate: dayjs(`${targetYear}-08-01`).format('YYYY-MM-DD'),
       endDate: mainsExamDate.format('YYYY-MM-DD'),
       durationMonths: 1,
