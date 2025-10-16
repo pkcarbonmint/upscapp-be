@@ -222,16 +222,16 @@ async function createStructuredHTML(studyPlan: StudyPlan, studentIntake: Student
     </head>
     <body>
         <div class="container">
+          ${generateStudentProfile(studentIntake)}
             ${generateCalendarHeader(year, studentIntake)}
             
             <div class="calendar-section">
             ${generateBirdsEyeView(studyPlan)}
-            ${generateMonthView(studyPlan)}
+            ${await generateMonthView(studyPlan)}
             ${generateWeekView(studyPlan)}
             ${await generateResourcesTable(studyPlan)}
             ${generateLegend(studyPlan)}
             </div>
-            ${generateStudentProfile(studentIntake)}
         </div>
     </body>
     </html>`;
@@ -449,7 +449,7 @@ function getStructuredCSS(): string {
         }
 
         body {
-            font-family: 'Lora', serif;
+            font-family: 'Roboto', sans-serif;
             background: white;
             font-size: 10pt;
             color: #333;
@@ -468,7 +468,6 @@ function getStructuredCSS(): string {
         }
 
         .header h1 {
-            font-family: 'Roboto', sans-serif;
             font-size: 24pt;
             font-weight: 700;
             margin-bottom: 5px;
@@ -482,6 +481,7 @@ function getStructuredCSS(): string {
         .student-profile {
             margin-bottom: 20px;
             page-break-inside: avoid;
+            page-break-after: always;
         }
 
         .profile-header {
@@ -490,7 +490,6 @@ function getStructuredCSS(): string {
         }
 
         .profile-title {
-            font-family: 'Roboto', sans-serif;
             font-size: 18pt;
             font-weight: 700;
             margin-bottom: 5px;
@@ -514,7 +513,6 @@ function getStructuredCSS(): string {
         }
 
         .profile-card-title {
-            font-family: 'Roboto', sans-serif;
             font-size: 12pt;
             font-weight: 700;
             margin-bottom: 10px;
@@ -537,7 +535,6 @@ function getStructuredCSS(): string {
         }
 
         .section-title {
-            font-family: 'Roboto', sans-serif;
             font-size: 16pt;
             font-weight: 700;
             margin-top: 30px;
@@ -545,6 +542,10 @@ function getStructuredCSS(): string {
             border-bottom: 1px solid #ccc;
             padding-bottom: 5px;
             page-break-before: always;
+        }
+
+        .section-title.no-page-break {
+            page-break-before: auto;
         }
 
         .year-calendar {
@@ -581,7 +582,6 @@ function getStructuredCSS(): string {
         }
 
         .month-name {
-            font-family: 'Roboto', sans-serif;
             font-size: 8pt;
             font-weight: 700;
             color: #333;
@@ -600,7 +600,6 @@ function getStructuredCSS(): string {
         }
 
         .day-header {
-            font-family: 'Roboto', sans-serif;
             text-align: center;
             font-weight: 700;
             font-size: 5pt;
@@ -634,8 +633,21 @@ function getStructuredCSS(): string {
         .month-card.cycle-c7 { background-color: rgb(255, 243, 224); border-color: rgb(245, 158, 11); }
         .month-card.cycle-c8 { background-color: rgb(241, 248, 233); border-color: rgb(132, 204, 22); }
 
+        .month-day-cell.cycle-c1 { background-color: rgb(227, 242, 253); }
+        .month-day-cell.cycle-c2 { background-color: rgb(232, 245, 232); }
+        .month-day-cell.cycle-c3 { background-color: rgb(252, 228, 236); }
+        .month-day-cell.cycle-c4 { background-color: rgb(255, 235, 238); }
+        .month-day-cell.cycle-c5 { background-color: rgb(243, 229, 245); }
+        .month-day-cell.cycle-c5b { background-color: rgb(243, 229, 245); }
+        .month-day-cell.cycle-c6 { background-color: rgb(225, 245, 254); }
+        .month-day-cell.cycle-c7 { background-color: rgb(255, 243, 224); }
+        .month-day-cell.cycle-c8 { background-color: rgb(241, 248, 233); }
+
         .month-detail {
             page-break-before: always;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .month-detail-header {
@@ -646,7 +658,6 @@ function getStructuredCSS(): string {
         }
 
         .month-detail-title {
-            font-family: 'Roboto', sans-serif;
             font-size: 18pt;
             font-weight: 700;
         }
@@ -661,10 +672,80 @@ function getStructuredCSS(): string {
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
             border: 1px solid #ddd;
+            flex: 1;
+        }
+
+        .monthly-resources {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .monthly-resources-title {
+            font-size: 14pt;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .monthly-resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 8px;
+        }
+
+        .monthly-resource-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .monthly-resource-subject {
+            font-size: 12pt;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .monthly-resource-lists {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .monthly-resource-category {
+            margin-bottom: 6px;
+        }
+
+        .monthly-resource-category-title {
+            font-size: 9pt;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .monthly-resource-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .monthly-resource-list li {
+            font-size: 8pt;
+            padding: 2px 0;
+            color: #666;
+            border-left: 2px solid #ddd;
+            padding-left: 8px;
+            margin-bottom: 2px;
         }
 
         .month-day-header {
-            font-family: 'Roboto', sans-serif;
             background: #f9f9f9;
             padding: 8px 4px;
             text-align: center;
@@ -714,7 +795,6 @@ function getStructuredCSS(): string {
         }
 
         .week-title {
-            font-family: 'Roboto', sans-serif;
             font-size: 16pt;
             font-weight: 700;
         }
@@ -737,7 +817,6 @@ function getStructuredCSS(): string {
         }
 
         .week-day-name {
-            font-family: 'Roboto', sans-serif;
             font-weight: 700;
             font-size: 10pt;
         }
@@ -784,7 +863,6 @@ function getStructuredCSS(): string {
         }
 
         .subject-resources-table th {
-            font-family: 'Roboto', sans-serif;
             font-weight: 700;
             background-color: #f9f9f9;
         }
@@ -798,7 +876,6 @@ function getStructuredCSS(): string {
         }
 
         .legend-title {
-            font-family: 'Roboto', sans-serif;
             font-size: 14pt;
             font-weight: 700;
             margin-bottom: 10px;
@@ -914,18 +991,106 @@ export function generateBirdsEyeView(studyPlan: StudyPlan): string {
   return html;
 }
 
-export function generateMonthView(studyPlan: StudyPlan): string {
+async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.Dayjs): Promise<string> {
   const cycles = studyPlan.cycles || [];
-  const firstMonth = dayjs(studyPlan.start_date).month();
-  const monthDate = dayjs().year(studyPlan.targeted_year).month(firstMonth);
-  const monthName = monthDate.format('MMMM');
-  const monthYear = monthDate.format('YYYY');
-
+  const monthStart = monthDate.startOf('month');
+  const monthEnd = monthDate.endOf('month');
+  
+  // Get all subjects that are active in this month
+  const monthlySubjects = new Set<string>();
+  
+  for (const cycle of cycles) {
+    for (const block of cycle.cycleBlocks) {
+      const blockStart = dayjs(block.block_start_date);
+      const blockEnd = dayjs(block.block_end_date);
+      
+      // Check if block overlaps with this month
+      if (blockStart.isBefore(monthEnd) && blockEnd.isAfter(monthStart)) {
+        for (const subject of block.subjects) {
+          monthlySubjects.add(subject);
+        }
+      }
+    }
+  }
+  
+  if (monthlySubjects.size === 0) {
+    return '<div class="monthly-resources"><p>No resources for this month.</p></div>';
+  }
+  
   let html = `
-    <div class="section-title">
-        <i class="fas fa-calendar-week"></i>
-        ${monthName} ${monthYear}
+    <div class="monthly-resources">
+        <div class="monthly-resources-title">
+            <i class="fas fa-book"></i>
+            Resources for ${monthDate.format('MMMM YYYY')}
+        </div>
+        <div class="monthly-resources-grid">
+  `;
+  
+  for (const subjectCode of Array.from(monthlySubjects)) {
+    const subjectName = getSubjectName(subjectCode);
+    const resources = await ResourceService.getResourcesForSubject(subjectCode);
+    
+    html += `
+      <div class="monthly-resource-card">
+          <div class="monthly-resource-subject">${subjectName}</div>
+          <div class="monthly-resource-lists">
+              <div class="monthly-resource-category">
+                  <div class="monthly-resource-category-title">📚 Primary Books</div>
+                  <ul class="monthly-resource-list">
+                      ${resources.primary_books.map(r => `<li>${r.resource_title}</li>`).join('')}
+                  </ul>
+              </div>
+              <div class="monthly-resource-category">
+                  <div class="monthly-resource-category-title">🎥 Video Content</div>
+                  <ul class="monthly-resource-list">
+                      ${resources.video_content.map(r => `<li>${r.resource_title}</li>`).join('')}
+                  </ul>
+              </div>
+              <div class="monthly-resource-category">
+                  <div class="monthly-resource-category-title">📝 Practice Materials</div>
+                  <ul class="monthly-resource-list">
+                      ${resources.practice_resources.map(r => `<li>${r.resource_title}</li>`).join('')}
+                  </ul>
+              </div>
+              <div class="monthly-resource-category">
+                  <div class="monthly-resource-category-title">📰 Current Affairs</div>
+                  <ul class="monthly-resource-list">
+                      ${resources.current_affairs_sources.map(r => `<li>${r.resource_title}</li>`).join('')}
+                  </ul>
+              </div>
+          </div>
+      </div>
+    `;
+  }
+  
+  html += `
+        </div>
     </div>
+  `;
+  
+  return html;
+}
+
+export async function generateMonthView(studyPlan: StudyPlan): Promise<string> {
+  const cycles = studyPlan.cycles || [];
+  let html = '';
+  
+  const minDate = dayjs(studyPlan.start_date);
+  const maxDate = dayjs(`${studyPlan.targeted_year}-08-31`);
+  const endDate = maxDate.endOf('month');
+
+  for (
+      let currentDate = minDate.startOf('month');
+      currentDate.isSameOrBefore(endDate, 'month');
+      currentDate = currentDate.add(1, 'month')
+  ) {
+      const monthDate = currentDate;
+      const monthName = monthDate.format('MMMM');
+      const monthYear = monthDate.format('YYYY');
+
+      // Only add page break for the first month
+      
+      html += `
     <div class="month-detail">
         <div class="month-detail-header">
             <div class="month-detail-title">${monthName.toUpperCase()}</div>
@@ -941,41 +1106,55 @@ export function generateMonthView(studyPlan: StudyPlan): string {
             <div class="month-day-header">Saturday</div>
     `;
 
-  const daysInMonth = monthDate.daysInMonth();
-  const firstDayOfMonth = monthDate.startOf('month').day();
+      const daysInMonth = monthDate.daysInMonth();
+      const firstDayOfMonth = monthDate.startOf('month').day();
 
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    html += '<div class="month-day-cell"></div>';
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const currentDate = monthDate.date(day);
-    html += `
-      <div class="month-day-cell">
-          <div class="month-day-number">${day}</div>
-      `;
-
-    for (const cycle of cycles) {
-      for (const block of cycle.cycleBlocks) {
-        const blockStart = dayjs(block.block_start_date);
-        const blockEnd = dayjs(block.block_end_date);
-
-        if (currentDate.isBetween(blockStart, blockEnd, 'day', '[]')) {
-          for (const subject of block.subjects) {
-            const subjectName = getSubjectName(subject).toLowerCase();
-            html += `<div class="subject-block ${subjectName}">${getSubjectName(subject)}</div>`;
-          }
-        }
+      for (let i = 0; i < firstDayOfMonth; i++) {
+          html += '<div class="month-day-cell"></div>';
       }
-    }
 
-    html += '</div>';
-  }
+      for (let day = 1; day <= daysInMonth; day++) {
+          const currentDay = monthDate.date(day);
+          
+          // Determine which cycle this day belongs to for background color
+          let dayCycleClass = '';
+          for (const cycle of cycles) {
+              const cycleStart = dayjs(cycle.cycleStartDate);
+              const cycleEnd = dayjs(cycle.cycleEndDate);
+              if (currentDay.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
+                  dayCycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
+                  break;
+              }
+          }
+          
+          html += `
+        <div class="month-day-cell ${dayCycleClass}">
+            <div class="month-day-number">${day}</div>
+        `;
 
-  html += `
+          for (const cycle of cycles) {
+              for (const block of cycle.cycleBlocks) {
+                  const blockStart = dayjs(block.block_start_date);
+                  const blockEnd = dayjs(block.block_end_date);
+
+                  if (currentDay.isBetween(blockStart, blockEnd, 'day', '[]')) {
+                      for (const subject of block.subjects) {
+                          const subjectName = getSubjectName(subject).toLowerCase();
+                          html += `<div class="subject-block ${subjectName}">${getSubjectName(subject)}</div>`;
+                      }
+                  }
+              }
+          }
+
+          html += '</div>';
+      }
+
+      html += `
         </div>
     </div>
+    ${await generateMonthlyResources(studyPlan, monthDate)}
     `;
+  }
 
   return html;
 }

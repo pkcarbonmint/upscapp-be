@@ -26,6 +26,96 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { LogEntry, Logger } from '../src/types/Types';
 
+interface CliArgs {
+  scenarios?: string[];
+  help?: boolean;
+}
+
+/**
+ * Parse command line arguments
+ */
+function parseCliArgs(): CliArgs {
+  const args: CliArgs = {};
+  const argv = process.argv.slice(2);
+  
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    
+    if (arg === '-s' || arg === '--scenarios') {
+      const nextArg = argv[i + 1];
+      if (nextArg && !nextArg.startsWith('-')) {
+        args.scenarios = nextArg.split(',').map(s => s.trim());
+        i++; // Skip the next argument as it's the value
+      } else {
+        console.error('❌ Error: -s/--scenarios requires a value (e.g., -s T1,T2,T3)');
+        process.exit(1);
+      }
+    } else if (arg === '-h' || arg === '--help') {
+      args.help = true;
+    } else if (arg.startsWith('-')) {
+      console.error(`❌ Error: Unknown option ${arg}`);
+      process.exit(1);
+    }
+  }
+  
+  return args;
+}
+
+/**
+ * Display help information
+ */
+function showHelp(): void {
+  console.log(`
+📚 Helios Test Document Generator
+
+Usage: node generate-test-documents2.ts [options]
+
+Options:
+  -s, --scenarios <list>    Comma-separated list of scenarios to run (e.g., T1,T2,T12)
+  -h, --help               Show this help message
+
+Examples:
+  node generate-test-documents2.ts                    # Run all scenarios
+  node generate-test-documents2.ts -s T1,T2          # Run only T1 and T2 scenarios
+  node generate-test-documents2.ts -s T1,T2,T12      # Run T1, T2, and T12 scenarios
+
+Available Scenarios:
+  T1-T15: Test scenarios with different start dates and configurations
+
+Note: If no scenarios are specified, all available scenarios will be run.
+`);
+}
+
+/**
+ * Filter scenarios based on command line arguments
+ */
+function filterScenarios(allScenarios: any[], selectedScenarios?: string[]): any[] {
+  if (!selectedScenarios || selectedScenarios.length === 0) {
+    return allScenarios;
+  }
+  
+  const filtered = allScenarios.filter(scenario => 
+    selectedScenarios.includes(scenario.name)
+  );
+  
+  // Check for invalid scenario names
+  const validScenarioNames = allScenarios.map(s => s.name);
+  const invalidScenarios = selectedScenarios.filter(name => !validScenarioNames.includes(name));
+  
+  if (invalidScenarios.length > 0) {
+    console.warn(`⚠️  Warning: Invalid scenario names: ${invalidScenarios.join(', ')}`);
+    console.log(`📋 Available scenarios: ${validScenarioNames.join(', ')}`);
+  }
+  
+  if (filtered.length === 0) {
+    console.error('❌ Error: No valid scenarios found. Available scenarios:', validScenarioNames.join(', '));
+    process.exit(1);
+  }
+  
+  console.log(`🎯 Running selected scenarios: ${filtered.map(s => s.name).join(', ')}`);
+  return filtered;
+}
+
 interface DocumentGeneratorOptions {
   outputDir?: string;
   includeResources: boolean;
@@ -64,13 +154,13 @@ const dummyStuff = {
 		highest_stage_per_attempt: 'N/A', // Required - "N/A" for freshers
 	},
 	personal_details: {
-		full_name: 'John Doe',
-		email: 'john.doe@example.com',
+		full_name: 'Swati Mutyam',
+		email: 'swati.mutyam@gmail.com',
 		phone_number: '+91-9876543210',
-		present_location: 'Delhi',
+		present_location: 'Hyderabad',
 		student_archetype: 'General',
-		graduation_stream: 'Engineering',
-		college_university: 'IIT Delhi',
+		graduation_stream: 'Commerce',
+		college_university: 'Hyderabad University',
 		year_of_passing: 2023
 	},
 
@@ -119,7 +209,7 @@ class TestDocumentGenerator {
   /**
    * Generate documents for all test scenarios
    */
-  async generateAllTestDocuments(): Promise<void> {
+  async generateAllTestDocuments(selectedScenarios?: string[]): Promise<void> {
     const startTime = Date.now();
     console.log('🚀 Starting document generation for all test scenarios...');
     console.log(`📊 Initial ${this.getMemoryUsage()}`);
@@ -129,13 +219,15 @@ class TestDocumentGenerator {
     await this.ensureOutputDirectory();
     console.log(`⏱️  Directory setup took: ${Date.now() - dirStartTime}ms`);
     // Define test scenarios for different target years
-
-    const scenarios = startDates.map((startDate, i) => ({
+    const allScenarios = startDates.map((startDate, i) => ({
       name: `T${i + 1}`,
       config: this.getTestConfig(),
       archetype: this.getBalancedDualSubjectArchetype(),
       intake: this.makeIntake('2027', startDate),
     }));
+
+    // Filter scenarios based on command line arguments
+    const scenarios = filterScenarios(allScenarios, selectedScenarios);
     // Collect all scenario data for collage
     const allScenarioData: Array<{
       name: string;
@@ -148,7 +240,8 @@ class TestDocumentGenerator {
     // Generate JSON for each scenario
     const jsonGenerationStartTime = Date.now();
     console.log(`📄 Starting JSON generation for ${scenarios.length} scenarios...`);
-    
+    if (this.generateJson) {
+
     for (const scenario of scenarios) {
       const scenarioStartTime = Date.now();
       console.log(`📄 Generating JSON for ${scenario.name}...`);
@@ -176,14 +269,13 @@ class TestDocumentGenerator {
         });
         
         // Generate JSON file for raw data debugging
-        if (this.generateJson) {
           const jsonSaveStartTime = Date.now();
           const jsonData = this.generateJsonData(result, result.intake);
           await this.saveJson(jsonData, scenario.name);
           const jsonSaveTime = Date.now() - jsonSaveStartTime;
           console.log(`  ⏱️  JSON save took: ${jsonSaveTime}ms`);
           console.log(`📊 Generated debug JSON: ${scenario.name}.json`);
-        }
+        
 
         const totalScenarioTime = Date.now() - scenarioStartTime;
         console.log(`  ✅ ${scenario.name} completed in: ${totalScenarioTime}ms`);
@@ -192,7 +284,7 @@ class TestDocumentGenerator {
         console.error(`❌ Failed to generate ${scenario.name}:`, error);
       }
     }
-    
+  }
     const totalJsonGenerationTime = Date.now() - jsonGenerationStartTime;
     console.log(`⏱️  Total JSON generation took: ${totalJsonGenerationTime}ms`);
     console.log(`📊 After JSON generation: ${this.getMemoryUsage()}`);
@@ -390,10 +482,11 @@ class TestDocumentGenerator {
   ): Promise<void> {
     const pdfDocStartTime = Date.now();
     console.log(`      📄 Generating PDF document...`);
-    // Dynamically import HighFidelityPDFService to avoid bundling issues
-    const { HighFidelityPDFService } = await import('../src/services/HighFidelityPDFService');
+    // Dynamically import CalendarPDFService to avoid bundling issues
+    const { CalendarPDFService } = await import('../src/services/CalendarPDFService');
     // Generate PDF with visual timeline (SVG converted to PNG)
-    await HighFidelityPDFService.generateStructuredPDF(studyPlan, studentIntake, `${scenarioName}.pdf`);
+    await CalendarPDFService.generateStudyPlanPDF(studyPlan, studentIntake, { filename: `${scenarioName}.pdf` });
+    await CalendarPDFService.generateHTML(studyPlan, studentIntake, { filename: `${scenarioName}.html` });
     
     const pdfDocTime = Date.now() - pdfDocStartTime;
     console.log(`      ⏱️  PDF document generation took: ${pdfDocTime}ms`);
@@ -1139,17 +1232,26 @@ Financial Planning Tips:
 // Main execution
 async function main() {
   try {
+    // Parse command line arguments
+    const cliArgs = parseCliArgs();
+    
+    // Show help if requested
+    if (cliArgs.help) {
+      showHelp();
+      return;
+    }
+    
     const generator = new TestDocumentGenerator({
       outputDir: './generated-docs',
       includeResources: true,
       generateMarkdown: false,
       generateJson: true,
       generateWeeklySchedules: false, // Disabled for performance testing
-      generatePDFs: false, // Enable PDF generation
-      maxScenarios: 3 // Limit to 3 scenarios for performance testing
+      generatePDFs: true, // Enable PDF generation
+      maxScenarios: Infinity // Remove limit when scenarios are explicitly selected
     });
 
-    await generator.generateAllTestDocuments();
+    await generator.generateAllTestDocuments(cliArgs.scenarios);
   } catch (error) {
     console.error('❌ Error running document generation:', error);
     process.exit(1);
