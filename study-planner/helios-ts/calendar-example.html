@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner Calendar - 2026</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Student Profile Section */
+        .student-profile {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .profile-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .profile-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .calendar-section {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Year Calendar Styles */
+        .year-calendar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .month-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cycle-label {
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6c757d;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .month-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .month-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+        }
+
+        .month-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .month-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .month-year {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            font-size: 0.8rem;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 500;
+            color: #4a5568;
+            padding: 4px;
+            font-size: 0.7rem;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .day-cell:hover {
+            background: #f7fafc;
+        }
+
+        .day-cell.weekend {
+            color: #e53e3e;
+        }
+
+        .day-cell.cycle-phase-1 {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            color: #495057;
+        }
+
+        .day-cell.cycle-phase-2 {
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+            color: #495057;
+        }
+
+        .day-cell.cycle-phase-3 {
+            background: #e8f0fe;
+            border: 1px solid #c6dafc;
+            color: #495057;
+        }
+
+        .day-cell.cycle-phase-4 {
+            background: #f3e5f5;
+            border: 1px solid #e1bee7;
+            color: #495057;
+        }
+
+        .day-cell.revision {
+            background: #fff3e0;
+            border: 1px solid #ffcc02;
+            color: #495057;
+        }
+
+        .day-cell.exam {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #495057;
+        }
+
+        /* Month Detail Calendar */
+        .month-detail {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .month-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .month-detail-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .month-detail-year {
+            font-size: 1.2rem;
+            color: #718096;
+        }
+
+        .month-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .month-day-header {
+            background: #f7fafc;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .month-day-cell {
+            background: white;
+            min-height: 80px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .month-day-number {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.9rem;
+        }
+
+        .month-day-number.weekend {
+            color: #e53e3e;
+        }
+
+        .subject-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 4px 6px;
+            margin: 2px 0;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #495057;
+            text-align: center;
+        }
+
+        .subject-block.history {
+            background: #fff5f5;
+            border-color: #fed7d7;
+            color: #c53030;
+        }
+
+        .subject-block.geography {
+            background: #f0fff4;
+            border-color: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .subject-block.polity {
+            background: #ebf8ff;
+            border-color: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .subject-block.economics {
+            background: #fffbeb;
+            border-color: #fbd38d;
+            color: #c05621;
+        }
+
+        .subject-block.science {
+            background: #faf5ff;
+            border-color: #e9d8fd;
+            color: #553c9a;
+        }
+
+        .subject-block.current-affairs {
+            background: #fdf2f8;
+            border-color: #fbb6ce;
+            color: #be185d;
+        }
+
+        .subject-block.optional {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        /* Week Calendar */
+        .week-calendar {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .week-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .week-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .week-day {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 200px;
+        }
+
+        .week-day-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .week-day-name {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .week-day-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-top: 4px;
+        }
+
+        .week-day-number.weekend {
+            color: #e53e3e;
+        }
+
+        .daily-tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.8rem;
+            border-left: 3px solid #e2e8f0;
+            margin-bottom: 6px;
+        }
+
+        .task-item.history {
+            border-left-color: #c53030;
+        }
+
+        .task-item.geography {
+            border-left-color: #2f855a;
+        }
+
+        .task-item.polity {
+            border-left-color: #2b6cb0;
+        }
+
+        .task-item.economics {
+            border-left-color: #c05621;
+        }
+
+        .task-item.science {
+            border-left-color: #553c9a;
+        }
+
+        .task-item.current-affairs {
+            border-left-color: #be185d;
+        }
+
+        .task-item.optional {
+            border-left-color: #166534;
+        }
+
+        .task-description {
+            color: #2d3748;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Week Resources Section */
+        .week-resources {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .week-resources-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .resource-category {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .resource-category-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+
+        .resource-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* Resources Table Section */
+        .resources-table-section {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 40px;
+        }
+
+        .resources-table-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subject-resources-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .subject-resources-table th {
+            background: #f7fafc;
+            color: #2d3748;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+
+        .subject-resources-table td {
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: #2d3748;
+            background: #f8f9fa;
+        }
+
+        .resource-type {
+            font-size: 0.8rem;
+            color: #4a5568;
+            margin-bottom: 4px;
+        }
+
+        .resource-list-item {
+            font-size: 0.8rem;
+            color: #2d3748;
+            margin-bottom: 2px;
+            padding-left: 8px;
+        }
+
+        .resource-list-item:before {
+            content: "•";
+            color: #667eea;
+            margin-right: 4px;
+        }
+
+        /* Legend */
+        .legend {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .legend-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .year-calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .week-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .month-detail-grid {
+                font-size: 0.8rem;
+            }
+            
+            .month-day-cell {
+                min-height: 60px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .year-calendar {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .calendar-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-calendar-alt"></i> Study Planner Calendar 2026</h1>
+            <p>Comprehensive UPSC Preparation Schedule with Cycles, Phases & Daily Tasks</p>
+        </div>
+
+        <!-- Student Profile Section -->
+        <div class="student-profile">
+            <div class="profile-header">
+                <div class="profile-title">Student Profile</div>
+                <div class="profile-subtitle">UPSC 2026 Preparation Plan</div>
+            </div>
+            
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <div class="profile-card-title">👤 Personal Details</div>
+                    <div class="profile-item">
+                        <span class="profile-label">Full Name:</span>
+                        <span class="profile-value">Rajesh Kumar</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Email:</span>
+                        <span class="profile-value">rajesh.kumar@email.com</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Phone:</span>
+                        <span class="profile-value">+91 9876543210</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Location:</span>
+                        <span class="profile-value">Delhi, India</span>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-card-title">🎓 Academic Background</div>
+                    <div class="profile-item">
+                        <span class="profile-label">Graduation:</span>
+                        <span class="profile-value">B.Tech Computer Science</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">College:</span>
+                        <span class="profile-value">IIT Delhi</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Year of Passing:</span>
+                        <span class="profile-value">2023</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Student Type:</span>
+                        <span class="profile-value">Fresher</span>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-card-title">📚 Study Strategy</div>
+                    <div class="profile-item">
+                        <span class="profile-label">Weekly Hours:</span>
+                        <span class="profile-value">56 hours</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Study Approach:</span>
+                        <span class="profile-value">Balanced</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Focus Combo:</span>
+                        <span class="profile-value">GS + Optional</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Optional Subject:</span>
+                        <span class="profile-value">Computer Science</span>
+                    </div>
+                </div>
+                
+                <div class="profile-card">
+                    <div class="profile-card-title">🎯 Preparation Status</div>
+                    <div class="profile-item">
+                        <span class="profile-label">Preparing Since:</span>
+                        <span class="profile-value">January 2024</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Previous Attempts:</span>
+                        <span class="profile-value">0 (Fresher)</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Target Year:</span>
+                        <span class="profile-value">2026</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">Start Date:</span>
+                        <span class="profile-value">January 1, 2026</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar-section">
+            <!-- Year Calendar -->
+            <div class="section-title">
+                <i class="fas fa-calendar"></i>
+                Year Overview - Study Cycles & Phases
+            </div>
+            <div class="year-calendar">
+                <!-- January -->
+                <div class="month-card active">
+                    <div class="cycle-label">NCERT Foundation</div>
+                    <div class="month-header">
+                        <div class="month-name">JANUARY</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell cycle-phase-1">1</div>
+                        <div class="day-cell cycle-phase-1">2</div>
+                        <div class="day-cell cycle-phase-1 weekend">3</div>
+                        <div class="day-cell cycle-phase-1 weekend">4</div>
+                        <div class="day-cell cycle-phase-1">5</div>
+                        <div class="day-cell cycle-phase-1 weekend">6</div>
+                        <div class="day-cell cycle-phase-1 weekend">7</div>
+                        <div class="day-cell cycle-phase-1">8</div>
+                        <div class="day-cell cycle-phase-1">9</div>
+                        <div class="day-cell cycle-phase-1">10</div>
+                        <div class="day-cell cycle-phase-1 weekend">11</div>
+                        <div class="day-cell cycle-phase-1 weekend">12</div>
+                        <div class="day-cell cycle-phase-1">13</div>
+                        <div class="day-cell cycle-phase-1">14</div>
+                        <div class="day-cell cycle-phase-1">15</div>
+                        <div class="day-cell cycle-phase-1">16</div>
+                        <div class="day-cell cycle-phase-1 weekend">17</div>
+                        <div class="day-cell cycle-phase-1 weekend">18</div>
+                        <div class="day-cell cycle-phase-1">19</div>
+                        <div class="day-cell cycle-phase-1">20</div>
+                        <div class="day-cell cycle-phase-1">21</div>
+                        <div class="day-cell cycle-phase-1">22</div>
+                        <div class="day-cell cycle-phase-1 weekend">23</div>
+                        <div class="day-cell cycle-phase-1 weekend">24</div>
+                        <div class="day-cell cycle-phase-1">25</div>
+                        <div class="day-cell cycle-phase-1">26</div>
+                        <div class="day-cell cycle-phase-1">27</div>
+                        <div class="day-cell cycle-phase-1">28</div>
+                        <div class="day-cell cycle-phase-1 weekend">29</div>
+                        <div class="day-cell cycle-phase-1 weekend">30</div>
+                        <div class="day-cell cycle-phase-1">31</div>
+                    </div>
+                </div>
+
+                <!-- February -->
+                <div class="month-card">
+                    <div class="cycle-label">Comprehensive Foundation</div>
+                    <div class="month-header">
+                        <div class="month-name">FEBRUARY</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell cycle-phase-1">1</div>
+                        <div class="day-cell cycle-phase-1">2</div>
+                        <div class="day-cell cycle-phase-1">3</div>
+                        <div class="day-cell cycle-phase-1">4</div>
+                        <div class="day-cell cycle-phase-1">5</div>
+                        <div class="day-cell cycle-phase-1 weekend">6</div>
+                        <div class="day-cell cycle-phase-1 weekend">7</div>
+                        <div class="day-cell cycle-phase-1">8</div>
+                        <div class="day-cell cycle-phase-1">9</div>
+                        <div class="day-cell cycle-phase-1">10</div>
+                        <div class="day-cell cycle-phase-1">11</div>
+                        <div class="day-cell cycle-phase-1">12</div>
+                        <div class="day-cell cycle-phase-1 weekend">13</div>
+                        <div class="day-cell cycle-phase-1 weekend">14</div>
+                        <div class="day-cell cycle-phase-1">15</div>
+                        <div class="day-cell cycle-phase-1">16</div>
+                        <div class="day-cell cycle-phase-1">17</div>
+                        <div class="day-cell cycle-phase-1">18</div>
+                        <div class="day-cell cycle-phase-1">19</div>
+                        <div class="day-cell cycle-phase-1 weekend">20</div>
+                        <div class="day-cell cycle-phase-1 weekend">21</div>
+                        <div class="day-cell cycle-phase-1">22</div>
+                        <div class="day-cell cycle-phase-1">23</div>
+                        <div class="day-cell cycle-phase-1">24</div>
+                        <div class="day-cell cycle-phase-1">25</div>
+                        <div class="day-cell cycle-phase-1">26</div>
+                        <div class="day-cell cycle-phase-1 weekend">27</div>
+                        <div class="day-cell cycle-phase-1 weekend">28</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- March -->
+                <div class="month-card">
+                    <div class="cycle-label">Mains Revision Pre-Prelims</div>
+                    <div class="month-header">
+                        <div class="month-name">MARCH</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell cycle-phase-2">1</div>
+                        <div class="day-cell cycle-phase-2">2</div>
+                        <div class="day-cell cycle-phase-2">3</div>
+                        <div class="day-cell cycle-phase-2">4</div>
+                        <div class="day-cell cycle-phase-2">5</div>
+                        <div class="day-cell cycle-phase-2">6</div>
+                        <div class="day-cell cycle-phase-2 weekend">7</div>
+                        <div class="day-cell cycle-phase-2 weekend">8</div>
+                        <div class="day-cell cycle-phase-2">9</div>
+                        <div class="day-cell cycle-phase-2">10</div>
+                        <div class="day-cell cycle-phase-2">11</div>
+                        <div class="day-cell cycle-phase-2">12</div>
+                        <div class="day-cell cycle-phase-2">13</div>
+                        <div class="day-cell cycle-phase-2 weekend">14</div>
+                        <div class="day-cell cycle-phase-2 weekend">15</div>
+                        <div class="day-cell cycle-phase-2">16</div>
+                        <div class="day-cell cycle-phase-2">17</div>
+                        <div class="day-cell cycle-phase-2">18</div>
+                        <div class="day-cell cycle-phase-2">19</div>
+                        <div class="day-cell cycle-phase-2">20</div>
+                        <div class="day-cell cycle-phase-2 weekend">21</div>
+                        <div class="day-cell cycle-phase-2 weekend">22</div>
+                        <div class="day-cell cycle-phase-2">23</div>
+                        <div class="day-cell cycle-phase-2">24</div>
+                        <div class="day-cell cycle-phase-2">25</div>
+                        <div class="day-cell cycle-phase-2">26</div>
+                        <div class="day-cell cycle-phase-2">27</div>
+                        <div class="day-cell cycle-phase-2 weekend">28</div>
+                        <div class="day-cell cycle-phase-2 weekend">29</div>
+                        <div class="day-cell cycle-phase-2">30</div>
+                        <div class="day-cell cycle-phase-2">31</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- April -->
+                <div class="month-card">
+                    <div class="cycle-label">Prelims Reading</div>
+                    <div class="month-header">
+                        <div class="month-name">APRIL</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell cycle-phase-2">1</div>
+                        <div class="day-cell cycle-phase-2">2</div>
+                        <div class="day-cell cycle-phase-2">3</div>
+                        <div class="day-cell cycle-phase-2">4</div>
+                        <div class="day-cell cycle-phase-2">5</div>
+                        <div class="day-cell cycle-phase-2 weekend">6</div>
+                        <div class="day-cell cycle-phase-2 weekend">7</div>
+                        <div class="day-cell cycle-phase-2">8</div>
+                        <div class="day-cell cycle-phase-2">9</div>
+                        <div class="day-cell cycle-phase-2">10</div>
+                        <div class="day-cell cycle-phase-2">11</div>
+                        <div class="day-cell cycle-phase-2">12</div>
+                        <div class="day-cell cycle-phase-2 weekend">13</div>
+                        <div class="day-cell cycle-phase-2 weekend">14</div>
+                        <div class="day-cell cycle-phase-2">15</div>
+                        <div class="day-cell cycle-phase-2">16</div>
+                        <div class="day-cell cycle-phase-2">17</div>
+                        <div class="day-cell cycle-phase-2">18</div>
+                        <div class="day-cell cycle-phase-2">19</div>
+                        <div class="day-cell cycle-phase-2 weekend">20</div>
+                        <div class="day-cell cycle-phase-2 weekend">21</div>
+                        <div class="day-cell cycle-phase-2">22</div>
+                        <div class="day-cell cycle-phase-2">23</div>
+                        <div class="day-cell cycle-phase-2">24</div>
+                        <div class="day-cell cycle-phase-2">25</div>
+                        <div class="day-cell cycle-phase-2">26</div>
+                        <div class="day-cell cycle-phase-2 weekend">27</div>
+                        <div class="day-cell cycle-phase-2 weekend">28</div>
+                        <div class="day-cell cycle-phase-2">29</div>
+                        <div class="day-cell cycle-phase-2">30</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- May -->
+                <div class="month-card">
+                    <div class="cycle-label">Prelims Revision</div>
+                    <div class="month-header">
+                        <div class="month-name">MAY</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell cycle-phase-3">1</div>
+                        <div class="day-cell cycle-phase-3">2</div>
+                        <div class="day-cell cycle-phase-3">3</div>
+                        <div class="day-cell cycle-phase-3">4</div>
+                        <div class="day-cell cycle-phase-3 weekend">5</div>
+                        <div class="day-cell cycle-phase-3 weekend">6</div>
+                        <div class="day-cell cycle-phase-3">7</div>
+                        <div class="day-cell cycle-phase-3">8</div>
+                        <div class="day-cell cycle-phase-3">9</div>
+                        <div class="day-cell cycle-phase-3">10</div>
+                        <div class="day-cell cycle-phase-3">11</div>
+                        <div class="day-cell cycle-phase-3 weekend">12</div>
+                        <div class="day-cell cycle-phase-3 weekend">13</div>
+                        <div class="day-cell cycle-phase-3">14</div>
+                        <div class="day-cell cycle-phase-3">15</div>
+                        <div class="day-cell cycle-phase-3">16</div>
+                        <div class="day-cell cycle-phase-3">17</div>
+                        <div class="day-cell cycle-phase-3">18</div>
+                        <div class="day-cell cycle-phase-3 weekend">19</div>
+                        <div class="day-cell cycle-phase-3 weekend">20</div>
+                        <div class="day-cell cycle-phase-3">21</div>
+                        <div class="day-cell cycle-phase-3">22</div>
+                        <div class="day-cell cycle-phase-3">23</div>
+                        <div class="day-cell cycle-phase-3">24</div>
+                        <div class="day-cell cycle-phase-3">25</div>
+                        <div class="day-cell cycle-phase-3 weekend">26</div>
+                        <div class="day-cell cycle-phase-3 weekend">27</div>
+                        <div class="day-cell cycle-phase-3">28</div>
+                        <div class="day-cell cycle-phase-3">29</div>
+                        <div class="day-cell cycle-phase-3">30</div>
+                        <div class="day-cell cycle-phase-3">31</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- June -->
+                <div class="month-card">
+                    <div class="cycle-label">Prelims Rapid Revision</div>
+                    <div class="month-header">
+                        <div class="month-name">JUNE</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell cycle-phase-3">1</div>
+                        <div class="day-cell cycle-phase-3">2</div>
+                        <div class="day-cell cycle-phase-3">3</div>
+                        <div class="day-cell cycle-phase-3">4</div>
+                        <div class="day-cell cycle-phase-3">5</div>
+                        <div class="day-cell cycle-phase-3 weekend">6</div>
+                        <div class="day-cell cycle-phase-3 weekend">7</div>
+                        <div class="day-cell cycle-phase-3">8</div>
+                        <div class="day-cell cycle-phase-3">9</div>
+                        <div class="day-cell cycle-phase-3">10</div>
+                        <div class="day-cell cycle-phase-3">11</div>
+                        <div class="day-cell cycle-phase-3">12</div>
+                        <div class="day-cell cycle-phase-3 weekend">13</div>
+                        <div class="day-cell cycle-phase-3 weekend">14</div>
+                        <div class="day-cell cycle-phase-3">15</div>
+                        <div class="day-cell cycle-phase-3">16</div>
+                        <div class="day-cell cycle-phase-3">17</div>
+                        <div class="day-cell cycle-phase-3">18</div>
+                        <div class="day-cell cycle-phase-3">19</div>
+                        <div class="day-cell cycle-phase-3 weekend">20</div>
+                        <div class="day-cell cycle-phase-3 weekend">21</div>
+                        <div class="day-cell cycle-phase-3">22</div>
+                        <div class="day-cell cycle-phase-3">23</div>
+                        <div class="day-cell cycle-phase-3">24</div>
+                        <div class="day-cell cycle-phase-3">25</div>
+                        <div class="day-cell cycle-phase-3">26</div>
+                        <div class="day-cell cycle-phase-3 weekend">27</div>
+                        <div class="day-cell cycle-phase-3 weekend">28</div>
+                        <div class="day-cell cycle-phase-3">29</div>
+                        <div class="day-cell cycle-phase-3">30</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- July -->
+                <div class="month-card">
+                    <div class="cycle-label">Mains Revision</div>
+                    <div class="month-header">
+                        <div class="month-name">JULY</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell cycle-phase-4">1</div>
+                        <div class="day-cell cycle-phase-4">2</div>
+                        <div class="day-cell cycle-phase-4">3</div>
+                        <div class="day-cell cycle-phase-4">4</div>
+                        <div class="day-cell cycle-phase-4">5</div>
+                        <div class="day-cell cycle-phase-4 weekend">6</div>
+                        <div class="day-cell cycle-phase-4 weekend">7</div>
+                        <div class="day-cell cycle-phase-4">8</div>
+                        <div class="day-cell cycle-phase-4">9</div>
+                        <div class="day-cell cycle-phase-4">10</div>
+                        <div class="day-cell cycle-phase-4">11</div>
+                        <div class="day-cell cycle-phase-4">12</div>
+                        <div class="day-cell cycle-phase-4 weekend">13</div>
+                        <div class="day-cell cycle-phase-4 weekend">14</div>
+                        <div class="day-cell cycle-phase-4">15</div>
+                        <div class="day-cell cycle-phase-4">16</div>
+                        <div class="day-cell cycle-phase-4">17</div>
+                        <div class="day-cell cycle-phase-4">18</div>
+                        <div class="day-cell cycle-phase-4">19</div>
+                        <div class="day-cell cycle-phase-4 weekend">20</div>
+                        <div class="day-cell cycle-phase-4 weekend">21</div>
+                        <div class="day-cell cycle-phase-4">22</div>
+                        <div class="day-cell cycle-phase-4">23</div>
+                        <div class="day-cell cycle-phase-4">24</div>
+                        <div class="day-cell cycle-phase-4">25</div>
+                        <div class="day-cell cycle-phase-4">26</div>
+                        <div class="day-cell cycle-phase-4 weekend">27</div>
+                        <div class="day-cell cycle-phase-4 weekend">28</div>
+                        <div class="day-cell cycle-phase-4">29</div>
+                        <div class="day-cell cycle-phase-4">30</div>
+                        <div class="day-cell cycle-phase-4">31</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- August -->
+                <div class="month-card">
+                    <div class="cycle-label">Mains Rapid Revision</div>
+                    <div class="month-header">
+                        <div class="month-name">AUGUST</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell cycle-phase-4">1</div>
+                        <div class="day-cell cycle-phase-4">2</div>
+                        <div class="day-cell cycle-phase-4">3</div>
+                        <div class="day-cell cycle-phase-4">4</div>
+                        <div class="day-cell cycle-phase-4">5</div>
+                        <div class="day-cell cycle-phase-4 weekend">6</div>
+                        <div class="day-cell cycle-phase-4 weekend">7</div>
+                        <div class="day-cell cycle-phase-4">8</div>
+                        <div class="day-cell cycle-phase-4">9</div>
+                        <div class="day-cell cycle-phase-4">10</div>
+                        <div class="day-cell cycle-phase-4">11</div>
+                        <div class="day-cell cycle-phase-4">12</div>
+                        <div class="day-cell cycle-phase-4 weekend">13</div>
+                        <div class="day-cell cycle-phase-4 weekend">14</div>
+                        <div class="day-cell cycle-phase-4">15</div>
+                        <div class="day-cell cycle-phase-4">16</div>
+                        <div class="day-cell cycle-phase-4">17</div>
+                        <div class="day-cell cycle-phase-4">18</div>
+                        <div class="day-cell cycle-phase-4">19</div>
+                        <div class="day-cell cycle-phase-4 weekend">20</div>
+                        <div class="day-cell cycle-phase-4 weekend">21</div>
+                        <div class="day-cell cycle-phase-4">22</div>
+                        <div class="day-cell cycle-phase-4">23</div>
+                        <div class="day-cell cycle-phase-4">24</div>
+                        <div class="day-cell cycle-phase-4">25</div>
+                        <div class="day-cell cycle-phase-4">26</div>
+                        <div class="day-cell cycle-phase-4 weekend">27</div>
+                        <div class="day-cell cycle-phase-4 weekend">28</div>
+                        <div class="day-cell cycle-phase-4">29</div>
+                        <div class="day-cell cycle-phase-4">30</div>
+                        <div class="day-cell cycle-phase-4">31</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- September -->
+                <div class="month-card">
+                    <div class="cycle-label">Mains Foundation</div>
+                    <div class="month-header">
+                        <div class="month-name">SEPTEMBER</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell revision">1</div>
+                        <div class="day-cell revision">2</div>
+                        <div class="day-cell revision">3</div>
+                        <div class="day-cell revision">4</div>
+                        <div class="day-cell revision">5</div>
+                        <div class="day-cell revision weekend">6</div>
+                        <div class="day-cell revision weekend">7</div>
+                        <div class="day-cell revision">8</div>
+                        <div class="day-cell revision">9</div>
+                        <div class="day-cell revision">10</div>
+                        <div class="day-cell revision">11</div>
+                        <div class="day-cell revision">12</div>
+                        <div class="day-cell revision weekend">13</div>
+                        <div class="day-cell revision weekend">14</div>
+                        <div class="day-cell revision">15</div>
+                        <div class="day-cell revision">16</div>
+                        <div class="day-cell revision">17</div>
+                        <div class="day-cell revision">18</div>
+                        <div class="day-cell revision">19</div>
+                        <div class="day-cell revision weekend">20</div>
+                        <div class="day-cell revision weekend">21</div>
+                        <div class="day-cell revision">22</div>
+                        <div class="day-cell revision">23</div>
+                        <div class="day-cell revision">24</div>
+                        <div class="day-cell revision">25</div>
+                        <div class="day-cell revision">26</div>
+                        <div class="day-cell revision weekend">27</div>
+                        <div class="day-cell revision weekend">28</div>
+                        <div class="day-cell revision">29</div>
+                        <div class="day-cell revision">30</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- October -->
+                <div class="month-card">
+                    <div class="cycle-label">Mains Foundation</div>
+                    <div class="month-header">
+                        <div class="month-name">OCTOBER</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell revision">1</div>
+                        <div class="day-cell revision">2</div>
+                        <div class="day-cell revision">3</div>
+                        <div class="day-cell revision">4</div>
+                        <div class="day-cell revision">5</div>
+                        <div class="day-cell revision weekend">6</div>
+                        <div class="day-cell revision weekend">7</div>
+                        <div class="day-cell revision">8</div>
+                        <div class="day-cell revision">9</div>
+                        <div class="day-cell revision">10</div>
+                        <div class="day-cell revision">11</div>
+                        <div class="day-cell revision">12</div>
+                        <div class="day-cell revision weekend">13</div>
+                        <div class="day-cell revision weekend">14</div>
+                        <div class="day-cell revision">15</div>
+                        <div class="day-cell revision">16</div>
+                        <div class="day-cell revision">17</div>
+                        <div class="day-cell revision">18</div>
+                        <div class="day-cell revision">19</div>
+                        <div class="day-cell revision weekend">20</div>
+                        <div class="day-cell revision weekend">21</div>
+                        <div class="day-cell revision">22</div>
+                        <div class="day-cell revision">23</div>
+                        <div class="day-cell revision">24</div>
+                        <div class="day-cell revision">25</div>
+                        <div class="day-cell revision">26</div>
+                        <div class="day-cell revision weekend">27</div>
+                        <div class="day-cell revision weekend">28</div>
+                        <div class="day-cell revision">29</div>
+                        <div class="day-cell revision">30</div>
+                        <div class="day-cell revision">31</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- November -->
+                <div class="month-card">
+                    <div class="cycle-label">Mains Foundation</div>
+                    <div class="month-header">
+                        <div class="month-name">NOVEMBER</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell revision">1</div>
+                        <div class="day-cell revision">2</div>
+                        <div class="day-cell revision">3</div>
+                        <div class="day-cell revision">4</div>
+                        <div class="day-cell revision">5</div>
+                        <div class="day-cell revision weekend">6</div>
+                        <div class="day-cell revision weekend">7</div>
+                        <div class="day-cell revision">8</div>
+                        <div class="day-cell revision">9</div>
+                        <div class="day-cell revision">10</div>
+                        <div class="day-cell revision">11</div>
+                        <div class="day-cell revision">12</div>
+                        <div class="day-cell revision weekend">13</div>
+                        <div class="day-cell revision weekend">14</div>
+                        <div class="day-cell revision">15</div>
+                        <div class="day-cell revision">16</div>
+                        <div class="day-cell revision">17</div>
+                        <div class="day-cell revision">18</div>
+                        <div class="day-cell revision">19</div>
+                        <div class="day-cell revision weekend">20</div>
+                        <div class="day-cell revision weekend">21</div>
+                        <div class="day-cell revision">22</div>
+                        <div class="day-cell revision">23</div>
+                        <div class="day-cell revision">24</div>
+                        <div class="day-cell revision">25</div>
+                        <div class="day-cell revision">26</div>
+                        <div class="day-cell revision weekend">27</div>
+                        <div class="day-cell revision weekend">28</div>
+                        <div class="day-cell revision">29</div>
+                        <div class="day-cell revision">30</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+
+                <!-- December -->
+                <div class="month-card">
+                    <div class="cycle-label">Exam</div>
+                    <div class="month-header">
+                        <div class="month-name">DECEMBER</div>
+                        <div class="month-year">2026</div>
+                    </div>
+                    <div class="month-grid">
+                        <div class="day-header">S</div>
+                        <div class="day-header">M</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">W</div>
+                        <div class="day-header">T</div>
+                        <div class="day-header">F</div>
+                        <div class="day-header">S</div>
+                        
+                        <div class="day-cell exam">1</div>
+                        <div class="day-cell exam">2</div>
+                        <div class="day-cell exam">3</div>
+                        <div class="day-cell exam">4</div>
+                        <div class="day-cell exam">5</div>
+                        <div class="day-cell exam weekend">6</div>
+                        <div class="day-cell exam weekend">7</div>
+                        <div class="day-cell exam">8</div>
+                        <div class="day-cell exam">9</div>
+                        <div class="day-cell exam">10</div>
+                        <div class="day-cell exam">11</div>
+                        <div class="day-cell exam">12</div>
+                        <div class="day-cell exam weekend">13</div>
+                        <div class="day-cell exam weekend">14</div>
+                        <div class="day-cell exam">15</div>
+                        <div class="day-cell exam">16</div>
+                        <div class="day-cell exam">17</div>
+                        <div class="day-cell exam">18</div>
+                        <div class="day-cell exam">19</div>
+                        <div class="day-cell exam weekend">20</div>
+                        <div class="day-cell exam weekend">21</div>
+                        <div class="day-cell exam">22</div>
+                        <div class="day-cell exam">23</div>
+                        <div class="day-cell exam">24</div>
+                        <div class="day-cell exam">25</div>
+                        <div class="day-cell exam">26</div>
+                        <div class="day-cell exam weekend">27</div>
+                        <div class="day-cell exam weekend">28</div>
+                        <div class="day-cell exam">29</div>
+                        <div class="day-cell exam">30</div>
+                        <div class="day-cell exam">31</div>
+                        <div class="day-cell"></div>
+                        <div class="day-cell"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Month Detail Calendar -->
+            <div class="section-title">
+                <i class="fas fa-calendar-week"></i>
+                January 2026 - Subject Level Tasks
+            </div>
+            <div class="month-detail">
+                <div class="month-detail-header">
+                    <div class="month-detail-title">JANUARY</div>
+                    <div class="month-detail-year">2026</div>
+                </div>
+                <div class="month-detail-grid">
+                    <div class="month-day-header">Sunday</div>
+                    <div class="month-day-header">Monday</div>
+                    <div class="month-day-header">Tuesday</div>
+                    <div class="month-day-header">Wednesday</div>
+                    <div class="month-day-header">Thursday</div>
+                    <div class="month-day-header">Friday</div>
+                    <div class="month-day-header">Saturday</div>
+                    
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">3</div>
+                        <div class="subject-block history">History</div>
+                        <div class="subject-block geography">Geography</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">4</div>
+                        <div class="subject-block polity">Polity</div>
+                        <div class="subject-block economics">Economics</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">5</div>
+                        <div class="subject-block science">Science</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">6</div>
+                        <div class="subject-block history">History</div>
+                        <div class="subject-block optional">Optional</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">7</div>
+                        <div class="subject-block geography">Geography</div>
+                        <div class="subject-block polity">Polity</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">8</div>
+                        <div class="subject-block economics">Economics</div>
+                        <div class="subject-block science">Science</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">9</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                        <div class="subject-block history">History</div>
+                    </div>
+                    
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">10</div>
+                        <div class="subject-block geography">Geography</div>
+                        <div class="subject-block optional">Optional</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">11</div>
+                        <div class="subject-block polity">Polity</div>
+                        <div class="subject-block economics">Economics</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">12</div>
+                        <div class="subject-block science">Science</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">13</div>
+                        <div class="subject-block history">History</div>
+                        <div class="subject-block geography">Geography</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">14</div>
+                        <div class="subject-block polity">Polity</div>
+                        <div class="subject-block optional">Optional</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">15</div>
+                        <div class="subject-block economics">Economics</div>
+                        <div class="subject-block science">Science</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">16</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                        <div class="subject-block history">History</div>
+                    </div>
+                    
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">17</div>
+                        <div class="subject-block geography">Geography</div>
+                        <div class="subject-block polity">Polity</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">18</div>
+                        <div class="subject-block economics">Economics</div>
+                        <div class="subject-block science">Science</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">19</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                        <div class="subject-block optional">Optional</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">20</div>
+                        <div class="subject-block history">History</div>
+                        <div class="subject-block geography">Geography</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">21</div>
+                        <div class="subject-block polity">Polity</div>
+                        <div class="subject-block economics">Economics</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">22</div>
+                        <div class="subject-block science">Science</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">23</div>
+                        <div class="subject-block history">History</div>
+                        <div class="subject-block optional">Optional</div>
+                    </div>
+                    
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">24</div>
+                        <div class="subject-block geography">Geography</div>
+                        <div class="subject-block polity">Polity</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">25</div>
+                        <div class="subject-block economics">Economics</div>
+                        <div class="subject-block science">Science</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">26</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                        <div class="subject-block history">History</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">27</div>
+                        <div class="subject-block geography">Geography</div>
+                        <div class="subject-block optional">Optional</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">28</div>
+                        <div class="subject-block polity">Polity</div>
+                        <div class="subject-block economics">Economics</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number">29</div>
+                        <div class="subject-block science">Science</div>
+                        <div class="subject-block current-affairs">Current Affairs</div>
+                    </div>
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">30</div>
+                        <div class="subject-block history">History</div>
+                        <div class="subject-block geography">Geography</div>
+                    </div>
+                    
+                    <div class="month-day-cell">
+                        <div class="month-day-number weekend">31</div>
+                        <div class="subject-block polity">Polity</div>
+                        <div class="subject-block optional">Optional</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week Calendar -->
+            <div class="section-title">
+                <i class="fas fa-calendar-day"></i>
+                Week of January 13-19, 2026 - Daily Tasks
+            </div>
+            <div class="week-calendar">
+                <div class="week-header">
+                    <div class="week-title">Week 3: January 13-19, 2026</div>
+                    <div class="week-nav">
+                        <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="week-grid">
+                    <div class="week-day">
+                        <div class="week-day-header">
+                            <div class="week-day-name">Sunday</div>
+                            <div class="week-day-number weekend">13</div>
+                        </div>
+                        <div class="daily-tasks">
+                            <div class="task-item current-affairs">
+                                <div class="task-description">Current Affairs - The Hindu Editorial</div>
+                            </div>
+                            <div class="task-item history">
+                                <div class="task-description">Modern History - Freedom Struggle</div>
+                            </div>
+                            <div class="task-item optional">
+                                <div class="task-description">Optional Subject - Topic 1</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-day">
+                        <div class="week-day-header">
+                            <div class="week-day-name">Monday</div>
+                            <div class="week-day-number">14</div>
+                        </div>
+                        <div class="daily-tasks">
+                            <div class="task-item polity">
+                                <div class="task-description">Polity - Constitution Articles</div>
+                            </div>
+                            <div class="task-item optional">
+                                <div class="task-description">Optional Subject - Topic 2</div>
+                            </div>
+                            <div class="task-item current-affairs">
+                                <div class="task-description">Current Affairs - Daily News</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-day">
+                        <div class="week-day-header">
+                            <div class="week-day-name">Tuesday</div>
+                            <div class="week-day-number">15</div>
+                        </div>
+                        <div class="daily-tasks">
+                            <div class="task-item economics">
+                                <div class="task-description">Economics - Macroeconomics</div>
+                            </div>
+                            <div class="task-item science">
+                                <div class="task-description">Science & Technology - Physics</div>
+                            </div>
+                            <div class="task-item current-affairs">
+                                <div class="task-description">Current Affairs - PIB</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-day">
+                        <div class="week-day-header">
+                            <div class="week-day-name">Wednesday</div>
+                            <div class="week-day-number">16</div>
+                        </div>
+                        <div class="daily-tasks">
+                            <div class="task-item current-affairs">
+                                <div class="task-description">Current Affairs - The Hindu Editorial</div>
+                            </div>
+                            <div class="task-item history">
+                                <div class="task-description">Modern History - Freedom Struggle</div>
+                            </div>
+                            <div class="task-item optional">
+                                <div class="task-description">Optional Subject - Topic 3</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-day">
+                        <div class="week-day-header">
+                            <div class="week-day-name">Thursday</div>
+                            <div class="week-day-number">17</div>
+                        </div>
+                        <div class="daily-tasks">
+                            <div class="task-item geography">
+                                <div class="task-description">Geography - Physical Geography</div>
+                            </div>
+                            <div class="task-item polity">
+                                <div class="task-description">Polity - Constitution Articles</div>
+                            </div>
+                            <div class="task-item current-affairs">
+                                <div class="task-description">Current Affairs - Daily News</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-day">
+                        <div class="week-day-header">
+                            <div class="week-day-name">Friday</div>
+                            <div class="week-day-number">18</div>
+                        </div>
+                        <div class="daily-tasks">
+                            <div class="task-item economics">
+                                <div class="task-description">Economics - Macroeconomics</div>
+                            </div>
+                            <div class="task-item science">
+                                <div class="task-description">Science & Technology - Physics</div>
+                            </div>
+                            <div class="task-item current-affairs">
+                                <div class="task-description">Current Affairs - PIB</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="week-day">
+                        <div class="week-day-header">
+                            <div class="week-day-name">Saturday</div>
+                            <div class="week-day-number weekend">19</div>
+                        </div>
+                        <div class="daily-tasks">
+                            <div class="task-item current-affairs">
+                                <div class="task-description">Current Affairs - The Hindu Editorial</div>
+                            </div>
+                            <div class="task-item history">
+                                <div class="task-description">Modern History - Freedom Struggle</div>
+                            </div>
+                            <div class="task-item optional">
+                                <div class="task-description">Optional Subject - Topic 4</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Week Resources Section -->
+            <div class="week-resources">
+                <div class="week-resources-title">
+                    <i class="fas fa-book-open"></i>
+                    Week 3 Resources - January 13-19, 2026
+                </div>
+                <div class="resources-grid">
+                    <div class="resource-category">
+                        <div class="resource-category-title">📚 Primary Books</div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📖</div>
+                            <div>Laxmikanth - Indian Polity (Chapters 1-3)</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📖</div>
+                            <div>Spectrum - Modern History (Freedom Struggle)</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📖</div>
+                            <div>Ramesh Singh - Indian Economy (Macroeconomics)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="resource-category">
+                        <div class="resource-category-title">📺 Video Content</div>
+                        <div class="resource-item">
+                            <div class="resource-icon">🎥</div>
+                            <div>Unacademy - Polity Foundation Course</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">🎥</div>
+                            <div>Vision IAS - History Optional Classes</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">🎥</div>
+                            <div>Drishti IAS - Economics Current Affairs</div>
+                        </div>
+                    </div>
+                    
+                    <div class="resource-category">
+                        <div class="resource-category-title">📝 Practice Materials</div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📋</div>
+                            <div>Previous Year Prelims Questions - Polity</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📋</div>
+                            <div>Mains Answer Writing Practice - History</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📋</div>
+                            <div>Current Affairs Quiz - Daily</div>
+                        </div>
+                    </div>
+                    
+                    <div class="resource-category">
+                        <div class="resource-category-title">📰 Current Affairs</div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📰</div>
+                            <div>The Hindu - Daily Editorial Analysis</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📰</div>
+                            <div>PIB - Press Information Bureau</div>
+                        </div>
+                        <div class="resource-item">
+                            <div class="resource-icon">📰</div>
+                            <div>Insights IAS - Current Affairs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-title">
+                    <i class="fas fa-info-circle"></i>
+                    Legend & Study Phases
+                </div>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f8f9fa; border: 1px solid #e9ecef;"></div>
+                        <div class="legend-text">NCERT Foundation Cycle (Jan)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f1f3f4; border: 1px solid #dadce0;"></div>
+                        <div class="legend-text">Comprehensive Foundation Cycle (Feb)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e8f0fe; border: 1px solid #c6dafc;"></div>
+                        <div class="legend-text">Mains Revision Pre-Prelims Cycle (Mar)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f3e5f5; border: 1px solid #e1bee7;"></div>
+                        <div class="legend-text">Prelims Reading Cycle (Apr)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0; border: 1px solid #ffcc02;"></div>
+                        <div class="legend-text">Prelims Revision Cycle (May)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0; border: 1px solid #ffcc02;"></div>
+                        <div class="legend-text">Prelims Rapid Revision Cycle (Jun)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f3e5f5; border: 1px solid #e1bee7;"></div>
+                        <div class="legend-text">Mains Revision Cycle (Jul)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f3e5f5; border: 1px solid #e1bee7;"></div>
+                        <div class="legend-text">Mains Rapid Revision Cycle (Aug)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff3e0; border: 1px solid #ffcc02;"></div>
+                        <div class="legend-text">Mains Foundation Cycle (Sep-Nov)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffebee; border: 1px solid #f44336;"></div>
+                        <div class="legend-text">Exam Phase (Dec)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff5f5; border: 1px solid #fed7d7;"></div>
+                        <div class="legend-text">History</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f0fff4; border: 1px solid #c6f6d5;"></div>
+                        <div class="legend-text">Geography</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ebf8ff; border: 1px solid #bee3f8;"></div>
+                        <div class="legend-text">Polity</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fffbeb; border: 1px solid #fbd38d;"></div>
+                        <div class="legend-text">Economics</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #faf5ff; border: 1px solid #e9d8fd;"></div>
+                        <div class="legend-text">Science & Technology</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fdf2f8; border: 1px solid #fbb6ce;"></div>
+                        <div class="legend-text">Current Affairs</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f0fdf4; border: 1px solid #bbf7d0;"></div>
+                        <div class="legend-text">Optional Subject</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comprehensive Resources Table -->
+            <div class="resources-table-section">
+                <div class="resources-table-title">
+                    <i class="fas fa-table"></i>
+                    Comprehensive Resources by Subject
+                </div>
+                
+                <table class="subject-resources-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Primary Books</th>
+                            <th>Video Content</th>
+                            <th>Practice Materials</th>
+                            <th>Current Affairs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="subject-name">History</td>
+                            <td>
+                                <div class="resource-type">📚 Textbooks</div>
+                                <div class="resource-list-item">Spectrum - Modern History</div>
+                                <div class="resource-list-item">NCERT - Class 6-12 History</div>
+                                <div class="resource-type">📖 Reference</div>
+                                <div class="resource-list-item">Bipin Chandra - India's Struggle for Independence</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">🎥 Online Courses</div>
+                                <div class="resource-list-item">Vision IAS - History Foundation</div>
+                                <div class="resource-list-item">Unacademy - Modern History</div>
+                                <div class="resource-type">📺 YouTube</div>
+                                <div class="resource-list-item">Drishti IAS - History Classes</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📋 Practice Tests</div>
+                                <div class="resource-list-item">Previous Year Prelims Questions</div>
+                                <div class="resource-list-item">Mains Answer Writing Practice</div>
+                                <div class="resource-type">📝 Mock Tests</div>
+                                <div class="resource-list-item">Vision IAS Test Series</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📰 Daily Sources</div>
+                                <div class="resource-list-item">The Hindu - Editorial</div>
+                                <div class="resource-list-item">Indian Express - Analysis</div>
+                                <div class="resource-type">📊 Monthly</div>
+                                <div class="resource-list-item">Vision IAS Monthly Magazine</div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="subject-name">Geography</td>
+                            <td>
+                                <div class="resource-type">📚 Textbooks</div>
+                                <div class="resource-list-item">GC Leong - Physical Geography</div>
+                                <div class="resource-list-item">NCERT - Class 6-12 Geography</div>
+                                <div class="resource-type">📖 Reference</div>
+                                <div class="resource-list-item">Majid Hussain - Indian Geography</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">🎥 Online Courses</div>
+                                <div class="resource-list-item">Vision IAS - Geography Foundation</div>
+                                <div class="resource-list-item">Unacademy - Physical Geography</div>
+                                <div class="resource-type">📺 YouTube</div>
+                                <div class="resource-list-item">Amit Sengupta - Geography</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📋 Practice Tests</div>
+                                <div class="resource-list-item">Previous Year Prelims Questions</div>
+                                <div class="resource-list-item">Map-based Questions</div>
+                                <div class="resource-type">📝 Mock Tests</div>
+                                <div class="resource-list-item">Drishti IAS Test Series</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📰 Daily Sources</div>
+                                <div class="resource-list-item">The Hindu - Geography News</div>
+                                <div class="resource-list-item">Down to Earth Magazine</div>
+                                <div class="resource-type">📊 Monthly</div>
+                                <div class="resource-list-item">Geography & You Magazine</div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="subject-name">Polity</td>
+                            <td>
+                                <div class="resource-type">📚 Textbooks</div>
+                                <div class="resource-list-item">Laxmikanth - Indian Polity</div>
+                                <div class="resource-list-item">NCERT - Class 9-12 Political Science</div>
+                                <div class="resource-type">📖 Reference</div>
+                                <div class="resource-list-item">D.D. Basu - Introduction to Constitution</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">🎥 Online Courses</div>
+                                <div class="resource-list-item">Vision IAS - Polity Foundation</div>
+                                <div class="resource-list-item">Unacademy - Indian Constitution</div>
+                                <div class="resource-type">📺 YouTube</div>
+                                <div class="resource-list-item">Laxmikanth Sir - Polity Classes</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📋 Practice Tests</div>
+                                <div class="resource-list-item">Previous Year Prelims Questions</div>
+                                <div class="resource-list-item">Constitutional Articles Practice</div>
+                                <div class="resource-type">📝 Mock Tests</div>
+                                <div class="resource-list-item">Insights IAS Test Series</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📰 Daily Sources</div>
+                                <div class="resource-list-item">The Hindu - Polity News</div>
+                                <div class="resource-list-item">PRS Legislative Research</div>
+                                <div class="resource-type">📊 Monthly</div>
+                                <div class="resource-list-item">Yojana Magazine</div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="subject-name">Economics</td>
+                            <td>
+                                <div class="resource-type">📚 Textbooks</div>
+                                <div class="resource-list-item">Ramesh Singh - Indian Economy</div>
+                                <div class="resource-list-item">NCERT - Class 9-12 Economics</div>
+                                <div class="resource-type">📖 Reference</div>
+                                <div class="resource-list-item">Mishra & Puri - Indian Economy</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">🎥 Online Courses</div>
+                                <div class="resource-list-item">Vision IAS - Economics Foundation</div>
+                                <div class="resource-list-item">Unacademy - Indian Economy</div>
+                                <div class="resource-type">📺 YouTube</div>
+                                <div class="resource-list-item">Mrunal Patel - Economics</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📋 Practice Tests</div>
+                                <div class="resource-list-item">Previous Year Prelims Questions</div>
+                                <div class="resource-list-item">Economic Survey Questions</div>
+                                <div class="resource-type">📝 Mock Tests</div>
+                                <div class="resource-list-item">Vision IAS Test Series</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📰 Daily Sources</div>
+                                <div class="resource-list-item">The Hindu - Business Page</div>
+                                <div class="resource-list-item">Economic Times</div>
+                                <div class="resource-type">📊 Monthly</div>
+                                <div class="resource-list-item">Economic Survey</div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="subject-name">Science & Technology</td>
+                            <td>
+                                <div class="resource-type">📚 Textbooks</div>
+                                <div class="resource-list-item">NCERT - Class 6-12 Science</div>
+                                <div class="resource-list-item">Shankar IAS - Science & Technology</div>
+                                <div class="resource-type">📖 Reference</div>
+                                <div class="resource-list-item">Ravi Agrahari - Science & Technology</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">🎥 Online Courses</div>
+                                <div class="resource-list-item">Vision IAS - Science Foundation</div>
+                                <div class="resource-list-item">Unacademy - Science & Technology</div>
+                                <div class="resource-type">📺 YouTube</div>
+                                <div class="resource-list-item">Khan Academy - Science</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📋 Practice Tests</div>
+                                <div class="resource-list-item">Previous Year Prelims Questions</div>
+                                <div class="resource-list-item">Science Current Affairs Quiz</div>
+                                <div class="resource-type">📝 Mock Tests</div>
+                                <div class="resource-list-item">Drishti IAS Test Series</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📰 Daily Sources</div>
+                                <div class="resource-list-item">The Hindu - Science Page</div>
+                                <div class="resource-list-item">Science Daily</div>
+                                <div class="resource-type">📊 Monthly</div>
+                                <div class="resource-list-item">Science Reporter</div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="subject-name">Current Affairs</td>
+                            <td>
+                                <div class="resource-type">📚 Monthly Magazines</div>
+                                <div class="resource-list-item">Vision IAS Monthly Magazine</div>
+                                <div class="resource-list-item">Insights IAS Monthly</div>
+                                <div class="resource-type">📖 Yearly</div>
+                                <div class="resource-list-item">Manorama Yearbook</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">🎥 Daily Analysis</div>
+                                <div class="resource-list-item">Vision IAS Daily Current Affairs</div>
+                                <div class="resource-list-item">Unacademy Daily News</div>
+                                <div class="resource-type">📺 YouTube</div>
+                                <div class="resource-list-item">Study IQ Daily Current Affairs</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📋 Practice Tests</div>
+                                <div class="resource-list-item">Daily Current Affairs Quiz</div>
+                                <div class="resource-list-item">Weekly Current Affairs Test</div>
+                                <div class="resource-type">📝 Mock Tests</div>
+                                <div class="resource-list-item">Monthly Current Affairs Test</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📰 Daily Sources</div>
+                                <div class="resource-list-item">The Hindu - Complete Newspaper</div>
+                                <div class="resource-list-item">Indian Express</div>
+                                <div class="resource-type">📊 Government</div>
+                                <div class="resource-list-item">PIB - Press Information Bureau</div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="subject-name">Optional Subject</td>
+                            <td>
+                                <div class="resource-type">📚 Subject Specific</div>
+                                <div class="resource-list-item">Subject-specific textbooks</div>
+                                <div class="resource-list-item">Previous year toppers' notes</div>
+                                <div class="resource-type">📖 Reference</div>
+                                <div class="resource-list-item">Standard reference books</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">🎥 Online Courses</div>
+                                <div class="resource-list-item">Subject-specific online courses</div>
+                                <div class="resource-list-item">YouTube channels</div>
+                                <div class="resource-type">📺 Live Classes</div>
+                                <div class="resource-list-item">Coaching institute classes</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📋 Practice Tests</div>
+                                <div class="resource-list-item">Previous year papers</div>
+                                <div class="resource-list-item">Mock test series</div>
+                                <div class="resource-type">📝 Answer Writing</div>
+                                <div class="resource-list-item">Daily answer writing practice</div>
+                            </td>
+                            <td>
+                                <div class="resource-type">📰 Current Affairs</div>
+                                <div class="resource-list-item">Subject-related current affairs</div>
+                                <div class="resource-list-item">Recent developments</div>
+                                <div class="resource-type">📊 Research</div>
+                                <div class="resource-list-item">Academic journals</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem; color: #4a5568;">
+                    <strong>Note:</strong> This comprehensive resource table provides a complete overview of all recommended materials for UPSC preparation. 
+                    Resources are categorized by type and subject for easy reference. Regular updates and current affairs integration are essential for success.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple interactivity for month cards
+        document.querySelectorAll('.month-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove active class from all cards
+                document.querySelectorAll('.month-card').forEach(c => c.classList.remove('active'));
+                // Add active class to clicked card
+                this.classList.add('active');
+            });
+        });
+
+        // Simple week navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // This would typically update the week view
+                console.log('Week navigation clicked');
+            });
+        });
+
+        // Add hover effects to task items
+        document.querySelectorAll('.task-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
