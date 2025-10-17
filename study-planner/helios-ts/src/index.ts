@@ -18,12 +18,6 @@ export {
 } from './engine/NewEngine-generate-plan';
 
 export {
-  generateFunctionalPlan,
-  rebalanceFunctionalPlan,
-  validateFunctionalPlan
-} from './engine/functional-engine';
-
-export {
   determineCycleSchedule,
 } from './engine/cycle-scheduler';
 
