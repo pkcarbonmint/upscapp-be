@@ -7,9 +7,9 @@
  */
 
 import dayjs from 'dayjs';
-import { StudentIntake, StudyPlan, StudyCycle, Block } from '../types/models';
+import { StudentIntake, StudyPlan, StudyCycle } from '../types/models';
 import { CycleType, Logger } from '../types/Types';
-import { Subject, SubjData } from '../types/Subjects';
+import { Subject } from '../types/Subjects';
 import { Config } from './engine-types';
 import { getSimpleCycleConfig, selectOptimalCycles, calculateCycleDuration } from './functional-cycle-config';
 import { SubjectLoader } from '../services/SubjectLoader';
@@ -61,7 +61,7 @@ export async function generateFunctionalPlan(
     };
     
   } catch (error) {
-    log.logError('FunctionalEngine', `Error generating plan: ${error}`);
+    log.logWarn('FunctionalEngine', `Error generating plan: ${error}`);
     return {
       success: false,
       plan: createEmptyPlan(userId),
@@ -79,8 +79,7 @@ async function loadSubjectsAndConfidence(
   logger: Logger
 ): Promise<{ subjects: Subject[]; confidenceMap: Map<string, number> }> {
   
-  const subjectLoader = new SubjectLoader();
-  const subjects = await subjectLoader.loadSubjects(intake);
+  const subjects = SubjectLoader.loadAllSubjects();
   
   // Create confidence map from intake
   const confidenceMap = new Map<string, number>();

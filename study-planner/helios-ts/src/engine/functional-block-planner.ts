@@ -10,7 +10,7 @@
 
 import dayjs from 'dayjs';
 import { Subject } from '../types/Subjects';
-import { StudentIntake, Block, WeeklyPlan, DailyPlan, Task } from '../types/models';
+import { StudentIntake, Block, WeeklyPlan } from '../types/models';
 import { CycleType, Logger } from '../types/Types';
 import { createPlanForOneWeek } from './OneWeekPlan';
 import { Config } from './engine-types';
@@ -62,17 +62,7 @@ export interface TaskRatios {
 // Configuration Constants
 // ============================================================================
 
-const CYCLE_TASK_RATIOS: Record<CycleType, TaskRatios> = {
-  'C1': { study: 1.0, practice: 0.0, revision: 0.0, test: 0.0 },
-  'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05 },
-  'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0.0 },
-  'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1 },
-  'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 },
-  'C5.b': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1 },
-  'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1 },
-  'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1 },
-  'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0.0 }
-};
+// Task ratios moved to intake.getTaskTypeRatios() method
 
 const CONFIDENCE_MULTIPLIERS = {
   'Weak': 1.5,      // Need more time for weak subjects
@@ -294,8 +284,6 @@ function createGapFillerBlock(
 
 export async function convertToBlocks(
   continuousBlocks: ContinuousBlock[],
-  cycleType: CycleType,
-  cycleOrder: number,
   cycleName: string,
   intake: StudentIntake,
   config: Config,
@@ -325,16 +313,16 @@ export async function convertToBlocks(
     }
     
     const block: Block = {
-      blockId: `${cycleName.replace(/\s+/g, '')}_${continuousBlock.subjectCode}_${i + 1}`,
-      blockName: `${continuousBlock.subjectName} Block`,
-      blockDescription: `Study block for ${continuousBlock.subjectName} (${continuousBlock.totalHours} hours over ${blockDurationWeeks} weeks)`,
-      blockType: 'Study',
-      blockOrder: i + 1,
-      blockDurationWeeks,
-      blockStartDate: continuousBlock.startDate.format('YYYY-MM-DD'),
-      blockEndDate: continuousBlock.endDate.format('YYYY-MM-DD'),
-      blockSubjects: continuousBlock.subjects.map(s => s.subjectCode),
-      blockTotalHours: continuousBlock.totalHours,
+      block_id: `${cycleName.replace(/\s+/g, '')}_${continuousBlock.subjectCode}_${i + 1}`,
+      block_name: `${continuousBlock.subjectName} Block`,
+      block_description: `Study block for ${continuousBlock.subjectName} (${continuousBlock.totalHours} hours over ${blockDurationWeeks} weeks)`,
+      block_type: 'Study',
+      block_order: i + 1,
+      block_duration_weeks: blockDurationWeeks,
+      block_start_date: continuousBlock.startDate.format('YYYY-MM-DD'),
+      block_end_date: continuousBlock.endDate.format('YYYY-MM-DD'),
+      block_subjects: continuousBlock.subjects.map(s => s.subjectCode),
+      block_total_hours: continuousBlock.totalHours,
       weekly_plan: weeklyPlans,
       resources: [] // Will be populated by resource service
     };
@@ -388,8 +376,6 @@ export async function createFunctionalBlocks(
   // Step 6: Convert to Block format
   const blocks = await convertToBlocks(
     gapFilledBlocks,
-    cycleType,
-    cycleOrder,
     cycleName,
     intake,
     config,

@@ -7,7 +7,7 @@
 
 import { CycleIntensity, StudentIntake } from '../types/models';
 import { CycleType, Logger } from '../types/Types';
-import { Subject, SubjData } from '../types/Subjects';
+import { Subject } from '../types/Subjects';
 import { Block } from '../types/models';
 import dayjs from 'dayjs';
 import { createFunctionalBlocks } from './functional-block-planner';
@@ -231,11 +231,11 @@ export function selectOptimalCycles(
   targetYear: number,
   intake: StudentIntake
 ): CycleType[] {
-  const prelimsDate = dayjs(intake.getPrelimsExamDate(targetYear.toString()));
-  const mainsDate = dayjs(intake.getMainsExamDate(targetYear.toString()));
+  const prelimsDate = dayjs(intake.getPrelimsExamDate());
+  const mainsDate = dayjs(intake.getMainsExamDate());
   
   const monthsToPrelimsFromStart = prelimsDate.diff(startDate, 'month');
-  const monthsToMainsFromStart = mainsDate.diff(startDate, 'month');
+  // Calculate time to exams for cycle selection
   
   // Simple heuristic for cycle selection based on available time
   if (monthsToPrelimsFromStart >= 18) {
