@@ -612,7 +612,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
   // Create single table with all month rows
   const allTableRows: TableRow[] = [];
   
-  monthRows.forEach((monthRow, rowIndex) => {
+  monthRows.forEach((monthRow) => {
     // Header row with month names
     const headerCells: TableCell[] = monthRow.map(({ month, cycle }) => {
       const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
