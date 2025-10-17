@@ -125,11 +125,11 @@ function getParallelCapacity(studyApproach: StudyApproach): number {
  * Also handles sequential scheduling when maxParallelSubjects = 1
  */
 function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap): SchedulingResult {
-  const { subjects, config, timeWindow, totalAvailableHours, workingHoursPerDay } = input;
+  const { subjects, config, timeWindow, totalAvailableHours, workingHoursPerDay, gsOptionalRatio } = input;
   const { cycleType, maxParallelSubjects } = config;
   const { start, end } = timeWindow;
   
-  const subjectAllocations = calculateSubjectAllocations(subjects, totalAvailableHours, confidenceMap, cycleType);
+  const subjectAllocations = calculateSubjectAllocations(subjects, totalAvailableHours, confidenceMap, cycleType, gsOptionalRatio);
   
   // For extreme short cycles, adjust allocations to fit within cycle duration
   const isExtremeShortCycle = [CycleType.C5, CycleType.C5B, CycleType.C8].includes(cycleType);
@@ -293,9 +293,110 @@ export function calculateActualHours(
 }
 
 /**
- * Calculate subject allocations based on proportional hours
+ * Get default GS:Optional ratio based on cycle type
  */
-function calculateSubjectAllocations(
+export function getDefaultGSOptionalRatio(cycleType: CycleType): GSOptionalRatio {
+  switch (cycleType) {
+    case CycleType.C4:
+    case CycleType.C5:
+    case CycleType.C5B:
+      // Prelims cycles: GS only (no optional)
+      return { gs: 1.0, optional: 0.0 };
+    case CycleType.C1:
+    case CycleType.C2:
+    case CycleType.C3:
+    case CycleType.C6:
+    case CycleType.C7:
+      // Foundation and Mains cycles: balanced approach
+      return { gs: 0.67, optional: 0.33 };
+    case CycleType.C8:
+      // Mains Foundation: more GS focus
+      return { gs: 0.8, optional: 0.2 };
+    default:
+      return { gs: 0.67, optional: 0.33 };
+  }
+}
+
+/**
+ * Create optional subject from basic information
+ * Since we don't have topic breakdown for optional subjects, we create a simplified structure
+ */
+export function createOptionalSubject(
+  subjectCode: string,
+  subjectName: string,
+  baselineHours: number,
+  priority: number = 3
+): Subject {
+  return {
+    subjectCode,
+    baselineHours,
+    priority,
+    subjectType: 'Optional',
+    isOptional: true,
+    optionalSubjectName: subjectName
+  };
+}
+
+/**
+ * Validate GS:Optional ratio
+ */
+export function validateGSOptionalRatio(ratio: GSOptionalRatio): boolean {
+  const total = ratio.gs + ratio.optional;
+  return total <= 1.0 && ratio.gs >= 0 && ratio.optional >= 0;
+}
+
+/**
+ * Calculate subject allocations based on proportional hours with GS:Optional ratio
+ */
+export function calculateSubjectAllocations(
+  subjects: Subject[],
+  totalHours: number,
+  confidenceMap: ConfidenceMap,
+  cycleType: CycleType,
+  gsOptionalRatio?: GSOptionalRatio
+): Map<string, number> {
+  // If no GS:Optional ratio specified, use proportional allocation
+  if (!gsOptionalRatio) {
+    return calculateProportionalAllocations(subjects, totalHours, confidenceMap, cycleType);
+  }
+
+  // Separate GS and Optional subjects
+  const gsSubjects = subjects.filter(s => s.subjectType === 'GS' || (!s.subjectType && !s.isOptional));
+  const optionalSubjects = subjects.filter(s => s.subjectType === 'Optional' || s.isOptional);
+  const otherSubjects = subjects.filter(s => s.subjectType === 'CSAT' || (!s.subjectType && !s.isOptional && !s.isOptional));
+
+  // Calculate hours for each category
+  const gsHours = Math.floor(totalHours * gsOptionalRatio.gs);
+  const optionalHours = Math.floor(totalHours * gsOptionalRatio.optional);
+  const otherHours = totalHours - gsHours - optionalHours;
+
+  const allocations = new Map<string, number>();
+
+  // Allocate GS subjects
+  if (gsSubjects.length > 0) {
+    const gsAllocations = calculateProportionalAllocations(gsSubjects, gsHours, confidenceMap, cycleType);
+    gsAllocations.forEach((hours, code) => allocations.set(code, hours));
+  }
+
+  // Allocate Optional subjects
+  if (optionalSubjects.length > 0) {
+    const optionalAllocations = calculateProportionalAllocations(optionalSubjects, optionalHours, confidenceMap, cycleType);
+    optionalAllocations.forEach((hours, code) => allocations.set(code, hours));
+  }
+
+  // Allocate other subjects (CSAT, etc.)
+  if (otherSubjects.length > 0) {
+    const otherAllocations = calculateProportionalAllocations(otherSubjects, otherHours, confidenceMap, cycleType);
+    otherAllocations.forEach((hours, code) => allocations.set(code, hours));
+  }
+
+  return allocations;
+}
+
+/**
+ * Calculate proportional allocations (original logic)
+ */
+function calculateProportionalAllocations(
   subjects: Subject[],
   totalHours: number,
   confidenceMap: ConfidenceMap,

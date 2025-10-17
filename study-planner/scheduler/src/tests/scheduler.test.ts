@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { determineCycleSchedule } from '../cycles';
-import { determineBlockSchedule, trimSubtopicsToFit, trimSubjectsToFit } from '../blocks';
+import { 
+  determineBlockSchedule, 
+  trimSubtopicsToFit, 
+  trimSubjectsToFit,
+  calculateSubjectAllocations,
+  createOptionalSubject,
+  validateGSOptionalRatio,
+  getDefaultGSOptionalRatio
+} from '../blocks';
 import { 
   Subject, 
   StudyApproach, 
@@ -467,6 +475,98 @@ describe('Scheduler Library Tests', () => {
         
         console.log(`✅ ${cycleType}: ${trimmedSubjects.length} subjects included`);
       });
+    });
+  });
+
+  /**
+   * Test GS:Optional ratio functionality
+   */
+  describe('GS:Optional Ratio Tests', () => {
+    it('should allocate hours based on GS:Optional ratio', () => {
+      const mockSubjects: Subject[] = [
+        { subjectCode: 'H01', baselineHours: 120, priority: 5, subjectType: 'GS' },
+        { subjectCode: 'H02', baselineHours: 100, priority: 4, subjectType: 'GS' },
+        { subjectCode: 'OPT01', baselineHours: 200, priority: 3, subjectType: 'Optional', isOptional: true, optionalSubjectName: 'History' }
+      ];
+      const mockConfidenceMap = new Map<string, number>([
+        ['H01', 1.0],
+        ['H02', 1.0],
+        ['OPT01', 1.0]
+      ]);
+      
+      const gsOptionalRatio = { gs: 0.67, optional: 0.33 };
+      const totalHours = 300;
+      
+      // Test the allocation calculation
+      const allocations = calculateSubjectAllocations(mockSubjects, totalHours, mockConfidenceMap, CycleType.C1, gsOptionalRatio);
+      
+      const gsHours = Array.from(allocations.entries())
+        .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'GS')
+        .reduce((sum, [, hours]) => sum + hours, 0);
+      
+      const optionalHours = Array.from(allocations.entries())
+        .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'Optional')
+        .reduce((sum, [, hours]) => sum + hours, 0);
+      
+      expect(gsHours).toBeGreaterThan(optionalHours);
+      expect(Math.abs(gsHours - (totalHours * 0.67))).toBeLessThan(10); // Allow some tolerance
+      expect(Math.abs(optionalHours - (totalHours * 0.33))).toBeLessThan(10);
+      
+      console.log(`✅ GS:Optional ratio allocation: GS=${gsHours}h, Optional=${optionalHours}h`);
+    });
+
+    it('should handle Prelims cycles with GS-only allocation', () => {
+      const mockSubjects: Subject[] = [
+        { subjectCode: 'H01', baselineHours: 120, priority: 5, subjectType: 'GS' },
+        { subjectCode: 'OPT01', baselineHours: 200, priority: 3, subjectType: 'Optional', isOptional: true }
+      ];
+      const mockConfidenceMap = new Map<string, number>([
+        ['H01', 1.0],
+        ['OPT01', 1.0]
+      ]);
+      
+      const gsOptionalRatio = { gs: 1.0, optional: 0.0 };
+      const totalHours = 200;
+      
+      const allocations = calculateSubjectAllocations(mockSubjects, totalHours, mockConfidenceMap, CycleType.C5, gsOptionalRatio);
+      
+      expect(allocations.get('H01')).toBeGreaterThan(0);
+      expect(allocations.get('OPT01')).toBeLessThanOrEqual(4); // Optional should get minimal hours in Prelims (due to minimum allocation)
+      
+      console.log('✅ Prelims GS-only allocation working correctly');
+    });
+
+    it('should create optional subjects correctly', () => {
+      const optionalSubject = createOptionalSubject('OPT01', 'History', 200, 4);
+      
+      expect(optionalSubject.subjectCode).toBe('OPT01');
+      expect(optionalSubject.baselineHours).toBe(200);
+      expect(optionalSubject.priority).toBe(4);
+      expect(optionalSubject.subjectType).toBe('Optional');
+      expect(optionalSubject.isOptional).toBe(true);
+      expect(optionalSubject.optionalSubjectName).toBe('History');
+      
+      console.log('✅ Optional subject creation working correctly');
+    });
+
+    it('should validate GS:Optional ratios correctly', () => {
+      expect(validateGSOptionalRatio({ gs: 0.67, optional: 0.33 })).toBe(true);
+      expect(validateGSOptionalRatio({ gs: 1.0, optional: 0.0 })).toBe(true);
+      expect(validateGSOptionalRatio({ gs: 0.5, optional: 0.5 })).toBe(true);
+      
+      expect(validateGSOptionalRatio({ gs: 1.1, optional: 0.0 })).toBe(false); // Invalid: > 1.0
+      expect(validateGSOptionalRatio({ gs: -0.1, optional: 0.5 })).toBe(false); // Invalid: negative
+      expect(validateGSOptionalRatio({ gs: 0.6, optional: 0.5 })).toBe(false); // Invalid: > 1.0 total
+      
+      console.log('✅ GS:Optional ratio validation working correctly');
+    });
+
+    it('should get default ratios based on cycle type', () => {
+      expect(getDefaultGSOptionalRatio(CycleType.C1)).toEqual({ gs: 0.67, optional: 0.33 });
+      expect(getDefaultGSOptionalRatio(CycleType.C5)).toEqual({ gs: 1.0, optional: 0.0 });
+      expect(getDefaultGSOptionalRatio(CycleType.C8)).toEqual({ gs: 0.8, optional: 0.2 });
+      
+      console.log('✅ Default GS:Optional ratios working correctly');
     });
   });
 
