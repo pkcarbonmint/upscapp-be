@@ -20,6 +20,7 @@ import { DEFAULT_CONFIG } from '../src/config';
 import type { StudentIntake, Archetype, StudyPlan } from '../src/types/models';
 import { createStudentIntake } from '../src/types/models';
 import { DocumentService } from '../src/services/DocumentService';
+import { CalendarDocxService } from '../src/services/CalendarDocxService';
 import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
 import * as path from 'path';
@@ -143,7 +144,7 @@ const startDates :  string [] = [
   '2027-04-15', // T14
   '2027-04-20', // T15
 ]
-// .slice(0,2)
+.slice(0,1)
 ;
 
 const dummyStuff = {
@@ -217,7 +218,7 @@ class TestDocumentGenerator {
     const allScenarios = startDates.map((startDate, i) => ({
       name: `T${i + 1}`,
       config: this.getTestConfig(),
-      archetype: this.getBalancedDualSubjectArchetype(),
+      archetype: this.getArchetype(),
       intake: this.makeIntake('2027', startDate),
     }));
 
@@ -310,16 +311,8 @@ class TestDocumentGenerator {
         console.log(`  ⏱️  Plan generation took: ${docPlanGenTime}ms`);
 
         // Generate Word document
-        const wordDocStartTime = Date.now();
-        const documentPath = await this.generateWordDocument(
+        await this.generateWordDocument(
           scenario.name, result.plan, result.intake);
-        const wordDocTime = Date.now() - wordDocStartTime;
-        console.log(`  ⏱️  Word document generation took: ${wordDocTime}ms`);
-        
-        const docSaveStartTime = Date.now();
-        await this.saveDocument(documentPath, scenario.name);
-        const docSaveTime = Date.now() - docSaveStartTime;
-        console.log(`  ⏱️  Document save took: ${docSaveTime}ms`);
 
         // Generate PDF document if enabled
         if (this.generatePDFs) {
@@ -453,18 +446,17 @@ class TestDocumentGenerator {
    */
   private async generateWordDocument(
     scenarioName: string,
-    studyPlan: StudyPlan, studentIntake: StudentIntake): Promise<Document> {
+    studyPlan: StudyPlan, studentIntake: StudentIntake): Promise<void> {
     const wordDocStartTime = Date.now();
     console.log(`      📄 Generating Word document...`);
     
-    // Use the actual student intake instead of creating a mock
-    const result = await DocumentService.generateDocument(
-      scenarioName, studyPlan, studentIntake);
-    
-    const wordDocTime = Date.now() - wordDocStartTime;
-    console.log(`      ⏱️  Word document generation took: ${wordDocTime}ms`);
-    
-    return result;
+    await CalendarDocxService.generateStudyPlanDocxToStream(
+      studyPlan,
+      studentIntake,
+      createWriteStream(path.join(this.outputDir, `${scenarioName}.docx`)),
+      { filename: `${scenarioName}.docx` }
+    );
+
   }
 
   /**
@@ -737,15 +729,15 @@ ${studyPlan.cycles?.map(cycle =>
 
   // Test scenario configurations (based on actual test files)
 
-  private getBalancedDualSubjectArchetype(): Archetype {
+  private getArchetype(): Archetype {
     return {
-      archetype: 'BalancedDualSubject',
+      archetype: 'Test Archetype',
       timeCommitment: 'FullTime',
       weeklyHoursMin: 40,
       weeklyHoursMax: 50,
       description: 'Student focusing on 2 subjects with balanced approach',
       defaultPacing: 'Balanced',
-      defaultApproach: 'DualSubject',
+      defaultApproach: 'SingleSubject',
       specialFocus: ['GS', 'Optional']
     };
   }
@@ -753,7 +745,7 @@ ${studyPlan.cycles?.map(cycle =>
   private makeIntake(targetYear: string, startDate: string): StudentIntake {
     return createStudentIntake({
       ...dummyStuff,
-      subject_approach: 'DualSubject',
+      subject_approach: 'SingleSubject',
       subject_confidence: {
         'H01': 'VeryStrong',
         'H02': 'VeryStrong',
@@ -879,7 +871,7 @@ async function main() {
       generateMarkdown: false,
       generateJson: true,
       generateWeeklySchedules: false, // Disabled for performance testing
-      generatePDFs: true // Enable PDF generation
+      generatePDFs: false // Enable PDF generation
     });
 
     await generator.generateAllTestDocuments(cliArgs.scenarios);
