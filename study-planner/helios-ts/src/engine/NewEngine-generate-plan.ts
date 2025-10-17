@@ -1,6 +1,6 @@
 import { StudyPlan, Archetype, StudyCycle } from '../types/models';
 import { StudentIntake } from '../types/models';
-import { Logger, LogEntry, SubjectApproach, CycleType } from '../types/Types';
+import { Logger, LogEntry, CycleType, ScenarioResult, CycleSchedule } from '../types/Types';
 import { Config } from './engine-types';
 import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
@@ -11,7 +11,7 @@ import { PlanResources, ResourceTimeline, BudgetSummary } from '../types/models'
 import { determineCycleSchedule } from './cycle-scheduler';
 import { createStudyCycle } from './cycle-creator';
 
-const makePlanner = (cycleType: CycleType) => function PlanCycle (
+const makeCycleCreator = (cycleType: CycleType) => function PlanCycle(
   logger: Logger,
   intake: StudentIntake,
   confidenceMap: Map<string, number>,
@@ -28,23 +28,23 @@ const makePlanner = (cycleType: CycleType) => function PlanCycle (
 function getPlannerForCycleType(cycleType: CycleType, logger: Logger) {
   switch (cycleType) {
     case CycleType.C1:
-      return makePlanner(CycleType.C1);
+      return makeCycleCreator(CycleType.C1);
     case CycleType.C2:
-      return makePlanner(CycleType.C2);
+      return makeCycleCreator(CycleType.C2);
     case CycleType.C3:
-      return makePlanner(CycleType.C3);
+      return makeCycleCreator(CycleType.C3);
     case CycleType.C4:
-    return makePlanner(CycleType.C4);
+      return makeCycleCreator(CycleType.C4);
     case CycleType.C5:
-      return makePlanner(CycleType.C5);
+      return makeCycleCreator(CycleType.C5);
     case CycleType.C5B:
-      return makePlanner(CycleType.C5B);
+      return makeCycleCreator(CycleType.C5B);
     case CycleType.C6:
-      return makePlanner(CycleType.C6);
+      return makeCycleCreator(CycleType.C6);
     case CycleType.C7:
-      return makePlanner(CycleType.C7);
+      return makeCycleCreator(CycleType.C7);
     case CycleType.C8:
-      return makePlanner(CycleType.C8);
+      return makeCycleCreator(CycleType.C8);
     default:
       logger.logWarn('Engine', `Unknown cycle type: ${cycleType}`);
       return undefined;
@@ -109,43 +109,31 @@ export async function generateInitialPlan(
    *    enough time for the rest of the subtopics.
    * 
    */
-  const subjects = loadAllSubjects();
+  const startDate = intake.start_date;
+  const subjects = await loadAllSubjects();
   const subjData: SubjData = {
-    subjects, subtopics: loadSubtopics(subjects)
+    subjects, subtopics: await loadSubtopics(subjects)
   }
-  // const baselineHourTable = buildBaselineHourTable(logger, subjData);
-
-  // NEW: Use cycle scheduler to determine plan structure
   const targetYear = intake.getTargetYear();
   const prelimsExamDate = intake.getPrelimsExamDate();
-  
-  // Debug: Log the start_date being used
-  const startDate = intake.start_date;
   logger.logInfo('Engine', `Using start_date: ${startDate} (from intake.start_date: ${intake.start_date})`);
-  
-  let scheduleResult;
+
   try {
-    scheduleResult = determineCycleSchedule(
+    const scheduleResult: ScenarioResult = determineCycleSchedule(
       logger,
       new Date(startDate),
       targetYear,
       prelimsExamDate
     );
+    logger.logInfo('Engine', `Determined scenario ${scheduleResult.scenario} with ${scheduleResult.totalTimeAvailable.toFixed(1)} months available`);
+    const cycles = await generateCyclesFromSchedule(logger, intake, scheduleResult, subjData);
+    const plan = await buildFinalPlan(logger, intake, cycles, scheduleResult.scenario);
+    await sanityCheckPlan(plan, intake);
+    return { plan, logs: logger.getLogs() };
   } catch (error) {
-    // Handle S8 (REJECT) scenario
     logger.logWarn('Engine', `Plan generation rejected: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    throw error;
+    return Promise.reject(error);
   }
-  
-  logger.logInfo('Engine', `Determined scenario ${scheduleResult.scenario} with ${scheduleResult.totalTimeAvailable.toFixed(1)} months available`);
-  
-  // Generate cycles based on determined schedule
-  const cycles = await generateCyclesFromSchedule(logger, intake, scheduleResult, subjData);
-  
-  const plan = await buildFinalPlan(logger, intake, cycles, scheduleResult.scenario);
-
-  await sanityCheckPlan(plan, intake);
-  return { plan, logs: logger.getLogs() };
 }
 
 /**
@@ -154,32 +142,12 @@ export async function generateInitialPlan(
 async function generateCyclesFromSchedule(
   logger: Logger,
   intake: StudentIntake,
-  scheduleResult: any, // ScenarioResult
+  scheduleResult: ScenarioResult,
   subjData: SubjData
 ): Promise<StudyCycle[]> {
-  const cycles: StudyCycle[] = [];
-  
-  // Determine subjectApproach based on study focus preference
-  const studyFocusCombo = intake.study_strategy.study_focus_combo;
-  const subjectApproach: SubjectApproach = 
-    studyFocusCombo === 'OneGS' ? 'SingleSubject' :
-    studyFocusCombo === 'OneGSPlusOptional' ? 'DualSubject' :
-    studyFocusCombo === 'GSPlusOptionalPlusCSAT' ? 'TripleSubject' :
-    'DualSubject'; // Default fallback
-  
-  logger.logInfo('Engine', `Using ${subjectApproach} approach based on study focus: ${studyFocusCombo}`);
-  
-  for (const schedule of scheduleResult.schedules) {
-    const cycle = await generateCycleForSchedule(
-      logger, 
-      intake, 
-      schedule,
-      subjData
-    );
-    if (cycle) cycles.push(cycle);
-  }
-  
-  return cycles;
+  const promises: Promise<StudyCycle>[] = scheduleResult.schedules.map((schedule) =>
+      generateCycleForSchedule(logger, intake, schedule, subjData));
+  return Promise.all(promises);
 }
 
 /**
@@ -188,16 +156,16 @@ async function generateCyclesFromSchedule(
 async function generateCycleForSchedule(
   logger: Logger,
   intake: StudentIntake,
-  schedule: any, // CycleSchedule
+  schedule: CycleSchedule,
   subjData: SubjData
-): Promise<StudyCycle | undefined> {
+): Promise<StudyCycle> {
   const startDate = dayjs(schedule.startDate);
   const endDate = dayjs(schedule.endDate);
   const confidenceMap = buildConfidenceMap(logger, intake, subjData);
   const planner = getPlannerForCycleType(schedule.cycleType, logger);
   if (!planner) {
     logger.logWarn('Engine', `No planner found for cycle type: ${schedule.cycleType}`);
-    return undefined;
+    return Promise.reject(new Error(`No planner found for cycle type: ${schedule.cycleType}`));
   }
   return await planner(logger, intake, confidenceMap, startDate, endDate, subjData);
 }
@@ -208,7 +176,7 @@ async function sanityCheckPlan(plan: StudyPlan, intake: StudentIntake): Promise<
   if (!plan.cycles) {
     throw new Error("Plan cycles are expected")
   }
-    // const cycleTypes = cycles?.map((cycle: StudyCycle) => cycle.cycleType);
+  // const cycleTypes = cycles?.map((cycle: StudyCycle) => cycle.cycleType);
   const prelimsRapidCycle = cycles?.find((cycle: StudyCycle) => cycle.cycleType === 'C5');
   if (!prelimsRapidCycle) {
     throw new Error("Prelims Rapid Revision cycle is expected")
@@ -255,11 +223,11 @@ function buildConfidenceMap(logger: Logger, intake: StudentIntake, subjData: Sub
   const { logInfo: info, logDebug: debug } = logger;
   const { subjects } = subjData;
   info('Engine', 'Building confidence map from intake data');
-  
+
   const confidenceMap = new Map<string, number>();
-  
+
   // Confidence factors are now handled by the intake calculator
-  
+
   // For each subject in intake, map all its subtopics to the subject's confidence factor
   Object.entries(intake.subject_confidence)
     .map(([subjectCode, confidenceLevel]) => ({
@@ -278,13 +246,13 @@ function buildConfidenceMap(logger: Logger, intake: StudentIntake, subjData: Sub
           return [subtopic.code, stretchFactor] as [string, number];
         })
     );
-  
+
   // For subjects not in intake, default to 'Moderate' confidence
   const moderateFactor = intake.getConfidenceFactor('Moderate');
-  const subjectsNotInIntake = subjects.filter(subject => 
+  const subjectsNotInIntake = subjects.filter(subject =>
     !Object.keys(intake.subject_confidence).includes(subject.subjectCode)
   );
-  
+
   subjectsNotInIntake.forEach(subject => {
     subject.topics
       .filter(topic => topic.subtopics)
@@ -296,9 +264,9 @@ function buildConfidenceMap(logger: Logger, intake: StudentIntake, subjData: Sub
         }
       });
   });
-  
+
   info('Engine', `Built confidence map with ${confidenceMap.size} subtopics (${subjectsNotInIntake.length} subjects defaulted to Moderate)`);
-  
+
   return confidenceMap;
 }
 
@@ -310,9 +278,9 @@ async function aggregatePlanResources(
   cycles: StudyCycle[]
 ): Promise<PlanResources> {
   const { logInfo: info, logDebug: debug } = logger;
-  
+
   info('Engine', 'Aggregating resources from all cycles');
-  
+
   // Collect all unique subjects from all cycles
   const allSubjects = new Set<string>();
   cycles.forEach(cycle => {
@@ -320,23 +288,23 @@ async function aggregatePlanResources(
       block.subjects.forEach(subjectCode => allSubjects.add(subjectCode));
     });
   });
-  
+
   debug('Engine', `Found subjects across all cycles: ${Array.from(allSubjects).join(', ')}`);
-  
+
   // Aggregate resources by category
   const allResources = new Map<string, any>(); // resource_id -> resource_obj for deduplication
-  
+
   for (const subjectCode of allSubjects) {
     try {
       const subjectResources = await ResourceService.getResourcesForSubject(subjectCode);
       const resourceCategories = [
         'primary_books',
-        'supplementary_materials', 
+        'supplementary_materials',
         'practice_resources',
         'video_content',
         'expert_recommendations'
       ];
-      
+
       resourceCategories.forEach(category => {
         const resources = subjectResources[category as keyof typeof subjectResources] || [];
         resources.forEach(resource => {
@@ -350,26 +318,26 @@ async function aggregatePlanResources(
       debug('Engine', `Error loading resources for subject ${subjectCode}: ${error}`);
     }
   }
-  
+
   info('Engine', `Aggregated ${allResources.size} unique resources from ${allSubjects.size} subjects`);
-  
+
   // Categorize resources by priority for timeline
   const essentialResources: any[] = [];
   const immediateNeeds: any[] = [];
   const midTermNeeds: any[] = [];
   const longTermNeeds: any[] = [];
   const alternativeOptions: any[] = [];
-  
+
   Array.from(allResources.values()).forEach(resource => {
     if (resource.resource_priority === 'Essential') {
       essentialResources.push(resource);
-      
+
       // Timeline distribution based on cycle type
-      const isEarlyCycle = cycles.some(cycle => 
-        cycle.cycleType === 'C2' && 
+      const isEarlyCycle = cycles.some(cycle =>
+        cycle.cycleType === 'C2' &&
         cycle.cycleBlocks.some(block => block.subjects.includes(resource.resource_subjects[0]))
       );
-      
+
       if (isEarlyCycle) {
         immediateNeeds.push(resource);
       } else {
@@ -384,24 +352,24 @@ async function aggregatePlanResources(
       alternativeOptions.push(resource);
     }
   });
-  
+
   debug('Engine', `Resource categorization: ${essentialResources.length} essential, ${immediateNeeds.length} immediate, ${midTermNeeds.length} mid-term, ${longTermNeeds.length} long-term, ${alternativeOptions.length} alternatives`);
-  
+
   // Calculate budget summary
   const budgetSummary = calculateBudgetSummary([
     ...essentialResources,
     ...midTermNeeds,
     ...longTermNeeds
   ]);
-  
+
   const recommendedTimeline: ResourceTimeline = {
     immediate_needs: immediateNeeds,
     mid_term_needs: midTermNeeds,
     long_term_needs: longTermNeeds
   };
-  
+
   info('Engine', `Resource aggregation complete: ${essentialResources.length} essential, ${immediateNeeds.length} immediate, ${midTermNeeds.length} mid-term, ${longTermNeeds.length} long-term`);
-  
+
   return {
     essential_resources: essentialResources,
     recommended_timeline: recommendedTimeline,
@@ -418,11 +386,11 @@ function calculateBudgetSummary(allResources: any[]): BudgetSummary {
   let optionalCost = 0;
   let freeAlternatives = 0;
   let subscriptionCost = 0;
-  
+
   allResources.forEach(resource => {
     if (resource.resource_cost?.type === 'Paid') {
       const cost = resource.resource_cost.amount || 0;
-      
+
       if (resource.resource_priority === 'Essential') {
         essentialCost += cost;
       } else if (resource.resource_priority === 'Optional') {
@@ -433,11 +401,11 @@ function calculateBudgetSummary(allResources: any[]): BudgetSummary {
       }
     } else if (resource.resource_cost?.type === 'Subscription') {
       // Use deterministic subscription cost instead of random
-      const subscriptionAmount = resource.resource_cost.plan === 'Premium' ? 50 : 
-                                resource.resource_cost.plan === 'Standard' ? 30 : 15;
-      
+      const subscriptionAmount = resource.resource_cost.plan === 'Premium' ? 50 :
+        resource.resource_cost.plan === 'Standard' ? 30 : 15;
+
       subscriptionCost += subscriptionAmount;
-      
+
       // Also distribute subscription cost to priority categories
       if (resource.resource_priority === 'Essential') {
         essentialCost += subscriptionAmount;
@@ -450,10 +418,10 @@ function calculateBudgetSummary(allResources: any[]): BudgetSummary {
       freeAlternatives++;
     }
   });
-  
+
   // Total cost is the sum of essential + optional costs only (subscription costs are already included in those)
   const totalCost = essentialCost + optionalCost;
-  
+
   return {
     total_cost: Math.round(totalCost),
     essential_cost: Math.round(essentialCost),
@@ -473,22 +441,22 @@ async function buildFinalPlan(
   scenario?: string
 ): Promise<StudyPlan> {
   const { logInfo: info, logDebug: debug } = logger;
-  
+
   info('Engine', 'Building final study plan');
-  
+
   debug('Engine', `Final plan includes ${cycles.length} cycles: ${cycles.map(c => c.cycleName).join(', ')}`);
-  
+
   // Calculate total blocks across all cycles
   const totalBlocks = cycles.reduce((sum, cycle) => sum + cycle.cycleBlocks.length, 0);
-  
+
   // Calculate total duration across all cycles
   const totalDuration = cycles.reduce((sum, cycle) => sum + cycle.cycleDuration, 0);
-  
+
   info('Engine', `Final plan: ${totalBlocks} blocks across ${totalDuration} weeks`);
-  
+
   // Aggregrate resources from all cycles
   const curatedResources = await aggregatePlanResources(logger, cycles);
-  
+
   const plan: StudyPlan = {
     targeted_year: intake.getTargetYear(),
     start_date: dayjs(intake.start_date || new Date()).toDate(),
@@ -503,9 +471,9 @@ async function buildFinalPlan(
     milestones: calculateMilestones(cycles),
     scenario: scenario
   };
-  
+
   info('Engine', 'Final study plan created successfully');
-  
+
   return plan;
 }
 
@@ -514,10 +482,10 @@ async function buildFinalPlan(
  */
 function calculateTimelineUtilization(cycles: StudyCycle[]): number {
   if (cycles.length === 0) return 0;
-  
+
   const totalWeeks = cycles.reduce((sum, cycle) => sum + cycle.cycleDuration, 0);
   const maxPossibleWeeks = 52; // Assuming 1 year max preparation
-  
+
   return Math.min(100, Math.round((totalWeeks / maxPossibleWeeks) * 100));
 }
 
@@ -526,22 +494,22 @@ function calculateTimelineUtilization(cycles: StudyCycle[]): number {
  */
 function calculateMilestones(cycles: StudyCycle[]): any {
   const milestones: any = {};
-  
+
   // Find foundation to prelims date
   const foundationCycle = cycles.find(c => c.cycleType === 'C2');
   const prelimsCycle = cycles.find(c => c.cycleType === 'C4');
-  
+
   if (foundationCycle && prelimsCycle) {
     milestones.foundationToPrelimsDate = prelimsCycle.cycleStartDate;
   }
-  
+
   // Find prelims to mains date
   const prelimsRapidCycle = cycles.find(c => c.cycleName.includes('Prelims Rapid'));
   const mainsRapidCycle = cycles.find(c => c.cycleName.includes('Mains Rapid'));
-  
+
   if (prelimsRapidCycle && mainsRapidCycle) {
     milestones.prelimsToMainsDate = mainsRapidCycle.cycleStartDate;
   }
-  
+
   return milestones;
 }

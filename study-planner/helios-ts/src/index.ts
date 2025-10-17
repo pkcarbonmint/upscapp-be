@@ -81,7 +81,6 @@ export { ResourceService } from './services/ResourceService';
 export { heliosClient, api } from './services/helios';
 
 // Import for internal use
-import { loadAllSubjects, loadSubtopics } from './services/SubjectLoader';
 import { generateInitialPlan } from './engine/Engine';
 import type { Archetype, StudentIntake } from './types/models';
 
@@ -109,21 +108,6 @@ export const DEFAULT_CONFIG = {
 export const VERSION = '1.0.0';
 export const ENGINE_NAME = 'Helios TypeScript Study Plan Engine';
 
-/**
- * Initialize the engine with default configuration
- * This is a convenience function for quick setup
- */
-export function initializeEngine() {
-  console.log(`🚀 ${ENGINE_NAME} v${VERSION} initialized`);
-  console.log('📚 Available subjects:', loadAllSubjects().length);
-  const subjects = loadAllSubjects();
-  return {
-    config: DEFAULT_CONFIG,
-    subjects,
-    subtopics: loadSubtopics(subjects),
-    version: VERSION
-  };
-}
 
 /**
  * Quick start function for generating a basic study plan

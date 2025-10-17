@@ -45,7 +45,7 @@ function decodeSubtopicBand(band: string): SubtopicBand {
   }
 }
 
-export function loadSubtopics(subjects: Subject[]): LoadSubtopicsResult {
+export async function loadSubtopics(subjects: Subject[]): Promise<LoadSubtopicsResult> {
   // create a map of topic code to subject 
   const topicCodeToSubject = new Map<string, Subject>();
   subjects.forEach(subject => {
@@ -191,7 +191,7 @@ export class SubjectLoader {
  * Convenience function to load all subjects
  * This is the main entry point for subject loading
  */
-export function loadAllSubjects(): Subject[] {
+export async function loadAllSubjects(): Promise<Subject[]> {
   return SubjectLoader.loadAllSubjects();
 }
 

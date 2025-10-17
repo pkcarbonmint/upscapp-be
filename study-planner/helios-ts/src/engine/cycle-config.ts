@@ -43,10 +43,20 @@ async function createStandardBlocks(
   const blockPrefix = config.cycleName.replace(/\s+Cycle$/, '');
   
   return await createBlocksForSubjects(
-    intake, filteredSubjects, totalHours, confidenceMap, blockPrefix,
-    config.cycleType, config.cycleOrder, config.cycleName,
-    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData,
-    logger
+    {
+      intake,
+      subjects: filteredSubjects,
+      totalHours,
+      confidenceMap,
+      blockPrefix,
+      cycleType: config.cycleType,
+      cycleOrder: config.cycleOrder,
+      cycleName: config.cycleName,
+      cycleStartDate: startDate.format('YYYY-MM-DD'),
+      cycleEndDate: endDate.format('YYYY-MM-DD'),
+      subjData,
+      logger
+    }
   );
 }
 
@@ -68,17 +78,37 @@ async function createGSOptionalSplitBlocks(
   const optionalHours = Math.floor(totalHours * ratio.optional);
 
   const gsBlocks = await createBlocksForSubjects(
-    intake, gsSubjects, gsHours, confidenceMap, 'GS Foundation',
-    config.cycleType, config.cycleOrder, config.cycleName,
-    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData,
-    logger
+    {
+      intake,
+      subjects: gsSubjects,
+      totalHours: gsHours,
+      confidenceMap,
+      blockPrefix: 'GS Foundation',
+      cycleType: config.cycleType,
+      cycleOrder: config.cycleOrder,
+      cycleName: config.cycleName,
+      cycleStartDate: startDate.format('YYYY-MM-DD'),
+      cycleEndDate: endDate.format('YYYY-MM-DD'),
+      subjData,
+      logger
+    }
   );
   
   const optionalBlocks = await createBlocksForSubjects(
-    intake, optionalSubjects, optionalHours, confidenceMap, 'Optional Foundation',
-    config.cycleType, config.cycleOrder, config.cycleName,
-    startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), subjData,
-    logger
+    {
+      intake,
+      subjects: optionalSubjects,
+      totalHours: optionalHours,
+      confidenceMap,
+      blockPrefix: 'Optional Foundation',
+      cycleType: config.cycleType,
+      cycleOrder: config.cycleOrder,
+      cycleName: config.cycleName,
+      cycleStartDate: startDate.format('YYYY-MM-DD'),
+      cycleEndDate: endDate.format('YYYY-MM-DD'),
+      subjData,
+      logger
+    }
   );
   
   return [...gsBlocks, ...optionalBlocks];
