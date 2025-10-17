@@ -1,0 +1,52 @@
+{
+  "name": "scheduler",
+  "version": "1.0.0",
+  "description": "scheduler for UPSC and competitive exams",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run type-check && vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest"
+  },
+  "keywords": [
+    "typescript",
+    "study-plan",
+    "education",
+    "upsc",
+    "planning",
+    "scheduling",
+    "helios"
+  ],
+  "author": "Laex Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "terser": "^5.44.0",
+    "tsx": "^4.0.0",
+    "vite": "^4.5.14",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@types/uuid": "^10.0.0",
+    "date-fns": "^3.0.0",
+    "dayjs": "^1.11.18",
+    "typescript": "~5.8.3",
+    "uuid": "^13.0.0"
+  }
+}

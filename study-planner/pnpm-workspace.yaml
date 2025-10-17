@@ -5,3 +5,4 @@ packages:
   - shared-ui-library
   - faculty-ui
   - plan-editor-library
+  - scheduler
