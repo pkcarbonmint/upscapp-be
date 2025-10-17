@@ -30,7 +30,7 @@ async function getSharedBrowser(): Promise<Browser> {
   browserLaunchPromise = launchBrowser();
   sharedBrowser = await browserLaunchPromise;
   browserLaunchPromise = null;
-  
+
   return sharedBrowser;
 }
 
@@ -99,6 +99,7 @@ async function generateStructuredPDF(
     // Generate PDF using Puppeteer
     const pdfBuffer = await generatePDFFromHTML(htmlContent, {
       format: 'A4',
+      landscape: true,
       printBackground: true,
       margin: { top: '20px', right: '30px', bottom: '20px', left: '30px' },
       preferCSSPageSize: false,
@@ -177,7 +178,7 @@ export class CalendarPDFService {
       filename: string;
     }
   ): Promise<void> {
-      return generateStructuredPDF(studyPlan, studentIntake, options?.filename);
+    return generateStructuredPDF(studyPlan, studentIntake, options?.filename);
   }
 
   /**
@@ -223,16 +224,16 @@ export class CalendarPDFService {
     try {
       console.log('🔄 Generating HTML content...');
       const htmlContent = await createStructuredHTML(studyPlan, studentIntake);
-      
+
       console.log(`📄 HTML content generated: ${htmlContent.length} characters`);
       console.log(`📤 Streaming HTML to output...`);
-      
+
       // Write HTML content to stream
       outputStream.write(htmlContent);
       outputStream.end();
-      
+
       console.log(`✅ HTML streamed successfully: ${options?.filename || 'study-plan.html'}`);
-      
+
     } catch (error) {
       console.error('Failed to generate HTML to stream:', error);
       throw new Error('HTML streaming failed');
@@ -256,7 +257,7 @@ async function generatePDFFromHTML(htmlContent: string, options: PDFOptions): Pr
   try {
     console.log('🚀 Starting PDF generation...');
     console.log(`📄 HTML content size: ${(htmlContent.length / 1024 / 1024).toFixed(2)} MB`);
-    
+
     // Get shared browser instance
     const browser = await getSharedBrowser();
     const page = await browser.newPage();
@@ -322,7 +323,7 @@ async function generatePDFFromHTMLToStream(htmlContent: string, outputStream: Wr
   try {
     console.log('🚀 Starting PDF streaming generation...');
     console.log(`📄 HTML content size: ${(htmlContent.length / 1024 / 1024).toFixed(2)} MB`);
-    
+
     // Get shared browser instance
     const browser = await getSharedBrowser();
     const page = await browser.newPage();
@@ -354,8 +355,8 @@ async function generatePDFFromHTMLToStream(htmlContent: string, outputStream: Wr
     console.log('✅ HTML content loaded successfully');
 
     // Wait for any charts or dynamic content to load
-    console.log('⏳ Waiting for content to stabilize...');
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // console.log('⏳ Waiting for content to stabilize...');
+    // await new Promise(resolve => setTimeout(resolve, 3000));
 
     // Create a temporary file for the PDF
     const tempDir = os.tmpdir();
@@ -372,7 +373,7 @@ async function generatePDFFromHTMLToStream(htmlContent: string, outputStream: Wr
 
       // Stream the temporary file to the output stream
       const readStream = fs.createReadStream(tempFilePath);
-      
+
       return new Promise<void>((resolve, reject) => {
         readStream.on('error', (error) => {
           // Clean up on read stream error
@@ -385,7 +386,7 @@ async function generatePDFFromHTMLToStream(htmlContent: string, outputStream: Wr
           }
           reject(error);
         });
-        
+
         outputStream.on('error', (error) => {
           // Clean up on output stream error
           try {
@@ -397,7 +398,7 @@ async function generatePDFFromHTMLToStream(htmlContent: string, outputStream: Wr
           }
           reject(error);
         });
-        
+
         outputStream.on('finish', () => {
           // Clean up after successful completion
           try {
@@ -409,7 +410,7 @@ async function generatePDFFromHTMLToStream(htmlContent: string, outputStream: Wr
           }
           resolve();
         });
-        
+
         readStream.pipe(outputStream);
       });
 
@@ -1508,6 +1509,267 @@ function getStructuredCSS(): string {
             text-align: right;
         }
 
+        /* Weekly Views Styles */
+        .weekly-views-section {
+            page-break-before: always;
+        }
+
+        .weekly-page {
+            page-break-before: always;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .weekly-header {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #ddd;
+        }
+
+        .weekly-header.cycle-c1 { background: linear-gradient(135deg, rgb(227, 242, 253) 0%, rgb(59, 130, 246) 100%); }
+        .weekly-header.cycle-c2 { background: linear-gradient(135deg, rgb(232, 245, 232) 0%, rgb(34, 197, 94) 100%); }
+        .weekly-header.cycle-c3 { background: linear-gradient(135deg, rgb(252, 228, 236) 0%, rgb(236, 72, 153) 100%); }
+        .weekly-header.cycle-c4 { background: linear-gradient(135deg, rgb(255, 235, 238) 0%, rgb(239, 68, 68) 100%); }
+        .weekly-header.cycle-c5 { background: linear-gradient(135deg, rgb(243, 229, 245) 0%, rgb(168, 85, 247) 100%); }
+        .weekly-header.cycle-c5b { background: linear-gradient(135deg, rgb(243, 229, 245) 0%, rgb(168, 85, 247) 100%); }
+        .weekly-header.cycle-c6 { background: linear-gradient(135deg, rgb(225, 245, 254) 0%, rgb(6, 182, 212) 100%); }
+        .weekly-header.cycle-c7 { background: linear-gradient(135deg, rgb(255, 243, 224) 0%, rgb(245, 158, 11) 100%); }
+        .weekly-header.cycle-c8 { background: linear-gradient(135deg, rgb(241, 248, 233) 0%, rgb(132, 204, 22) 100%); }
+
+        .weekly-title {
+            text-align: left;
+        }
+
+        .weekly-range {
+            font-size: 18pt;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .weekly-subtitle {
+            font-size: 12pt;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .weekly-cycle-info {
+            text-align: right;
+        }
+
+        .weekly-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .weekly-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+            flex: 1;
+            min-height: 400px;
+        }
+
+        .weekly-day-column {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .weekly-day-column.cycle-c1 { background: rgb(227, 242, 253); border-color: rgb(59, 130, 246); }
+        .weekly-day-column.cycle-c2 { background: rgb(232, 245, 232); border-color: rgb(34, 197, 94); }
+        .weekly-day-column.cycle-c3 { background: rgb(252, 228, 236); border-color: rgb(236, 72, 153); }
+        .weekly-day-column.cycle-c4 { background: rgb(255, 235, 238); border-color: rgb(239, 68, 68); }
+        .weekly-day-column.cycle-c5 { background: rgb(243, 229, 245); border-color: rgb(168, 85, 247); }
+        .weekly-day-column.cycle-c5b { background: rgb(243, 229, 245); border-color: rgb(168, 85, 247); }
+        .weekly-day-column.cycle-c6 { background: rgb(225, 245, 254); border-color: rgb(6, 182, 212); }
+        .weekly-day-column.cycle-c7 { background: rgb(255, 243, 224); border-color: rgb(245, 158, 11); }
+        .weekly-day-column.cycle-c8 { background: rgb(241, 248, 233); border-color: rgb(132, 204, 22); }
+
+        .weekly-day-column.empty-day {
+            background: #f1f3f4;
+            border-color: #dadce0;
+            opacity: 0.6;
+        }
+
+        .day-header {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .day-name {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .day-number {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .day-tasks {
+            flex: 1;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+        }
+
+        .weekly-task-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 8pt;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .weekly-task-item.theory { border-left: 4px solid #2196F3; }
+        .weekly-task-item.practice { border-left: 4px solid #4CAF50; }
+        .weekly-task-item.revision { border-left: 4px solid #FF9800; }
+        .weekly-task-item.test { border-left: 4px solid #F44336; }
+
+        .task-type-badge {
+            font-size: 10pt;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-subject {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+            font-size: 9pt;
+        }
+
+        .task-description {
+            color: #666;
+            font-size: 8pt;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .task-time {
+            color: #888;
+            font-size: 7pt;
+            font-weight: 500;
+        }
+
+        .task-checkbox {
+            margin-left: auto;
+        }
+
+        .checkbox {
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .no-tasks {
+            text-align: center;
+            color: #999;
+            font-size: 8pt;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .no-tasks i {
+            font-size: 16pt;
+            opacity: 0.5;
+        }
+
+        .weekly-notes-section {
+            margin-top: 20px;
+        }
+
+        .weekly-notes-title {
+            font-size: 14pt;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .weekly-notes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .notes-column {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .notes-label {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .notes-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .notes-line {
+            height: 1px;
+            background: #ddd;
+            margin: 2px 0;
+        }
+
+        .weekly-progress-section {
+            margin-top: 20px;
+        }
+
+        .weekly-progress-title {
+            font-size: 14pt;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
     </style>
     `;
 }
@@ -1538,32 +1800,32 @@ function getSubjectName(subjectCode: string): string {
 export function generateBirdsEyeView(studyPlan: StudyPlan): string {
   const cycles = studyPlan.cycles || [];
   let html = `<div class="year-calendar">`;
-  
+
   const minDate = dayjs(studyPlan.start_date);
   const maxDate = dayjs(`${studyPlan.targeted_year}-08-31`);
   const endDate = maxDate.endOf('month');
 
   for (
-      let currentDate = minDate.startOf('month');
-      currentDate.isSameOrBefore(endDate, 'month');
-      currentDate = currentDate.add(1, 'month')
+    let currentDate = minDate.startOf('month');
+    currentDate.isSameOrBefore(endDate, 'month');
+    currentDate = currentDate.add(1, 'month')
   ) {
-      const monthDate = currentDate;
-      const monthName = monthDate.format('MMM'); // Use abbreviated month name
+    const monthDate = currentDate;
+    const monthName = monthDate.format('MMM'); // Use abbreviated month name
 
-      let cycleLabel = '';
-      let cycleClass = '';
-      for (const cycle of cycles) {
-          const cycleStart = dayjs(cycle.cycleStartDate);
-          const cycleEnd = dayjs(cycle.cycleEndDate);
-          if (monthDate.isBetween(cycleStart, cycleEnd, 'month', '[]')) {
-              cycleLabel = cycle.cycleName || cycle.cycleType;
-              cycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
-              break;
-          }
+    let cycleLabel = '';
+    let cycleClass = '';
+    for (const cycle of cycles) {
+      const cycleStart = dayjs(cycle.cycleStartDate);
+      const cycleEnd = dayjs(cycle.cycleEndDate);
+      if (monthDate.isBetween(cycleStart, cycleEnd, 'month', '[]')) {
+        cycleLabel = cycle.cycleName || cycle.cycleType;
+        cycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
+        break;
       }
+    }
 
-      html += `
+    html += `
     <div class="month-card ${cycleClass}">
         <div class="cycle-label">${cycleLabel.replace(/ Cycle$/, '')}</div>
         <div class="month-header">
@@ -1579,18 +1841,18 @@ export function generateBirdsEyeView(studyPlan: StudyPlan): string {
             <div class="day-header">S</div>
     `;
 
-      const daysInMonth = monthDate.daysInMonth();
-      const firstDayOfMonth = monthDate.startOf('month').day();
+    const daysInMonth = monthDate.daysInMonth();
+    const firstDayOfMonth = monthDate.startOf('month').day();
 
-      for (let j = 0; j < firstDayOfMonth; j++) {
-          html += '<div class="day-cell"></div>';
-      }
+    for (let j = 0; j < firstDayOfMonth; j++) {
+      html += '<div class="day-cell"></div>';
+    }
 
-      for (let day = 1; day <= daysInMonth; day++) {
-          html += `<div class="day-cell">${day}</div>`;
-      }
+    for (let day = 1; day <= daysInMonth; day++) {
+      html += `<div class="day-cell">${day}</div>`;
+    }
 
-      html += `
+    html += `
         </div>
     </div>
     `;
@@ -1604,15 +1866,15 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
   const cycles = studyPlan.cycles || [];
   const monthStart = monthDate.startOf('month');
   const monthEnd = monthDate.endOf('month');
-  
+
   // Get all subjects that are active in this month
   const monthlySubjects = new Set<string>();
-  
+
   for (const cycle of cycles) {
     for (const block of cycle.cycleBlocks) {
       const blockStart = dayjs(block.block_start_date);
       const blockEnd = dayjs(block.block_end_date);
-      
+
       // Check if block overlaps with this month
       if (blockStart.isBefore(monthEnd) && blockEnd.isAfter(monthStart)) {
         for (const subject of block.subjects) {
@@ -1621,11 +1883,11 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
       }
     }
   }
-  
+
   if (monthlySubjects.size === 0) {
     return '<div class="monthly-resources"><p>No resources for this month.</p></div>';
   }
-  
+
   let html = `
     <div class="monthly-resources">
         <div class="monthly-resources-title">
@@ -1634,11 +1896,11 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
         </div>
         <div class="monthly-resources-grid">
   `;
-  
+
   for (const subjectCode of Array.from(monthlySubjects)) {
     const subjectName = getSubjectName(subjectCode);
     const resources = await ResourceService.getResourcesForSubject(subjectCode);
-    
+
     html += `
       <div class="monthly-resource-card">
           <div class="monthly-resource-subject">${subjectName}</div>
@@ -1671,19 +1933,30 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
       </div>
     `;
   }
-  
+
   html += `
         </div>
     </div>
   `;
-  
+
   return html;
 }
 
-export async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<string> {
+enum MONTH_DETAIL_VIEW {
+  DAILY,
+  WEEKLY
+}
+type MonthViewOptions = {
+  monthDetails: MONTH_DETAIL_VIEW;
+}
+const defaultMonthViewOptions: MonthViewOptions = {
+  monthDetails: MONTH_DETAIL_VIEW.WEEKLY
+}
+
+export async function generateMonthViewWithDailyPages(studyPlan: StudyPlan, options: MonthViewOptions = defaultMonthViewOptions): Promise<string> {
   const cycles = studyPlan.cycles || [];
   let html = '';
-  
+
   const minDate = dayjs(studyPlan.start_date);
   const maxDate = dayjs(`${studyPlan.targeted_year}-08-31`);
   const endDate = maxDate.endOf('month');
@@ -1693,18 +1966,18 @@ export async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Pro
   let monthCount = 0;
 
   for (
-      let currentDate = minDate.startOf('month');
-      currentDate.isSameOrBefore(endDate, 'month') && (maxMonths === null || monthCount < maxMonths);
-      currentDate = currentDate.add(1, 'month')
+    let currentDate = minDate.startOf('month');
+    currentDate.isSameOrBefore(endDate, 'month') && (maxMonths === null || monthCount < maxMonths);
+    currentDate = currentDate.add(1, 'month')
   ) {
-      const monthDate = currentDate;
-      const monthName = monthDate.format('MMMM');
-      const monthYear = monthDate.format('YYYY');
+    const monthDate = currentDate;
+    const monthName = monthDate.format('MMMM');
+    const monthYear = monthDate.format('YYYY');
 
-      // console.log(`📅 Generating ${monthName} ${monthYear}...`);
+    // console.log(`📅 Generating ${monthName} ${monthYear}...`);
 
-      // Generate Month View
-      html += `
+    // Generate Month View
+    html += `
     <div class="month-detail">
         <div class="month-detail-header">
             <div class="month-detail-title">${monthName.toUpperCase()}</div>
@@ -1720,78 +1993,99 @@ export async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Pro
             <div class="month-day-header">Saturday</div>
     `;
 
-      const daysInMonth = monthDate.daysInMonth();
-      const firstDayOfMonth = monthDate.startOf('month').day();
+    const daysInMonth = monthDate.daysInMonth();
+    const firstDayOfMonth = monthDate.startOf('month').day();
 
-      for (let i = 0; i < firstDayOfMonth; i++) {
-          html += '<div class="month-day-cell"></div>';
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      html += '<div class="month-day-cell"></div>';
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const currentDay = monthDate.date(day);
+
+      // Determine which cycle this day belongs to for background color
+      let dayCycleClass = '';
+      for (const cycle of cycles) {
+        const cycleStart = dayjs(cycle.cycleStartDate);
+        const cycleEnd = dayjs(cycle.cycleEndDate);
+        if (currentDay.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
+          dayCycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
+          break;
+        }
       }
 
-      for (let day = 1; day <= daysInMonth; day++) {
-          const currentDay = monthDate.date(day);
-          
-          // Determine which cycle this day belongs to for background color
-          let dayCycleClass = '';
-          for (const cycle of cycles) {
-              const cycleStart = dayjs(cycle.cycleStartDate);
-              const cycleEnd = dayjs(cycle.cycleEndDate);
-              if (currentDay.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
-                  dayCycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
-                  break;
-              }
-          }
-          
-          html += `
+      html += `
         <div class="month-day-cell ${dayCycleClass}">
             <div class="month-day-number">${day}</div>
         `;
 
-          for (const cycle of cycles) {
-              for (const block of cycle.cycleBlocks) {
-                  const blockStart = dayjs(block.block_start_date);
-                  const blockEnd = dayjs(block.block_end_date);
+      for (const cycle of cycles) {
+        for (const block of cycle.cycleBlocks) {
+          const blockStart = dayjs(block.block_start_date);
+          const blockEnd = dayjs(block.block_end_date);
 
-                  if (currentDay.isBetween(blockStart, blockEnd, 'day', '[]')) {
-                      for (const subject of block.subjects) {
-                          const subjectName = getSubjectName(subject).toLowerCase();
-                          html += `<div class="subject-block ${subjectName}">${getSubjectName(subject)}</div>`;
-                      }
-                  }
-              }
+          if (currentDay.isBetween(blockStart, blockEnd, 'day', '[]')) {
+            for (const subject of block.subjects) {
+              const subjectName = getSubjectName(subject).toLowerCase();
+              html += `<div class="subject-block ${subjectName}">${getSubjectName(subject)}</div>`;
+            }
           }
-
-          html += '</div>';
+        }
       }
 
-      html += `
+      html += '</div>';
+    }
+
+    html += `
         </div>
     </div>
     ${await generateMonthlyResources(studyPlan, monthDate)}
     `;
 
-      // Generate Daily Pages for this month immediately after month view
-      html += `
+    switch (options.monthDetails) {
+      case MONTH_DETAIL_VIEW.WEEKLY: {
+        // Generate Weekly Pages for this month
+        html += `
+        <div class="weekly-views-section">
+      `;
+
+        // Generate weekly pages for the month
+        const weeks = getWeeksInMonth(monthDate, minDate, endDate);
+        for (const week of weeks) {
+          html += generateWeeklyView(week, cycles);
+        }
+
+        html += `</div>`;
+      }
+      break;
+      default:
+      case MONTH_DETAIL_VIEW.DAILY: {
+
+        // Generate Daily Pages for this month immediately after month view
+        html += `
         <div class="daily-views-section">
       `;
-      
-      // Generate daily pages for first 7 days of the month (sample week)
-      const maxDays = 21;
-      let dayCount = 0;
-      
-      for (let day = 1; day <= daysInMonth && dayCount < maxDays; day++) {
+
+        // Generate daily pages for first 7 days of the month (sample week)
+        const maxDays = 21;
+        let dayCount = 0;
+
+        for (let day = 1; day <= daysInMonth && dayCount < maxDays; day++) {
           const currentDay = monthDate.date(day);
-          
+
           // Skip if day is before start date or after end date
           if (currentDay.isBefore(minDate) || currentDay.isAfter(endDate)) {
-              continue;
+            continue;
           }
-          
+
           html += generateDailyView(currentDay, cycles);
           dayCount++;
+        }
+
+        html += `</div>`;
       }
-      
-      html += `</div>`;
-      monthCount++;
+    }
+    monthCount++;
   }
 
   return html;
@@ -1803,23 +2097,23 @@ function generateDailyView(day: dayjs.Dayjs, cycles: any[]): string {
   const dayNumber = day.format('DD');
   const monthName = day.format('MMMM');
   const year = day.format('YYYY');
-  
+
   // Determine which cycle this day belongs to
   let dayCycle = null;
   let dayCycleClass = '';
   for (const cycle of cycles) {
-      const cycleStart = dayjs(cycle.cycleStartDate);
-      const cycleEnd = dayjs(cycle.cycleEndDate);
-      if (day.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
-          dayCycle = cycle;
-          dayCycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
-          break;
-      }
+    const cycleStart = dayjs(cycle.cycleStartDate);
+    const cycleEnd = dayjs(cycle.cycleEndDate);
+    if (day.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
+      dayCycle = cycle;
+      dayCycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
+      break;
+    }
   }
-  
+
   // Get tasks for this day
   const dailyTasks = getDailyTasks(day, cycles);
-  
+
   return `
     <div class="daily-page">
         <div class="daily-header ${dayCycleClass}">
@@ -1905,67 +2199,251 @@ function generateDailyView(day: dayjs.Dayjs, cycles: any[]): string {
   `;
 }
 
-function getDailyTasks(day: dayjs.Dayjs, cycles: any[]): any[] {
-  const tasks = [];
+function getWeeksInMonth(monthDate: dayjs.Dayjs, minDate: dayjs.Dayjs, endDate: dayjs.Dayjs): (dayjs.Dayjs | null)[][] {
+  const weeks: (dayjs.Dayjs | null)[][] = [];
+  const startOfMonth = monthDate.startOf('month');
+  const endOfMonth = monthDate.endOf('month');
   
-  for (const cycle of cycles) {
-      for (const block of cycle.cycleBlocks) {
-          const blockStart = dayjs(block.block_start_date);
-          const blockEnd = dayjs(block.block_end_date);
-
-          if (day.isBetween(blockStart, blockEnd, 'day', '[]')) {
-              for (const subject of block.subjects) {
-                  const subjectName = getSubjectName(subject);
-                  const taskType = determineTaskType(block.block_title, subjectName);
-                  
-                  tasks.push({
-                      subject: subjectName,
-                      description: `${block.block_title}`,
-                      type: taskType.type,
-                      typeIcon: taskType.icon,
-                      timeSlot: getTimeSlotForSubject(subjectName)
-                  });
-              }
-          }
+  // Start from the Monday of the week containing the first day of the month
+  let currentWeekStart = startOfMonth.startOf('week');
+  
+  while (currentWeekStart.isBefore(endOfMonth) || currentWeekStart.isSame(endOfMonth, 'week')) {
+    const week: (dayjs.Dayjs | null)[] = [];
+    
+    // Generate 7 days for the week
+    for (let i = 0; i < 7; i++) {
+      const day = currentWeekStart.add(i, 'day');
+      
+      // Only include days within the study plan date range
+      if (day.isBetween(minDate, endDate, 'day', '[]')) {
+        week.push(day);
+      } else {
+        week.push(null); // Placeholder for days outside range
       }
+    }
+    
+    // Only add week if it has at least one valid day
+    if (week.some(day => day !== null)) {
+      weeks.push(week);
+    }
+    
+    currentWeekStart = currentWeekStart.add(1, 'week');
   }
   
+  return weeks;
+}
+
+function generateWeeklyView(week: (dayjs.Dayjs | null)[], cycles: any[]): string {
+  const weekStart = week.find(day => day !== null);
+  const weekEnd = week.filter(day => day !== null).pop();
+  
+  if (!weekStart || !weekEnd) return '';
+  
+  const weekRange = `${weekStart.format('MMM DD')} - ${weekEnd.format('MMM DD, YYYY')}`;
+  
+  // Get the cycle for the week (use the first day's cycle)
+  let weekCycle = null;
+  let weekCycleClass = '';
+  for (const cycle of cycles) {
+    const cycleStart = dayjs(cycle.cycleStartDate);
+    const cycleEnd = dayjs(cycle.cycleEndDate);
+    if (weekStart.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
+      weekCycle = cycle;
+      weekCycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
+      break;
+    }
+  }
+
+  return `
+    <div class="weekly-page">
+        <div class="weekly-header ${weekCycleClass}">
+            <div class="weekly-title">
+                <div class="weekly-range">${weekRange}</div>
+                <div class="weekly-subtitle">Weekly Study Plan</div>
+            </div>
+            <div class="weekly-cycle-info">
+                ${weekCycle ? `<div class="cycle-badge">${weekCycle.cycleName}</div>` : ''}
+            </div>
+        </div>
+        
+        <div class="weekly-content">
+            <div class="weekly-grid">
+                ${week.map((day, index) => {
+                  if (day === null) {
+                    return `
+                      <div class="weekly-day-column empty-day">
+                        <div class="day-header">
+                          <div class="day-name">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index]}</div>
+                          <div class="day-number">-</div>
+                        </div>
+                        <div class="day-tasks">
+                          <div class="no-tasks">Outside study period</div>
+                        </div>
+                      </div>
+                    `;
+                  }
+                  
+                  const dayName = day.format('ddd');
+                  const dayNumber = day.format('DD');
+                  const dayTasks = getDailyTasks(day, cycles);
+                  
+                  // Determine cycle for this specific day
+                  let dayCycleClass = '';
+                  for (const cycle of cycles) {
+                    const cycleStart = dayjs(cycle.cycleStartDate);
+                    const cycleEnd = dayjs(cycle.cycleEndDate);
+                    if (day.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
+                      dayCycleClass = `cycle-${cycle.cycleType.toLowerCase()}`;
+                      break;
+                    }
+                  }
+                  
+                  return `
+                    <div class="weekly-day-column ${dayCycleClass}">
+                        <div class="day-header">
+                            <div class="day-name">${dayName}</div>
+                            <div class="day-number">${dayNumber}</div>
+                        </div>
+                        <div class="day-tasks">
+                            ${dayTasks.length > 0 ? dayTasks.map(task => `
+                                <div class="weekly-task-item ${task.type}">
+                                    <div class="task-type-badge">${task.typeIcon}</div>
+                                    <div class="task-content">
+                                        <div class="task-subject">${task.subject}</div>
+                                        <div class="task-description">${task.description}</div>
+                                        <div class="task-time">${task.timeSlot}</div>
+                                    </div>
+                                    <div class="task-checkbox">
+                                        <div class="checkbox">☐</div>
+                                    </div>
+                                </div>
+                            `).join('') : `
+                                <div class="no-tasks">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <div>No tasks</div>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                  `;
+                }).join('')}
+            </div>
+            
+            <div class="weekly-notes-section">
+                <div class="weekly-notes-title">
+                    <i class="fas fa-sticky-note"></i>
+                    Weekly Notes & Reflections
+                </div>
+                <div class="weekly-notes-grid">
+                    <div class="notes-column">
+                        <div class="notes-label">Monday - Wednesday</div>
+                        <div class="notes-area">
+                            <div class="notes-line"></div>
+                            <div class="notes-line"></div>
+                            <div class="notes-line"></div>
+                            <div class="notes-line"></div>
+                        </div>
+                    </div>
+                    <div class="notes-column">
+                        <div class="notes-label">Thursday - Sunday</div>
+                        <div class="notes-area">
+                            <div class="notes-line"></div>
+                            <div class="notes-line"></div>
+                            <div class="notes-line"></div>
+                            <div class="notes-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="weekly-progress-section">
+                <div class="weekly-progress-title">
+                    <i class="fas fa-chart-line"></i>
+                    Weekly Progress Summary
+                </div>
+                <div class="progress-grid">
+                    <div class="progress-item">
+                        <span class="progress-label">Study Hours:</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-value">0/40 hrs</span>
+                    </div>
+                    <div class="progress-item">
+                        <span class="progress-label">Tasks Completed:</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-value">0/0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  `;
+}
+
+function getDailyTasks(day: dayjs.Dayjs, cycles: any[]): any[] {
+  const tasks = [];
+
+  for (const cycle of cycles) {
+    for (const block of cycle.cycleBlocks) {
+      const blockStart = dayjs(block.block_start_date);
+      const blockEnd = dayjs(block.block_end_date);
+
+      if (day.isBetween(blockStart, blockEnd, 'day', '[]')) {
+        for (const subject of block.subjects) {
+          const subjectName = getSubjectName(subject);
+          const taskType = determineTaskType(block.block_title, subjectName);
+
+          tasks.push({
+            subject: subjectName,
+            description: `${block.block_title}`,
+            type: taskType.type,
+            typeIcon: taskType.icon,
+            timeSlot: getTimeSlotForSubject(subjectName)
+          });
+        }
+      }
+    }
+  }
+
   return tasks;
 }
 
 function determineTaskType(blockTitle: string, subjectName: string): { type: string, icon: string } {
   const title = blockTitle.toLowerCase();
   const subject = subjectName.toLowerCase();
-  
+
   if (title.includes('revision') || title.includes('review')) {
-      return { type: 'revision', icon: '🔄' };
+    return { type: 'revision', icon: '🔄' };
   } else if (title.includes('practice') || title.includes('test') || title.includes('mock')) {
-      return { type: 'practice', icon: '📝' };
+    return { type: 'practice', icon: '📝' };
   } else if (title.includes('current affairs') || subject.includes('current affairs')) {
-      return { type: 'current-affairs', icon: '📰' };
+    return { type: 'current-affairs', icon: '📰' };
   } else if (title.includes('optional') || subject.includes('optional')) {
-      return { type: 'optional', icon: '📖' };
+    return { type: 'optional', icon: '📖' };
   } else {
-      return { type: 'study', icon: '📚' };
+    return { type: 'study', icon: '📚' };
   }
 }
 
 function getTimeSlotForSubject(subjectName: string): string {
   const subject = subjectName.toLowerCase();
-  
+
   if (subject.includes('current affairs')) {
-      return 'Morning (6:00-7:00 AM)';
+    return 'Morning (6:00-7:00 AM)';
   } else if (subject.includes('history')) {
-      return 'Morning (9:00-11:00 AM)';
+    return 'Morning (9:00-11:00 AM)';
   } else if (subject.includes('geography')) {
-      return 'Afternoon (2:00-4:00 PM)';
+    return 'Afternoon (2:00-4:00 PM)';
   } else if (subject.includes('polity')) {
-      return 'Evening (5:00-7:00 PM)';
+    return 'Evening (5:00-7:00 PM)';
   } else if (subject.includes('economics')) {
-      return 'Evening (7:00-9:00 PM)';
+    return 'Evening (7:00-9:00 PM)';
   } else if (subject.includes('optional')) {
-      return 'Night (9:00-11:00 PM)';
+    return 'Night (9:00-11:00 PM)';
   } else {
-      return 'Flexible';
+    return 'Flexible';
   }
 }
