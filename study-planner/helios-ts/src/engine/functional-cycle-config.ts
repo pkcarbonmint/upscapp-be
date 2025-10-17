@@ -54,8 +54,6 @@ async function createFunctionalBlocksWrapper(
     endDate,
     dailyHours,
     confidenceMap,
-    config.cycleType,
-    config.cycleOrder,
     config.cycleName,
     intake,
     engineConfig,
@@ -228,14 +226,11 @@ export function getAllCycleTypes(): CycleType[] {
  */
 export function selectOptimalCycles(
   startDate: dayjs.Dayjs,
-  targetYear: number,
   intake: StudentIntake
 ): CycleType[] {
   const prelimsDate = dayjs(intake.getPrelimsExamDate());
-  const mainsDate = dayjs(intake.getMainsExamDate());
   
   const monthsToPrelimsFromStart = prelimsDate.diff(startDate, 'month');
-  // Calculate time to exams for cycle selection
   
   // Simple heuristic for cycle selection based on available time
   if (monthsToPrelimsFromStart >= 18) {

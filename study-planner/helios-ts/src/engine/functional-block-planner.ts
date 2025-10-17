@@ -11,7 +11,7 @@
 import dayjs from 'dayjs';
 import { Subject } from '../types/Subjects';
 import { StudentIntake, Block, WeeklyPlan } from '../types/models';
-import { CycleType, Logger } from '../types/Types';
+import { Logger } from '../types/Types';
 import { createPlanForOneWeek } from './OneWeekPlan';
 import { Config } from './engine-types';
 
@@ -314,17 +314,23 @@ export async function convertToBlocks(
     
     const block: Block = {
       block_id: `${cycleName.replace(/\s+/g, '')}_${continuousBlock.subjectCode}_${i + 1}`,
-      block_name: `${continuousBlock.subjectName} Block`,
+      block_title: `${continuousBlock.subjectName} Block`,
       block_description: `Study block for ${continuousBlock.subjectName} (${continuousBlock.totalHours} hours over ${blockDurationWeeks} weeks)`,
-      block_type: 'Study',
-      block_order: i + 1,
-      block_duration_weeks: blockDurationWeeks,
+      subjects: continuousBlock.subjects.map(s => s.subjectCode),
+      duration_weeks: blockDurationWeeks,
       block_start_date: continuousBlock.startDate.format('YYYY-MM-DD'),
       block_end_date: continuousBlock.endDate.format('YYYY-MM-DD'),
-      block_subjects: continuousBlock.subjects.map(s => s.subjectCode),
-      block_total_hours: continuousBlock.totalHours,
+      estimated_hours: continuousBlock.totalHours,
       weekly_plan: weeklyPlans,
-      resources: [] // Will be populated by resource service
+      block_resources: {
+        primary_books: [],
+        supplementary_materials: [],
+        practice_resources: [],
+        video_content: [],
+        current_affairs_sources: [],
+        revision_materials: [],
+        expert_recommendations: []
+      }
     };
     
     blocks.push(block);
@@ -343,8 +349,6 @@ export async function createFunctionalBlocks(
   endDate: dayjs.Dayjs,
   dailyHours: number,
   confidenceMap: Map<string, number>,
-  cycleType: CycleType,
-  cycleOrder: number,
   cycleName: string,
   intake: StudentIntake,
   config: Config,

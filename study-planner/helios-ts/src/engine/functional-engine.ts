@@ -26,7 +26,7 @@ export async function generateFunctionalPlan(
   logger?: Logger
 ): Promise<{ success: boolean; plan: StudyPlan; message: string }> {
   
-  const log = logger || makeLogger('FunctionalEngine', 'info');
+  const log = logger || makeLogger();
   
   try {
     log.logInfo('FunctionalEngine', `Generating functional plan for user ${userId}`);
@@ -50,7 +50,7 @@ export async function generateFunctionalPlan(
     );
     
     // 4. Create final study plan
-    const studyPlan = createStudyPlan(userId, cycles, intake, startDate, targetYear);
+    const studyPlan = createStudyPlan(userId, cycles, startDate, targetYear);
     
     log.logInfo('FunctionalEngine', `Successfully generated plan with ${cycles.length} cycles`);
     
@@ -129,7 +129,7 @@ function determineStudyPeriod(
   const targetYear = intake.getTargetYear();
   
   // Select optimal cycles based on available time
-  const selectedCycles = selectOptimalCycles(startDate, targetYear, intake);
+  const selectedCycles = selectOptimalCycles(startDate, intake);
   
   logger.logDebug('FunctionalEngine', 
     `Study period: ${startDate.format('YYYY-MM-DD')} to target year ${targetYear}, selected cycles: ${selectedCycles.join(', ')}`
@@ -172,7 +172,7 @@ async function generateCycles(
     const cycleSubjects = cycleConfig.subjectFilter(subjects);
     
     if (cycleSubjects.length === 0) {
-      logger.logWarning('FunctionalEngine', `No subjects found for cycle ${cycleType}, skipping`);
+      logger.logWarn('FunctionalEngine', `No subjects found for cycle ${cycleType}, skipping`);
       continue;
     }
     
@@ -197,10 +197,9 @@ async function generateCycles(
       cycleOrder: cycleConfig.cycleOrder,
       cycleStartDate: currentDate.format('YYYY-MM-DD'),
       cycleEndDate: cycleEndDate.format('YYYY-MM-DD'),
-      cycleDurationWeeks: cycleDuration,
+      cycleDuration: cycleDuration,
       cycleIntensity: cycleConfig.cycleIntensity,
-      cycleBlocks: blocks,
-      cycleSubjects: cycleSubjects.map(s => s.subjectCode)
+      cycleBlocks: blocks
     };
     
     cycles.push(cycle);
@@ -217,52 +216,44 @@ async function generateCycles(
 function createStudyPlan(
   userId: string,
   cycles: StudyCycle[],
-  intake: StudentIntake,
   startDate: dayjs.Dayjs,
   targetYear: number
 ): StudyPlan {
   
-  const totalBlocks = cycles.reduce((sum, cycle) => sum + cycle.cycleBlocks.length, 0);
-  const totalWeeks = cycles.reduce((sum, cycle) => sum + cycle.cycleDurationWeeks, 0);
-  
   return {
-    planId: `functional_plan_${userId}_${Date.now()}`,
-    planName: `Functional Study Plan for ${targetYear}`,
-    planDescription: `Comprehensive study plan generated using functional block planning approach`,
-    planStartDate: startDate.format('YYYY-MM-DD'),
-    planEndDate: cycles.length > 0 ? cycles[cycles.length - 1].cycleEndDate : startDate.format('YYYY-MM-DD'),
-    planDurationWeeks: totalWeeks,
-    planTargetYear: targetYear.toString(),
+    targeted_year: targetYear,
+    start_date: startDate.toDate(),
+    study_plan_id: `functional_plan_${userId}_${Date.now()}`,
+    user_id: userId,
+    plan_title: `Functional Study Plan for ${targetYear}`,
+    curated_resources: {
+      essential_resources: [],
+      recommended_timeline: { immediate_needs: [], mid_term_needs: [], long_term_needs: [] },
+      budget_summary: { total_cost: 0, essential_cost: 0, optional_cost: 0, free_alternatives: 0, subscription_cost: 0 },
+      alternative_options: []
+    },
+    effective_season_context: 'ComprehensiveStudy',
     cycles: cycles,
-    effective_season_context: 'ComprehensiveStudy', // Simplified - no complex seasonal logic
-    planSummary: {
-      totalCycles: cycles.length,
-      totalBlocks: totalBlocks,
-      totalWeeks: totalWeeks,
-      subjectsCount: new Set(cycles.flatMap(c => c.cycleSubjects)).size,
-      approachType: intake.subject_approach || 'DualSubject'
-    }
+    timelineUtilization: 1.0
   };
 }
 
 function createEmptyPlan(userId: string): StudyPlan {
   return {
-    planId: `empty_plan_${userId}`,
-    planName: 'Empty Plan',
-    planDescription: 'Plan generation failed',
-    planStartDate: dayjs().format('YYYY-MM-DD'),
-    planEndDate: dayjs().format('YYYY-MM-DD'),
-    planDurationWeeks: 0,
-    planTargetYear: '2026',
-    cycles: [],
+    targeted_year: 2026,
+    start_date: new Date(),
+    study_plan_id: `empty_plan_${userId}`,
+    user_id: userId,
+    plan_title: 'Empty Plan',
+    curated_resources: {
+      essential_resources: [],
+      recommended_timeline: { immediate_needs: [], mid_term_needs: [], long_term_needs: [] },
+      budget_summary: { total_cost: 0, essential_cost: 0, optional_cost: 0, free_alternatives: 0, subscription_cost: 0 },
+      alternative_options: []
+    },
     effective_season_context: 'ComprehensiveStudy',
-    planSummary: {
-      totalCycles: 0,
-      totalBlocks: 0,
-      totalWeeks: 0,
-      subjectsCount: 0,
-      approachType: 'DualSubject'
-    }
+    cycles: [],
+    timelineUtilization: 0
   };
 }
 
@@ -272,14 +263,12 @@ function createEmptyPlan(userId: string): StudyPlan {
 
 export async function rebalanceFunctionalPlan(
   originalPlan: StudyPlan,
-  feedback: any,
-  topicConfidenceMap: Map<string, number>,
   config: Config,
   intake: StudentIntake,
   logger?: Logger
 ): Promise<{ success: boolean; plan: StudyPlan; message: string }> {
   
-  const log = logger || makeLogger('FunctionalEngine', 'info');
+  const log = logger || makeLogger();
   
   try {
     log.logInfo('FunctionalEngine', 'Rebalancing functional plan based on feedback');
@@ -287,22 +276,22 @@ export async function rebalanceFunctionalPlan(
     // For now, regenerate the entire plan with updated confidence
     // In a more sophisticated version, we could update only affected cycles
     const result = await generateFunctionalPlan(
-      originalPlan.planId.split('_')[2] || 'unknown', // Extract user ID
+      originalPlan.study_plan_id.split('_')[2] || 'unknown', // Extract user ID
       config,
       intake,
       log
     );
     
     if (result.success) {
-      result.plan.planId = `rebalanced_${result.plan.planId}`;
-      result.plan.planName = `Rebalanced ${result.plan.planName}`;
+      result.plan.study_plan_id = `rebalanced_${result.plan.study_plan_id}`;
+      result.plan.plan_title = `Rebalanced ${result.plan.plan_title}`;
       result.message = `Successfully rebalanced plan: ${result.message}`;
     }
     
     return result;
     
   } catch (error) {
-    log.logError('FunctionalEngine', `Error rebalancing plan: ${error}`);
+    log.logWarn('FunctionalEngine', `Error rebalancing plan: ${error}`);
     return {
       success: false,
       plan: originalPlan,
@@ -328,12 +317,12 @@ export function validateFunctionalPlan(plan: StudyPlan): { isValid: boolean; iss
     
     // Check for gaps between blocks within cycle
     const sortedBlocks = [...blocks].sort((a, b) => 
-      dayjs(a.blockStartDate).diff(dayjs(b.blockStartDate))
+      dayjs(a.block_start_date).diff(dayjs(b.block_start_date))
     );
     
     for (let i = 0; i < sortedBlocks.length - 1; i++) {
-      const currentEnd = dayjs(sortedBlocks[i].blockEndDate);
-      const nextStart = dayjs(sortedBlocks[i + 1].blockStartDate);
+    const currentEnd = dayjs(sortedBlocks[i].block_end_date);
+    const nextStart = dayjs(sortedBlocks[i + 1].block_start_date);
       
       if (nextStart.diff(currentEnd, 'day') > 1) {
         issues.push(`Gap found between blocks in cycle ${cycle.cycleName}`);
