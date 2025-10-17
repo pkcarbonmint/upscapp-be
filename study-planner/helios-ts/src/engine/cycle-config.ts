@@ -104,7 +104,7 @@ const C1_CONFIG: CycleConfig = {
 const C2_CONFIG: CycleConfig = {
   cycleType: CycleType.C2,
   cycleOrder: 1,
-  cycleName: 'Foundation Cycle',
+  cycleName: 'UPSC Foundation Cycle',
   cycleDescription: 'Foundation building phase with comprehensive subject coverage',
   cycleIntensity: CycleIntensity.Foundation,
   subjectFilter: (subjects) => subjects, // Uses all subjects, split later
@@ -122,7 +122,7 @@ const C2_CONFIG: CycleConfig = {
 const C3_CONFIG: CycleConfig = {
   cycleType: CycleType.C3,
   cycleOrder: 3,
-  cycleName: 'Mains Revision Pre-Prelims Cycle',
+  cycleName: 'Mains Foundation',
   cycleDescription: 'Mains-specific foundation building phase preparing for answer writing',
   cycleIntensity: CycleIntensity.Foundation,
   subjectFilter: (subjects) => subjects.filter(s =>
@@ -218,7 +218,7 @@ const C7_CONFIG: CycleConfig = {
 const C8_CONFIG: CycleConfig = {
   cycleType: CycleType.C8,
   cycleOrder: 8,
-  cycleName: 'C8 Mains Foundation Cycle',
+  cycleName: 'Mains Foundation (C8) Cycle',
   cycleDescription: 'Mains-focused foundation work for very late starts, bridge to prelims preparation',
   cycleIntensity: CycleIntensity.Foundation,
   subjectFilter: (subjects) => subjects.filter(s =>
