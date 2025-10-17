@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, Header, Footer, PageBreak } from 'docx';
+import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, Header, Footer, PageBreak, PageNumber } from 'docx';
 import type { StudyPlan, StudentIntake } from '../types/models';
 import { CycleType } from '../types/Types';
 import { ResourceService } from './ResourceService';
@@ -154,48 +154,61 @@ export class CalendarDocxService {
 async function createStructuredWordDocument(studyPlan: StudyPlan, studentIntake: StudentIntake): Promise<Document> {
   const year = studyPlan.targeted_year || new Date().getFullYear();
 
-  // Build all document elements
-  const documentElements: (Paragraph | Table)[] = [];
+  // Build cover page elements
+  const coverPageElements = generateCoverPage(studentIntake, year);
   
-  // Cover Page
-  documentElements.push(...generateCoverPage(studentIntake, year));
-  
-  // Page break before Birds Eye View
-  documentElements.push(new Paragraph({
-    children: [new PageBreak()]
-  }));
+  // Build main content elements
+  const mainContentElements: (Paragraph | Table)[] = [];
   
   // Birds Eye View
-  documentElements.push(...generateBirdsEyeView(studyPlan));
+  mainContentElements.push(...generateBirdsEyeView(studyPlan));
   
   // Page break before Monthly Views
-  documentElements.push(new Paragraph({
+  mainContentElements.push(new Paragraph({
     children: [new PageBreak()]
   }));
   
   // Monthly Views with Daily/Weekly Pages
   const monthlyElements = await generateMonthViewWithDailyPages(studyPlan);
-  documentElements.push(...monthlyElements.filter(item => item instanceof Paragraph || item instanceof Table));
+  mainContentElements.push(...monthlyElements.filter(item => item instanceof Paragraph || item instanceof Table));
   
   // Page break before Resources Table
-  documentElements.push(new Paragraph({
+  mainContentElements.push(new Paragraph({
     children: [new PageBreak()]
   }));
   
   // Resources Table
-  documentElements.push(...await generateResourcesTable(studyPlan));
+  mainContentElements.push(...await generateResourcesTable(studyPlan));
   
   // Page break before Legend
-  documentElements.push(new Paragraph({
+  mainContentElements.push(new Paragraph({
     children: [new PageBreak()]
   }));
   
   // Legend
-  documentElements.push(...generateLegend(studyPlan));
+  mainContentElements.push(...generateLegend(studyPlan));
 
   const document = new Document({
     styles: getDocumentStyles(),
     sections: [
+      // Cover page section (no header)
+      {
+        properties: {
+          page: {
+            margin: {
+              top: 1440, // 1 inch
+              right: 1440,
+              bottom: 1440,
+              left: 1440,
+            },
+          },
+        },
+        footers: {
+          default: createFooter(),
+        },
+        children: coverPageElements, // All cover page elements
+      },
+      // Main content section (with header)
       {
         properties: {
           page: {
@@ -213,7 +226,7 @@ async function createStructuredWordDocument(studyPlan: StudyPlan, studentIntake:
         footers: {
           default: createFooter(),
         },
-        children: documentElements,
+        children: mainContentElements, // All main content elements
       },
     ],
   });
@@ -231,12 +244,198 @@ function generateCoverPage(studentIntake: StudentIntake, year: number): (Paragra
 
   const elements: (Paragraph | Table)[] = [];
 
-  // Title
+  // Top decorative line
+
+  // Main title with gradient effect simulation
+
   elements.push(new Paragraph({
     children: [new TextRun({ 
-      text: 'UPSC Study Planner', 
+      text: 'UPSC STUDY PLANNER - ' + year.toString(), 
       bold: true, 
-      size: 48, 
+      size: 42, 
+      color: DOCUMENT_STYLES.colors.primary,
+      font: DOCUMENT_STYLES.font
+    })],
+    alignment: AlignmentType.CENTER,
+    spacing: { after: 0 }
+  }));
+
+  // Student name with elegant styling
+  elements.push(new Paragraph({
+    children: [new TextRun({ 
+      text: pd?.full_name?.toUpperCase() || 'STUDENT NAME', 
+      bold: true, 
+      size: 36, 
+      color: DOCUMENT_STYLES.colors.text,
+      font: DOCUMENT_STYLES.font
+    })],
+    alignment: AlignmentType.CENTER,
+    spacing: { after: 100 }
+  }));
+
+  // Subtitle
+  elements.push(new Paragraph({
+    children: [new TextRun({ 
+      text: 'Personalized Study Plan & Calendar', 
+      size: 18, 
+      color: DOCUMENT_STYLES.colors.secondary,
+      font: DOCUMENT_STYLES.font
+    })],
+    alignment: AlignmentType.CENTER,
+    spacing: { after: 200 }
+  }));
+
+  // Student info card with modern design
+  const infoCardRows: TableRow[] = [
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ 
+                text: '📧', 
+                size: 16, 
+                color: DOCUMENT_STYLES.colors.primary,
+                font: DOCUMENT_STYLES.font
+              })],
+              alignment: AlignmentType.CENTER
+            })
+          ],
+          width: { size: 15, type: WidthType.PERCENTAGE },
+          margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({ 
+                  text: 'Email: ', 
+                  bold: true, 
+                  size: 14, 
+                  color: DOCUMENT_STYLES.colors.secondary,
+                  font: DOCUMENT_STYLES.font
+                }),
+                new TextRun({ 
+                  text: pd?.email || 'N/A', 
+                  size: 14, 
+                  color: DOCUMENT_STYLES.colors.text,
+                  font: DOCUMENT_STYLES.font
+                })
+              ]
+            })
+          ],
+          width: { size: 85, type: WidthType.PERCENTAGE },
+          margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        })
+      ]
+    }),
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ 
+                text: '📱', 
+                size: 16, 
+                color: DOCUMENT_STYLES.colors.primary,
+                font: DOCUMENT_STYLES.font
+              })],
+              alignment: AlignmentType.CENTER
+            })
+          ],
+          width: { size: 15, type: WidthType.PERCENTAGE },
+          margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({ 
+                  text: 'Phone: ', 
+                  bold: true, 
+                  size: 14, 
+                  color: DOCUMENT_STYLES.colors.secondary,
+                  font: DOCUMENT_STYLES.font
+                }),
+                new TextRun({ 
+                  text: pd?.phone_number || 'N/A', 
+                  size: 14, 
+                  color: DOCUMENT_STYLES.colors.text,
+                  font: DOCUMENT_STYLES.font
+                })
+              ]
+            })
+          ],
+          width: { size: 85, type: WidthType.PERCENTAGE },
+          margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        })
+      ]
+    }),
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ 
+                text: '📍', 
+                size: 16, 
+                color: DOCUMENT_STYLES.colors.primary,
+                font: DOCUMENT_STYLES.font
+              })],
+              alignment: AlignmentType.CENTER
+            })
+          ],
+          width: { size: 15, type: WidthType.PERCENTAGE },
+          margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({ 
+                  text: 'Location: ', 
+                  bold: true, 
+                  size: 14, 
+                  color: DOCUMENT_STYLES.colors.secondary,
+                  font: DOCUMENT_STYLES.font
+                }),
+                new TextRun({ 
+                  text: pd?.present_location || 'N/A', 
+                  size: 14, 
+                  color: DOCUMENT_STYLES.colors.text,
+                  font: DOCUMENT_STYLES.font
+                })
+              ]
+            })
+          ],
+          width: { size: 85, type: WidthType.PERCENTAGE },
+          margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        })
+      ]
+    })
+  ];
+
+  elements.push(new Table({
+    rows: infoCardRows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideVertical: { style: BorderStyle.NONE, size: 0 }
+    }
+  }));
+
+  elements.push(new Paragraph({ text: '', spacing: { after: 600 } }));
+
+  // Study strategy highlights
+  elements.push(new Paragraph({
+    children: [new TextRun({ 
+      text: 'Study Strategy Overview', 
+      bold: true, 
+      size: 24, 
       color: DOCUMENT_STYLES.colors.primary,
       font: DOCUMENT_STYLES.font
     })],
@@ -244,64 +443,26 @@ function generateCoverPage(studentIntake: StudentIntake, year: number): (Paragra
     spacing: { after: 400 }
   }));
 
-  // Year
-  elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: year.toString(), 
-      bold: true, 
-      size: 36, 
-      color: DOCUMENT_STYLES.colors.primary,
-      font: DOCUMENT_STYLES.font
-    })],
-    alignment: AlignmentType.CENTER,
-    spacing: { after: 800 }
-  }));
-
-  // Student Name
-  elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: pd?.full_name || 'Student Name', 
-      bold: true, 
-      size: 32, 
-      color: DOCUMENT_STYLES.colors.text,
-      font: DOCUMENT_STYLES.font
-    })],
-    alignment: AlignmentType.CENTER,
-    spacing: { after: 600 }
-  }));
-
-  // Student Details Table
-  const studentDetailsRows: TableRow[] = [
+  // Strategy cards in 2x2 grid
+  const strategyRows: TableRow[] = [
     new TableRow({
       children: [
-        createTableCell('Email:', DOCUMENT_STYLES.colors.secondary, true),
-        createTableCell(pd?.email || 'N/A', DOCUMENT_STYLES.colors.text)
+        createStrategyCard('⏰', 'Weekly Hours', ss?.weekly_study_hours || 'N/A'),
+        createStrategyCard('🎯', 'Study Approach', ss?.study_approach || 'N/A')
       ]
     }),
     new TableRow({
       children: [
-        createTableCell('Phone:', DOCUMENT_STYLES.colors.secondary, true),
-        createTableCell(pd?.phone_number || 'N/A', DOCUMENT_STYLES.colors.text)
-      ]
-    }),
-    new TableRow({
-      children: [
-        createTableCell('Location:', DOCUMENT_STYLES.colors.secondary, true),
-        createTableCell(pd?.present_location || 'N/A', DOCUMENT_STYLES.colors.text)
-      ]
-    }),
-    new TableRow({
-      children: [
-        createTableCell('Target Year:', DOCUMENT_STYLES.colors.secondary, true),
-        createTableCell(studentIntake.target_year || 'N/A', DOCUMENT_STYLES.colors.text)
+        createStrategyCard('📚', 'Optional Subject', studentIntake.optional_subject?.optional_subject_name || 'N/A'),
+        createStrategyCard('🏆', 'Previous Attempts', ps?.number_of_attempts || 'N/A')
       ]
     })
   ];
 
   elements.push(new Table({
-    rows: studentDetailsRows,
+    rows: strategyRows,
     width: { size: 100, type: WidthType.PERCENTAGE },
-    columnWidths: [3000, 5000],
+    columnWidths: [4000, 4000],
     borders: {
       top: { style: BorderStyle.NONE, size: 0 },
       bottom: { style: BorderStyle.NONE, size: 0 },
@@ -312,58 +473,81 @@ function generateCoverPage(studentIntake: StudentIntake, year: number): (Paragra
     }
   }));
 
-  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+  elements.push(new Paragraph({ text: '', spacing: { after: 800 } }));
 
-  // Study Details Grid
-  const studyDetailsRows: TableRow[] = [
-    new TableRow({
-      children: [
-        createStudyDetailCell('📚', 'Weekly Hours', ss?.weekly_study_hours || 'N/A'),
-        createStudyDetailCell('🎯', 'Study Approach', ss?.study_approach || 'N/A')
-      ]
-    }),
-    new TableRow({
-      children: [
-        createStudyDetailCell('📖', 'Optional Subject', studentIntake.optional_subject?.optional_subject_name || 'N/A'),
-        createStudyDetailCell('🏆', 'Previous Attempts', ps?.number_of_attempts || 'N/A')
-      ]
-    })
-  ];
-
+  // Inspirational quote with better styling
   elements.push(new Table({
-    rows: studyDetailsRows,
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [new TextRun({ 
+                  text: '"Success is the sum of small efforts repeated day in and day out."', 
+                  italics: true, 
+                  size: 18, 
+                  color: DOCUMENT_STYLES.colors.primary,
+                  font: DOCUMENT_STYLES.font
+                })],
+                alignment: AlignmentType.CENTER
+              }),
+              new Paragraph({
+                children: [new TextRun({ 
+                  text: '— Robert Collier', 
+                  size: 14, 
+                  color: DOCUMENT_STYLES.colors.secondary,
+                  font: DOCUMENT_STYLES.font
+                })],
+                alignment: AlignmentType.CENTER,
+                spacing: { before: 200 }
+              })
+            ],
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            margins: { top: 400, bottom: 400, left: 400, right: 400 },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
+              bottom: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
+              left: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
+              right: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary }
+            }
+          })
+        ]
+      })
+    ],
     width: { size: 100, type: WidthType.PERCENTAGE },
-    columnWidths: [4000, 4000],
     borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+      top: { style: BorderStyle.NONE, size: 0 },
+      bottom: { style: BorderStyle.NONE, size: 0 },
+      left: { style: BorderStyle.NONE, size: 0 },
+      right: { style: BorderStyle.NONE, size: 0 },
+      insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+      insideVertical: { style: BorderStyle.NONE, size: 0 }
     }
   }));
 
-  elements.push(new Paragraph({ text: '', spacing: { after: 800 } }));
+  elements.push(new Paragraph({ text: '', spacing: { after: 600 } }));
 
-  // Quote
+  // Footer with branding
   elements.push(new Paragraph({
     children: [new TextRun({ 
-      text: '"Success is the sum of small efforts repeated day in and day out."', 
-      italics: true, 
-      size: 20, 
+      text: 'La Mentora Study Planner v1.0 - © 2025-2026 All Rights Reserved', 
+      size: 14, 
       color: DOCUMENT_STYLES.colors.secondary,
       font: DOCUMENT_STYLES.font
     })],
     alignment: AlignmentType.CENTER,
-    spacing: { after: 400 }
+    spacing: { after: 200 }
   }));
 
-  // Generated by
   elements.push(new Paragraph({
     children: [new TextRun({ 
-      text: 'Generated by Helios Study Planner', 
-      size: 16, 
+      text: `Generated on ${new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })}`, 
+      size: 12, 
       color: DOCUMENT_STYLES.colors.secondary,
       font: DOCUMENT_STYLES.font
     })],
@@ -425,10 +609,10 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
     monthRows.push(months.slice(i, i + 6));
   }
 
-  // Create table for each row of months
-  monthRows.forEach(monthRow => {
-    const tableRows: TableRow[] = [];
-    
+  // Create single table with all month rows
+  const allTableRows: TableRow[] = [];
+  
+  monthRows.forEach((monthRow, rowIndex) => {
     // Header row with month names
     const headerCells: TableCell[] = monthRow.map(({ month, cycle }) => {
       const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
@@ -471,73 +655,102 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
       }));
     }
     
-    tableRows.push(new TableRow({ children: headerCells }));
+    allTableRows.push(new TableRow({ children: headerCells }));
     
-    // Calendar grid for each month - use improved text formatting
+    // Calendar grid for each month - use table structure for perfect alignment
     const calendarCells: TableCell[] = monthRow.map(({ month }) => {
       const daysInMonth = month.daysInMonth();
       const firstDayOfMonth = month.startOf('month').day();
       
-      // Build calendar content using multiple paragraphs for better spacing control
-      const calendarParagraphs: Paragraph[] = [];
+      // Create a mini table for the calendar with proper alignment
+      const calendarTableRows: TableRow[] = [];
       
       // Header row with day names
-      calendarParagraphs.push(new Paragraph({
-        children: [new TextRun({ 
-          text: 'S  M  T  W  T  F  S', 
-          size: 9, 
-          color: DOCUMENT_STYLES.colors.secondary,
-          font: 'Courier New'
-        })],
-        alignment: AlignmentType.CENTER,
-        spacing: { before: 0, after: 0 }
-      }));
+      const dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => 
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ 
+                text: day, 
+                bold: true, 
+                size: 8, 
+                color: DOCUMENT_STYLES.colors.secondary,
+                font: DOCUMENT_STYLES.font
+              })],
+              alignment: AlignmentType.CENTER
+            })
+          ],
+          width: { size: 14.28, type: WidthType.PERCENTAGE },
+          margins: { top: 50, bottom: 50, left: 20, right: 20 }
+        })
+      );
+      calendarTableRows.push(new TableRow({ children: dayHeaders }));
       
-      // Build calendar weeks
-      let currentWeek = '';
+      // Create calendar weeks
+      let currentWeek: TableCell[] = [];
       
       // Add empty cells for days before month starts
       for (let i = 0; i < firstDayOfMonth; i++) {
-        currentWeek += '   ';
+        currentWeek.push(new TableCell({
+          children: [new Paragraph({ text: '' })],
+          width: { size: 14.28, type: WidthType.PERCENTAGE },
+          margins: { top: 20, bottom: 20, left: 10, right: 10 }
+        }));
       }
       
       // Add days of the month
       for (let day = 1; day <= daysInMonth; day++) {
-        const dayStr = day.toString().padStart(2, ' ');
-        currentWeek += `${dayStr} `;
+        currentWeek.push(new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ 
+                text: day.toString(), 
+                size: 8, 
+                color: DOCUMENT_STYLES.colors.text,
+                font: DOCUMENT_STYLES.font
+              })],
+              alignment: AlignmentType.CENTER
+            })
+          ],
+          width: { size: 14.28, type: WidthType.PERCENTAGE },
+          margins: { top: 20, bottom: 20, left: 10, right: 10 }
+        }));
         
-        // Start new week every 7 days
-        if ((firstDayOfMonth + day) % 7 === 0) {
-          calendarParagraphs.push(new Paragraph({
-            children: [new TextRun({ 
-              text: currentWeek, 
-              size: 9, 
-              color: DOCUMENT_STYLES.colors.text,
-              font: 'Courier New'
-            })],
-            alignment: AlignmentType.CENTER,
-            spacing: { before: 0, after: 0 }
-          }));
-          currentWeek = '';
+        // Start new week if we have 7 days
+        if (currentWeek.length === 7) {
+          calendarTableRows.push(new TableRow({ children: currentWeek }));
+          currentWeek = [];
         }
       }
       
-      // Add the last week if it has content
-      if (currentWeek.trim()) {
-        calendarParagraphs.push(new Paragraph({
-          children: [new TextRun({ 
-            text: currentWeek, 
-            size: 9, 
-            color: DOCUMENT_STYLES.colors.text,
-            font: 'Courier New'
-          })],
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 0, after: 0 }
+      // Fill remaining cells in the last week
+      while (currentWeek.length < 7) {
+        currentWeek.push(new TableCell({
+          children: [new Paragraph({ text: '' })],
+          width: { size: 14.28, type: WidthType.PERCENTAGE },
+          margins: { top: 20, bottom: 20, left: 10, right: 10 }
         }));
       }
+      if (currentWeek.length > 0) {
+        calendarTableRows.push(new TableRow({ children: currentWeek }));
+      }
+      
+      // Create the mini calendar table
+      const calendarTable = new Table({
+        rows: calendarTableRows,
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: {
+          top: { style: BorderStyle.NONE, size: 0 },
+          bottom: { style: BorderStyle.NONE, size: 0 },
+          left: { style: BorderStyle.NONE, size: 0 },
+          right: { style: BorderStyle.NONE, size: 0 },
+          insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+          insideVertical: { style: BorderStyle.NONE, size: 0 }
+        }
+      });
       
       return new TableCell({
-        children: calendarParagraphs,
+        children: [calendarTable],
         width: { size: 16.67, type: WidthType.PERCENTAGE },
         margins: { top: 100, bottom: 100, left: 50, right: 50 }
       });
@@ -551,23 +764,22 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
       }));
     }
     
-    tableRows.push(new TableRow({ children: calendarCells }));
-    
-    elements.push(new Table({
-      rows: tableRows,
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      borders: {
-        top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
-      }
-    }));
-    
-    elements.push(new Paragraph({ text: '', spacing: { after: 200 } }));
+    allTableRows.push(new TableRow({ children: calendarCells }));
   });
+  
+  // Create single table with all rows
+  elements.push(new Table({
+    rows: allTableRows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+    }
+  }));
 
   return elements;
 }
@@ -642,7 +854,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
                   children: [new TextRun({ 
                     text: cycleName, 
                     bold: true, 
-                    size: DOCUMENT_STYLES.sizes.heading1, 
+                    size: 25, 
                     color: DOCUMENT_STYLES.colors.primary,
                     font: DOCUMENT_STYLES.font
                   })],
@@ -1182,42 +1394,54 @@ function createTableCell(text: string, color: string, bold = false): TableCell {
 }
 
 /**
- * Create a study detail cell with icon, title, and value
+ * Create a strategy card with icon, title, and value
  */
-function createStudyDetailCell(icon: string, title: string, value: string): TableCell {
+function createStrategyCard(icon: string, title: string, value: string): TableCell {
   return new TableCell({
     children: [
       new Paragraph({
         children: [new TextRun({ 
           text: icon, 
-          size: 24, 
+          size: 20, 
+          color: DOCUMENT_STYLES.colors.primary,
           font: DOCUMENT_STYLES.font
         })],
-        alignment: AlignmentType.CENTER
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 }
       }),
       new Paragraph({
         children: [new TextRun({ 
           text: title, 
+          bold: true, 
           size: 12, 
           color: DOCUMENT_STYLES.colors.secondary,
           font: DOCUMENT_STYLES.font
         })],
-        alignment: AlignmentType.CENTER
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 100 }
       }),
       new Paragraph({
         children: [new TextRun({ 
           text: value, 
-          bold: true, 
-          size: 16, 
+          size: 14, 
           color: DOCUMENT_STYLES.colors.text,
           font: DOCUMENT_STYLES.font
         })],
         alignment: AlignmentType.CENTER
       })
     ],
-    margins: { top: 400, bottom: 400, left: 200, right: 200 }
+    width: { size: 50, type: WidthType.PERCENTAGE },
+    margins: { top: 300, bottom: 300, left: 200, right: 200 },
+    shading: { fill: 'F8F9FA' },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+    }
   });
 }
+
 
 /**
  * Get unique subjects from study plan
@@ -1362,11 +1586,29 @@ function createFooter(): Footer {
       new Paragraph({
         children: [
           new TextRun({
-            text: `Generated by Helios Study Planner on ${new Date().toLocaleDateString('en-US', {
+            text: `La Mentora Study Planner v1.0 - © 2025-2026 All Rights Reserved. Generated on ${new Date().toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric'
             })} - Page `,
+            size: DOCUMENT_STYLES.sizes.small,
+            color: DOCUMENT_STYLES.colors.secondary,
+            font: DOCUMENT_STYLES.font
+          }),
+          new TextRun({
+            children: [PageNumber.CURRENT],
+            size: DOCUMENT_STYLES.sizes.small,
+            color: DOCUMENT_STYLES.colors.secondary,
+            font: DOCUMENT_STYLES.font
+          }),
+          new TextRun({
+            text: ' of ',
+            size: DOCUMENT_STYLES.sizes.small,
+            color: DOCUMENT_STYLES.colors.secondary,
+            font: DOCUMENT_STYLES.font
+          }),
+          new TextRun({
+            children: [PageNumber.TOTAL_PAGES],
             size: DOCUMENT_STYLES.sizes.small,
             color: DOCUMENT_STYLES.colors.secondary,
             font: DOCUMENT_STYLES.font
