@@ -433,7 +433,7 @@ describe('generateInitialPlan', () => {
       });
 
       // Should cover ALL subjects in the system (since we default missing subjects to Moderate)
-      const allSystemSubjects = loadAllSubjects().map(s => s.subjectCode);
+      const allSystemSubjects = (await loadAllSubjects()).map(s => s.subjectCode);
       const notCoveredSubjects = allSystemSubjects.filter(subject => !foundationSubjects.has(subject));
       expect(notCoveredSubjects.length).toBe(0);
 
@@ -481,7 +481,7 @@ describe('generateInitialPlan', () => {
       });
 
       // Should cover ALL subjects in the system
-      const allSystemSubjects = loadAllSubjects().map(s => s.subjectCode);
+      const allSystemSubjects = (await loadAllSubjects()).map(s => s.subjectCode);
       const notCoveredSubjects = allSystemSubjects.filter(subject => !revisionSubjects.has(subject));
       expect(notCoveredSubjects.length).toBe(1);
       expect(notCoveredSubjects[0]).toBe('Z');
@@ -532,7 +532,7 @@ describe('generateInitialPlan', () => {
       // console.log('Prelims rapid revision subjects covered:', Array.from(rapidSubjects));
 
       // Should cover ALL subjects in the system
-      const allSystemSubjects = loadAllSubjects().map(s => s.subjectCode);
+      const allSystemSubjects = (await loadAllSubjects()).map(s => s.subjectCode);
       const notCoveredSubjects = allSystemSubjects.filter(subject => !rapidSubjects.has(subject));
       expect(notCoveredSubjects.length).toBe(1);
       expect(notCoveredSubjects[0]).toBe('Z');
@@ -580,7 +580,7 @@ describe('generateInitialPlan', () => {
       });
 
       // Should cover ALL subjects in the system
-      const allSystemSubjects = loadAllSubjects().map(s => s.subjectCode);
+      const allSystemSubjects = (await loadAllSubjects()).map(s => s.subjectCode);
       const notCoveredSubjects = allSystemSubjects.filter(subject => !mainsSubjects.has(subject));
       expect(notCoveredSubjects.length).toBe(0);
 

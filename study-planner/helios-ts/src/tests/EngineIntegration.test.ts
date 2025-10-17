@@ -59,7 +59,7 @@ describe('Engine Integration Tests', () => {
   describe('Complete Engine Workflow', () => {
     it('should generate a complete study plan with real subjects', async () => {
       // Load real subjects
-      const allSubjects = loadAllSubjects();
+      const allSubjects = await loadAllSubjects();
       expect(allSubjects.length).toBeGreaterThan(0);
       
       // Create a realistic student intake
