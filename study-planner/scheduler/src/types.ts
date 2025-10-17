@@ -55,6 +55,16 @@ export type Subject = {
   subjectCode: SubjectCode;
   baselineHours: number;
   priority?: number; // Higher number = higher priority
+  subjectType?: SubjectType; // NEW: GS, Optional, or CSAT
+  isOptional?: boolean; // NEW: true for optional subjects
+  optionalSubjectName?: string; // NEW: name of optional subject (e.g., "History", "Geography")
+};
+
+export type SubjectType = 'GS' | 'Optional' | 'CSAT';
+
+export type GSOptionalRatio = {
+  gs: number; // percentage for GS subjects
+  optional: number; // percentage for optional subjects
 };
 
 export type Subtopic = {
@@ -108,6 +118,7 @@ export type SchedulingInput = {
   timeWindow: { start: Dayjs; end: Dayjs };
   totalAvailableHours: number;
   workingHoursPerDay: number;
+  gsOptionalRatio?: GSOptionalRatio; // NEW: GS:Optional ratio (e.g., {gs: 0.67, optional: 0.33})
 };
 
 export type ScheduledSubject = {
