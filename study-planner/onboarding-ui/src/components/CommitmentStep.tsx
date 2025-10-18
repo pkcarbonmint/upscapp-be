@@ -3,6 +3,8 @@ import type { IWFStudyCommitment, StudyPreference, SubjectApproach } from '../ty
 import { validateCommitment, type CommitmentValidation, isCommitmentValid } from '../utils/validation';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useTheme } from '../hooks/useTheme';
+import { loadOptionalSubjects } from '../services/heliosService';
+import type { Subject } from 'helios-ts';
 
 interface CommitmentStepProps {
   data: IWFStudyCommitment;
@@ -37,34 +39,7 @@ const subjectApproachOptions: SubjectApproach[] = [
   'TripleSubject'
 ];
 
-// UPSC Optional Subject options
-const upscOptionalSubjects = [
-  'Agriculture',
-  'Animal Husbandry and Veterinary Science',
-  'Anthropology',
-  'Botany',
-  'Chemistry',
-  'Civil Engineering',
-  'Commerce and Accountancy',
-  'Economics',
-  'Electrical Engineering',
-  'Geography',
-  'Geology',
-  'History',
-  'Law',
-  'Management',
-  'Mathematics',
-  'Mechanical Engineering',
-  'Medical Science',
-  'Philosophy',
-  'Physics',
-  'Political Science and International Relations',
-  'Psychology',
-  'Public Administration',
-  'Sociology',
-  'Statistics',
-  'Zoology'
-];
+// UPSC Optional Subject options will be loaded dynamically
 
 // Weekly test day options
 const weeklyTestDayOptions = [
@@ -102,6 +77,24 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
   const { getClasses } = useTheme();
   const [validation, setValidation] = useState<CommitmentValidation>(() => validateCommitment(data));
   const [showErrors, setShowErrors] = useState(forceShowErrors);
+  const [upscOptionalSubjects, setUpscOptionalSubjects] = useState<Subject[]>([]);
+
+  // Load optional subjects on component mount
+  useEffect(() => {
+    const loadSubjects = async () => {
+      try {
+        const subjects = await loadOptionalSubjects();
+        // Store the full Subject objects - we'll use subjectCode for server communication
+        setUpscOptionalSubjects(subjects);
+      } catch (error) {
+        console.error('Failed to load optional subjects:', error);
+        // Fallback to empty array or default list if needed
+        setUpscOptionalSubjects([]);
+      }
+    };
+    
+    loadSubjects();
+  }, []);
 
   // Update validation when data changes
   useEffect(() => {
@@ -245,13 +238,13 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
         <div className="space-y-3">
           <select
             value={data.upscOptionalSubject || ''}
-            onChange={(e) => onUpdate(prev => ({ ...prev, upscOptionalSubject: e.target.value || undefined }))}
+            onChange={(e) => onUpdate(prev => ({ ...prev, upscOptionalSubject: e.target.value || '' }))}
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
           >
             <option value="">Select Optional Subject (if applicable)</option>
             {upscOptionalSubjects.map((subject) => (
-              <option key={subject} value={subject}>
-                {subject}
+              <option key={subject.subjectCode} value={subject.subjectCode}>
+                {subject.subjectName}
               </option>
             ))}
           </select>

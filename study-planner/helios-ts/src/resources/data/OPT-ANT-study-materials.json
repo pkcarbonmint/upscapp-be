@@ -1,0 +1,373 @@
+[
+  {
+    "subjectCode": "OPT-ANT",
+    "basics": [
+      "NCERT XI Anthropology",
+      "NCERT XII Anthropology",
+      "IGNOU Anthropology Material (ANE-01, ANE-02, ANE-03, ANE-04)"
+    ],
+    "textbooks": [
+      "Ember & Ember - Cultural Anthropology",
+      "Conrad Kottak - Anthropology: The Exploration of Human Diversity",
+      "Raymond Scupin - Cultural Anthropology: A Global Perspective",
+      "Carol R. Ember - Physical Anthropology and Archaeology"
+    ],
+    "value_addition": [
+      "Economic and Political Weekly (EPW)",
+      "Newspapers (The Hindu, Indian Express - Tribal issues)",
+      "Yojana Magazine",
+      "Kurukshetra Magazine",
+      "Tribal Research Institute Reports",
+      "Ministry of Tribal Affairs Reports",
+      "Anthropological Survey of India Reports",
+      "Census Tribal Data"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Anthropology Material",
+      "Mains RRP + Prelims RRP",
+      "Prelims & Mains Workbooks",
+      "Previous Year Question Papers",
+      "Mock Tests"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-01",
+    "basics": [
+      "NCERT XI - Introduction to Anthropology",
+      "IGNOU ANE-01 - Introduction to Anthropology"
+    ],
+    "textbooks": [
+      "E.B. Tylor - Primitive Culture",
+      "Lewis Henry Morgan - Ancient Society",
+      "Franz Boas - The Mind of Primitive Man"
+    ],
+    "value_addition": [
+      "Anthropological Survey of India Publications",
+      "EPW Articles on Anthropology"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Introduction to Anthropology Material",
+      "Mains Workbook - Paper I"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-02",
+    "basics": [
+      "NCERT XI - Physical Anthropology",
+      "IGNOU ANE-02 - Physical Anthropology"
+    ],
+    "textbooks": [
+      "Clark Spencer Larsen - Our Origins",
+      "Robert Jurmain - Introduction to Physical Anthropology",
+      "Philip Stein - Physical Anthropology"
+    ],
+    "value_addition": [
+      "Human Evolution Studies",
+      "Genetic Research Reports",
+      "Forensic Anthropology Studies"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Physical Anthropology Material",
+      "Mains Workbook - Paper I"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-03",
+    "basics": [
+      "NCERT XI - Archaeological Anthropology",
+      "IGNOU ANE-03 - Archaeological Anthropology"
+    ],
+    "textbooks": [
+      "Colin Renfrew - Archaeology: Theories, Methods and Practice",
+      "Brian Fagan - Archaeology: A Brief Introduction",
+      "Robert L. Kelly - The Foraging Spectrum"
+    ],
+    "value_addition": [
+      "Archaeological Survey of India Reports",
+      "Excavation Reports",
+      "Heritage Site Documentation"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Archaeological Anthropology Material",
+      "Mains Workbook - Paper I"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-04",
+    "basics": [
+      "NCERT XI - Social-Cultural Anthropology",
+      "IGNOU ANE-04 - Social-Cultural Anthropology"
+    ],
+    "textbooks": [
+      "Bronislaw Malinowski - Argonauts of the Western Pacific",
+      "Claude Levi-Strauss - Structural Anthropology",
+      "Clifford Geertz - The Interpretation of Cultures"
+    ],
+    "value_addition": [
+      "Ethnographic Studies",
+      "Cultural Documentation Reports",
+      "Social Anthropology Journals"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Social-Cultural Anthropology Material",
+      "Mains Workbook - Paper I"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-05",
+    "basics": [
+      "NCERT XII - Indian Anthropology",
+      "IGNOU Material on Indian Anthropology"
+    ],
+    "textbooks": [
+      "M.N. Srinivas - Social Change in Modern India",
+      "A.R. Desai - Rural Sociology in India",
+      "D.N. Majumdar - Races and Cultures of India"
+    ],
+    "value_addition": [
+      "Tribal Research Institute Reports",
+      "Ministry of Tribal Affairs Data",
+      "Scheduled Tribes Lists"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Indian Anthropology Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-06",
+    "basics": [
+      "IGNOU Material on Tribal Studies"
+    ],
+    "textbooks": [
+      "Verrier Elwin - The Tribal World of Verrier Elwin",
+      "G.S. Ghurye - The Scheduled Tribes",
+      "B.K. Roy Burman - Tribes in Perspective"
+    ],
+    "value_addition": [
+      "Tribal Development Reports",
+      "Forest Rights Act Implementation",
+      "Tribal Sub-Plan Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Tribal Studies Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-07",
+    "basics": [
+      "IGNOU Material on Indian Society"
+    ],
+    "textbooks": [
+      "Yogendra Singh - Modernization of Indian Tradition",
+      "Andre Beteille - Society and Politics in India",
+      "T.K. Oommen - Social Movements in India"
+    ],
+    "value_addition": [
+      "Census Reports",
+      "Social Development Reports",
+      "NSSO Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Indian Society Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-08",
+    "basics": [
+      "IGNOU Material on Kinship and Marriage"
+    ],
+    "textbooks": [
+      "Louis Dumont - Homo Hierarchicus",
+      "Irawati Karve - Kinship Organization in India",
+      "M.N. Srinivas - Marriage and Family in India"
+    ],
+    "value_addition": [
+      "Marriage Registration Data",
+      "Family Planning Reports",
+      "Gender Statistics"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Kinship and Marriage Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-09",
+    "basics": [
+      "IGNOU Material on Religion and Society"
+    ],
+    "textbooks": [
+      "Max Weber - The Protestant Ethic and the Spirit of Capitalism",
+      "Emile Durkheim - The Elementary Forms of Religious Life",
+      "Clifford Geertz - Religion as a Cultural System"
+    ],
+    "value_addition": [
+      "Religious Demographics",
+      "Minority Commission Reports",
+      "Religious Freedom Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Religion and Society Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-10",
+    "basics": [
+      "IGNOU Material on Economic Anthropology"
+    ],
+    "textbooks": [
+      "Karl Polanyi - The Great Transformation",
+      "Marshall Sahlins - Stone Age Economics",
+      "Richard Wilk - Economies and Cultures"
+    ],
+    "value_addition": [
+      "Economic Survey",
+      "Rural Development Reports",
+      "Agricultural Statistics"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Economic Anthropology Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-11",
+    "basics": [
+      "IGNOU Material on Political Anthropology"
+    ],
+    "textbooks": [
+      "E.E. Evans-Pritchard - The Nuer",
+      "Max Gluckman - Custom and Conflict in Africa",
+      "Victor Turner - The Ritual Process"
+    ],
+    "value_addition": [
+      "Panchayati Raj Reports",
+      "Local Governance Studies",
+      "Political Participation Data"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Political Anthropology Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-12",
+    "basics": [
+      "IGNOU Material on Applied Anthropology"
+    ],
+    "textbooks": [
+      "John Van Willigen - Applied Anthropology",
+      "Satish Kedia - Applied Anthropology",
+      "Robert Chambers - Rural Development"
+    ],
+    "value_addition": [
+      "Development Program Reports",
+      "NGO Impact Studies",
+      "Policy Implementation Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Applied Anthropology Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-13",
+    "basics": [
+      "IGNOU Material on Medical Anthropology"
+    ],
+    "textbooks": [
+      "Arthur Kleinman - Patients and Healers",
+      "Paul Farmer - Pathologies of Power",
+      "Margaret Lock - Encounters with Aging"
+    ],
+    "value_addition": [
+      "Health Ministry Reports",
+      "Traditional Medicine Studies",
+      "Public Health Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Medical Anthropology Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-14",
+    "basics": [
+      "IGNOU Material on Urban Anthropology"
+    ],
+    "textbooks": [
+      "Louis Wirth - Urbanism as a Way of Life",
+      "Robert Redfield - The Folk Society",
+      "Oscar Lewis - The Culture of Poverty"
+    ],
+    "value_addition": [
+      "Urban Development Reports",
+      "Slum Studies",
+      "Migration Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Urban Anthropology Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-15",
+    "basics": [
+      "IGNOU Material on Ecological Anthropology"
+    ],
+    "textbooks": [
+      "Roy Rappaport - Pigs for the Ancestors",
+      "Julian Steward - Theory of Culture Change",
+      "Marvin Harris - Cultural Materialism"
+    ],
+    "value_addition": [
+      "Environment Ministry Reports",
+      "Forest Conservation Reports",
+      "Climate Change Studies"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Ecological Anthropology Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-ANT",
+    "topicCode": "ANT-16",
+    "basics": [
+      "IGNOU Material on Anthropological Theories"
+    ],
+    "textbooks": [
+      "Adam Kuper - Anthropology and Anthropologists",
+      "George Stocking - Race, Culture, and Evolution",
+      "Thomas Hylland Eriksen - Small Places, Large Issues"
+    ],
+    "value_addition": [
+      "Theoretical Debates in Anthropology",
+      "Methodological Studies",
+      "Fieldwork Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Anthropological Theories Material",
+      "Mains Workbook - Paper I"
+    ]
+  }
+]

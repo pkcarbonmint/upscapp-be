@@ -77,6 +77,9 @@ export { selectBestArchetype } from './services/ArchetypeSelector';
 export { handleConversation } from './services/TelegramBot';
 export { ResourceService } from './services/ResourceService';
 
+// Configuration
+export { getAllOptionalSubjects, getOptionalSubjectByCode } from './config';
+
 // Client
 export { heliosClient, api } from './services/helios';
 

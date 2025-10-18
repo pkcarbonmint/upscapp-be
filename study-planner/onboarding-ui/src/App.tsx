@@ -59,7 +59,7 @@ const initialFormData: IntakeWizardFormData = {
     },
     studyPreference: "WeakSubjectsFirst",
     subjectApproach: "DualSubject",
-    upscOptionalSubject: undefined,
+    upscOptionalSubject: 'OPT-SOC',
     optionalFirst: false,
     weeklyTestDayPreference: "Sunday"
   },

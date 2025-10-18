@@ -5,7 +5,8 @@ import {
   StudyApproach, 
   ConfidenceMap, 
   CycleType,
-  CycleSchedule
+  CycleSchedule,
+  SubjectType
 } from '../types';
 
 /**
@@ -24,7 +25,7 @@ describe('Performance Benchmarking Tests', () => {
       subjectCode: `SUBJECT_${i.toString().padStart(3, '0')}`,
       baselineHours: Math.floor(Math.random() * 200) + 50,
       priority: Math.floor(Math.random() * 5) + 1,
-      subjectType: i % 10 === 0 ? 'Optional' : 'GS',
+      subjectType: (i % 10 === 0 ? 'Optional' : 'GS') as SubjectType,
       isOptional: i % 10 === 0
     }));
 
@@ -51,7 +52,7 @@ describe('Performance Benchmarking Tests', () => {
         largeSubjectList,
         largeConfidenceMap,
         1000,
-        'balanced',
+        'Balanced',
         8,
         { gs: 0.67, optional: 0.33 }
       );
@@ -71,7 +72,7 @@ describe('Performance Benchmarking Tests', () => {
         subjectCode: `LARGE_SUBJECT_${i.toString().padStart(3, '0')}`,
         baselineHours: Math.floor(Math.random() * 150) + 30,
         priority: Math.floor(Math.random() * 5) + 1,
-        subjectType: i % 15 === 0 ? 'Optional' : 'GS',
+        subjectType: (i % 15 === 0 ? 'Optional' : 'GS') as SubjectType,
         isOptional: i % 15 === 0
       }));
 
@@ -87,7 +88,7 @@ describe('Performance Benchmarking Tests', () => {
         veryLargeSubjectList,
         veryLargeConfidenceMap,
         2000,
-        'balanced',
+        'Balanced',
         8,
         { gs: 0.7, optional: 0.3 }
       );
@@ -119,7 +120,7 @@ describe('Performance Benchmarking Tests', () => {
           testSubjects,
           testConfidenceMap,
           count * 10, // Scale hours with subject count
-          'balanced',
+          'Balanced',
           8
         );
         
@@ -149,12 +150,12 @@ describe('Performance Benchmarking Tests', () => {
       
       // Process large dataset multiple times
       for (let i = 0; i < 10; i++) {
-        const blocks = determineBlockSchedule(
+        determineBlockSchedule(
           benchmarkCycleSchedule,
           largeSubjectList,
           largeConfidenceMap,
           1000,
-          'balanced',
+          'Balanced',
           8
         );
         
@@ -183,7 +184,7 @@ describe('Performance Benchmarking Tests', () => {
           largeSubjectList,
           largeConfidenceMap,
           1000,
-          'balanced',
+          'Balanced',
           8
         );
         
@@ -224,7 +225,7 @@ describe('Performance Benchmarking Tests', () => {
             largeSubjectList,
             largeConfidenceMap,
             1000,
-            'balanced',
+            'Balanced',
             8
           );
           
@@ -280,7 +281,7 @@ describe('Performance Benchmarking Tests', () => {
     it('should handle complex scheduling scenarios efficiently', () => {
       const complexScenarios = [
         { name: 'High Priority Focus', approach: 'StrongFirst' as StudyApproach, hours: 500 },
-        { name: 'Balanced Approach', approach: 'balanced' as StudyApproach, hours: 300 },
+        { name: 'Balanced Approach', approach: 'Balanced' as StudyApproach, hours: 300 },
         { name: 'Weak Subject Focus', approach: 'WeakFirst' as StudyApproach, hours: 400 },
         { name: 'Single Subject', approach: 'SingleSubject' as StudyApproach, hours: 200 }
       ];
@@ -330,7 +331,7 @@ describe('Performance Benchmarking Tests', () => {
           largeSubjectList,
           largeConfidenceMap,
           1000,
-          'balanced',
+          'Balanced',
           8
         );
       }

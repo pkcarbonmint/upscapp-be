@@ -265,7 +265,7 @@ export interface StudyStrategy {
   catch_up_day_preference: string;
   // New UPSC fields
   optional_first_preference?: boolean;
-  upsc_optional_subject?: string;
+  upsc_optional_subject: string; // code of the optional subject
   weekly_test_day_preference?: string;
 }
 

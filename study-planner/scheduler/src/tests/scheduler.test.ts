@@ -801,7 +801,7 @@ describe('Scheduler Library Tests', () => {
       );
 
       // Test without GS:Optional ratio (should fall back to trimSubjectsToFit)
-      const blocksWithoutRatio = determineBlockSchedule(
+      determineBlockSchedule(
         cycleSchedule,
         allSubjects,
         confidenceMap,

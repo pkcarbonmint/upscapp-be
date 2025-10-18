@@ -26,6 +26,7 @@ export function transformUIToStudentIntake(wizardData: UIWizardData): StudentInt
     seasonal_windows: strategy.seasonal_windows,
     catch_up_day_preference: strategy.catch_up_day_preference,
     optional_first_preference: strategy.optional_first_preference,
+    upsc_optional_subject: strategy.upsc_optional_subject,
   };
   if (!start_date) {
     throw new Error("start_date is required");

@@ -7,6 +7,41 @@
   },
   "subjects": [
     {
+      "name": "Optional Subject",
+      "code": "OPT",
+      "baseline_hours": 120,
+      "category": "Optional",
+      "exam_focus": "MainsOnly",
+      "has_current_affairs": false,
+      "topics": [
+        {
+          "name": "Opt Topic 1",
+          "code": "OPT/01",
+          "priority": "Essential"
+        },
+        {
+          "name": "Opt Topic 2",
+          "code": "OPT/02",
+          "priority": "Essential"
+        },
+        {
+          "name": "Opt Topic 3",
+          "code": "OPT/03",
+          "priority": "Essential"
+        },
+        {
+          "name": "Opt Topic 4",
+          "code": "OPT/04",
+          "priority": "Essential"
+        },
+        {
+          "name": "Opt Topic 5",
+          "code": "OPT/05",
+          "priority": "Essential"
+        }
+      ]
+    },
+    {
       "name": "History-Ancient",
       "code": "H01",
       "baseline_hours": 25,

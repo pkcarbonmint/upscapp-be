@@ -79,7 +79,8 @@ describe('Engine Integration Tests', () => {
           revision_strategy: 'regular',
           test_frequency: 'weekly',
           seasonal_windows: [],
-          catch_up_day_preference: 'sunday'
+          catch_up_day_preference: 'sunday',
+          upsc_optional_subject: 'OPT-SOC'
         },
         target_year: '2026',
         start_date: '2024-01-01',
@@ -186,7 +187,8 @@ describe('Engine Integration Tests', () => {
           revision_strategy: 'regular',
           test_frequency: 'weekly',
           seasonal_windows: [],
-          catch_up_day_preference: 'sunday'
+          catch_up_day_preference: 'sunday',
+          upsc_optional_subject: 'OPT-SOC'
         },
         target_year: nextYear.toString(),
         start_date: '2024-01-01',
@@ -262,7 +264,8 @@ describe('Engine Integration Tests', () => {
           revision_strategy: 'regular',
           test_frequency: 'weekly',
           seasonal_windows: [],
-          catch_up_day_preference: 'sunday'
+          catch_up_day_preference: 'sunday',
+          upsc_optional_subject: 'OPT-SOC'
         },
         target_year: '2026',
         start_date: '2024-01-01',
@@ -301,7 +304,8 @@ describe('Engine Integration Tests', () => {
           revision_strategy: 'regular',
           test_frequency: 'weekly',
           seasonal_windows: [],
-          catch_up_day_preference: 'sunday'
+          catch_up_day_preference: 'sunday',
+          upsc_optional_subject: 'OPT-SOC'
         },
         target_year: '2026',
         start_date: '2024-01-01',
@@ -339,7 +343,8 @@ describe('Engine Integration Tests', () => {
           revision_strategy: 'regular',
           test_frequency: 'weekly',
           seasonal_windows: [],
-          catch_up_day_preference: 'sunday'
+          catch_up_day_preference: 'sunday',
+          upsc_optional_subject: 'OPT-SOC'
         },
         target_year: '2025', // Short term
         start_date: '2024-01-01',
@@ -391,7 +396,8 @@ describe('Engine Integration Tests', () => {
           revision_strategy: 'regular',
           test_frequency: 'weekly',
           seasonal_windows: [],
-          catch_up_day_preference: 'sunday'
+          catch_up_day_preference: 'sunday',
+          upsc_optional_subject: 'OPT-SOC'
         },
         target_year: undefined,
         start_date: '2024-01-01',
@@ -422,7 +428,8 @@ describe('Engine Integration Tests', () => {
           revision_strategy: 'regular',
           test_frequency: 'weekly',
           seasonal_windows: [],
-          catch_up_day_preference: 'sunday'
+          catch_up_day_preference: 'sunday',
+          upsc_optional_subject: 'OPT-SOC'
         },
         target_year: '2026',
         start_date: '2024-01-01',

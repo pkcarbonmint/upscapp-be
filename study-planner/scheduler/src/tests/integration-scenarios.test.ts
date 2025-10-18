@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { determineCycleSchedule } from '../cycles';
 import { 
-  determineBlockSchedule, 
-  calculateSubjectAllocations
+  determineBlockSchedule
 } from '../blocks';
 import { 
   Subject, 
@@ -64,7 +63,7 @@ describe('Integration and Real-World Scenario Tests', () => {
       // Step 2: Schedule blocks for each cycle
       const cycleResults = cycles.map(cycle => {
         const totalHours = 200; // Realistic hours per cycle
-        const studyApproach = 'balanced' as StudyApproach;
+        const studyApproach = 'Balanced' as StudyApproach;
         const gsOptionalRatio = { gs: 0.67, optional: 0.33 };
         
         const blocks = determineBlockSchedule(
@@ -146,7 +145,7 @@ describe('Integration and Real-World Scenario Tests', () => {
         priority: 'mandatory' as const
       };
       
-      const studyApproaches: StudyApproach[] = ['SingleSubject', 'DualSubject', 'TripleSubject', 'balanced'];
+      const studyApproaches: StudyApproach[] = ['SingleSubject', 'DualSubject', 'TripleSubject', 'Balanced'];
       const gsOptionalRatio = { gs: 0.67, optional: 0.33 };
       
       const results = studyApproaches.map(approach => {
@@ -204,7 +203,7 @@ describe('Integration and Real-World Scenario Tests', () => {
         realisticSubjects,
         realisticConfidenceMap,
         limitedHours,
-        'balanced',
+        'Balanced',
         8
       );
       
@@ -217,9 +216,6 @@ describe('Integration and Real-World Scenario Tests', () => {
           priority: subject?.priority || 0
         };
       });
-      
-      // Sort by confidence to verify prioritization
-      const sortedByConfidence = [...scheduledSubjects].sort((a, b) => b.confidence - a.confidence);
       
       // High confidence subjects should be included
       const highConfidenceSubjects = scheduledSubjects.filter(s => s.confidence >= 4);
@@ -254,7 +250,7 @@ describe('Integration and Real-World Scenario Tests', () => {
           realisticSubjects,
           realisticConfidenceMap,
           scenario.hours,
-          'balanced',
+          'Balanced',
           8,
           scenario.ratio
         );
@@ -315,7 +311,7 @@ describe('Integration and Real-World Scenario Tests', () => {
         initialSubjects,
         realisticConfidenceMap,
         200,
-        'balanced',
+        'Balanced',
         8,
         { gs: 0.67, optional: 0.33 }
       );
@@ -336,7 +332,7 @@ describe('Integration and Real-World Scenario Tests', () => {
         updatedSubjects,
         updatedConfidenceMap,
         200,
-        'balanced',
+        'Balanced',
         8,
         { gs: 0.67, optional: 0.33 }
       );
@@ -362,7 +358,7 @@ describe('Integration and Real-World Scenario Tests', () => {
         realisticSubjects,
         realisticConfidenceMap,
         200,
-        'balanced',
+        'Balanced',
         8
       );
       
@@ -372,7 +368,7 @@ describe('Integration and Real-World Scenario Tests', () => {
         realisticSubjects,
         realisticConfidenceMap,
         300, // Increased hours
-        'balanced',
+        'Balanced',
         8
       );
       

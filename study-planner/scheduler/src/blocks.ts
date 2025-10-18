@@ -170,30 +170,50 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
     });
   }
   
-  // When GS:Optional ratio is provided, schedule all subjects that have allocations
-  // Otherwise, respect the parallel capacity limit
-  const subjectsToScheduleInitially = gsOptionalRatio 
-    ? subjects.filter(subject => (subjectAllocations.get(subject.subjectCode) || 0) > 0)
-    : subjects.slice(0, maxParallelSubjects);
+  // Always respect the parallel capacity limit, regardless of GS:Optional ratio
+  // When GS:Optional ratio is provided, we still need to respect maxParallelSubjects
+  const subjectsToScheduleInitially = subjects
+    .filter(subject => (subjectAllocations.get(subject.subjectCode) || 0) > 0)
+    .slice(0, maxParallelSubjects);
   
-  // For GS:Optional ratio, we need to handle all subjects in the initial scheduling
-  // For regular scheduling, we handle remaining subjects sequentially
-  const subjectsToScheduleSequentially = gsOptionalRatio ? [] : subjects.slice(maxParallelSubjects);
+  // Handle remaining subjects sequentially
+  const subjectsToScheduleSequentially = subjects
+    .filter(subject => (subjectAllocations.get(subject.subjectCode) || 0) > 0)
+    .slice(maxParallelSubjects);
+
+  // Check if all subjects can fit in the cycle duration
+  const cycleDurationDays = end.diff(start, 'day');
+  const totalAllocatedHours = Array.from(subjectAllocations.values()).reduce((sum, hours) => sum + hours, 0);
+  const totalRequiredDays = Math.ceil(totalAllocatedHours / workingHoursPerDay);
+  
+  // If we can't fit all subjects, adjust allocations to fit within cycle duration
+  if (totalRequiredDays > cycleDurationDays) {
+    const maxHoursForCycle = cycleDurationDays * workingHoursPerDay;
+    const scaleFactor = maxHoursForCycle / totalAllocatedHours;
+    
+    // Scale down all allocations proportionally
+    for (const [subjectCode, currentAllocation] of subjectAllocations.entries()) {
+      const adjustedAllocation = Math.max(4, Math.floor(currentAllocation * scaleFactor));
+      subjectAllocations.set(subjectCode, adjustedAllocation);
+    }
+  }
   
   const initialSchedules = subjectsToScheduleInitially.map(subject => {
     const allocatedHours = subjectAllocations.get(subject.subjectCode) || 4;
     
-    // For extreme short cycles, calculate duration more conservatively
-    let durationWeeks: number;
+    // Calculate duration more accurately to match allocated hours
+    let durationDays: number;
     if (isExtremeShortCycle) {
       const cycleDurationDays = end.diff(start, 'day');
       const maxDurationDays = Math.floor(cycleDurationDays * 0.9); // Use 90% of cycle duration
-      durationWeeks = Math.max(1, Math.floor(maxDurationDays / 7));
+      durationDays = Math.max(7, Math.floor(maxDurationDays / subjectsToScheduleInitially.length));
     } else {
-      durationWeeks = Math.ceil(allocatedHours / (workingHoursPerDay * 7));
+      // Calculate duration based on allocated hours, ensuring it matches
+      durationDays = Math.max(7, Math.ceil(allocatedHours / workingHoursPerDay));
     }
     
-    const endDate = start.add(durationWeeks * 7 - 1, 'day');
+    const endDate = start.add(durationDays - 1, 'day');
+    const durationWeeks = Math.ceil(durationDays / 7);
     return createScheduledSubject(subject, start, endDate, durationWeeks, allocatedHours, config.studyApproach);
   });
   
@@ -201,16 +221,16 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
   const invalidInitialSubjects = initialSchedules.filter(schedule => schedule.endDate.isAfter(end)).map(s => s.subject);
   const initialConflicts = invalidInitialSubjects.map(subject => createTimeConflict(subject.subjectCode, 'error'));
   
-  console.log(`Debug scheduleParallel: ${subjects.length} subjects, ${validInitialSchedules.length} valid initial schedules, ${invalidInitialSubjects.length} invalid initial subjects`);
   
   const allSchedules = subjectsToScheduleSequentially.reduce((acc, subject) => {
     const allocatedHours = subjectAllocations.get(subject.subjectCode) || 4;
-    const durationWeeks = Math.ceil(allocatedHours / (workingHoursPerDay * 7));
+    const durationDays = Math.max(7, Math.ceil(allocatedHours / workingHoursPerDay));
+    const durationWeeks = Math.ceil(durationDays / 7);
     
     // Handle case where activeSchedules is empty
     if (acc.activeSchedules.length === 0) {
       const startDate = start;
-      const endDate = startDate.add(durationWeeks * 7 - 1, 'day');
+      const endDate = startDate.add(durationDays - 1, 'day');
       
       if (endDate.isAfter(end)) {
         return { ...acc, unscheduledSubjects: [...acc.unscheduledSubjects, subject], conflicts: [...acc.conflicts, createTimeConflict(subject.subjectCode, 'warning')] };
@@ -222,7 +242,19 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
     
     const earliestEnding = acc.activeSchedules.reduce((earliest: ScheduledSubject, current: ScheduledSubject) => current.endDate.isBefore(earliest.endDate) ? current : earliest);
     const startDate = earliestEnding.endDate.add(1, 'day');
-    const endDate = startDate.add(durationWeeks * 7 - 1, 'day');
+    const endDate = startDate.add(durationDays - 1, 'day');
+    
+    // Ensure we don't exceed the cycle end date
+    if (endDate.isAfter(end)) {
+      // Try to fit the subject by reducing duration if possible
+      const maxDurationDays = end.diff(startDate, 'day') + 1;
+      if (maxDurationDays >= 7) { // Minimum 1 week
+        const adjustedEndDate = startDate.add(maxDurationDays - 1, 'day');
+        const scheduled = createScheduledSubject(subject, startDate, adjustedEndDate, Math.ceil(maxDurationDays / 7), allocatedHours, config.studyApproach);
+        const updatedActiveSchedules = acc.activeSchedules.map((active: ScheduledSubject) => active === earliestEnding ? scheduled : active);
+        return { ...acc, scheduledSubjects: [...acc.scheduledSubjects, scheduled], activeSchedules: updatedActiveSchedules };
+      }
+    }
     
     if (endDate.isAfter(end)) {
       return { ...acc, unscheduledSubjects: [...acc.unscheduledSubjects, subject], conflicts: [...acc.conflicts, createTimeConflict(subject.subjectCode, 'warning')] };

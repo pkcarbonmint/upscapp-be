@@ -7,12 +7,80 @@ import { createPlanForOneWeek } from './OneWeekPlan';
 import { makeLogger } from '../services/Log';
 import { selectBestArchetype } from '../services/ArchetypeSelector';
 import dayjs from 'dayjs';
-import assert from 'assert';
 import { Config } from './engine-types';
+import { 
+  determineBlockSchedule,
+  CycleType as SchedulerCycleType, 
+  trimSubtopicsToFit as schedulerTrimSubtopicsToFit
+} from 'scheduler';
+import type { 
+  Subject as SchedulerSubject,
+  StudyApproach,
+  ConfidenceMap as SchedulerConfidenceMap,
+  CycleSchedule as SchedulerCycleSchedule
+} from 'scheduler';
 
 // Task ratios are now handled by intake.getTaskTypeRatios(cycleType)
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
-type BlockSansResources = Omit<Block, 'block_resources'>;
+
+/**
+ * Check if a subject is optional
+ */
+export function isOptional(subject: Subject): boolean {
+  return subject.subjectCode === 'OPT' || subject.category === 'Optional';
+}
+
+/**
+ * Convert helios-ts Subject to scheduler library Subject
+ */
+function convertToSchedulerSubject(subject: Subject): SchedulerSubject {
+  const subjectIsOptional = isOptional(subject);
+  return {
+    subjectCode: subject.subjectCode,
+    baselineHours: subject.baselineHours,
+    priority: 3, // Default priority
+    subjectType: subjectIsOptional ? 'Optional' : 'GS',
+    isOptional: subjectIsOptional,
+    optionalSubjectName: subjectIsOptional ? subject.subjectName : undefined
+  };
+}
+
+/**
+ * Convert helios-ts CycleType to scheduler library CycleType
+ */
+function convertToSchedulerCycleType(cycleType: CycleType): SchedulerCycleType {
+  switch (cycleType) {
+    case CycleType.C1: return SchedulerCycleType.C1;
+    case CycleType.C2: return SchedulerCycleType.C2;
+    case CycleType.C3: return SchedulerCycleType.C3;
+    case CycleType.C4: return SchedulerCycleType.C4;
+    case CycleType.C5: return SchedulerCycleType.C5;
+    case CycleType.C5B: return SchedulerCycleType.C5B;
+    case CycleType.C6: return SchedulerCycleType.C6;
+    case CycleType.C7: return SchedulerCycleType.C7;
+    case CycleType.C8: return SchedulerCycleType.C8;
+    default: return SchedulerCycleType.C1;
+  }
+}
+
+/**
+ * Convert helios-ts subject approach to scheduler library StudyApproach
+ */
+function convertToSchedulerStudyApproach(subjectApproach: string): StudyApproach {
+  switch (subjectApproach) {
+    case 'SingleSubject': return 'SingleSubject';
+    case 'DualSubject': return 'DualSubject';
+    case 'TripleSubject': return 'TripleSubject';
+    default: return 'SingleSubject';
+  }
+}
+
+/**
+ * Convert helios-ts confidence map to scheduler library ConfidenceMap
+ */
+function convertToSchedulerConfidenceMap(confidenceMap: Map<string, number>): SchedulerConfidenceMap {
+  return new Map(confidenceMap);
+}
 
 /**
  * Get resources for a subject based on cycle type
@@ -51,112 +119,6 @@ async function getBlockResources(
     };
   }
 }
-
-/**
- * Calculate weighted baseline for a subject
- */
-function calculateWeightedBaseline(
-  subject: Subject,
-  confidenceMap: Map<string, number>,
-  cycleType: CycleType
-): number {
-  const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
-  const subjBaselineHoursFactorForCycle = determineSubjBaselineFactorForCycle(cycleType);
-  return subject.baselineHours * subjBaselineHoursFactorForCycle * confidenceMultiplier;
-}
-
-/**
- * Calculate total weighted baseline for all subjects
- */
-function calculateTotalWeightedBaseline(
-  subjects: Subject[],
-  confidenceMap: Map<string, number>,
-  cycleType: CycleType
-): number {
-  return subjects.reduce((sum, subject) =>
-    sum + calculateWeightedBaseline(subject, confidenceMap, cycleType), 0);
-}
-
-/**
- * Block processor function for converting subjects into blocks
- */
-async function BlockProcessor(
-  params: BlockCreationParams,
-  totalWeightedBaseline: number,
-  prevBlocks: Promise<BlockSansResources[]>, subject: Subject
-): Promise<BlockSansResources[]> {
-  const blocks = await prevBlocks;
-  const hoursPerDay = parseInt(params.intake.study_strategy.weekly_study_hours, 10) / 7;
-  const currentCumulativeWeeks = blocks.reduce((sum, block) => sum + block.duration_weeks, 0);
-  const cycleDurationWeeks = params.cycleStartDate && params.cycleEndDate
-    ? Math.ceil(dayjs(params.cycleEndDate).diff(dayjs(params.cycleStartDate), 'day') / 7)
-    : 0;
-
-  // Check if we have enough time left in the cycle for this subject
-  if (cycleDurationWeeks > 0 && currentCumulativeWeeks >= cycleDurationWeeks) {
-    console.log(`Skipping subject ${subject.subjectName}: no time left in cycle (cumulativeWeeks=${currentCumulativeWeeks}, cycleDurationWeeks=${cycleDurationWeeks})`);
-    return blocks;
-  }
-
-  // Process subject subtopics and calculate allocations
-  const { adjustedSubtopics, allocatedHours, confidenceMultiplier, weightedBaseline } =
-    processSubjectSubtopics(subject, params.subjData, params.confidenceMap, params.cycleType, params.totalHours, totalWeightedBaseline);
-
-  console.log(`Subject ${subject.subjectCode} (${subject.subjectName}): baseline=${subject.baselineHours}, confidence=${confidenceMultiplier}, weighted=${weightedBaseline}, allocated=${allocatedHours} hours`);
-
-  const trimmedSubtopics = trimSubtopicsToFit(adjustedSubtopics, allocatedHours);
-
-  // Calculate block duration in weeks - ensure it fills remaining cycle time
-  const remainingWeeks = cycleDurationWeeks - currentCumulativeWeeks;
-  const calculatedDurationWeeks = Math.ceil(allocatedHours / (hoursPerDay * 7));
-  const blockDurationWeeks = Math.max(calculatedDurationWeeks, Math.max(1, remainingWeeks));
-
-  // Calculate this block's start date
-  const cycleStart = new Date(params.cycleStartDate);
-  const blockStart = dayjs(cycleStart).add(currentCumulativeWeeks * 7, 'day');
-  console.log(`Block ${subject.subjectName}: cumulativeWeeks=${currentCumulativeWeeks}, blockStart=${blockStart.format('YYYY-MM-DD')}, blockDurationWeeks=${blockDurationWeeks}`);
-
-  // Calculate block dates with constraints
-  const cycleEnd = dayjs(params.cycleEndDate);
-  const { blockStartDate, blockEndDate } = calculateBlockDatesWithConstraints(
-    blockStart, blockDurationWeeks, cycleEnd, params.cycleStartDate
-  );
-
-  // Handle constrained hours if block exceeds cycle end
-  let actualHours = trimmedSubtopics.length > 0
-    ? trimmedSubtopics.reduce((sum, st) => sum + st.adjustedHours, 0)
-    : allocatedHours;
-
-  if (blockStart.add(blockDurationWeeks * 7 - 1, 'day').isAfter(cycleEnd)) {
-    const actualWeeks = Math.ceil(dayjs(blockEndDate).diff(blockStart, 'day') / 7);
-    const dailyHours = params.intake.getDailyStudyHours();
-    const constrainedHours = actualWeeks * 7 * dailyHours;
-    const constrainedSubtopics = trimSubtopicsToFit(adjustedSubtopics, constrainedHours);
-    actualHours = constrainedSubtopics.length > 0
-      ? constrainedSubtopics.reduce((sum, st) => sum + st.adjustedHours, 0)
-      : Math.min(allocatedHours, constrainedHours);
-    trimmedSubtopics.splice(0, trimmedSubtopics.length, ...constrainedSubtopics);
-  }
-
-  const block: BlockSansResources = {
-    block_id: `${params.blockPrefix}-${subject.subjectCode}`,
-    block_title: `${subject.subjectName}`,
-    cycle_type: params.cycleType,
-    cycle_order: params.cycleOrder,
-    cycle_name: params.cycleName,
-    subjects: [subject.subjectCode],
-    duration_weeks: blockDurationWeeks,
-    weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, params.cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, params.confidenceMap.get(subject.subjectCode) || 1.0), params.intake),
-    block_start_date: blockStartDate,
-    block_end_date: blockEndDate,
-    block_description: `${params.blockPrefix} block for ${subject.subjectName}`,
-    estimated_hours: allocatedHours,
-    actual_hours: actualHours,
-  };
-
-  return [...blocks, block];
-}
-
 
 /**
  * Process subject subtopics and calculate allocations
@@ -201,34 +163,6 @@ function processSubjectSubtopics(
   };
 }
 
-/**
- * Calculate block dates and handle cycle constraints
- */
-function calculateBlockDatesWithConstraints(
-  blockStart: dayjs.Dayjs,
-  blockDurationWeeks: number,
-  cycleEnd: dayjs.Dayjs,
-  cycleStartDate: string
-) {
-  const desiredBlockEnd = blockStart.add(blockDurationWeeks * 7 - 1, 'day');
-  let blockEnd = desiredBlockEnd;
-
-  if (desiredBlockEnd.isAfter(cycleEnd)) {
-    blockEnd = cycleEnd;
-  }
-
-  const newStartDate = blockEnd.subtract(blockDurationWeeks * 7 - 1, 'day');
-  const newStartDate2 = dayjs(newStartDate).isAfter(dayjs(cycleStartDate))
-    ? dayjs(newStartDate)
-    : dayjs(cycleStartDate);
-
-  assert(newStartDate2.isBefore(cycleEnd.format('YYYY-MM-DD')));
-
-  return {
-    blockStartDate: newStartDate2.format('YYYY-MM-DD'),
-    blockEndDate: blockEnd.format('YYYY-MM-DD')
-  };
-}
 
 /**
  * Determine baseline hours for a subject based on cycle type
@@ -270,209 +204,116 @@ export type BlockCreationParams = {
 };
 
 /**
- * Create blocks for subjects with confidence factors applied and trimming
+ * Create blocks for subjects using the new scheduler library
  */
 export async function createBlocksForSubjects(params: BlockCreationParams): Promise<Block[]> {
-  const { intake, subjects, confidenceMap, cycleType, cycleStartDate, cycleEndDate } = params;
-  const cycleStartDayJs = dayjs(cycleStartDate);
-  const cycleEndDayJs = dayjs(cycleEndDate);
-  const subjectApproach = intake.subject_approach;
-
-  if (subjectApproach === 'DualSubject' || subjectApproach === 'TripleSubject') {
-    return await createContinuousParallelBlocks(subjectApproach === 'DualSubject' ? 2 : 3, params);
-  }
-
-  // Calculate total weighted baseline hours for proportional allocation
-  const totalWeightedBaseline = calculateTotalWeightedBaseline(subjects, confidenceMap, cycleType);
-  const init = Promise.resolve([] as BlockSansResources[]);
-  const sansResources: BlockSansResources[] = await subjects.reduce(
-    (blocksPromise, subject) => BlockProcessor(params, totalWeightedBaseline, blocksPromise, subject),
-    init);
-
-  const withResources: Block[] = await Promise.all(sansResources.map(async block => ({
-    ...block,
-    block_resources: await getBlockResources(block.subjects[0], params.cycleType, block.duration_weeks)
-  })));
-  return withResources
-    .map(block => rescheduleOutofBoundsSingleBlock(cycleStartDayJs, cycleEndDayJs, block))
-    .filter(block => !isBlockOutOfBounds(cycleStartDayJs, cycleEndDayJs)(block))
-    .filter(block => block && block.actual_hours && block.actual_hours > 0)
-    .sort((a, b) => dayjs(a.block_start_date).diff(dayjs(b.block_start_date)));
-}
-
-function isBlockOutOfBounds(cycleStart: dayjs.Dayjs, cycleEnd: dayjs.Dayjs) {
-  return (block: Block): boolean => {
-    const blockStart = dayjs(block.block_start_date);
-    const blockEnd = dayjs(block.block_end_date);
-
-    // Block is out of bounds if:
-    // 1. Starts before cycle start
-    // 2. Starts after cycle end
-    // 3. Ends after cycle end
-    // 4. Has invalid dates (end before start)
-    return blockStart.isBefore(cycleStart) ||
-      blockStart.isAfter(cycleEnd) ||
-      blockEnd.isAfter(cycleEnd) ||
-      blockEnd.isBefore(blockStart);
+  const { intake, subjects, confidenceMap, cycleType, cycleStartDate, cycleEndDate, totalHours } = params;
+  
+  // Convert to scheduler library formats
+  const schedulerSubjects = subjects.map(convertToSchedulerSubject);
+  const schedulerConfidenceMap = convertToSchedulerConfidenceMap(confidenceMap);
+  const schedulerCycleType = convertToSchedulerCycleType(cycleType);
+  const studyApproach = convertToSchedulerStudyApproach(intake.subject_approach);
+  
+  // Get GS:Optional ratio from intake
+  const gsOptionalRatio = intake.getGSOptionalRatio ? intake.getGSOptionalRatio() : { gs: 0.67, optional: 0.33 };
+  
+  // Create cycle schedule for the scheduler library
+  const cycleSchedule: SchedulerCycleSchedule = {
+    cycleType: schedulerCycleType,
+    startDate: cycleStartDate,
+    endDate: cycleEndDate,
+    priority: 'mandatory'
   };
+  
+  // Use the scheduler library to determine block schedule with GS:Optional ratio
+  const blockSchedules = determineBlockSchedule(
+    cycleSchedule,
+    schedulerSubjects,
+    schedulerConfidenceMap,
+    totalHours,
+    studyApproach,
+    intake.getDailyStudyHours(),
+    gsOptionalRatio
+  );
+  
+  // Map block schedules to actual blocks
+  const blocks = await Promise.all(
+    blockSchedules.map(async (schedule: { subjectCode: string; startDate: string; endDate: string }, index: number) => {
+      const subject = subjects.find(s => s.subjectCode === schedule.subjectCode);
+      if (!subject) {
+        throw new Error(`Subject ${schedule.subjectCode} not found`);
+      }
+      
+      // Calculate allocated hours based on baseline hours and confidence
+      const confidenceMultiplier = confidenceMap.get(schedule.subjectCode) || 1.0;
+      const baselineFactor = determineSubjBaselineFactorForCycle(cycleType);
+      const allocatedHours = Math.floor(subject.baselineHours * baselineFactor * confidenceMultiplier);
+      
+      return await createBlockFromSchedule(schedule, subject, params, index, allocatedHours);
+    })
+  );
+  
+  return blocks.filter((block: Block) => block && block.actual_hours && block.actual_hours > 0);
+}
+
+/**
+ * Create a block from a schedule item
+ */
+async function createBlockFromSchedule(
+  schedule: { subjectCode: string; startDate: string; endDate: string },
+  subject: Subject,
+  params: BlockCreationParams,
+  index: number,
+  allocatedHours: number
+): Promise<Block> {
+  const { intake, confidenceMap, cycleType, cycleOrder, cycleName, subjData } = params;
+  
+  // Calculate duration in weeks
+  const startDate = dayjs(schedule.startDate);
+  const endDate = dayjs(schedule.endDate);
+  const durationWeeks = Math.ceil(endDate.diff(startDate, 'day') / 7);
+  
+  // Use allocated hours from scheduler library (already calculated with GS:Optional ratio)
+  const calculatedHours = allocatedHours;
+  
+  // Process subject subtopics and calculate actual hours
+  const { adjustedSubtopics } = processSubjectSubtopics(
+    subject, subjData, confidenceMap, cycleType, calculatedHours, calculatedHours
+  );
+  
+  const trimmedSubtopics = schedulerTrimSubtopicsToFit(adjustedSubtopics, calculatedHours);
+  const actualHours = trimmedSubtopics.length > 0
+    ? trimmedSubtopics.reduce((sum, st) => sum + st.adjustedHours, 0)
+    : calculatedHours;
+
+    // Get resources for this subject
+  const blockResources = await getBlockResources(subject.subjectCode, cycleType, durationWeeks);
+  
+  // Create block object
+    const block: Block = {
+    block_id: `${cycleName.replace(/\s+Cycle$/, '')}-${subject.subjectCode}-${index}`,
+      block_title: `${subject.subjectName}`,
+      cycle_type: cycleType,
+      cycle_order: cycleOrder,
+      cycle_name: cycleName,
+      subjects: [subject.subjectCode],
+    duration_weeks: durationWeeks,
+    weekly_plan: await createEnhancedWeeklyPlan(durationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, calculatedHours, confidenceMap.get(subject.subjectCode) || 1.0), intake),
+      block_resources: blockResources,
+    block_start_date: schedule.startDate,
+    block_end_date: schedule.endDate,
+    block_description: `${cycleName} block for ${subject.subjectName}`,
+    estimated_hours: calculatedHours,
+    actual_hours: actualHours
+    };
+
+  return block;
 }
 
 
-const rescheduleOutofBoundsSingleBlock = (cycleStart: dayjs.Dayjs, cycleEnd: dayjs.Dayjs, block: Block): Block => {
-  if (!isBlockOutOfBounds(cycleStart, cycleEnd)(block)) {
-    return block;
-  }
 
-  let currentStart = cycleStart;
 
-  // Try original duration first (convert weeks to days)
-  const originalDurationDays = block.duration_weeks * 7;
-  let newEndDate = currentStart.add(originalDurationDays - 1, 'day');
-  const originalEstimatedHours = block.estimated_hours || 0;
-  const originalActualHours = block.actual_hours || 0;
-
-  // If the new end date would exceed cycle end, try reducing duration iteratively
-  if (newEndDate.isAfter(cycleEnd)) {
-    let currentDurationDays = originalDurationDays;
-    const reductionFactor = 0.7; // 30% reduction per attempt
-    const maxAttempts = 3; // Maximum 3 reduction attempts
-
-    let attempts = 0;
-    while (newEndDate.isAfter(cycleEnd) && attempts < maxAttempts) {
-      currentDurationDays = Math.max(1, Math.floor(currentDurationDays * reductionFactor)); // Minimum 1 day
-      newEndDate = currentStart.add(currentDurationDays - 1, 'day');
-      attempts++;
-      // @ts-ignore
-      const currentDurationWeeks = Math.ceil(currentDurationDays / 7);
-      // console.log(`Block ${block.block_title} duration reduced to ${currentDurationDays} days (${currentDurationWeeks} weeks, ${Math.round((currentDurationDays / originalDurationDays) * 100)}% of original) - attempt ${attempts}/${maxAttempts}`);
-    }
-
-    // Update block properties with final reduced values
-    const finalReductionFactor = currentDurationDays / originalDurationDays;
-    block.duration_weeks = Math.ceil(currentDurationDays / 7); // Convert back to weeks for display
-    block.estimated_hours = Math.floor(originalEstimatedHours * finalReductionFactor);
-    block.actual_hours = Math.floor(originalActualHours * finalReductionFactor);
-
-    // If still exceeds cycle end after all attempts, force it to fit within cycle dates
-    if (newEndDate.isAfter(cycleEnd)) {
-      // console.log(`⚠️  Block ${block.block_title} still exceeds cycle end after ${maxAttempts} reduction attempts. Forcing to fit within cycle dates.`);
-
-      // If currentStart is after cycleEnd, the block cannot be scheduled
-      if (currentStart.isAfter(cycleEnd)) {
-        // console.log(`⚠️  Block ${block.block_title} cannot be scheduled - start date ${currentStart.format('YYYY-MM-DD')} is after cycle end ${cycleEnd.format('YYYY-MM-DD')}. Marking for removal.`);
-        // Mark block for removal by setting invalid dates
-        block.block_start_date = cycleEnd.add(1, 'day').format('YYYY-MM-DD');
-        block.block_end_date = cycleEnd.add(1, 'day').format('YYYY-MM-DD');
-        return block;
-      }
-
-      // Force the block to end exactly at cycle end date
-      newEndDate = cycleEnd;
-      const forcedDurationDays = Math.max(1, cycleEnd.diff(currentStart, 'day') + 1); // +1 to include both start and end days
-
-      // Update block properties to match the forced duration
-      block.duration_weeks = Math.ceil(forcedDurationDays / 7); // Convert back to weeks for display
-      block.estimated_hours = Math.floor(originalEstimatedHours * (forcedDurationDays / originalDurationDays));
-      block.actual_hours = Math.floor(originalActualHours * (forcedDurationDays / originalDurationDays));
-
-      // console.log(`Block ${block.block_title} forced to ${forcedDurationDays} days (${block.duration_weeks} weeks) to fit within cycle dates`);
-    }
-  }
-
-  // Update block dates
-  block.block_start_date = currentStart.format('YYYY-MM-DD');
-  block.block_end_date = newEndDate.format('YYYY-MM-DD');
-
-  // Move to next available slot
-  currentStart = newEndDate.add(1, 'day');
-  return block;
-};
-
-// @ts-ignore 
-const rescheduleOutofBoundsBlocksOld = (cycleStart: dayjs.Dayjs, cycleEnd: dayjs.Dayjs, _blocks: Block[]): Block[] => {
-  const blocks = _blocks;
-  let excessBlocks: Block[] = [];
-  let numAttempts = 0;
-
-  for (
-    excessBlocks = blocks.filter(isBlockOutOfBounds(cycleStart, cycleEnd));
-    excessBlocks.length > 0 && numAttempts < 5;
-    excessBlocks = blocks.filter(isBlockOutOfBounds(cycleStart, cycleEnd)), numAttempts++
-  ) {
-    // console.log(`# excess: ${excessBlocks.length}, numAttempts: ${numAttempts}`);
-
-    // Schedule excess blocks sequentially after the last valid block
-    let currentStart = cycleStart;
-
-    for (const block of excessBlocks) {
-      // const beforeStart = dayjs(block.block_start_date).format('YYYY-MM-DD');
-      // const beforeEnd = dayjs(block.block_end_date).format('YYYY-MM-DD');
-
-      // Try original duration first (convert weeks to days)
-      const originalDurationDays = block.duration_weeks * 7;
-      let newEndDate = currentStart.add(originalDurationDays - 1, 'day');
-      const originalEstimatedHours = block.estimated_hours || 0;
-      const originalActualHours = block.actual_hours || 0;
-
-      // If the new end date would exceed cycle end, try reducing duration iteratively
-      if (newEndDate.isAfter(cycleEnd)) {
-        let currentDurationDays = originalDurationDays;
-        const reductionFactor = 0.7; // 30% reduction per attempt
-        const maxAttempts = 3; // Maximum 3 reduction attempts
-
-        let attempts = 0;
-        while (newEndDate.isAfter(cycleEnd) && attempts < maxAttempts) {
-          currentDurationDays = Math.max(1, Math.floor(currentDurationDays * reductionFactor)); // Minimum 1 day
-          newEndDate = currentStart.add(currentDurationDays - 1, 'day');
-          attempts++;
-          // @ts-ignore
-          const currentDurationWeeks = Math.ceil(currentDurationDays / 7);
-          // console.log(`Block ${block.block_title} duration reduced to ${currentDurationDays} days (${currentDurationWeeks} weeks, ${Math.round((currentDurationDays / originalDurationDays) * 100)}% of original) - attempt ${attempts}/${maxAttempts}`);
-        }
-
-        // Update block properties with final reduced values
-        const finalReductionFactor = currentDurationDays / originalDurationDays;
-        block.duration_weeks = Math.ceil(currentDurationDays / 7); // Convert back to weeks for display
-        block.estimated_hours = Math.floor(originalEstimatedHours * finalReductionFactor);
-        block.actual_hours = Math.floor(originalActualHours * finalReductionFactor);
-
-        // If still exceeds cycle end after all attempts, force it to fit within cycle dates
-        if (newEndDate.isAfter(cycleEnd)) {
-          // console.log(`⚠️  Block ${block.block_title} still exceeds cycle end after ${maxAttempts} reduction attempts. Forcing to fit within cycle dates.`);
-
-          // If currentStart is after cycleEnd, the block cannot be scheduled
-          if (currentStart.isAfter(cycleEnd)) {
-            // console.log(`⚠️  Block ${block.block_title} cannot be scheduled - start date ${currentStart.format('YYYY-MM-DD')} is after cycle end ${cycleEnd.format('YYYY-MM-DD')}. Marking for removal.`);
-            // Mark block for removal by setting invalid dates
-            block.block_start_date = cycleEnd.add(1, 'day').format('YYYY-MM-DD');
-            block.block_end_date = cycleEnd.add(1, 'day').format('YYYY-MM-DD');
-            continue;
-          }
-
-          // Force the block to end exactly at cycle end date
-          newEndDate = cycleEnd;
-          const forcedDurationDays = Math.max(1, cycleEnd.diff(currentStart, 'day') + 1); // +1 to include both start and end days
-
-          // Update block properties to match the forced duration
-          block.duration_weeks = Math.ceil(forcedDurationDays / 7); // Convert back to weeks for display
-          block.estimated_hours = Math.floor(originalEstimatedHours * (forcedDurationDays / originalDurationDays));
-          block.actual_hours = Math.floor(originalActualHours * (forcedDurationDays / originalDurationDays));
-
-          // console.log(`Block ${block.block_title} forced to ${forcedDurationDays} days (${block.duration_weeks} weeks) to fit within cycle dates`);
-        }
-      }
-
-      // Update block dates
-      block.block_start_date = currentStart.format('YYYY-MM-DD');
-      block.block_end_date = newEndDate.format('YYYY-MM-DD');
-
-      // Move to next available slot
-      currentStart = newEndDate.add(1, 'day');
-    }
-  }
-
-  return blocks;
-};
 
 
 /**
@@ -674,254 +515,3 @@ function createBasicWeeklyPlan(durationWeeks: number, subjectCode: string): Week
   return weeklyPlans;
 }
 
-/**
- * Schedule information for a subject block
- */
-type SubjectSchedule = {
-  subject: Subject;
-  startDate: string;
-  endDate: string;
-  durationWeeks: number;
-  allocatedHours: number;
-};
-
-/**
- * Create blocks with continuous parallel execution
- * Always maintains the specified number of active parallel subjects
- * Ensures continuous coverage throughout the entire cycle duration
- */
-async function createContinuousParallelBlocks(
-  numberOfParallelSubjects: number,
-  params: BlockCreationParams
-): Promise<Block[]> {
-  const { subjects, totalHours, confidenceMap, cycleType, cycleStartDate, cycleEndDate, logger } = params;
-  logger.logInfo('CycleUtils', `Creating ${numberOfParallelSubjects} parallel subject blocks for ${subjects.length} subjects`);
-
-  // Phase 1: Pure scheduling logic
-  const subjectSchedules = scheduleParallelSubjects(
-    subjects,
-    numberOfParallelSubjects,
-    totalHours,
-    confidenceMap,
-    cycleType,
-    cycleStartDate,
-    cycleEndDate
-  );
-
-  // Phase 2: Block creation from schedules
-  const blocks = await Promise.all(
-    subjectSchedules.map(schedule => createBlockFromSchedule(schedule, params))
-  );
-
-  // Phase 3: Validation and sorting
-  const cycleStart = dayjs(cycleStartDate);
-  const cycleEnd = dayjs(cycleEndDate);
-  return blocks
-    .map(block => rescheduleOutofBoundsSingleBlock(cycleStart, cycleEnd, block))
-    .filter(block => !isBlockOutOfBounds(cycleStart, cycleEnd)(block))
-    .filter(block => block && block.actual_hours && block.actual_hours > 0)
-    .sort((a, b) => dayjs(a.block_start_date).diff(dayjs(b.block_start_date)));
-}
-
-/**
- * Pure scheduling logic - creates schedule data structure
- */
-function scheduleParallelSubjects(
-  subjects: Subject[],
-  numberOfParallelSubjects: number,
-  totalHours: number,
-  confidenceMap: Map<string, number>,
-  cycleType: CycleType,
-  cycleStartDate: string,
-  cycleEndDate: string
-): SubjectSchedule[] {
-  const subjectAllocations = calculateSubjectAllocations(subjects, totalHours, confidenceMap, cycleType);
-  const schedules: SubjectSchedule[] = [];
-  const activeSchedules: SubjectSchedule[] = [];
-
-  // Schedule initial parallel subjects
-  const initialSubjects = subjects.slice(0, numberOfParallelSubjects);
-  for (const subject of initialSubjects) {
-    const allocatedHours = subjectAllocations.get(subject.subjectCode) || 4;
-    const durationWeeks = Math.ceil(allocatedHours / (8 * 7));
-    const endDate = dayjs(cycleStartDate).add(durationWeeks * 7 - 1, 'day').format('YYYY-MM-DD');
-    
-    const schedule: SubjectSchedule = {
-      subject,
-      startDate: cycleStartDate,
-      endDate,
-      durationWeeks,
-      allocatedHours
-    };
-    
-    schedules.push(schedule);
-    activeSchedules.push(schedule);
-  }
-
-  // Schedule remaining subjects
-  const remainingSubjects = subjects.slice(numberOfParallelSubjects);
-  for (const subject of remainingSubjects) {
-    const allocatedHours = subjectAllocations.get(subject.subjectCode) || 4;
-    const durationWeeks = Math.ceil(allocatedHours / (8 * 7));
-    
-    // Find earliest ending schedule
-    const earliestEnding = activeSchedules.reduce((earliest, current) =>
-      dayjs(current.endDate).isBefore(dayjs(earliest.endDate)) ? current : earliest
-    );
-    
-    const startDate = dayjs(earliestEnding.endDate).add(1, 'day').format('YYYY-MM-DD');
-    const endDate = dayjs(startDate).add(durationWeeks * 7 - 1, 'day').format('YYYY-MM-DD');
-    
-    const schedule: SubjectSchedule = {
-      subject,
-      startDate,
-      endDate,
-      durationWeeks,
-      allocatedHours
-    };
-    
-    schedules.push(schedule);
-    
-    // Replace the ending schedule with the new one
-    const index = activeSchedules.indexOf(earliestEnding);
-    activeSchedules[index] = schedule;
-  }
-
-  return schedules;
-}
-
-/**
- * Create block from schedule data
- */
-async function createBlockFromSchedule(
-  schedule: SubjectSchedule,
-  params: BlockCreationParams
-): Promise<Block> {
-  return createSingleSubjectBlock(
-    schedule.subject,
-    schedule.startDate,
-    schedule.allocatedHours,
-    params.confidenceMap,
-    params.subjData,
-    params.blockPrefix,
-    params.cycleType,
-    params.cycleOrder,
-    params.cycleName,
-    params.cycleEndDate,
-    params.intake,
-    params.logger
-  );
-}
-
-/**
- * Calculate subject allocations based on proportional hours
- */
-function calculateSubjectAllocations(
-  subjects: Subject[],
-  totalHours: number,
-  confidenceMap: Map<string, number>,
-  cycleType: CycleType
-): Map<string, number> {
-  const totalWeightedBaseline = calculateTotalWeightedBaseline(subjects, confidenceMap, cycleType);
-  
-  return subjects.reduce((map, subject) => {
-    const confidenceMultiplier = confidenceMap.get(subject.subjectCode) || 1.0;
-    const weightedBaseline = subject.baselineHours * confidenceMultiplier;
-    const allocatedHours = Math.max(4, Math.floor(
-      (totalHours * weightedBaseline) / totalWeightedBaseline
-    ));
-    map.set(subject.subjectCode, allocatedHours);
-    return map;
-  }, new Map<string, number>());
-}
-
-
-/**
- * Create a single subject block using existing block creation logic
- */
-async function createSingleSubjectBlock(
-  subject: Subject,
-  startDate: string,
-  allocatedHours: number,
-  confidenceMap: Map<string, number>,
-  subjData: any,
-  blockPrefix: string,
-  cycleType: CycleType,
-  cycleOrder: number,
-  cycleName: string,
-  cycleEndDate: string,
-  intake: StudentIntake,
-  // @ts-ignore
-  logger: Logger
-): Promise<Block> {
-
-  // Get subtopics for this subject (from existing logic lines 32-43)
-  let subjectSubtopics: any[] = [];
-  if (subjData && subjData.subtopics) {
-    subjectSubtopics = subject.topics.flatMap(topic =>
-      subjData.subtopics.subtopics.filter((st: any) => st.topicCode === topic.topicCode)
-    );
-  } else {
-    subjectSubtopics = subject.topics.flatMap(topic => topic.subtopics || []);
-  }
-
-  // Apply confidence factors and trim (lines 44-58)
-  const adjustedSubtopics = subjectSubtopics
-    .map(subtopic => ({
-      ...subtopic,
-      adjustedHours: Math.ceil(subtopic.baselineHours * (confidenceMap.get(subtopic.code) || 1.0))
-    }))
-    .sort((a, b) => {
-      const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
-      return bandOrder[a.band] - bandOrder[b.band];
-    });
-
-  const trimmedSubtopics = trimSubtopicsToFit(adjustedSubtopics, allocatedHours);
-
-  // Calculate block duration and dates (lines 60-115)
-  const blockDurationWeeks = Math.ceil(allocatedHours / (8 * 7));
-  const blockStart = dayjs(startDate);
-  const desiredBlockEnd = blockStart.add(blockDurationWeeks * 7 - 1, 'day');
-
-  // Ensure block doesn't exceed cycle end date
-  let blockEnd = desiredBlockEnd;
-  if (desiredBlockEnd.isAfter(dayjs(cycleEndDate))) {
-    blockEnd = dayjs(cycleEndDate);
-
-    // Recalculate actual hours based on constrained duration
-    const actualWeeks = Math.ceil(blockEnd.diff(blockStart, 'day') / 7);
-    const dailyHours = intake.getDailyStudyHours();
-    const constrainedHours = actualWeeks * 7 * dailyHours;
-    const constrainedSubtopics = trimSubtopicsToFit(adjustedSubtopics, constrainedHours);
-
-    trimmedSubtopics.splice(0, trimmedSubtopics.length, ...constrainedSubtopics);
-  }
-
-  // Calculate actual hours
-  const actualHours = trimmedSubtopics.length > 0
-    ? trimmedSubtopics.reduce((sum, st) => sum + st.adjustedHours, 0)
-    : allocatedHours;
-
-  // Get resources for this subject
-  const blockResources = await getBlockResources(subject.subjectCode, cycleType, blockDurationWeeks);
-
-  // Create block object using simplified weekly plan to avoid memory issues
-  const block: Block = {
-    block_id: `${blockPrefix}-${subject.subjectCode}`,
-    block_title: `${subject.subjectName}`,
-    cycle_type: cycleType,
-    cycle_order: cycleOrder,
-    cycle_name: cycleName,
-    subjects: [subject.subjectCode],
-    duration_weeks: blockDurationWeeks,
-    weekly_plan: await createEnhancedWeeklyPlan(blockDurationWeeks, cycleType, subject.subjectCode, calculateTopicHours(subject, allocatedHours, 1.0), intake),
-    block_resources: blockResources,
-    block_start_date: blockStart.format('YYYY-MM-DD'),
-    block_end_date: blockEnd.format('YYYY-MM-DD'),
-    block_description: `${blockPrefix} block for ${subject.subjectName}`,
-    estimated_hours: allocatedHours,
-    actual_hours: actualHours
-  };
-
-  return block;
-}

@@ -28,7 +28,7 @@ export interface CycleConfig {
 }
 
 // Block Creator Functions
-async function createStandardBlocks(
+async function blockCreator(
   intake: StudentIntake,
   filteredSubjects: Subject[],
   totalHours: number,
@@ -60,59 +60,6 @@ async function createStandardBlocks(
   );
 }
 
-async function createGSOptionalSplitBlocks(
-  intake: StudentIntake,
-  filteredSubjects: Subject[],
-  totalHours: number,
-  confidenceMap: Map<string, number>,
-  config: CycleConfig,
-  startDate: dayjs.Dayjs,
-  endDate: dayjs.Dayjs,
-  subjData: SubjData,
-  logger: Logger
-): Promise<Block[]> {
-  const gsSubjects = filteredSubjects.filter(s => s.category === 'Macro');
-  const optionalSubjects = filteredSubjects.filter(s => s.category === 'Micro');
-  const ratio = intake.getGSOptionalRatio();
-  const gsHours = Math.floor(totalHours * ratio.gs);
-  const optionalHours = Math.floor(totalHours * ratio.optional);
-
-  const gsBlocks = await createBlocksForSubjects(
-    {
-      intake,
-      subjects: gsSubjects,
-      totalHours: gsHours,
-      confidenceMap,
-      blockPrefix: 'GS Foundation',
-      cycleType: config.cycleType,
-      cycleOrder: config.cycleOrder,
-      cycleName: config.cycleName,
-      cycleStartDate: startDate.format('YYYY-MM-DD'),
-      cycleEndDate: endDate.format('YYYY-MM-DD'),
-      subjData,
-      logger
-    }
-  );
-  
-  const optionalBlocks = await createBlocksForSubjects(
-    {
-      intake,
-      subjects: optionalSubjects,
-      totalHours: optionalHours,
-      confidenceMap,
-      blockPrefix: 'Optional Foundation',
-      cycleType: config.cycleType,
-      cycleOrder: config.cycleOrder,
-      cycleName: config.cycleName,
-      cycleStartDate: startDate.format('YYYY-MM-DD'),
-      cycleEndDate: endDate.format('YYYY-MM-DD'),
-      subjData,
-      logger
-    }
-  );
-  
-  return [...gsBlocks, ...optionalBlocks];
-}
 
 // Cycle Configuration Constants
 const C1_CONFIG: CycleConfig = {
@@ -128,7 +75,7 @@ const C1_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 const C2_CONFIG: CycleConfig = {
@@ -142,7 +89,7 @@ const C2_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createGSOptionalSplitBlocks,
+  blockCreator,
   validation: (startDate, _endDate, intake) => {
     const foundationEndDate = dayjs(intake.getFoundationCycleEndDate());
     return !startDate.isAfter(foundationEndDate);
@@ -162,7 +109,7 @@ const C3_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 const C4_CONFIG: CycleConfig = {
@@ -178,7 +125,7 @@ const C4_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 const C5_CONFIG: CycleConfig = {
@@ -194,7 +141,7 @@ const C5_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 const C5B_CONFIG: CycleConfig = {
@@ -210,7 +157,7 @@ const C5B_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 const C6_CONFIG: CycleConfig = {
@@ -226,7 +173,7 @@ const C6_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 const C7_CONFIG: CycleConfig = {
@@ -242,7 +189,7 @@ const C7_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 const C8_CONFIG: CycleConfig = {
@@ -258,7 +205,7 @@ const C8_CONFIG: CycleConfig = {
     const dailyHours = intake.getDailyStudyHours();
     return durationWeeks * 7 * dailyHours;
   },
-  blockCreator: createStandardBlocks
+  blockCreator
 };
 
 export function getCycleConfig(cycleType: CycleType): CycleConfig {

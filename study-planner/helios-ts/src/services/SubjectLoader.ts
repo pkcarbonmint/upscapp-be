@@ -1,6 +1,7 @@
 import type { ExamFocus, LoadSubtopicsResult, Subject, Subtopic, SubtopicBand, TopicPriority } from '../types/Subjects';
 import subjectsData from '../config/upsc_subjects.json';
 import subtopicsData from '../config/subtopics.json';
+import { isOptional } from '../engine/cycle-utils';
 
 function mapTopicPriority(priority: string): TopicPriority {
   switch (priority) {
@@ -184,6 +185,20 @@ export class SubjectLoader {
    */
   static getSubjectsWithCurrentAffairs(): Subject[] {
     return this.loadAllSubjects().filter(subject => subject.hasCurrentAffairs);
+  }
+
+  /**
+   * Get optional subjects (OPT or Micro category)
+   */
+  static getOptionalSubjects(): Subject[] {
+    return this.loadAllSubjects().filter(isOptional);
+  }
+
+  /**
+   * Get GS subjects (non-optional)
+   */
+  static getGSSubjects(): Subject[] {
+    return this.loadAllSubjects().filter(subject => !isOptional(subject));
   }
 }
 

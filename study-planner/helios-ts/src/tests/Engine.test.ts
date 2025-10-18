@@ -47,7 +47,8 @@ describe('Engine', () => {
       revision_strategy: 'regular',
       test_frequency: 'weekly',
       seasonal_windows: [],
-      catch_up_day_preference: 'sunday'
+      catch_up_day_preference: 'sunday',
+      upsc_optional_subject: 'OPT-SOC'
     },
     target_year: '2025',
     start_date: '2024-01-01'
