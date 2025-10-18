@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-ECO",
+    "basics": [
+      "NCERT XI Economics - Indian Economic Development",
+      "NCERT XII Economics - Introductory Microeconomics",
+      "NCERT XII Economics - Introductory Macroeconomics",
+      "Indian Economy - Ramesh Singh"
+    ],
+    "textbooks": [
+      "Microeconomics - Hal Varian",
+      "Macroeconomics - Mankiw",
+      "Development Economics - Todaro and Smith",
+      "International Economics - Krugman",
+      "Public Finance - Musgrave and Musgrave"
+    ],
+    "value_addition": [
+      "Economic Survey",
+      "RBI Bulletins",
+      "Economic and Political Weekly",
+      "Business Standard Economics",
+      "NITI Aayog Reports",
+      "World Bank Reports on India",
+      "IMF Reports"
+    ],
+    "rapid_revision_practice": [
+      "Economics Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Economic Data Analysis"
+    ]
+  }
+]

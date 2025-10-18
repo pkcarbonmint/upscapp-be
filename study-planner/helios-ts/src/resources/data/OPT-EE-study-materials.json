@@ -1,0 +1,33 @@
+[
+  {
+    "subjectCode": "OPT-EE",
+    "basics": [
+      "Electrical Circuit Analysis - A. Chakrabarti",
+      "Basic Electrical Engineering - D.P. Kothari",
+      "Network Analysis - Van Valkenburg",
+      "Electrical Machines Fundamentals - Del Toro"
+    ],
+    "textbooks": [
+      "Electric Machinery - Fitzgerald",
+      "Power System Analysis - Hadi Saadat",
+      "Control Systems Engineering - Nise",
+      "Electronic Devices - Floyd",
+      "Power Electronics - Rashid"
+    ],
+    "value_addition": [
+      "Ministry of Power Reports",
+      "Central Electricity Authority Reports",
+      "Renewable Energy Reports",
+      "Power Grid Corporation Reports",
+      "IEEE Spectrum Magazine",
+      "Electrical India Magazine"
+    ],
+    "rapid_revision_practice": [
+      "Electrical Engineering Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Circuit Analysis Practice"
+    ]
+  }
+]

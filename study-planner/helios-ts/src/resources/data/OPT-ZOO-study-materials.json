@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-ZOO",
+    "basics": [
+      "NCERT XI Biology - Animal Kingdom",
+      "NCERT XII Biology - Human Physiology",
+      "NCERT XII Biology - Reproduction",
+      "Animal Physiology - Knut Schmidt-Nielsen"
+    ],
+    "textbooks": [
+      "Invertebrate Zoology - Ruppert and Barnes",
+      "Vertebrate Life - Pough",
+      "Cell and Molecular Biology - Lodish",
+      "Developmental Biology - Gilbert",
+      "Animal Behavior - Alcock"
+    ],
+    "value_addition": [
+      "Journal of Animal Science",
+      "Current Science - Zoology Articles",
+      "Wildlife Protection Reports",
+      "Zoological Survey of India Reports",
+      "Conservation Biology Reports",
+      "Biodiversity Studies",
+      "Animal Welfare Reports"
+    ],
+    "rapid_revision_practice": [
+      "Zoology Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Specimen Study Practice"
+    ]
+  }
+]

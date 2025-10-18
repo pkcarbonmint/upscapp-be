@@ -1,0 +1,33 @@
+[
+  {
+    "subjectCode": "OPT-STA",
+    "basics": [
+      "NCERT XI Mathematics - Statistics",
+      "Introduction to Statistics - Walpole and Myers",
+      "Fundamentals of Statistics - S.C. Gupta",
+      "Statistical Methods - S.P. Gupta"
+    ],
+    "textbooks": [
+      "Mathematical Statistics - Hogg and Craig",
+      "Probability and Statistics - Sheldon Ross",
+      "Sampling Techniques - Cochran",
+      "Design of Experiments - Montgomery",
+      "Time Series Analysis - Chatfield"
+    ],
+    "value_addition": [
+      "Journal of Statistical Planning and Inference",
+      "Indian Journal of Statistics",
+      "National Sample Survey Reports",
+      "Census Statistical Reports",
+      "Economic Survey Statistical Appendix",
+      "RBI Statistical Tables"
+    ],
+    "rapid_revision_practice": [
+      "Statistics Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Statistical Problem Practice"
+    ]
+  }
+]

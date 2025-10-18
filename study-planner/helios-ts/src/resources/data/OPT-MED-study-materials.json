@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-MED",
+    "basics": [
+      "NCERT XII Biology - Human Health and Disease",
+      "Anatomy - B.D. Chaurasia",
+      "Physiology - Guyton and Hall",
+      "Biochemistry - Harper's"
+    ],
+    "textbooks": [
+      "Pathology - Robbins and Cotran",
+      "Pharmacology - Goodman and Gilman",
+      "Microbiology - Ananthanarayan",
+      "Community Medicine - Park",
+      "Forensic Medicine - Krishan Vij"
+    ],
+    "value_addition": [
+      "Indian Journal of Medical Research",
+      "Ministry of Health Reports",
+      "WHO Reports on India",
+      "Medical Council of India Updates",
+      "National Health Mission Reports",
+      "Epidemiological Studies",
+      "Public Health Reports"
+    ],
+    "rapid_revision_practice": [
+      "Medical Science Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Clinical Case Studies"
+    ]
+  }
+]

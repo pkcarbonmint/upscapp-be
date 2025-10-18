@@ -1,0 +1,33 @@
+[
+  {
+    "subjectCode": "OPT-MAT",
+    "basics": [
+      "NCERT XI Mathematics - Sets, Relations and Functions",
+      "NCERT XII Mathematics - Calculus",
+      "Higher Engineering Mathematics - B.S. Grewal",
+      "Mathematical Methods - Potter and Goldberg"
+    ],
+    "textbooks": [
+      "Real Analysis - Bartle and Sherbert",
+      "Abstract Algebra - Dummit and Foote",
+      "Topology - Munkres",
+      "Complex Analysis - Ahlfors",
+      "Differential Equations - Simmons"
+    ],
+    "value_addition": [
+      "Mathematical Reviews",
+      "American Mathematical Monthly",
+      "Journal of Mathematical Analysis",
+      "Current Science - Mathematics",
+      "Research Papers in Mathematics",
+      "Mathematical Olympiad Problems"
+    ],
+    "rapid_revision_practice": [
+      "Mathematics Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Problem Solving Practice"
+    ]
+  }
+]

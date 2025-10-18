@@ -1,0 +1,33 @@
+[
+  {
+    "subjectCode": "OPT-CHE",
+    "basics": [
+      "NCERT XI Chemistry - Structure of Atom",
+      "NCERT XI Chemistry - Chemical Bonding",
+      "NCERT XII Chemistry - Solutions",
+      "NCERT XII Chemistry - Electrochemistry"
+    ],
+    "textbooks": [
+      "Physical Chemistry - Atkins and Paula",
+      "Organic Chemistry - Morrison and Boyd",
+      "Inorganic Chemistry - J.D. Lee",
+      "Advanced Inorganic Chemistry - Cotton and Wilkinson",
+      "Organic Chemistry - Clayden"
+    ],
+    "value_addition": [
+      "Journal of Chemical Sciences",
+      "Current Science - Chemistry Articles",
+      "Chemical Industry Reports",
+      "Department of Chemicals and Petrochemicals Reports",
+      "Research Papers in Chemistry",
+      "Nobel Prize in Chemistry Updates"
+    ],
+    "rapid_revision_practice": [
+      "Chemistry Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Numerical Problem Practice"
+    ]
+  }
+]
