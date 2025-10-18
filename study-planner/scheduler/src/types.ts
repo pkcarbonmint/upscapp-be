@@ -74,6 +74,10 @@ export type Subtopic = {
   topicCode: string;
 };
 
+export type AdjustedSubtopic = Subtopic & {
+  adjustedHours: number;
+};
+
 export type PriorityLevel = 'A' | 'B' | 'C' | 'D';
 export const bandOrder: Record<PriorityLevel, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 

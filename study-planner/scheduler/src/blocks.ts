@@ -11,8 +11,10 @@ import {
   SchedulingConflict,
   ConfidenceMap,
   Subtopic,
+  AdjustedSubtopic,
   PrioritizedItem,
-  bandOrder
+  bandOrder,
+  GSOptionalRatio
 } from "./types";
 
 // return a set of block schedules for a given cycle schedule
@@ -22,7 +24,8 @@ export function determineBlockSchedule(
   confidenceMap: ConfidenceMap,
   totalHours: number,
   studyApproach: StudyApproach,
-  workingHoursPerDay: number = 8
+  workingHoursPerDay: number = 8,
+  gsOptionalRatio?: GSOptionalRatio
 ): BlockSchedule[] {
   const cycleStart = dayjs(cycleSchedule.startDate);
   const cycleEnd = dayjs(cycleSchedule.endDate);
@@ -38,15 +41,34 @@ export function determineBlockSchedule(
     },
     timeWindow: { start: cycleStart, end: cycleEnd },
     totalAvailableHours: totalHours,
-    workingHoursPerDay
+    workingHoursPerDay,
+    gsOptionalRatio // Pass the GS:Optional ratio to the scheduler
   };
   
-  // Trim subjects to fit available time if needed
-  const totalAvailableHours = totalHours;
-  const trimmedSubjects = trimSubjectsToFit(subjects, totalAvailableHours, confidenceMap, cycleSchedule.cycleType);
+  // Use GS:Optional ratio allocations if provided, otherwise fall back to trimSubjectsToFit
+  let trimmedSubjects: Subject[];
+  if (gsOptionalRatio) {
+    // Calculate subject allocations respecting GS:Optional ratio
+    const subjectAllocations = calculateSubjectAllocations(
+      subjects,
+      totalHours,
+      confidenceMap,
+      cycleSchedule.cycleType,
+      gsOptionalRatio
+    );
+    
+    // Filter subjects based on allocations
+    trimmedSubjects = subjects.filter(subject => {
+      const allocatedHours = subjectAllocations.get(subject.subjectCode) || 0;
+      return allocatedHours > 0;
+    });
+  } else {
+    // Fall back to original logic
+    trimmedSubjects = trimSubjectsToFit(subjects, totalHours, confidenceMap, cycleSchedule.cycleType);
+  }
   
   console.log(`Debug: Cycle ${cycleSchedule.cycleType}, subjects: ${subjects.length} -> trimmed: ${trimmedSubjects.length}`);
-  console.log(`Debug: Available hours: ${totalAvailableHours}, cycle duration: ${cycleEnd.diff(cycleStart, 'day')} days`);
+  console.log(`Debug: Available hours: ${totalHours}, cycle duration: ${cycleEnd.diff(cycleStart, 'day')} days`);
   
   // Update input with trimmed subjects
   const trimmedInput = { ...input, subjects: trimmedSubjects };
@@ -148,7 +170,17 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
     });
   }
   
-  const initialSchedules = subjects.slice(0, maxParallelSubjects).map(subject => {
+  // When GS:Optional ratio is provided, schedule all subjects that have allocations
+  // Otherwise, respect the parallel capacity limit
+  const subjectsToScheduleInitially = gsOptionalRatio 
+    ? subjects.filter(subject => (subjectAllocations.get(subject.subjectCode) || 0) > 0)
+    : subjects.slice(0, maxParallelSubjects);
+  
+  // For GS:Optional ratio, we need to handle all subjects in the initial scheduling
+  // For regular scheduling, we handle remaining subjects sequentially
+  const subjectsToScheduleSequentially = gsOptionalRatio ? [] : subjects.slice(maxParallelSubjects);
+  
+  const initialSchedules = subjectsToScheduleInitially.map(subject => {
     const allocatedHours = subjectAllocations.get(subject.subjectCode) || 4;
     
     // For extreme short cycles, calculate duration more conservatively
@@ -171,9 +203,23 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
   
   console.log(`Debug scheduleParallel: ${subjects.length} subjects, ${validInitialSchedules.length} valid initial schedules, ${invalidInitialSubjects.length} invalid initial subjects`);
   
-  const allSchedules = subjects.slice(maxParallelSubjects).reduce((acc, subject) => {
+  const allSchedules = subjectsToScheduleSequentially.reduce((acc, subject) => {
     const allocatedHours = subjectAllocations.get(subject.subjectCode) || 4;
     const durationWeeks = Math.ceil(allocatedHours / (workingHoursPerDay * 7));
+    
+    // Handle case where activeSchedules is empty
+    if (acc.activeSchedules.length === 0) {
+      const startDate = start;
+      const endDate = startDate.add(durationWeeks * 7 - 1, 'day');
+      
+      if (endDate.isAfter(end)) {
+        return { ...acc, unscheduledSubjects: [...acc.unscheduledSubjects, subject], conflicts: [...acc.conflicts, createTimeConflict(subject.subjectCode, 'warning')] };
+      }
+      
+      const scheduled = createScheduledSubject(subject, startDate, endDate, durationWeeks, allocatedHours, config.studyApproach);
+      return { ...acc, scheduledSubjects: [...acc.scheduledSubjects, scheduled], activeSchedules: [scheduled] };
+    }
+    
     const earliestEnding = acc.activeSchedules.reduce((earliest: ScheduledSubject, current: ScheduledSubject) => current.endDate.isBefore(earliest.endDate) ? current : earliest);
     const startDate = earliestEnding.endDate.add(1, 'day');
     const endDate = startDate.add(durationWeeks * 7 - 1, 'day');
@@ -219,7 +265,7 @@ function createTimeConflict(subjectCode: string, severity: 'error' | 'warning'):
 /**
  * Trim subtopics to fit within allocated hours, starting from D5 down to B1
  */
-export function trimSubtopicsToFit(subtopics: Subtopic[], allocatedHours: number): Subtopic[] {
+export function trimSubtopicsToFit(subtopics: Subtopic[], allocatedHours: number): AdjustedSubtopic[] {
   const adjustedSubtopics = subtopics
     .map(subtopic => ({
       ...subtopic,
@@ -229,18 +275,18 @@ export function trimSubtopicsToFit(subtopics: Subtopic[], allocatedHours: number
   
   // Keep all Band A subtopics
   const bandASubtopics = adjustedSubtopics.filter(st => st.band === 'A');
-  const bandAHours = bandASubtopics.reduce((sum, st) => sum + (st as any).adjustedHours, 0);
+  const bandAHours = bandASubtopics.reduce((sum, st) => sum + st.adjustedHours, 0);
   
   // Add other bands in order until we hit the limit
   const otherSubtopics = adjustedSubtopics.filter(st => st.band !== 'A');
   const remainingHours = allocatedHours - bandAHours;
   
   const includedOtherSubtopics = otherSubtopics.reduce((acc, subtopic) => {
-    const currentTotal = acc.reduce((sum, st) => sum + (st as any).adjustedHours, 0);
-    return currentTotal + (subtopic as any).adjustedHours <= remainingHours 
+    const currentTotal = acc.reduce((sum, st) => sum + st.adjustedHours, 0);
+    return currentTotal + subtopic.adjustedHours <= remainingHours 
       ? [...acc, subtopic] 
       : acc;
-  }, [] as Subtopic[]);
+  }, [] as AdjustedSubtopic[]);
   
   return [...bandASubtopics, ...includedOtherSubtopics];
 }

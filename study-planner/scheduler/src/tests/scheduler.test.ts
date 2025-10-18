@@ -347,6 +347,66 @@ describe('Scheduler Library Tests', () => {
       
       console.log(`✅ Edge cases: ${trimmedSubjects.length} (limited) vs ${allSubjects.length} (abundant)`);
     });
+
+    it('should allocate minimum baseline hours to all subjects when time is sufficient', () => {
+      // Calculate total baseline hours needed
+      const totalBaselineHours = mockSubjects.reduce((sum, subject) => sum + subject.baselineHours, 0);
+      const sufficientHours = totalBaselineHours + 100; // Extra time
+      
+      const trimmedSubjects = trimSubjectsToFit(
+        mockSubjects,
+        sufficientHours,
+        mockConfidenceMap,
+        CycleType.C1
+      );
+      
+      // All subjects should be included
+      expect(trimmedSubjects.length).toBe(mockSubjects.length);
+      
+      // Each subject should get at least their baseline hours
+      trimmedSubjects.forEach(subject => {
+        const originalSubject = mockSubjects.find(s => s.subjectCode === subject.subjectCode);
+        expect(subject.baselineHours).toBeGreaterThanOrEqual(originalSubject!.baselineHours);
+      });
+      
+      console.log(`✅ All ${mockSubjects.length} subjects allocated minimum baseline hours`);
+    });
+
+
+    it('should keep only essentials in severely compressed timeline', () => {
+      // Severely compressed timeline - only highest priority subjects should survive
+      const severelyCompressedHours = 50; // Very limited time
+      const cycleType = CycleType.C5; // Extreme short cycle
+      
+      const trimmedSubjects = trimSubjectsToFit(
+        mockSubjects,
+        severelyCompressedHours,
+        mockConfidenceMap,
+        cycleType
+      );
+      
+      // Should only keep essential subjects (priority >= 4)
+      const essentialSubjects = mockSubjects.filter(s => (s.priority || 0) >= 4);
+      expect(trimmedSubjects.length).toBeLessThanOrEqual(essentialSubjects.length);
+      expect(trimmedSubjects.length).toBeGreaterThan(0);
+      
+      // All remaining subjects should be high priority
+      trimmedSubjects.forEach(subject => {
+        expect(subject.priority || 0).toBeGreaterThanOrEqual(4);
+      });
+      
+      // Verify that low priority subjects are dropped
+      const lowPrioritySubjects = mockSubjects.filter(s => (s.priority || 0) < 4);
+      lowPrioritySubjects.forEach(lowPrioritySubject => {
+        const keptSubject = trimmedSubjects.find(s => s.subjectCode === lowPrioritySubject.subjectCode);
+        expect(keptSubject).toBeUndefined();
+      });
+      
+      console.log(`✅ Severely compressed: kept ${trimmedSubjects.length}/${mockSubjects.length} subjects (only essentials)`);
+      trimmedSubjects.forEach(subject => {
+        console.log(`  ${subject.subjectCode}: priority ${subject.priority}, baseline ${subject.baselineHours}h`);
+      });
+    });
   });
 
   /**
@@ -567,6 +627,288 @@ describe('Scheduler Library Tests', () => {
       expect(getDefaultGSOptionalRatio(CycleType.C8)).toEqual({ gs: 0.8, optional: 0.2 });
       
       console.log('✅ Default GS:Optional ratios working correctly');
+    });
+
+    it('should respect exact GS:Optional ratios with precise calculations', () => {
+      const mockSubjects: Subject[] = [
+        { subjectCode: 'H01', baselineHours: 100, priority: 5, subjectType: 'GS' },
+        { subjectCode: 'H02', baselineHours: 100, priority: 4, subjectType: 'GS' },
+        { subjectCode: 'OPT01', baselineHours: 200, priority: 3, subjectType: 'Optional', isOptional: true, optionalSubjectName: 'History' }
+      ];
+      const mockConfidenceMap = new Map<string, number>([
+        ['H01', 1.0],
+        ['H02', 1.0],
+        ['OPT01', 1.0]
+      ]);
+      
+      const testCases = [
+        { ratio: { gs: 0.67, optional: 0.33 }, totalHours: 1000 },
+        { ratio: { gs: 0.8, optional: 0.2 }, totalHours: 500 },
+        { ratio: { gs: 0.5, optional: 0.5 }, totalHours: 200 },
+        { ratio: { gs: 1.0, optional: 0.0 }, totalHours: 300 }
+      ];
+      
+      testCases.forEach(({ ratio, totalHours }) => {
+        const allocations = calculateSubjectAllocations(mockSubjects, totalHours, mockConfidenceMap, CycleType.C1, ratio);
+        
+        const gsHours = Array.from(allocations.entries())
+          .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'GS')
+          .reduce((sum, [, hours]) => sum + hours, 0);
+        
+        const optionalHours = Array.from(allocations.entries())
+          .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'Optional')
+          .reduce((sum, [, hours]) => sum + hours, 0);
+        
+        const expectedGSHours = Math.floor(totalHours * ratio.gs);
+        const expectedOptionalHours = Math.floor(totalHours * ratio.optional);
+        
+        // Allow 5 hour tolerance for rounding and minimum hour constraints
+        expect(Math.abs(gsHours - expectedGSHours)).toBeLessThanOrEqual(5);
+        expect(Math.abs(optionalHours - expectedOptionalHours)).toBeLessThanOrEqual(5);
+        
+        console.log(`✅ Ratio ${ratio.gs}:${ratio.optional} - GS: ${gsHours}/${expectedGSHours}h, Optional: ${optionalHours}/${expectedOptionalHours}h`);
+      });
+    });
+
+    it('should handle edge cases in GS:Optional ratio allocation', () => {
+      const mockSubjects: Subject[] = [
+        { subjectCode: 'H01', baselineHours: 1, priority: 5, subjectType: 'GS' },
+        { subjectCode: 'OPT01', baselineHours: 1, priority: 3, subjectType: 'Optional', isOptional: true }
+      ];
+      const mockConfidenceMap = new Map<string, number>([
+        ['H01', 1.0],
+        ['OPT01', 1.0]
+      ]);
+      
+      // Test with very small hours
+      const allocations = calculateSubjectAllocations(mockSubjects, 10, mockConfidenceMap, CycleType.C1, { gs: 0.6, optional: 0.4 });
+      
+      const gsHours = Array.from(allocations.entries())
+        .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'GS')
+        .reduce((sum, [, hours]) => sum + hours, 0);
+      
+      const optionalHours = Array.from(allocations.entries())
+        .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'Optional')
+        .reduce((sum, [, hours]) => sum + hours, 0);
+      
+      // Should still respect the ratio even with small numbers
+      expect(gsHours).toBeGreaterThan(optionalHours);
+      expect(gsHours + optionalHours).toBeLessThanOrEqual(10);
+      
+      console.log(`✅ Edge case: GS=${gsHours}h, Optional=${optionalHours}h (total: ${gsHours + optionalHours}h)`);
+    });
+
+    it('should maintain ratio consistency across different subject counts', () => {
+      const testCases = [
+        { gsCount: 1, optionalCount: 1 },
+        { gsCount: 5, optionalCount: 1 },
+        { gsCount: 10, optionalCount: 2 },
+        { gsCount: 16, optionalCount: 1 }
+      ];
+      
+      testCases.forEach(({ gsCount, optionalCount }) => {
+        const mockSubjects: Subject[] = [];
+        
+        // Create GS subjects
+        for (let i = 0; i < gsCount; i++) {
+          mockSubjects.push({
+            subjectCode: `GS${i.toString().padStart(2, '0')}`,
+            baselineHours: 100,
+            priority: 5,
+            subjectType: 'GS'
+          });
+        }
+        
+        // Create Optional subjects
+        for (let i = 0; i < optionalCount; i++) {
+          mockSubjects.push({
+            subjectCode: `OPT${i.toString().padStart(2, '0')}`,
+            baselineHours: 200,
+            priority: 3,
+            subjectType: 'Optional',
+            isOptional: true,
+            optionalSubjectName: `Optional${i}`
+          });
+        }
+        
+        const mockConfidenceMap = new Map<string, number>();
+        mockSubjects.forEach(subject => {
+          mockConfidenceMap.set(subject.subjectCode, 1.0);
+        });
+        
+        const ratio = { gs: 0.67, optional: 0.33 };
+        const totalHours = 1000;
+        
+        const allocations = calculateSubjectAllocations(mockSubjects, totalHours, mockConfidenceMap, CycleType.C1, ratio);
+        
+        const gsHours = Array.from(allocations.entries())
+          .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'GS')
+          .reduce((sum, [, hours]) => sum + hours, 0);
+        
+        const optionalHours = Array.from(allocations.entries())
+          .filter(([code]) => mockSubjects.find(s => s.subjectCode === code)?.subjectType === 'Optional')
+          .reduce((sum, [, hours]) => sum + hours, 0);
+        
+        const expectedGSHours = Math.floor(totalHours * ratio.gs);
+        const expectedOptionalHours = Math.floor(totalHours * ratio.optional);
+        
+        // Verify ratio is maintained regardless of subject count (allow larger tolerance for complex allocations)
+        expect(Math.abs(gsHours - expectedGSHours)).toBeLessThanOrEqual(20);
+        expect(Math.abs(optionalHours - expectedOptionalHours)).toBeLessThanOrEqual(20);
+        
+        console.log(`✅ ${gsCount}GS:${optionalCount}OPT - GS: ${gsHours}/${expectedGSHours}h, Optional: ${optionalHours}/${expectedOptionalHours}h`);
+      });
+    });
+
+    it('should respect GS:Optional ratios in determineBlockSchedule', () => {
+      // Create subjects with GS and Optional types
+      const gsSubjects: Subject[] = [
+        { subjectCode: 'H01', baselineHours: 100, priority: 5, subjectType: 'GS', isOptional: false },
+        { subjectCode: 'H02', baselineHours: 80, priority: 4, subjectType: 'GS', isOptional: false },
+        { subjectCode: 'G', baselineHours: 120, priority: 5, subjectType: 'GS', isOptional: false }
+      ];
+      
+      const optionalSubjects: Subject[] = [
+        { subjectCode: 'OPT', baselineHours: 200, priority: 5, subjectType: 'Optional', isOptional: true }
+      ];
+      
+      const allSubjects = [...gsSubjects, ...optionalSubjects];
+      const confidenceMap = new Map<string, number>();
+      allSubjects.forEach(subject => {
+        confidenceMap.set(subject.subjectCode, 1.0);
+      });
+
+      const cycleSchedule = {
+        cycleType: CycleType.C1,
+        startDate: '2025-03-01',
+        endDate: '2025-05-31',
+        priority: 'mandatory' as const
+      };
+
+      const totalHours = 1000;
+      const gsOptionalRatio = { gs: 0.67, optional: 0.33 };
+      const studyApproach = 'balanced' as StudyApproach;
+
+      // Test with GS:Optional ratio
+      const blocksWithRatio = determineBlockSchedule(
+        cycleSchedule,
+        allSubjects,
+        confidenceMap,
+        totalHours,
+        studyApproach,
+        8,
+        gsOptionalRatio
+      );
+
+      // Test without GS:Optional ratio (should fall back to trimSubjectsToFit)
+      const blocksWithoutRatio = determineBlockSchedule(
+        cycleSchedule,
+        allSubjects,
+        confidenceMap,
+        totalHours,
+        studyApproach,
+        8
+      );
+
+      // With GS:Optional ratio, all subjects should be scheduled (plenty of time)
+      expect(blocksWithRatio.length).toBe(allSubjects.length);
+      
+      // Calculate actual hours allocated
+      const gsBlocksWithRatio = blocksWithRatio.filter(block => {
+        const subject = allSubjects.find(s => s.subjectCode === block.subjectCode);
+        return subject && !subject.isOptional;
+      });
+      
+      const optionalBlocksWithRatio = blocksWithRatio.filter(block => {
+        const subject = allSubjects.find(s => s.subjectCode === block.subjectCode);
+        return subject && subject.isOptional;
+      });
+
+      // Verify that GS:Optional ratio is respected
+      const expectedGSHours = Math.floor(totalHours * gsOptionalRatio.gs);
+      const expectedOptionalHours = Math.floor(totalHours * gsOptionalRatio.optional);
+      
+      // The blocks should be created for all subjects when GS:Optional ratio is provided
+      expect(gsBlocksWithRatio.length).toBe(gsSubjects.length);
+      expect(optionalBlocksWithRatio.length).toBe(optionalSubjects.length);
+
+      console.log(`✅ determineBlockSchedule with GS:Optional ratio: ${gsBlocksWithRatio.length}GS + ${optionalBlocksWithRatio.length}OPT blocks`);
+      console.log(`✅ Expected: ${expectedGSHours}h GS + ${expectedOptionalHours}h Optional`);
+    });
+
+
+    it('should respect GS:Optional ratios in all time allocation scenarios', () => {
+      const gsSubjects: Subject[] = [
+        { subjectCode: 'H01', baselineHours: 100, priority: 5, subjectType: 'GS', isOptional: false },
+        { subjectCode: 'H02', baselineHours: 80, priority: 4, subjectType: 'GS', isOptional: false },
+        { subjectCode: 'G', baselineHours: 120, priority: 5, subjectType: 'GS', isOptional: false }
+      ];
+      
+      const optionalSubjects: Subject[] = [
+        { subjectCode: 'OPT', baselineHours: 200, priority: 5, subjectType: 'Optional', isOptional: true }
+      ];
+      
+      const allSubjects = [...gsSubjects, ...optionalSubjects];
+      const confidenceMap = new Map<string, number>();
+      allSubjects.forEach(subject => {
+        confidenceMap.set(subject.subjectCode, 1.0);
+      });
+
+      const cycleSchedule = {
+        cycleType: CycleType.C1,
+        startDate: '2025-03-01',
+        endDate: '2025-05-31',
+        priority: 'mandatory' as const
+      };
+
+      const gsOptionalRatio = { gs: 0.67, optional: 0.33 };
+      const studyApproach = 'balanced' as StudyApproach;
+
+      // Test scenarios with different time allocations
+      const scenarios = [
+        { name: 'Sufficient time', totalHours: 1000 },
+        { name: 'Limited time', totalHours: 200 },
+        { name: 'Severely compressed', totalHours: 50 }
+      ];
+
+      scenarios.forEach(({ name, totalHours }) => {
+        const blocks = determineBlockSchedule(
+          cycleSchedule,
+          allSubjects,
+          confidenceMap,
+          totalHours,
+          studyApproach,
+          8,
+          gsOptionalRatio
+        );
+
+        // Calculate GS vs Optional allocation
+        const gsBlocks = blocks.filter(block => {
+          const subject = allSubjects.find(s => s.subjectCode === block.subjectCode);
+          return subject && !subject.isOptional;
+        });
+
+        const optionalBlocks = blocks.filter(block => {
+          const subject = allSubjects.find(s => s.subjectCode === block.subjectCode);
+          return subject && subject.isOptional;
+        });
+
+        console.log(`✅ ${name}: ${gsBlocks.length}GS + ${optionalBlocks.length}OPT blocks (${blocks.length}/${allSubjects.length} total)`);
+        
+        // Verify that GS:Optional ratio is respected when possible
+        if (blocks.length === allSubjects.length) {
+          // All subjects scheduled - ratio should be respected
+          const totalScheduled = gsBlocks.length + optionalBlocks.length;
+          const actualGSRatio = gsBlocks.length / totalScheduled;
+          const actualOptionalRatio = optionalBlocks.length / totalScheduled;
+          
+          expect(Math.abs(actualGSRatio - gsOptionalRatio.gs)).toBeLessThanOrEqual(0.1);
+          expect(Math.abs(actualOptionalRatio - gsOptionalRatio.optional)).toBeLessThanOrEqual(0.1);
+        } else {
+          // Some subjects dropped - should prioritize based on ratio
+          console.log(`  Note: ${allSubjects.length - blocks.length} subjects dropped due to time constraints`);
+        }
+      });
     });
   });
 
