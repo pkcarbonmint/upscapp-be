@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
 import { DEFAULT_CONFIG } from '../config';
 import { createStudentIntake } from '../types/models';
-import type { Config, Archetype } from '../engine/engine-types';
+import type { Config } from '../engine/engine-types';
+import type { Archetype } from '../types/models';
 
 describe('Optional Subject Integration', () => {
   let testConfig: Config;
@@ -66,7 +67,7 @@ describe('Optional Subject Integration', () => {
     try {
       result = await generateInitialPlan('test-user', testConfig, testArchetype, intake);
     } catch (error) {
-      console.log('⚠️ Plan generation failed with error:', error.message);
+      console.log('⚠️ Plan generation failed with error:', error instanceof Error ? error.message : String(error));
       // Even if there's an error, let's check if we can get partial results
       return; // Skip this test for now
     }
@@ -80,9 +81,9 @@ describe('Optional Subject Integration', () => {
       firstCycle: result.plan.cycles[0] ? {
         cycleType: result.plan.cycles[0].cycleType,
         allProperties: Object.keys(result.plan.cycles[0]),
-        blocksType: typeof result.plan.cycles[0].blocks,
-        blocksLength: result.plan.cycles[0].blocks?.length,
-        blocksIsArray: Array.isArray(result.plan.cycles[0].blocks)
+        blocksType: typeof result.plan.cycles[0].cycleBlocks,
+        blocksLength: result.plan.cycles[0].cycleBlocks?.length,
+        blocksIsArray: Array.isArray(result.plan.cycles[0].cycleBlocks)
       } : 'No cycles'
     });
 
@@ -104,7 +105,7 @@ describe('Optional Subject Integration', () => {
           if (block.subjects.includes('OPT-SOC')) {
             foundOptionalSubject = true;
             blocksWithOptionalSubject++;
-            console.log(`✅ Found OPT-SOC in cycle ${cycle.cycleType}, block ${block.blockCode}`);
+            console.log(`✅ Found OPT-SOC in cycle ${cycle.cycleType}, block ${block.block_title}`);
           }
         }
       }
@@ -154,7 +155,7 @@ describe('Optional Subject Integration', () => {
     try {
       result = await generateInitialPlan('test-user', testConfig, testArchetype, intake);
     } catch (error) {
-      console.log('⚠️ Plan generation failed with error:', error.message);
+      console.log('⚠️ Plan generation failed with error:', error instanceof Error ? error.message : String(error));
       // Even if there's an error, let's check if we can get partial results
       return; // Skip this test for now
     }
@@ -175,7 +176,7 @@ describe('Optional Subject Integration', () => {
           if (block.subjects.includes('OPT-AGR')) {
             foundOptionalSubject = true;
             blocksWithOptionalSubject++;
-            console.log(`✅ Found OPT-AGR in cycle ${cycle.cycleType}, block ${block.blockCode}`);
+            console.log(`✅ Found OPT-AGR in cycle ${cycle.cycleType}, block ${block.block_title}`);
           }
         }
       }

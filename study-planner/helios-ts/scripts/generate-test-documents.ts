@@ -21,6 +21,7 @@ import type { StudentIntake, Archetype, StudyPlan } from '../src/types/models';
 import { createStudentIntake } from '../src/types/models';
 import { DocumentService } from '../src/services/DocumentService';
 import { CalendarDocxService } from '../src/services/CalendarDocxService';
+import { TemplateCalendarDocxService } from '../src/services/TemplateCalendarDocxService';
 import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
 import * as path from 'path';
@@ -124,6 +125,7 @@ interface DocumentGeneratorOptions {
   generateJson: boolean;
   generateWeeklySchedules: boolean;
   generatePDFs: boolean; // Generate PDF versions alongside Word documents
+  generateTemplateDocx: boolean; // Generate template-based Word documents
 }
 
 
@@ -171,6 +173,7 @@ class TestDocumentGenerator {
   private generateJson: boolean;
   private generateWeeklySchedules: boolean;
   private generatePDFs: boolean;
+  private generateTemplateDocx: boolean;
 
   constructor(options: DocumentGeneratorOptions) {
     this.outputDir = options.outputDir || './generated-docs';
@@ -178,6 +181,7 @@ class TestDocumentGenerator {
     this.generateJson = options.generateJson;
     this.generateWeeklySchedules= options.generateWeeklySchedules;
     this.generatePDFs = options.generatePDFs; // Default to true to generate PDFs
+    this.generateTemplateDocx = options.generateTemplateDocx; // Generate template-based documents
   }
 
   /**
@@ -312,6 +316,15 @@ class TestDocumentGenerator {
         // Generate Word document
         await this.generateWordDocument(
           scenario.name, result.plan, result.intake);
+
+        // Generate template-based Word document if enabled
+        if (this.generateTemplateDocx) {
+          const templateStartTime = Date.now();
+          await this.generateTemplateWordDocument(scenario.name, result.plan, result.intake);
+          const templateTime = Date.now() - templateStartTime;
+          console.log(`  ⏱️  Template Word document generation took: ${templateTime}ms`);
+          console.log(`📊 Generated template Word document: ${scenario.name}-template.docx`);
+        }
 
         // Generate PDF document if enabled
         if (this.generatePDFs) {
@@ -456,6 +469,35 @@ class TestDocumentGenerator {
       { filename: `${scenarioName}.docx` }
     );
 
+  }
+
+  /**
+   * Generate template-based Word document from study plan data
+   */
+  private async generateTemplateWordDocument(
+    scenarioName: string,
+    studyPlan: StudyPlan, 
+    studentIntake: StudentIntake
+  ): Promise<void> {
+    const templateDocStartTime = Date.now();
+    console.log(`      📄 Generating template-based Word document...`);
+    
+    try {
+      await TemplateCalendarDocxService.generateStudyPlanDocxToStream(
+        studyPlan,
+        studentIntake,
+        createWriteStream(path.join(this.outputDir, `${scenarioName}-template.docx`)),
+        { filename: `${scenarioName}-template.docx` }
+      );
+
+      const templateDocTime = Date.now() - templateDocStartTime;
+      console.log(`      ⏱️  Template Word document generation took: ${templateDocTime}ms`);
+      console.log(`      📁 Template Word document generated: ${scenarioName}-template.docx`);
+      
+    } catch (error) {
+      console.error(`      ❌ Failed to generate template Word document for ${scenarioName}:`, error);
+      console.log(`      🔄 Template-based generation failed, but continuing with other documents...`);
+    }
   }
 
   /**
@@ -871,7 +913,8 @@ async function main() {
       generateMarkdown: false,
       generateJson: true,
       generateWeeklySchedules: false, // Disabled for performance testing
-      generatePDFs: false // Enable PDF generation
+      generatePDFs: false, // Enable PDF generation
+      generateTemplateDocx: true // Enable template-based Word document generation
     });
 
     await generator.generateAllTestDocuments(cliArgs.scenarios);
