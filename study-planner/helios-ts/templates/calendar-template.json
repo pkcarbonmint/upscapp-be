@@ -1,0 +1,262 @@
+{
+  "templateName": "UPSC Study Planner Template",
+  "version": "1.0.0",
+  "description": "Professional template for UPSC study plan documents",
+  
+  "colors": {
+    "primary": "2E5BBA",
+    "secondary": "666666", 
+    "text": "333333",
+    "success": "28A745",
+    "warning": "FFC107",
+    "info": "17A2B8",
+    "error": "FF6B6B",
+    "border": "E0E0E0",
+    "background": "F8F9FA"
+  },
+  
+  "fonts": {
+    "primary": "Aptos",
+    "secondary": "Calibri",
+    "monospace": "Consolas"
+  },
+  
+  "spacing": {
+    "cellPadding": 100,
+    "paragraphAfter": 200,
+    "headingBefore": 400,
+    "headingAfter": 200,
+    "sectionSpacing": 600,
+    "lineSpacing": 240
+  },
+  
+  "styles": {
+    "documentTitle": {
+      "size": 42,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "studentName": {
+      "size": 36,
+      "bold": true,
+      "color": "text",
+      "font": "primary"
+    },
+    "documentSubtitle": {
+      "size": 18,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "mainHeading": {
+      "size": 28,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "subHeading": {
+      "size": 24,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "sectionHeading": {
+      "size": 24,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "monthTitle": {
+      "size": 28,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "cycleName": {
+      "size": 25,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "tableHeader": {
+      "size": 20,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "tableCell": {
+      "size": 20,
+      "color": "text",
+      "font": "primary"
+    },
+    "calendarCycleName": {
+      "size": 10,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "calendarMonthName": {
+      "size": 12,
+      "bold": true,
+      "color": "text",
+      "font": "primary"
+    },
+    "calendarDayHeader": {
+      "size": 8,
+      "bold": true,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "calendarDay": {
+      "size": 8,
+      "color": "text",
+      "font": "primary"
+    },
+    "calendarDayNumber": {
+      "size": 14,
+      "bold": true,
+      "color": "text",
+      "font": "primary"
+    },
+    "calendarSubject": {
+      "size": 8,
+      "color": "text",
+      "font": "primary"
+    },
+    "monthlyCalendarHeader": {
+      "size": 12,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "infoIcon": {
+      "size": 16,
+      "color": "primary",
+      "font": "primary"
+    },
+    "infoLabel": {
+      "size": 14,
+      "bold": true,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "infoValue": {
+      "size": 14,
+      "color": "text",
+      "font": "primary"
+    },
+    "strategyIcon": {
+      "size": 20,
+      "color": "primary",
+      "font": "primary"
+    },
+    "strategyTitle": {
+      "size": 12,
+      "bold": true,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "strategyValue": {
+      "size": 14,
+      "color": "text",
+      "font": "primary"
+    },
+    "subjectCardTitle": {
+      "size": 14,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "resourceCategoryTitle": {
+      "size": 10,
+      "bold": true,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "resourceItem": {
+      "size": 9,
+      "color": "text",
+      "font": "primary"
+    },
+    "noResourcesMessage": {
+      "size": 14,
+      "italics": true,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "quote": {
+      "size": 18,
+      "italics": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "quoteAuthor": {
+      "size": 14,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "coverFooter": {
+      "size": 14,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "generationDate": {
+      "size": 12,
+      "color": "secondary",
+      "font": "primary"
+    }
+  },
+  
+  "tableStyles": {
+    "infoCard": {
+      "borders": {
+        "top": { "style": "single", "size": 1, "color": "border" },
+        "bottom": { "style": "single", "size": 1, "color": "border" },
+        "left": { "style": "single", "size": 1, "color": "border" },
+        "right": { "style": "single", "size": 1, "color": "border" },
+        "insideHorizontal": { "style": "single", "size": 1, "color": "border" },
+        "insideVertical": { "style": "none", "size": 0 }
+      }
+    },
+    "calendarGrid": {
+      "borders": {
+        "top": { "style": "single", "size": 1, "color": "border" },
+        "bottom": { "style": "single", "size": 1, "color": "border" },
+        "left": { "style": "single", "size": 1, "color": "border" },
+        "right": { "style": "single", "size": 1, "color": "border" },
+        "insideHorizontal": { "style": "single", "size": 1, "color": "border" },
+        "insideVertical": { "style": "single", "size": 1, "color": "border" }
+      }
+    },
+    "resourcesTable": {
+      "borders": {
+        "top": { "style": "single", "size": 1, "color": "border" },
+        "bottom": { "style": "single", "size": 1, "color": "border" },
+        "left": { "style": "single", "size": 1, "color": "border" },
+        "right": { "style": "single", "size": 1, "color": "border" },
+        "insideHorizontal": { "style": "single", "size": 1, "color": "border" },
+        "insideVertical": { "style": "single", "size": 1, "color": "border" }
+      }
+    }
+  },
+  
+  "cycleColors": {
+    "C1": "E3F2FD",
+    "C2": "E8F5E8", 
+    "C3": "FCE4EC",
+    "C4": "FFEBEE",
+    "C5": "F3E5F5",
+    "C5B": "F3E5F5",
+    "C6": "E1F5FE",
+    "C7": "FFF3E0",
+    "C8": "F1F8E9"
+  },
+  
+  "metadata": {
+    "author": "La Mentora Study Planner",
+    "subject": "UPSC Study Plan",
+    "keywords": ["UPSC", "Study Plan", "Calendar", "Education"],
+    "company": "La Mentora",
+    "createdBy": "Helios TypeScript Engine"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "templateName": "Custom Dark Theme Template",
+  "version": "1.0.0",
+  "description": "Dark themed template for UPSC study plan documents",
+  
+  "colors": {
+    "primary": "FF6B35",
+    "secondary": "888888", 
+    "text": "222222",
+    "success": "4CAF50",
+    "warning": "FF9800",
+    "info": "2196F3",
+    "error": "F44336",
+    "border": "CCCCCC",
+    "background": "F5F5F5"
+  },
+  
+  "fonts": {
+    "primary": "Georgia",
+    "secondary": "Arial",
+    "monospace": "Courier New"
+  },
+  
+  "spacing": {
+    "cellPadding": 150,
+    "paragraphAfter": 300,
+    "headingBefore": 500,
+    "headingAfter": 250,
+    "sectionSpacing": 800,
+    "lineSpacing": 280
+  },
+  
+  "styles": {
+    "documentTitle": {
+      "size": 48,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "studentName": {
+      "size": 40,
+      "bold": true,
+      "color": "text",
+      "font": "primary"
+    },
+    "documentSubtitle": {
+      "size": 20,
+      "italics": true,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "mainHeading": {
+      "size": 32,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "subHeading": {
+      "size": 26,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "sectionHeading": {
+      "size": 26,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "monthTitle": {
+      "size": 32,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "cycleName": {
+      "size": 28,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "tableHeader": {
+      "size": 22,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "tableCell": {
+      "size": 18,
+      "color": "text",
+      "font": "secondary"
+    },
+    "quote": {
+      "size": 20,
+      "italics": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "quoteAuthor": {
+      "size": 16,
+      "color": "secondary",
+      "font": "primary"
+    },
+    "coverFooter": {
+      "size": 16,
+      "color": "secondary",
+      "font": "secondary"
+    },
+    "generationDate": {
+      "size": 14,
+      "color": "secondary",
+      "font": "secondary"
+    }
+  },
+  
+  "cycleColors": {
+    "C1": "FFE0B2",
+    "C2": "C8E6C9", 
+    "C3": "F8BBD9",
+    "C4": "FFCDD2",
+    "C5": "E1BEE7",
+    "C5B": "E1BEE7",
+    "C6": "B3E5FC",
+    "C7": "FFCC80",
+    "C8": "DCEDC8"
+  },
+  
+  "metadata": {
+    "author": "Custom Template Designer",
+    "subject": "UPSC Study Plan - Custom Theme",
+    "keywords": ["UPSC", "Study Plan", "Calendar", "Custom", "Dark Theme"],
+    "company": "La Mentora Custom",
+    "createdBy": "Template System"
+  }
+}
