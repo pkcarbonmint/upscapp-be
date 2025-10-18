@@ -42,6 +42,7 @@ class ResourceLoader {
     
     // Handle optional subjects with dynamic imports
     if (subjectCode.startsWith('OPT-')) {
+      console.log("=x".repeat(40));
       return await this.loadOptionalSubjectMaterials(subjectCode);
     }
     
@@ -61,6 +62,8 @@ class ResourceLoader {
       const materialsModule = await import(`./data/${subjectCode}-study-materials.json`);
       return materialsModule.default as StudyMaterial[];
     } catch (error) {
+      console.log("y~".repeat(40));
+      console.error(error);
       if (process.env.NODE_ENV === 'development') {
         console.warn(`Failed to load study materials for ${subjectCode}:`, error);
       }

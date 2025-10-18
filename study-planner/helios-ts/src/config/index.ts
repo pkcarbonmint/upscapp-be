@@ -33,7 +33,7 @@ function mapOptionalSubjectToSubject(optionalSubject: any): Subject {
     subjectCode: optionalSubject.code,
     subjectName: optionalSubject.name,
     baselineHours: optionalSubject.baseline_hours,
-    category: optionalSubject.category === 'Literature' ? 'Micro' : 'Macro',
+    category: "Optional",
     examFocus: 'MainsOnly',
     hasCurrentAffairs: false,
     topics: [
@@ -67,7 +67,7 @@ export async function getAllOptionalSubjects(): Promise<Subject[]> {
  * Get optional subject by code
  */
 export async function getOptionalSubjectByCode(code: string): Promise<Subject | undefined> {
-  const allSubjects = await getAllOptionalSubjects();
-  return allSubjects.find(subject => subject.subjectCode === code);
+  const allOptSubjects = await getAllOptionalSubjects();
+  return allOptSubjects.find(subject => subject.subjectCode === code);
 }
 

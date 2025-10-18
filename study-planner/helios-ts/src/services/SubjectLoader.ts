@@ -1,6 +1,7 @@
 import type { ExamFocus, LoadSubtopicsResult, Subject, Subtopic, SubtopicBand, TopicPriority } from '../types/Subjects';
 import subjectsData from '../config/upsc_subjects.json';
 import subtopicsData from '../config/subtopics.json';
+import optionalSubjectsData from '../config/optional_subjects.json';
 import { isOptional } from '../engine/cycle-utils';
 
 function mapTopicPriority(priority: string): TopicPriority {
@@ -44,6 +45,36 @@ function decodeSubtopicBand(band: string): SubtopicBand {
     default:
       return 'A';
   }
+}
+
+/**
+ * Convert optional subject JSON to Subject type
+ */
+function mapOptionalSubjectToSubject(optionalSubject: any): Subject {
+  return {
+    subjectCode: optionalSubject.code,
+    subjectName: optionalSubject.name,
+    baselineHours: optionalSubject.baseline_hours,
+    category: optionalSubject.category === 'Literature' ? 'Micro' : 'Macro',
+    examFocus: 'MainsOnly',
+    hasCurrentAffairs: false,
+    topics: [
+      {
+        subjectCode: optionalSubject.code,
+        topicCode: `${optionalSubject.code}/01`,
+        topicName: `${optionalSubject.name} - Paper 1`,
+        priority: 'EssentialTopic' as TopicPriority,
+        subtopics: []
+      },
+      {
+        subjectCode: optionalSubject.code,
+        topicCode: `${optionalSubject.code}/02`,
+        topicName: `${optionalSubject.name} - Paper 2`,
+        priority: 'EssentialTopic' as TopicPriority,
+        subtopics: []
+      }
+    ]
+  };
 }
 
 export async function loadSubtopics(subjects: Subject[]): Promise<LoadSubtopicsResult> {
@@ -110,13 +141,16 @@ export async function loadSubtopics(subjects: Subject[]): Promise<LoadSubtopicsR
  */
 export class SubjectLoader {
   private static subjects: Subject[] | null = null;
+  private static selectedOptionalSubject: string | null = null;
 
   /**
    * Load all subjects from the embedded JSON data
    * This function is pure and provides the definitive list of subjects for the application
+   * @param optionalSubjectCode - Optional subject code to include in the subjects list
    */
-  static loadAllSubjects(): Subject[] {
-    if (this.subjects === null) {
+  static loadAllSubjects(optionalSubjectCode?: string): Subject[] {
+    // Check if we need to reload subjects (different optional subject or first load)
+    if (this.subjects === null || this.selectedOptionalSubject !== optionalSubjectCode) {
       try {
         // Convert the JSON data to our Subject type
         this.subjects = subjectsData.subjects.map(subjectData => ({
@@ -140,6 +174,23 @@ export class SubjectLoader {
           }))
         }));
 
+        // Add the selected optional subject if provided
+        if (optionalSubjectCode) {
+          const optionalSubjectData = optionalSubjectsData.subjects.find(
+            subject => subject.code === optionalSubjectCode
+          );
+          
+          if (optionalSubjectData) {
+            const optionalSubject = mapOptionalSubjectToSubject(optionalSubjectData);
+            this.subjects.push(optionalSubject);
+            console.log(`✅ Added optional subject: ${optionalSubject.subjectName} (${optionalSubject.subjectCode})`);
+          } else {
+            console.warn(`⚠️ Optional subject ${optionalSubjectCode} not found in optional_subjects.json`);
+          }
+        }
+
+        this.selectedOptionalSubject = optionalSubjectCode || null;
+
       } catch (error) {
         console.error('❌ Failed to load subjects from embedded data:', error);
         throw error;
@@ -147,16 +198,6 @@ export class SubjectLoader {
     }
 
     return this.subjects;
-
-    function decodeSubtopicBand(band: string): SubtopicBand {
-      switch (band.trim()) {
-        case 'A': return 'A';
-        case 'B': return 'B';
-        case 'C': return 'C';
-        case 'D': return 'D';
-        default: return 'A';
-      }
-    }
   }
 
   /**
@@ -175,8 +216,32 @@ export class SubjectLoader {
 
   /**
    * Get a specific subject by code
+   * Uses cached subjects if available, otherwise loads without optional subject
+   * For optional subjects, tries to load from optional_subjects.json if not in cache
    */
   static getSubjectByCode(subjectCode: string): Subject | undefined {
+    // If we have cached subjects, use them (they may include optional subject)
+    if (this.subjects !== null) {
+      const cachedSubject = this.subjects.find(subject => subject.subjectCode === subjectCode);
+      if (cachedSubject) {
+        return cachedSubject;
+      }
+    }
+    
+    // For optional subjects not in cache, try to load from optional_subjects.json
+    if (subjectCode.startsWith('OPT-')) {
+      const optionalSubjectData = optionalSubjectsData.subjects.find(
+        subject => subject.code === subjectCode
+      );
+      
+      if (optionalSubjectData) {
+        const optionalSubject = mapOptionalSubjectToSubject(optionalSubjectData);
+        console.log(`✅ Loaded optional subject on-demand: ${optionalSubject.subjectName} (${optionalSubject.subjectCode})`);
+        return optionalSubject;
+      }
+    }
+    
+    // Otherwise, load subjects without optional subject
     return this.loadAllSubjects().find(subject => subject.subjectCode === subjectCode);
   }
 
@@ -200,13 +265,22 @@ export class SubjectLoader {
   static getGSSubjects(): Subject[] {
     return this.loadAllSubjects().filter(subject => !isOptional(subject));
   }
+
+  /**
+   * Clear the subjects cache to force reload
+   */
+  static clearCache(): void {
+    this.subjects = null;
+    this.selectedOptionalSubject = null;
+  }
 }
 
 /**
  * Convenience function to load all subjects
  * This is the main entry point for subject loading
+ * @param optionalSubjectCode - Optional subject code to include in the subjects list
  */
-export async function loadAllSubjects(): Promise<Subject[]> {
-  return SubjectLoader.loadAllSubjects();
+export async function loadAllSubjects(optionalSubjectCode?: string): Promise<Subject[]> {
+  return SubjectLoader.loadAllSubjects(optionalSubjectCode);
 }
 
