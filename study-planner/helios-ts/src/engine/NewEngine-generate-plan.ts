@@ -110,14 +110,21 @@ function getPlannerForCycleType(cycleType: CycleType, logger: Logger) {
 
   info('Engine', `Starting initial plan generation. User: ${userId}`);
   const startDate = intake.start_date;
-  const subjects = await loadAllSubjects();
-  const subjData: SubjData = {
+  
+  // Load the student's optional subject first
+  const studentOptionalSubject = await getOptionalSubjectByCode(intake.study_strategy.upsc_optional_subject);
+  if (!studentOptionalSubject) {
+    throw new Error(`Optional subject ${intake.study_strategy.upsc_optional_subject} not found`);
+  }
+  
+  // Load all subjects including the selected optional subject
+  const subjects = [
+    studentOptionalSubject,
+    ...await loadAllSubjects(intake.study_strategy.upsc_optional_subject)
+  ];
+    const subjData: SubjData = {
     subjects, subtopics: await loadSubtopics(subjects)
   }
-   const studentOptionalSubject = await getOptionalSubjectByCode(intake.study_strategy.upsc_optional_subject);
-   if (!studentOptionalSubject) {
-     throw new Error(`Optional subject ${intake.study_strategy.upsc_optional_subject} not found`);
-   }
   const targetYear = intake.getTargetYear();
   const prelimsExamDate = intake.getPrelimsExamDate();
   logger.logInfo('Engine', `Using start_date: ${startDate} (from intake.start_date: ${intake.start_date})`);

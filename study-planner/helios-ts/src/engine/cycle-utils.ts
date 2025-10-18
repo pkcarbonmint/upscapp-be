@@ -27,7 +27,7 @@ const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
  * Check if a subject is optional
  */
 export function isOptional(subject: Subject): boolean {
-  return subject.subjectCode === 'OPT' || subject.category === 'Optional';
+  return subject.subjectCode.startsWith('OPT-') || subject.subjectCode === 'OPT' || subject.category === 'Optional';
 }
 
 /**

@@ -766,7 +766,7 @@ ${studyPlan.cycles?.map(cycle =>
         test_frequency: 'Weekly',
         seasonal_windows: ['Foundation', 'Revision', 'Intensive'],
         catch_up_day_preference: 'Sunday',
-        upsc_optional_subject: 'OPT-AGR'
+        upsc_optional_subject: 'OPT-SOC'
       },
       target_year: targetYear,
       start_date: startDate

@@ -10,7 +10,7 @@ describe('GS:Optional Ratio Integration Tests', () => {
   let mockIntake: any;
 
   beforeEach(async () => {
-    subjects = await loadAllSubjects();
+    subjects = await loadAllSubjects('OPT-SOC'); // Include Sociology as optional subject
     
     // Create a mock intake with balanced approach
     mockIntake = createStudentIntake({
