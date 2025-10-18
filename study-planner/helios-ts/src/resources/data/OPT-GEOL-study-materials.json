@@ -1,0 +1,33 @@
+[
+  {
+    "subjectCode": "OPT-GEOL",
+    "basics": [
+      "NCERT XI Geography - Physical Geography (Geomorphology)",
+      "Physical Geology - Plummer and McGeary",
+      "Mineralogy - Klein and Hurlbut",
+      "Petrology - Best"
+    ],
+    "textbooks": [
+      "Structural Geology - Billings",
+      "Stratigraphy and Sedimentation - Krumbein",
+      "Economic Geology - Evans",
+      "Hydrogeology - Freeze and Cherry",
+      "Engineering Geology - Bell"
+    ],
+    "value_addition": [
+      "Geological Survey of India Reports",
+      "Ministry of Mines Reports",
+      "Journal of Geological Society of India",
+      "Current Science - Earth Sciences",
+      "Mineral Information Centre Reports",
+      "National Mineral Policy Updates"
+    ],
+    "rapid_revision_practice": [
+      "Geology Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Geological Map Reading"
+    ]
+  }
+]

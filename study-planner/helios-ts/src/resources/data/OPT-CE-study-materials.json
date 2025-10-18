@@ -1,0 +1,33 @@
+[
+  {
+    "subjectCode": "OPT-CE",
+    "basics": [
+      "Engineering Mechanics - S.S. Bhavikatti",
+      "Strength of Materials - R.K. Bansal",
+      "Fluid Mechanics - R.K. Bansal",
+      "Basic Civil Engineering - Satheesh Gopi"
+    ],
+    "textbooks": [
+      "Structural Analysis - C.S. Reddy",
+      "Design of Concrete Structures - Nilson",
+      "Geotechnical Engineering - Braja M. Das",
+      "Water Resources Engineering - Linsley",
+      "Transportation Engineering - Khanna and Justo"
+    ],
+    "value_addition": [
+      "Indian Roads Congress Reports",
+      "Ministry of Road Transport Reports",
+      "Central Water Commission Reports",
+      "Bureau of Indian Standards Codes",
+      "Infrastructure Development Reports",
+      "Smart Cities Mission Updates"
+    ],
+    "rapid_revision_practice": [
+      "Civil Engineering Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Engineering Drawing Practice"
+    ]
+  }
+]
