@@ -14,5 +14,6 @@ export { DocumentService } from './services/DocumentService';
 export { HighFidelityPDFService } from './services/HighFidelityPDFService';
 export { CalendarDocxService } from './services/CalendarDocxService';
 export { TemplateCalendarDocxService } from './services/TemplateCalendarDocxService';
+export { WordTemplateCalendarDocxService } from './services/WordTemplateCalendarDocxService';
 
 
