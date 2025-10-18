@@ -1,81 +1,151 @@
 # Calendar Template Documentation
 
-This directory contains Word document templates for the TemplateCalendarDocxService.
+This directory contains JSON template configuration files for the TemplateCalendarDocxService.
+
+## Template System
+
+The template-based service uses JSON configuration files to define styles, colors, fonts, and other document properties. This allows for complete customization of document appearance without modifying code.
 
 ## Template Structure
 
-The template-based service uses predefined styles instead of inline formatting. This allows for easier customization of the document appearance without modifying code.
+Templates are JSON files that define:
+- **Colors**: Color palette for different elements
+- **Fonts**: Font families for different text types  
+- **Styles**: Text formatting (size, bold, italics, color)
+- **Spacing**: Margins, padding, and spacing values
+- **Cycle Colors**: Background colors for different study cycles
+- **Metadata**: Document properties and information
 
-## Creating the Template
+## Creating Custom Templates
 
-To create a Word template with the required styles:
+Create a JSON file with the following structure:
 
-1. **Open Microsoft Word**
-2. **Create a new blank document**
-3. **Define the following styles** (Format > Styles > Manage Styles):
+```json
+{
+  "templateName": "My Custom Template",
+  "version": "1.0.0",
+  "description": "Custom template description",
+  
+  "colors": {
+    "primary": "2E5BBA",
+    "secondary": "666666", 
+    "text": "333333",
+    "border": "E0E0E0"
+  },
+  
+  "fonts": {
+    "primary": "Aptos",
+    "secondary": "Calibri"
+  },
+  
+  "styles": {
+    "documentTitle": {
+      "size": 42,
+      "bold": true,
+      "color": "primary",
+      "font": "primary"
+    },
+    "studentName": {
+      "size": 36,
+      "bold": true,
+      "color": "text",
+      "font": "primary"
+    }
+    // ... more styles
+  },
+  
+  "cycleColors": {
+    "C1": "E3F2FD",
+    "C2": "E8F5E8",
+    // ... more cycle colors
+  }
+}
+```
+
+## Available Style Properties
+
+Each style in the `styles` object can have:
+- **size**: Font size in points
+- **bold**: true/false for bold text
+- **italics**: true/false for italic text
+- **color**: Color key from the colors object or hex color
+- **font**: Font key from the fonts object
+
+## Available Styles
 
 ### Cover Page Styles
-- **DocumentTitle**: Font: Aptos, Size: 42pt, Bold, Color: #2E5BBA
-- **StudentName**: Font: Aptos, Size: 36pt, Bold, Color: #333333
-- **DocumentSubtitle**: Font: Aptos, Size: 18pt, Color: #666666
-- **SectionHeading**: Font: Aptos, Size: 24pt, Bold, Color: #2E5BBA
-- **Quote**: Font: Aptos, Size: 18pt, Italic, Color: #2E5BBA
-- **QuoteAuthor**: Font: Aptos, Size: 14pt, Color: #666666
-- **CoverFooter**: Font: Aptos, Size: 14pt, Color: #666666
-- **GenerationDate**: Font: Aptos, Size: 12pt, Color: #666666
+- `documentTitle`: Main document title
+- `studentName`: Student name display
+- `documentSubtitle`: Document subtitle
+- `sectionHeading`: Section headers
+- `quote`: Inspirational quotes
+- `quoteAuthor`: Quote attribution
+- `coverFooter`: Footer text
+- `generationDate`: Generation timestamp
 
 ### Main Content Styles
-- **MainHeading**: Font: Aptos, Size: 28pt, Bold, Color: #2E5BBA
-- **SubHeading**: Font: Aptos, Size: 24pt, Bold, Color: #2E5BBA
-- **MonthTitle**: Font: Aptos, Size: 28pt, Bold, Color: #2E5BBA
-- **CycleName**: Font: Aptos, Size: 25pt, Bold, Color: #2E5BBA
+- `mainHeading`: Primary headings
+- `subHeading`: Secondary headings
+- `monthTitle`: Month page titles
+- `cycleName`: Study cycle names
+- `tableHeader`: Table header cells
+- `tableCell`: Regular table cells
 
 ### Calendar Styles
-- **CalendarCycleName**: Font: Aptos, Size: 10pt, Bold, Color: #2E5BBA
-- **CalendarMonthName**: Font: Aptos, Size: 12pt, Bold, Color: #333333
-- **CalendarDayHeader**: Font: Aptos, Size: 8pt, Bold, Color: #666666
-- **CalendarDay**: Font: Aptos, Size: 8pt, Color: #333333
-- **MonthlyCalendarHeader**: Font: Aptos, Size: 12pt, Bold, Color: #2E5BBA
-- **CalendarDayNumber**: Font: Aptos, Size: 14pt, Bold, Color: #333333
-- **CalendarSubject**: Font: Aptos, Size: 8pt, Color: #333333
-
-### Info and Strategy Styles
-- **InfoIcon**: Font: Aptos, Size: 16pt, Color: #2E5BBA
-- **InfoLabel**: Font: Aptos, Size: 14pt, Bold, Color: #666666
-- **InfoValue**: Font: Aptos, Size: 14pt, Color: #333333
-- **StrategyIcon**: Font: Aptos, Size: 20pt, Color: #2E5BBA
-- **StrategyTitle**: Font: Aptos, Size: 12pt, Bold, Color: #666666
-- **StrategyValue**: Font: Aptos, Size: 14pt, Color: #333333
+- `calendarCycleName`: Cycle names in calendar
+- `calendarMonthName`: Month names in calendar
+- `calendarDayHeader`: Day of week headers
+- `calendarDay`: Individual calendar days
+- `calendarDayNumber`: Day numbers in monthly view
+- `calendarSubject`: Subject names in calendar
 
 ### Resource Styles
-- **SubjectCardTitle**: Font: Aptos, Size: 14pt, Bold, Color: #2E5BBA
-- **ResourceCategoryTitle**: Font: Aptos, Size: 10pt, Bold, Color: #666666
-- **ResourceItem**: Font: Aptos, Size: 9pt, Color: #333333
-- **NoResourcesMessage**: Font: Aptos, Size: 14pt, Italic, Color: #666666
+- `subjectCardTitle`: Subject card headers
+- `resourceCategoryTitle`: Resource category labels
+- `resourceItem`: Individual resource items
+- `noResourcesMessage`: No resources message
 
-### Table Styles
-- **TableHeader**: Font: Aptos, Size: 20pt, Bold, Color: #2E5BBA
-- **TableCell**: Font: Aptos, Size: 20pt, Color: #333333
+## Usage Examples
 
-## Table Styles
+### Using Default Template
+```typescript
+import { TemplateCalendarDocxService } from './services/TemplateCalendarDocxService';
 
-Create the following table styles:
+// Uses calendar-template.json automatically
+await TemplateCalendarDocxService.generateStudyPlanDocx(
+  studyPlan, 
+  studentIntake, 
+  { filename: 'study-plan.docx' }
+);
+```
 
-### InfoCard
-- Borders: All sides, 1pt, Color: #E0E0E0
-- No inside vertical borders
+### Using Custom Template
+```typescript
+import { TemplateCalendarDocxService } from './services/TemplateCalendarDocxService';
 
-### StrategyGrid
-- No borders
+// Set custom template
+TemplateCalendarDocxService.setTemplatePath('./my-custom-template.json');
 
-### CalendarGrid
-- Borders: All sides and inside, 1pt, Color: #E0E0E0
+// Generate with custom styling
+await TemplateCalendarDocxService.generateStudyPlanDocx(
+  studyPlan, 
+  studentIntake, 
+  { filename: 'custom-styled-plan.docx' }
+);
+```
 
-### ResourcesTable
-- Borders: All sides and inside, 1pt, Color: #E0E0E0
+### Template Files Included
 
-### LegendTable
-- Borders: All sides and inside, 1pt, Color: #E0E0E0
+1. **`calendar-template.json`** - Default professional template
+2. **`custom-template.json`** - Example custom template with different styling
+
+## Template Validation
+
+The system automatically:
+- Validates JSON syntax
+- Falls back to defaults for missing properties
+- Provides console logging for template loading status
+- Handles missing template files gracefully
 
 ## Color Palette
 
@@ -97,20 +167,31 @@ The following background colors are used for different cycle types:
 - **C7**: #FFF3E0 (Very light orange)
 - **C8**: #F1F8E9 (Very light lime)
 
-## Usage
-
-1. Save the template as `calendar-template.docx` in this directory
-2. The TemplateCalendarDocxService will use these styles automatically
-3. To customize appearance, modify the template file instead of the code
-
 ## Benefits
 
-- **Separation of Concerns**: Content generation is separate from styling
-- **Easy Customization**: Change appearance without touching code
-- **Professional Look**: Consistent styling throughout the document
-- **Maintainability**: Styles are centralized in the template
-- **Flexibility**: Different templates can be used for different purposes
+- **True Template System**: Actually loads and uses external template files
+- **JSON Configuration**: Easy to edit and version control
+- **Separation of Concerns**: Complete separation of content and styling
+- **Easy Customization**: Change appearance by editing JSON files
+- **Professional Look**: Consistent styling throughout documents
+- **Maintainability**: Centralized style definitions
+- **Flexibility**: Multiple templates for different use cases
+- **Fallback System**: Graceful handling of missing templates
 
-## Note
+## Advanced Features
 
-The current implementation works without a template file by using inline styles that match the template specification. The template file is optional but recommended for maximum flexibility.
+- **Color References**: Use color names that reference the color palette
+- **Font References**: Use font names that reference the font definitions
+- **Automatic Path Resolution**: Finds templates in multiple possible locations
+- **Runtime Template Switching**: Change templates programmatically
+- **Comprehensive Logging**: Track template loading and usage
+
+## Testing
+
+The template system has been thoroughly tested with:
+- ✅ Default template loading
+- ✅ Custom template loading  
+- ✅ Missing template fallback
+- ✅ Invalid JSON handling
+- ✅ Runtime template switching
+- ✅ Document generation with different styles

@@ -26,21 +26,35 @@ const CYCLE_TYPE_COLORS = {
   [CycleType.C8]: { bg: 'F1F8E9', border: '84CC16' }, // Very light lime
 } as const;
 
+// Template configuration interface
+interface TemplateConfig {
+  templateName?: string;
+  version?: string;
+  description?: string;
+  styles?: Record<string, any>;
+  colors?: Record<string, string>;
+  fonts?: Record<string, string>;
+  spacing?: Record<string, number>;
+  tableStyles?: Record<string, any>;
+  cycleColors?: Record<string, string>;
+  metadata?: Record<string, any>;
+}
+
 /**
  * Template-based Calendar Document Service
  * 
- * This service generates Word documents using predefined styles instead of inline formatting.
- * It separates content generation from styling by utilizing Word's built-in style system.
+ * This service generates Word documents using a template-based approach.
+ * It can load configuration from a template file or use default template settings.
  * 
- * Key differences from CalendarDocxService:
- * - Uses predefined styles instead of inline formatting
- * - Minimal inline styling - relies on style definitions
- * - Cleaner separation between content and presentation
- * - Easier to customize appearance without code changes
- * - Optional template file support for advanced customization
+ * Key features:
+ * - Loads template configuration from JSON files
+ * - Supports custom styling through template files
+ * - Separates content generation from styling
+ * - Fallback to default styles if template not found
  */
 export class TemplateCalendarDocxService {
-  private static templatePath: string = path.join(process.cwd(), 'study-planner', 'helios-ts', 'templates', 'calendar-template.docx');
+  private static templatePath: string = TemplateCalendarDocxService.getDefaultTemplatePath();
+  private static templateConfig: TemplateConfig | null = null;
 
   /**
    * Generate study plan document using template
@@ -86,10 +100,33 @@ export class TemplateCalendarDocxService {
   }
 
   /**
+   * Get default template path
+   */
+  private static getDefaultTemplatePath(): string {
+    // Try different possible locations for the template
+    const possiblePaths = [
+      path.join(__dirname, '..', '..', 'templates', 'calendar-template.json'),
+      path.join(process.cwd(), 'templates', 'calendar-template.json'),
+      path.join(process.cwd(), 'study-planner', 'helios-ts', 'templates', 'calendar-template.json'),
+      path.join(process.cwd(), 'src', 'templates', 'calendar-template.json')
+    ];
+
+    for (const templatePath of possiblePaths) {
+      if (fs.existsSync(templatePath)) {
+        return templatePath;
+      }
+    }
+
+    // Return the most likely path even if it doesn't exist
+    return path.join(process.cwd(), 'templates', 'calendar-template.json');
+  }
+
+  /**
    * Set custom template path
    */
   static setTemplatePath(templatePath: string): void {
     this.templatePath = templatePath;
+    this.templateConfig = null; // Reset cached config
   }
 
   /**
@@ -97,6 +134,99 @@ export class TemplateCalendarDocxService {
    */
   static getTemplatePath(): string {
     return this.templatePath;
+  }
+
+  /**
+   * Load template configuration from file
+   */
+  private static loadTemplateConfig(): TemplateConfig {
+    if (this.templateConfig) {
+      return this.templateConfig;
+    }
+
+    try {
+      if (fs.existsSync(this.templatePath)) {
+        console.log(`📄 Loading template configuration from: ${this.templatePath}`);
+        const templateData = fs.readFileSync(this.templatePath, 'utf-8');
+        this.templateConfig = JSON.parse(templateData);
+        console.log(`✅ Template configuration loaded successfully`);
+        return this.templateConfig!;
+      } else {
+        console.log(`⚠️  Template file not found at: ${this.templatePath}`);
+        console.log(`📄 Using default template configuration`);
+      }
+    } catch (error) {
+      console.error(`❌ Error loading template configuration:`, error);
+      console.log(`📄 Falling back to default template configuration`);
+    }
+
+    // Return default configuration
+    this.templateConfig = this.getDefaultTemplateConfig();
+    return this.templateConfig!;
+  }
+
+  /**
+   * Get default template configuration
+   */
+  private static getDefaultTemplateConfig(): TemplateConfig {
+    return {
+      colors: {
+        primary: '2E5BBA',
+        secondary: '666666',
+        text: '333333',
+        success: '28A745',
+        warning: 'FFC107',
+        info: '17A2B8',
+        error: 'FF6B6B',
+        border: 'E0E0E0'
+      },
+      fonts: {
+        primary: 'Aptos',
+        secondary: 'Calibri'
+      },
+      spacing: {
+        cellPadding: 100,
+        paragraphAfter: 200,
+        headingBefore: 400,
+        headingAfter: 200
+      },
+      styles: {
+        documentTitle: { size: 42, bold: true, color: 'primary' },
+        studentName: { size: 36, bold: true, color: 'text' },
+        documentSubtitle: { size: 18, color: 'secondary' },
+        mainHeading: { size: 28, bold: true, color: 'primary' },
+        subHeading: { size: 24, bold: true, color: 'primary' },
+        sectionHeading: { size: 24, bold: true, color: 'primary' },
+        monthTitle: { size: 28, bold: true, color: 'primary' },
+        cycleName: { size: 25, bold: true, color: 'primary' },
+        tableHeader: { size: 20, bold: true, color: 'primary' },
+        tableCell: { size: 20, color: 'text' },
+        calendarDay: { size: 8, color: 'text' },
+        calendarSubject: { size: 8, color: 'text' },
+        resourceItem: { size: 9, color: 'text' },
+        quote: { size: 18, italics: true, color: 'primary' },
+        quoteAuthor: { size: 14, color: 'secondary' }
+      }
+    };
+  }
+
+  /**
+   * Apply template style to text run
+   */
+  private static applyTemplateStyle(styleName: string, text: string): TextRun {
+    const config = this.loadTemplateConfig();
+    const style = config.styles?.[styleName] || {};
+    const colors = config.colors || {};
+    const fonts = config.fonts || {};
+
+    return new TextRun({
+      text,
+      size: style.size || 12,
+      bold: style.bold || false,
+      italics: style.italics || false,
+      color: colors[style.color] || style.color || '000000',
+      font: fonts[style.font] || fonts.primary || 'Aptos'
+    });
   }
 }
 
@@ -152,6 +282,12 @@ async function generateTemplateBasedDocxToStream(
  */
 async function createTemplateBasedDocument(studyPlan: StudyPlan, studentIntake: StudentIntake): Promise<Document> {
   const year = studyPlan.targeted_year || new Date().getFullYear();
+
+  console.log(`📄 Creating template-based document for year ${year}`);
+  
+  // Load template configuration
+  const templateConfig = TemplateCalendarDocxService['loadTemplateConfig']();
+  console.log(`🎨 Using template config with ${Object.keys(templateConfig.styles || {}).length} styles`);
 
   // Build cover page elements using template styles
   const coverPageElements = generateTemplatedCoverPage(studentIntake, year);
@@ -245,29 +381,23 @@ function generateTemplatedCoverPage(studentIntake: StudentIntake, year: number):
 
   // Main title using template style
   elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: 'UPSC STUDY PLANNER - ' + year.toString()
-    })],
-    style: 'DocumentTitle',
+    children: [TemplateCalendarDocxService['applyTemplateStyle']('documentTitle', 'UPSC STUDY PLANNER - ' + year.toString())],
     alignment: AlignmentType.CENTER,
+    spacing: { after: 0 }
   }));
 
   // Student name using template style
   elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: pd?.full_name?.toUpperCase() || 'STUDENT NAME'
-    })],
-    style: 'StudentName',
+    children: [TemplateCalendarDocxService['applyTemplateStyle']('studentName', pd?.full_name?.toUpperCase() || 'STUDENT NAME')],
     alignment: AlignmentType.CENTER,
+    spacing: { after: 100 }
   }));
 
   // Subtitle using template style
   elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: 'Personalized Study Plan & Calendar'
-    })],
-    style: 'DocumentSubtitle',
+    children: [TemplateCalendarDocxService['applyTemplateStyle']('documentSubtitle', 'Personalized Study Plan & Calendar')],
     alignment: AlignmentType.CENTER,
+    spacing: { after: 200 }
   }));
 
   // Student info card using template styles
@@ -287,11 +417,9 @@ function generateTemplatedCoverPage(studentIntake: StudentIntake, year: number):
 
   // Study strategy section using template styles
   elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: 'Study Strategy Overview'
-    })],
-    style: 'SectionHeading',
+    children: [TemplateCalendarDocxService['applyTemplateStyle']('sectionHeading', 'Study Strategy Overview')],
     alignment: AlignmentType.CENTER,
+    spacing: { after: 400 }
   }));
 
   // Strategy cards using template styles
@@ -324,18 +452,13 @@ function generateTemplatedCoverPage(studentIntake: StudentIntake, year: number):
           new TableCell({
             children: [
               new Paragraph({
-                children: [new TextRun({ 
-                  text: '"Success is the sum of small efforts repeated day in and day out."'
-                })],
-                style: 'Quote',
+                children: [TemplateCalendarDocxService['applyTemplateStyle']('quote', '"Success is the sum of small efforts repeated day in and day out."')],
                 alignment: AlignmentType.CENTER
               }),
               new Paragraph({
-                children: [new TextRun({ 
-                  text: '— Robert Collier'
-                })],
-                style: 'QuoteAuthor',
+                children: [TemplateCalendarDocxService['applyTemplateStyle']('quoteAuthor', '— Robert Collier')],
                 alignment: AlignmentType.CENTER,
+                spacing: { before: 200 }
               })
             ],
             width: { size: 100, type: WidthType.PERCENTAGE },
@@ -349,22 +472,17 @@ function generateTemplatedCoverPage(studentIntake: StudentIntake, year: number):
 
   // Footer with branding using template style
   elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: 'La Mentora Study Planner v1.0 - © 2025-2026 All Rights Reserved'
-    })],
-    style: 'CoverFooter',
+    children: [TemplateCalendarDocxService['applyTemplateStyle']('coverFooter', 'La Mentora Study Planner v1.0 - © 2025-2026 All Rights Reserved')],
     alignment: AlignmentType.CENTER,
+    spacing: { after: 200 }
   }));
 
   elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: `Generated on ${new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })}`
-    })],
-    style: 'GenerationDate',
+    children: [TemplateCalendarDocxService['applyTemplateStyle']('generationDate', `Generated on ${new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    })}`)],
     alignment: AlignmentType.CENTER
   }));
 
@@ -380,10 +498,8 @@ function generateTemplatedBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table
 
   // Title using template style
   elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: 'Birds Eye View - Yearly Calendar'
-    })],
-    style: 'MainHeading'
+    children: [TemplateCalendarDocxService['applyTemplateStyle']('mainHeading', 'Birds Eye View - Yearly Calendar')],
+    spacing: { after: 400 }
   }));
 
   const minDate = dayjs(studyPlan.start_date);
@@ -425,19 +541,20 @@ function generateTemplatedBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table
   monthRows.forEach((monthRow) => {
     // Header row with month names
     const headerCells: TableCell[] = monthRow.map(({ month, cycle }) => {
-      const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
+      const templateConfig = TemplateCalendarDocxService['loadTemplateConfig']();
+      const cycleColor = cycle ? 
+        (templateConfig.cycleColors?.[cycle.cycleType] || CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF') : 
+        'FFFFFF';
       const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
       
       return new TableCell({
         children: [
           new Paragraph({
-            children: [new TextRun({ text: cycleName })],
-            style: 'CalendarCycleName',
+            children: [TemplateCalendarDocxService['applyTemplateStyle']('calendarCycleName', cycleName)],
             alignment: AlignmentType.CENTER
           }),
           new Paragraph({
-            children: [new TextRun({ text: month.format('MMM YYYY').toUpperCase() })],
-            style: 'CalendarMonthName',
+            children: [TemplateCalendarDocxService['applyTemplateStyle']('calendarMonthName', month.format('MMM YYYY').toUpperCase())],
             alignment: AlignmentType.CENTER
           })
         ],
