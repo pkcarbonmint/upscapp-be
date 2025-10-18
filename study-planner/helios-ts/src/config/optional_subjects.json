@@ -1,0 +1,476 @@
+{
+    "domain": {
+        "name": "UPSC_Optional_Subjects",
+        "version": "2024.1",
+        "last_updated": "2024-12-20",
+        "source_authority": "UPSC Official Notification",
+        "description": "Complete list of optional subjects available for UPSC Civil Services Mains Examination"
+    },
+    "subjects": [
+        {
+            "code": "OPT-AGR",
+            "name": "Agriculture",
+            "category": "Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        },
+        {
+            "code": "OPT-AHV",
+            "name": "Animal Husbandry and Veterinary Science",
+            "category": "Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-ANT",
+            "name": "Anthropology",
+            "category": "Social Science",
+            "baseline_hours": 180,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-BOT",
+            "name": "Botany",
+            "category": "Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-CHE",
+            "name": "Chemistry",
+            "category": "Science",
+            "baseline_hours": 200,
+            "difficulty_level": "High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-CE",
+            "name": "Civil Engineering",
+            "category": "Engineering",
+            "baseline_hours": 220,
+            "difficulty_level": "High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-COM",
+            "name": "Commerce and Accountancy",
+            "category": "Commerce",
+            "baseline_hours": 180,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        },
+        {
+            "code": "OPT-ECO",
+            "name": "Economics",
+            "category": "Social Science",
+            "baseline_hours": 200,
+            "difficulty_level": "High",
+            "popularity": "Very High"
+        },
+        {
+            "code": "OPT-EE",
+            "name": "Electrical Engineering",
+            "category": "Engineering",
+            "baseline_hours": 220,
+            "difficulty_level": "High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-GEO",
+            "name": "Geography",
+            "category": "Social Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "Very High"
+        },
+        {
+            "code": "OPT-GEO",
+            "name": "Geology",
+            "category": "Science",
+            "baseline_hours": 200,
+            "difficulty_level": "High",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-HIS",
+            "name": "History",
+            "category": "Social Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "Very High"
+        },
+        {
+            "code": "OPT-LAW",
+            "name": "Law",
+            "category": "Social Science",
+            "baseline_hours": 180,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        },
+        {
+            "code": "OPT-MGT",
+            "name": "Management",
+            "category": "Commerce",
+            "baseline_hours": 180,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        },
+        {
+            "code": "OPT-MAT",
+            "name": "Mathematics",
+            "category": "Science",
+            "baseline_hours": 220,
+            "difficulty_level": "Very High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-ME",
+            "name": "Mechanical Engineering",
+            "category": "Engineering",
+            "baseline_hours": 220,
+            "difficulty_level": "High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-MED",
+            "name": "Medical Science",
+            "category": "Science",
+            "baseline_hours": 200,
+            "difficulty_level": "High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-PHI",
+            "name": "Philosophy",
+            "category": "Social Science",
+            "baseline_hours": 180,
+            "difficulty_level": "High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-PHY",
+            "name": "Physics",
+            "category": "Science",
+            "baseline_hours": 220,
+            "difficulty_level": "Very High",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-PSIR",
+            "name": "Political Science and International Relations",
+            "category": "Social Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "Very High"
+        },
+        {
+            "code": "OPT-PSY",
+            "name": "Psychology",
+            "category": "Social Science",
+            "baseline_hours": 180,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        },
+        {
+            "code": "OPT-PA",
+            "name": "Public Administration",
+            "category": "Social Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "Very High"
+        },
+        {
+            "code": "OPT-SOC",
+            "name": "Sociology",
+            "category": "Social Science",
+            "baseline_hours": 180,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        },
+        {
+            "code": "OPT-STA",
+            "name": "Statistics",
+            "category": "Science",
+            "baseline_hours": 220,
+            "difficulty_level": "High",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-ZOO",
+            "name": "Zoology",
+            "category": "Science",
+            "baseline_hours": 200,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-ASM",
+            "name": "Assamese Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-BEN",
+            "name": "Bengali Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-BOD",
+            "name": "Bodo Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-DOG",
+            "name": "Dogri Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-GUJ",
+            "name": "Gujarati Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-HIN",
+            "name": "Hindi Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        },
+        {
+            "code": "OPT-KAN",
+            "name": "Kannada Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-KAS",
+            "name": "Kashmiri Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-KON",
+            "name": "Konkani Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-MAI",
+            "name": "Maithili Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-MAL",
+            "name": "Malayalam Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-MAN",
+            "name": "Manipuri Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-MAR",
+            "name": "Marathi Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-NEP",
+            "name": "Nepali Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-ODI",
+            "name": "Odia Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-PUN",
+            "name": "Punjabi Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-SAN",
+            "name": "Sanskrit Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "High",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-SAN",
+            "name": "Santhali Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-SIN",
+            "name": "Sindhi Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Low"
+        },
+        {
+            "code": "OPT-TAM",
+            "name": "Tamil Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-TEL",
+            "name": "Telugu Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-URD",
+            "name": "Urdu Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "Medium"
+        },
+        {
+            "code": "OPT-ENG",
+            "name": "English Literature",
+            "category": "Literature",
+            "baseline_hours": 150,
+            "difficulty_level": "Medium",
+            "popularity": "High"
+        }
+    ],
+    "statistics": {
+        "total_subjects": 48,
+        "core_subjects_count": 25,
+        "literature_subjects_count": 23,
+        "most_popular_subjects": [
+            "Geography",
+            "History",
+            "Political Science and International Relations",
+            "Public Administration",
+            "Economics"
+        ],
+        "highest_scoring_subjects": [
+            "Geography",
+            "Public Administration",
+            "Political Science and International Relations",
+            "Sociology",
+            "Psychology"
+        ],
+        "difficulty_levels": {
+            "very_high": [
+                "Mathematics",
+                "Physics"
+            ],
+            "high": [
+                "Chemistry",
+                "Civil Engineering",
+                "Electrical Engineering",
+                "Mechanical Engineering",
+                "Medical Science",
+                "Philosophy",
+                "Statistics",
+                "Sanskrit Literature"
+            ],
+            "medium": [
+                "All other subjects"
+            ],
+            "low": []
+        }
+    },
+    "selection_criteria": {
+        "factors": [
+            "Academic background",
+            "Interest and aptitude",
+            "Availability of study material",
+            "Scoring potential",
+            "Overlap with General Studies",
+            "Time availability for preparation"
+        ],
+        "recommendations": {
+            "for_science_background": [
+                "Mathematics",
+                "Physics",
+                "Chemistry",
+                "Botany",
+                "Zoology"
+            ],
+            "for_engineering_background": [
+                "Civil Engineering",
+                "Electrical Engineering",
+                "Mechanical Engineering"
+            ],
+            "for_commerce_background": [
+                "Commerce and Accountancy",
+                "Economics",
+                "Management"
+            ],
+            "for_arts_background": [
+                "History",
+                "Geography",
+                "Political Science and International Relations",
+                "Public Administration",
+                "Sociology",
+                "Psychology"
+            ],
+            "for_literature_background": [
+                "Hindi Literature",
+                "English Literature",
+                "Sanskrit Literature"
+            ]
+        }
+    }
+}

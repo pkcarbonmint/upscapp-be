@@ -40,11 +40,32 @@ class ResourceLoader {
   static async loadStudyMaterials(subjectCode: string): Promise<StudyMaterial[]> {
     await this.init();
     
+    // Handle optional subjects with dynamic imports
+    if (subjectCode.startsWith('OPT-')) {
+      return await this.loadOptionalSubjectMaterials(subjectCode);
+    }
+    
     if (!this.studyMaterialsCache) {
       return [];
     }
     
     return this.studyMaterialsCache.filter(material => material.subjectCode === subjectCode);
+  }
+
+  /**
+   * Load study materials for optional subjects using dynamic imports
+   */
+  private static async loadOptionalSubjectMaterials(subjectCode: string): Promise<StudyMaterial[]> {
+    try {
+      // Dynamic import of optional subject study materials
+      const materialsModule = await import(`./data/${subjectCode}-study-materials.json`);
+      return materialsModule.default as StudyMaterial[];
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`Failed to load study materials for ${subjectCode}:`, error);
+      }
+      return [];
+    }
   }
 
   /**
@@ -112,13 +133,32 @@ class ResourceLoader {
     const allSubjects = await loadAllSubjects();
     const subject = allSubjects.find(s => s.subjectCode === subjectCode);
     
+    // For optional subjects, extract name from subjectCode if not found in allSubjects
+    let subjectName = subject?.subjectName || subjectCode;
+    if (subjectCode.startsWith('OPT-') && !subject) {
+      // Extract subject name from code (e.g., OPT-SOC -> Sociology)
+      const codeMap: Record<string, string> = {
+        'OPT-SOC': 'Sociology',
+        'OPT-HIS': 'History',
+        'OPT-GEO': 'Geography',
+        'OPT-POL': 'Political Science',
+        'OPT-PUB': 'Public Administration',
+        'OPT-ECO': 'Economics',
+        'OPT-PSY': 'Psychology',
+        'OPT-AGR': 'Agriculture',
+        'OPT-ANT': 'Anthropology',
+        'OPT-PHI': 'Philosophy'
+      };
+      subjectName = codeMap[subjectCode] || subjectCode;
+    }
+    
     // Get subject info
     const subjectInfo = {
       code: subjectCode,
-      name: subject?.subjectName || subjectCode,
-      category: subject?.category || 'Macro',
-      exam_focus: subject?.examFocus || 'BothExams',
-      has_current_affairs: subject?.hasCurrentAffairs || false,
+      name: subjectName,
+      category: subject?.category || (subjectCode.startsWith('OPT-') ? 'Optional' : 'Macro'),
+      exam_focus: subject?.examFocus || (subjectCode.startsWith('OPT-') ? 'Mains' : 'BothExams'),
+      has_current_affairs: subject?.hasCurrentAffairs || true,
       baseline_hours: subject?.baselineHours || 50,
       resource_count: studyMaterials.length
     };

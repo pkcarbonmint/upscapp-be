@@ -99,7 +99,8 @@ describe('T1-T15 Scenarios: Cycle Generation and Date Validation', () => {
         revision_strategy: 'Weekly',
         test_frequency: 'Weekly',
         seasonal_windows: ['Foundation', 'Revision', 'Intensive'],
-        catch_up_day_preference: 'Sunday'
+        catch_up_day_preference: 'Sunday',
+        upsc_optional_subject: 'OPT-SOC'
       },
       target_year: targetYear,
       start_date: startDate

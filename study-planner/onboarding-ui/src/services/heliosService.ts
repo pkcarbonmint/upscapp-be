@@ -1,6 +1,7 @@
 // Service for integrating with helios-ts library
 import type { ConfidenceLevel, StudentIntake, StudyPlan, Config } from 'helios-ts';
 import { createStudentIntake } from 'helios-ts';
+import type { IntakeWizardFormData } from '../types';
 
 // Dynamic imports for heavy helios-ts functions to reduce initial bundle size
 async function loadHeliosPlanGenerator() {
@@ -12,10 +13,11 @@ async function loadSubjects() {
   const { loadAllSubjects } = await import('helios-ts');
   return loadAllSubjects();
 }
-// Import selectBestArchetype directly from the local helios-ts package
-// Since it's not exported from the main index, we'll implement a simple archetype selection
 
-import type { IntakeWizardFormData } from '../types';
+async function loadOptionalSubjects() {
+  const { getAllOptionalSubjects } = await import('helios-ts');
+  return getAllOptionalSubjects();
+}
 
 const getConfig = (): Config => ({
   block_duration_clamp: {
@@ -127,7 +129,8 @@ export async function transformToStudentIntake(formData: IntakeWizardFormData): 
     revision_strategy: 'weekly',
     test_frequency: 'monthly',
     seasonal_windows: ['morning', 'evening'],
-    catch_up_day_preference: 'sunday'
+    catch_up_day_preference: 'sunday',
+    upsc_optional_subject: commitment.upscOptionalSubject
   };
 
   // Create student intake with all required fields
@@ -236,3 +239,6 @@ export async function getPreviewData(formData: IntakeWizardFormData): Promise<{
     preview: previewData
   };
 }
+
+// Export the loadOptionalSubjects function
+export { loadOptionalSubjects };

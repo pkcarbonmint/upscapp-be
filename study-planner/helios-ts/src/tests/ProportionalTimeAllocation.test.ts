@@ -77,7 +77,8 @@ describe('Proportional Time Allocation Verification', () => {
         revision_strategy: 'Weekly',
         test_frequency: 'Monthly',
         seasonal_windows: ['Foundation', 'Revision'],
-        catch_up_day_preference: 'Sunday'
+        catch_up_day_preference: 'Sunday',
+        upsc_optional_subject: 'OPT-SOC'
       },
       subject_approach: 'SingleSubject'
     });

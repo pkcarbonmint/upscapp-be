@@ -91,7 +91,7 @@ export type PrioritizedItem = {
 export type ConfidenceMap = Map<SubjectCode, ConfidenceLevelNumber>;
 
 // Study approach options
-export type StudyApproach = 'SingleSubject' | 'DualSubject' | 'TripleSubject';
+export type StudyApproach = 'SingleSubject' | 'DualSubject' | 'TripleSubject' | 'WeakFirst' | 'StrongFirst' | 'Balanced';
 
 // Cycle types (copied from your existing types)
 export enum CycleType {

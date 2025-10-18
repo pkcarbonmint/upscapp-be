@@ -6,10 +6,11 @@ import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
 import { loadAllSubjects, loadSubtopics } from '../services/SubjectLoader';
 import { ResourceService } from '../services/ResourceService';
-import { SubjData } from '../types/Subjects';
+import { SubjData, Subject } from '../types/Subjects';
 import { PlanResources, ResourceTimeline, BudgetSummary } from '../types/models';
 import { determineCycleSchedule } from './cycle-scheduler';
 import { createStudyCycle } from './cycle-creator';
+import { getOptionalSubjectByCode } from '../config';
 
 const makeCycleCreator = (cycleType: CycleType) => function PlanCycle(
   logger: Logger,
@@ -56,20 +57,7 @@ function getPlannerForCycleType(cycleType: CycleType, logger: Logger) {
  * Algorithm:
  *   1. 
  */
-export async function generateInitialPlan(
-  userId: string,
-  _config: Config,
-  _archetypeDetails: Archetype,
-  intake: StudentIntake,
-  logger0?: Logger
-): Promise<{ plan: StudyPlan; logs: LogEntry[] }> {
-  const logs: LogEntry[] = [];
-  const logger = logger0 || makeLogger(logs);
-  const { logInfo: info, } = logger;
-
-  info('Engine', `Starting initial plan generation. User: ${userId}`);
-
-  /**
+ /**
    * Other rules:
    * 
    *  - Optional subject is studied only before target year. E.g. if preparing for 2026,
@@ -109,11 +97,27 @@ export async function generateInitialPlan(
    *    enough time for the rest of the subtopics.
    * 
    */
+  export async function generateInitialPlan(
+  userId: string,
+  _config: Config,
+  _archetypeDetails: Archetype,
+  intake: StudentIntake,
+  logger0?: Logger
+): Promise<{ plan: StudyPlan; logs: LogEntry[] }> {
+  const logs: LogEntry[] = [];
+  const logger = logger0 || makeLogger(logs);
+  const { logInfo: info, } = logger;
+
+  info('Engine', `Starting initial plan generation. User: ${userId}`);
   const startDate = intake.start_date;
   const subjects = await loadAllSubjects();
   const subjData: SubjData = {
     subjects, subtopics: await loadSubtopics(subjects)
   }
+   const studentOptionalSubject = await getOptionalSubjectByCode(intake.study_strategy.upsc_optional_subject);
+   if (!studentOptionalSubject) {
+     throw new Error(`Optional subject ${intake.study_strategy.upsc_optional_subject} not found`);
+   }
   const targetYear = intake.getTargetYear();
   const prelimsExamDate = intake.getPrelimsExamDate();
   logger.logInfo('Engine', `Using start_date: ${startDate} (from intake.start_date: ${intake.start_date})`);
@@ -126,7 +130,7 @@ export async function generateInitialPlan(
       prelimsExamDate
     );
     logger.logInfo('Engine', `Determined scenario ${scheduleResult.scenario} with ${scheduleResult.totalTimeAvailable.toFixed(1)} months available`);
-    const cycles = await generateCyclesFromSchedule(logger, intake, scheduleResult, subjData);
+    const cycles = await generateCyclesFromSchedule(logger, intake, scheduleResult, subjData, studentOptionalSubject);
     const plan = await buildFinalPlan(logger, intake, cycles, scheduleResult.scenario);
     await sanityCheckPlan(plan, intake);
     return { plan, logs: logger.getLogs() };
@@ -143,10 +147,11 @@ async function generateCyclesFromSchedule(
   logger: Logger,
   intake: StudentIntake,
   scheduleResult: ScenarioResult,
-  subjData: SubjData
+  subjData: SubjData,
+  studentOptionalSubject: Subject
 ): Promise<StudyCycle[]> {
   const promises: Promise<StudyCycle>[] = scheduleResult.schedules.map((schedule) =>
-      generateCycleForSchedule(logger, intake, schedule, subjData));
+      generateCycleForSchedule(logger, intake, schedule, subjData, studentOptionalSubject));
   return Promise.all(promises);
 }
 
@@ -157,11 +162,18 @@ async function generateCycleForSchedule(
   logger: Logger,
   intake: StudentIntake,
   schedule: CycleSchedule,
-  subjData: SubjData
+  subjData: SubjData,
+  studentOptionalSubject: Subject
 ): Promise<StudyCycle> {
   const startDate = dayjs(schedule.startDate);
   const endDate = dayjs(schedule.endDate);
   const confidenceMap = buildConfidenceMap(logger, intake, subjData);
+  
+  // Log optional subject information for this cycle
+  if (studentOptionalSubject) {
+    logger.logInfo('Cycle', `Student's optional subject: ${studentOptionalSubject.subjectName} (${studentOptionalSubject.subjectCode}) - ${studentOptionalSubject.category}`);
+  }
+  
   const planner = getPlannerForCycleType(schedule.cycleType, logger);
   if (!planner) {
     logger.logWarn('Engine', `No planner found for cycle type: ${schedule.cycleType}`);

@@ -40,7 +40,8 @@ function makeIntake(testCase: { startDate: Date, targetYear: number }) {
 			revision_strategy: 'weekly',
 			test_frequency: 'biweekly',
 			seasonal_windows: ['morning', 'evening'],
-			catch_up_day_preference: 'weekend'
+			catch_up_day_preference: 'weekend',
+			upsc_optional_subject: 'OPT-SOC'
 		},
 		subject_confidence: {
 			'H01': 'Moderate',
@@ -171,7 +172,8 @@ describe('CycleSchedulerScenarios', () => {
 						revision_strategy: 'weekly',
 						test_frequency: 'biweekly',
 						seasonal_windows: ['morning', 'evening'],
-						catch_up_day_preference: 'weekend'
+						catch_up_day_preference: 'Sunday',
+						upsc_optional_subject: 'OPT-SOC'
 					},
 					subject_confidence: {
 						'H01': 'Weak',

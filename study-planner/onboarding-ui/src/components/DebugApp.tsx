@@ -40,7 +40,10 @@ const initialFormData: IntakeWizardFormData = {
       scienceTech: "Good"
     },
     studyPreference: "WeakSubjectsFirst",
-    subjectApproach: "DualSubject"
+    subjectApproach: "DualSubject",
+    upscOptionalSubject: 'OPT-SOC',
+    optionalFirst: false,
+    weeklyTestDayPreference: "Sunday"
   },
   confidenceLevel: {
     "H01": "Moderate",

@@ -163,7 +163,7 @@ describe('Real-World UPSC Preparation Tests', () => {
         upscSubjects,
         upscConfidenceMap,
         400, // Limited total hours
-        'balanced',
+        'Balanced',
         4, // Only 4 hours per day
         { gs: 0.7, optional: 0.3 }
       );
@@ -205,7 +205,7 @@ describe('Real-World UPSC Preparation Tests', () => {
         upscSubjects,
         upscConfidenceMap,
         600,
-        'balanced',
+        'Balanced',
         8,
         { gs: 0.6, optional: 0.4 } // Higher optional allocation
       );
@@ -247,7 +247,7 @@ describe('Real-World UPSC Preparation Tests', () => {
         gsOnlySubjects, // Only GS subjects
         upscConfidenceMap,
         400,
-        'balanced',
+        'Balanced',
         8,
         { gs: 1.0, optional: 0.0 } // 100% GS focus
       );
@@ -287,7 +287,7 @@ describe('Real-World UPSC Preparation Tests', () => {
         upscSubjects,
         upscConfidenceMap,
         500,
-        'balanced',
+        'Balanced',
         8,
         { gs: 0.5, optional: 0.5 } // Equal emphasis
       );
@@ -397,7 +397,7 @@ describe('Real-World UPSC Preparation Tests', () => {
         upscSubjects,
         upscConfidenceMap,
         400,
-        'balanced',
+        'Balanced',
         8,
         { gs: 0.67, optional: 0.33 }
       );
@@ -448,15 +448,15 @@ function getRealisticHoursForCycle(cycleType: CycleType): number {
 function getStudyApproachForCycle(cycleType: CycleType): StudyApproach {
   switch (cycleType) {
     case CycleType.C1: return 'WeakFirst'; // Foundation: focus on basics
-    case CycleType.C2: return 'balanced'; // Main prep: balanced approach
+    case CycleType.C2: return 'Balanced'; // Main prep: balanced approach
     case CycleType.C3: return 'StrongFirst'; // Prelims: focus on strong areas
-    case CycleType.C4: return 'balanced'; // Mains: balanced approach
+    case CycleType.C4: return 'Balanced'; // Mains: balanced approach
     case CycleType.C5: return 'StrongFirst'; // Revision: focus on strong areas
     case CycleType.C5B: return 'StrongFirst'; // Intensive revision
     case CycleType.C6: return 'StrongFirst'; // Last minute: strong areas
     case CycleType.C7: return 'StrongFirst'; // Final touches
-    case CycleType.C8: return 'balanced'; // Late starter: balanced
-    default: return 'balanced';
+    case CycleType.C8: return 'Balanced'; // Late starter: balanced
+    default: return 'Balanced';
   }
 }
 

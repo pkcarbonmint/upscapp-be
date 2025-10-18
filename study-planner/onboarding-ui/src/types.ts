@@ -35,8 +35,8 @@ export interface IWFStudyCommitment {
   studyPreference: StudyPreference;
   subjectApproach: SubjectApproach;
   // New UPSC fields
-  upscOptionalSubject?: string;
-  optionalFirst?: boolean;
+  upscOptionalSubject: string;
+  optionalFirst: boolean;
   weeklyTestDayPreference?: string;
 }
 

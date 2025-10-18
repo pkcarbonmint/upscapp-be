@@ -6,7 +6,6 @@ import {
 } from '../blocks';
 import { 
   Subject, 
-  StudyApproach, 
   ConfidenceMap, 
   CycleType,
   CycleSchedule
@@ -55,7 +54,7 @@ describe('Boundary Conditions Tests', () => {
         mockSubjects,
         mockConfidenceMap,
         -100, // Negative hours
-        'balanced',
+        'Balanced',
         8
       );
       expect(result).toBeDefined();
@@ -69,7 +68,7 @@ describe('Boundary Conditions Tests', () => {
         mockSubjects,
         mockConfidenceMap,
         100,
-        'balanced',
+        'Balanced',
         -5 // Negative working hours
       );
       expect(result).toBeDefined();
@@ -88,7 +87,7 @@ describe('Boundary Conditions Tests', () => {
         mockSubjects,
         mockConfidenceMap,
         100,
-        'balanced',
+        'Balanced',
         8
       );
       expect(result).toBeDefined();
@@ -172,7 +171,7 @@ describe('Boundary Conditions Tests', () => {
         singleSubject,
         mockConfidenceMap,
         100,
-        'balanced',
+        'Balanced',
         8
       );
       expect(result.length).toBeLessThanOrEqual(1);
@@ -227,7 +226,7 @@ describe('Boundary Conditions Tests', () => {
         mockSubjects,
         mockConfidenceMap,
         100,
-        'balanced',
+        'Balanced',
         0 // Zero working hours
       );
       expect(result).toBeDefined();
@@ -239,7 +238,7 @@ describe('Boundary Conditions Tests', () => {
         mockSubjects,
         mockConfidenceMap,
         100,
-        'balanced',
+        'Balanced',
         30 // Invalid working hours
       );
       expect(result).toBeDefined();
@@ -260,7 +259,7 @@ describe('Boundary Conditions Tests', () => {
         mockSubjects,
         mockConfidenceMap,
         100,
-        'balanced',
+        'Balanced',
         8
       );
       expect(result).toBeDefined();
@@ -279,7 +278,7 @@ describe('Boundary Conditions Tests', () => {
         mockSubjects,
         mockConfidenceMap,
         100,
-        'balanced',
+        'Balanced',
         8
       );
       expect(result).toBeDefined();

@@ -1,0 +1,355 @@
+[
+  {
+    "subjectCode": "OPT-SOC",
+    "basics": [
+      "NCERT XII Sociology - Indian Society",
+      "NCERT XII Sociology - Social Change and Development in India",
+      "IGNOU Sociology Material (ESO-11, ESO-12, ESO-13, ESO-14)"
+    ],
+    "textbooks": [
+      "Haralambos and Holborn - Sociology: Themes and Perspectives",
+      "Anthony Giddens - Sociology",
+      "Ritzer - Sociological Theory",
+      "George Ritzer - Modern Sociological Theory"
+    ],
+    "value_addition": [
+      "Indian Sociological Review",
+      "Economic and Political Weekly (EPW)",
+      "Newspapers (The Hindu, Indian Express - Social issues)",
+      "Yojana Magazine",
+      "Kurukshetra Magazine",
+      "Social Watch India Reports",
+      "NSSO Reports",
+      "NFHS Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology Material",
+      "Mains RRP + Prelims RRP",
+      "Prelims & Mains Workbooks",
+      "Previous Year Question Papers",
+      "Mock Tests"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-01",
+    "basics": [
+      "NCERT XII - Indian Society",
+      "IGNOU ESO-11 - Sociology of India"
+    ],
+    "textbooks": [
+      "A.R. Desai - Social Background of Indian Nationalism",
+      "M.N. Srinivas - Social Change in Modern India",
+      "Yogendra Singh - Modernization of Indian Tradition"
+    ],
+    "value_addition": [
+      "EPW Articles on Indian Society",
+      "Census Reports",
+      "Social Development Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Indian Society Material",
+      "Mains Workbook - Paper I"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-02",
+    "basics": [
+      "NCERT XII - Social Change and Development",
+      "IGNOU ESO-12 - Sociology of Development"
+    ],
+    "textbooks": [
+      "Andre Beteille - Society and Politics in India",
+      "T.K. Oommen - Social Movements in India"
+    ],
+    "value_addition": [
+      "Planning Commission Reports",
+      "NITI Aayog Reports",
+      "World Bank Reports on India"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Social Change Material",
+      "Mains Workbook - Paper II"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-03",
+    "basics": [
+      "IGNOU ESO-13 - Sociology of Religion"
+    ],
+    "textbooks": [
+      "Max Weber - The Protestant Ethic and the Spirit of Capitalism",
+      "Emile Durkheim - The Elementary Forms of Religious Life"
+    ],
+    "value_addition": [
+      "Religious Demographics Reports",
+      "Minority Commission Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Religion Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-04",
+    "basics": [
+      "IGNOU ESO-14 - Sociology of Education"
+    ],
+    "textbooks": [
+      "Pierre Bourdieu - Reproduction in Education, Society and Culture",
+      "Basil Bernstein - Class, Codes and Control"
+    ],
+    "value_addition": [
+      "ASER Reports",
+      "NEP 2020",
+      "Education Statistics Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Education Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-05",
+    "basics": [
+      "IGNOU Material on Social Stratification"
+    ],
+    "textbooks": [
+      "M.N. Srinivas - Caste in Modern India",
+      "Louis Dumont - Homo Hierarchicus"
+    ],
+    "value_addition": [
+      "Sachar Committee Report",
+      "Mandal Commission Report",
+      "Caste Census Data"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Social Stratification Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-06",
+    "basics": [
+      "IGNOU Material on Gender Studies"
+    ],
+    "textbooks": [
+      "Simone de Beauvoir - The Second Sex",
+      "Judith Butler - Gender Trouble"
+    ],
+    "value_addition": [
+      "Gender Budget Reports",
+      "Women and Child Development Ministry Reports",
+      "NFHS Gender Data"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Gender Studies Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-07",
+    "basics": [
+      "IGNOU Material on Urban Sociology"
+    ],
+    "textbooks": [
+      "Louis Wirth - Urbanism as a Way of Life",
+      "Robert Park - The City"
+    ],
+    "value_addition": [
+      "Census Urban Data",
+      "Smart Cities Mission Reports",
+      "Urban Development Ministry Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Urban Sociology Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-08",
+    "basics": [
+      "IGNOU Material on Rural Sociology"
+    ],
+    "textbooks": [
+      "M.N. Srinivas - Village Studies",
+      "A.R. Desai - Rural Sociology in India"
+    ],
+    "value_addition": [
+      "Rural Development Ministry Reports",
+      "MGNREGA Reports",
+      "Panchayati Raj Statistics"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Rural Sociology Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-09",
+    "basics": [
+      "IGNOU Material on Social Movements"
+    ],
+    "textbooks": [
+      "Charles Tilly - Social Movements",
+      "Alain Touraine - The Voice and the Eye"
+    ],
+    "value_addition": [
+      "Social Movement Case Studies",
+      "Civil Society Reports",
+      "Human Rights Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Social Movements Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-10",
+    "basics": [
+      "IGNOU Material on Sociology of Health"
+    ],
+    "textbooks": [
+      "Talcott Parsons - The Social System",
+      "Michel Foucault - The Birth of the Clinic"
+    ],
+    "value_addition": [
+      "Health Ministry Reports",
+      "WHO Reports on India",
+      "Ayushman Bharat Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Health Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-11",
+    "basics": [
+      "IGNOU Material on Sociology of Law"
+    ],
+    "textbooks": [
+      "Max Weber - Economy and Society",
+      "Emile Durkheim - The Division of Labor in Society"
+    ],
+    "value_addition": [
+      "Law Commission Reports",
+      "Supreme Court Judgments",
+      "Legal Aid Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Law Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-12",
+    "basics": [
+      "IGNOU Material on Sociology of Media"
+    ],
+    "textbooks": [
+      "Marshall McLuhan - Understanding Media",
+      "Jurgen Habermas - The Structural Transformation of the Public Sphere"
+    ],
+    "value_addition": [
+      "Media Reports",
+      "Broadcasting Ministry Reports",
+      "Social Media Impact Studies"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Media Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-13",
+    "basics": [
+      "IGNOU Material on Sociology of Science and Technology"
+    ],
+    "textbooks": [
+      "Robert Merton - The Sociology of Science",
+      "Bruno Latour - Science in Action"
+    ],
+    "value_addition": [
+      "Science and Technology Ministry Reports",
+      "ISRO Reports",
+      "Digital India Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Science Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-14",
+    "basics": [
+      "IGNOU Material on Sociology of Environment"
+    ],
+    "textbooks": [
+      "Ulrich Beck - Risk Society",
+      "Anthony Giddens - The Consequences of Modernity"
+    ],
+    "value_addition": [
+      "Environment Ministry Reports",
+      "Climate Change Reports",
+      "Sustainable Development Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Environment Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-15",
+    "basics": [
+      "IGNOU Material on Sociology of Globalization"
+    ],
+    "textbooks": [
+      "Manuel Castells - The Information Age",
+      "Saskia Sassen - Globalization and its Discontents"
+    ],
+    "value_addition": [
+      "WTO Reports",
+      "Globalization Impact Studies",
+      "International Migration Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Globalization Material",
+      "Mains Workbook"
+    ]
+  },
+  {
+    "subjectCode": "OPT-SOC",
+    "topicCode": "SOC-16",
+    "basics": [
+      "IGNOU Material on Sociology of Work and Industry"
+    ],
+    "textbooks": [
+      "Karl Marx - Capital",
+      "Max Weber - The Protestant Ethic"
+    ],
+    "value_addition": [
+      "Labor Ministry Reports",
+      "Industrial Relations Reports",
+      "Skill Development Reports"
+    ],
+    "rapid_revision_practice": [
+      "La Excellence Sociology of Work Material",
+      "Mains Workbook"
+    ]
+  }
+]

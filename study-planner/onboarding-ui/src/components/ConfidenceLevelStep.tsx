@@ -162,7 +162,7 @@ export const ConfidenceLevelStep: React.FC<ConfidenceLevelStepProps> = ({
     const loadSubjects = async () => {
       try {
         const { loadAllSubjects } = await import('helios-ts');
-        const allSubjects = loadAllSubjects();
+        const allSubjects = await loadAllSubjects();
         setSubjects(allSubjects);
         
         // Create subject groups for quick overview
