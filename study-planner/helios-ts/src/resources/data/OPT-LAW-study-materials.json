@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-LAW",
+    "basics": [
+      "Indian Constitution - D.D. Basu",
+      "Jurisprudence - Salmond",
+      "Contract Law - Pollock and Mulla",
+      "Criminal Law - K.D. Gaur"
+    ],
+    "textbooks": [
+      "Administrative Law - H.W.R. Wade",
+      "International Law - Starke",
+      "Constitutional Law - M.P. Jain",
+      "Law of Torts - Ratanlal and Dhirajlal",
+      "Company Law - Avtar Singh"
+    ],
+    "value_addition": [
+      "Supreme Court Cases (SCC)",
+      "All India Reporter (AIR)",
+      "Law Commission Reports",
+      "Parliamentary Debates",
+      "Legal News and Updates",
+      "Bar Council Reports",
+      "Ministry of Law and Justice Reports"
+    ],
+    "rapid_revision_practice": [
+      "Law Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Case Law Analysis"
+    ]
+  }
+]

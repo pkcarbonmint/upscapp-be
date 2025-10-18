@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-AHV",
+    "basics": [
+      "NCERT XII Biology - Animal Kingdom",
+      "NCERT XII Biology - Human Health and Disease",
+      "Basic Veterinary Science - K.M. Singh",
+      "Animal Husbandry Handbook - ICAR"
+    ],
+    "textbooks": [
+      "Veterinary Medicine - Radostits",
+      "Animal Nutrition - McDonald",
+      "Veterinary Pathology - Carlton and McGavin",
+      "Animal Breeding - Falconer and Mackay",
+      "Livestock Production Management - Banerjee"
+    ],
+    "value_addition": [
+      "Indian Journal of Animal Sciences",
+      "Livestock Census Reports",
+      "Department of Animal Husbandry Reports",
+      "FAO Animal Health Reports",
+      "Veterinary World Journal",
+      "Economic Survey - Animal Husbandry Chapter",
+      "NDDB Annual Reports"
+    ],
+    "rapid_revision_practice": [
+      "Animal Husbandry Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Current Affairs for Animal Husbandry"
+    ]
+  }
+]

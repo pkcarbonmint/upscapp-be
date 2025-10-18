@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-PHY",
+    "basics": [
+      "NCERT XI Physics - Mechanics",
+      "NCERT XII Physics - Electrodynamics",
+      "NCERT XII Physics - Modern Physics",
+      "Concepts of Physics - H.C. Verma"
+    ],
+    "textbooks": [
+      "Classical Mechanics - Goldstein",
+      "Electrodynamics - Griffiths",
+      "Quantum Mechanics - Griffiths",
+      "Statistical Mechanics - Pathria",
+      "Solid State Physics - Kittel"
+    ],
+    "value_addition": [
+      "Physics Today Magazine",
+      "Current Science - Physics Articles",
+      "Journal of Physics",
+      "Department of Atomic Energy Reports",
+      "ISRO Publications",
+      "Nobel Prize in Physics Updates",
+      "Research Papers in Physics"
+    ],
+    "rapid_revision_practice": [
+      "Physics Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Numerical Problem Practice"
+    ]
+  }
+]

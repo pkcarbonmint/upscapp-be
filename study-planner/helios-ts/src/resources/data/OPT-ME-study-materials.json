@@ -1,0 +1,33 @@
+[
+  {
+    "subjectCode": "OPT-ME",
+    "basics": [
+      "Engineering Mechanics - S.S. Bhavikatti",
+      "Strength of Materials - R.K. Bansal",
+      "Thermodynamics - P.K. Nag",
+      "Machine Design - R.S. Khurmi"
+    ],
+    "textbooks": [
+      "Heat and Mass Transfer - P.K. Nag",
+      "Fluid Mechanics - Frank White",
+      "Manufacturing Technology - P.N. Rao",
+      "Theory of Machines - S.S. Rattan",
+      "Industrial Engineering - O.P. Khanna"
+    ],
+    "value_addition": [
+      "Mechanical Engineering Magazine",
+      "ASME Publications",
+      "Ministry of Heavy Industries Reports",
+      "Automotive Industry Reports",
+      "Manufacturing Sector Updates",
+      "Technology Innovation Reports"
+    ],
+    "rapid_revision_practice": [
+      "Mechanical Engineering Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Design Problem Practice"
+    ]
+  }
+]

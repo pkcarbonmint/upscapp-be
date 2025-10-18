@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-GEO",
+    "basics": [
+      "NCERT XI Geography - Physical Geography",
+      "NCERT XII Geography - Human Geography",
+      "NCERT XII Geography - India - People and Economy",
+      "Certificate Physical and Human Geography - G.C. Leong"
+    ],
+    "textbooks": [
+      "Physical Geography - Savindra Singh",
+      "Human Geography - Majid Husain",
+      "Economic Geography - Alexander",
+      "Climatology - Critchfield",
+      "Geomorphology - Thornbury"
+    ],
+    "value_addition": [
+      "Survey of India Reports",
+      "Census of India",
+      "Ministry of Earth Sciences Reports",
+      "National Geographic Magazine",
+      "Geographical Review of India",
+      "Remote Sensing Applications",
+      "Climate Change Reports"
+    ],
+    "rapid_revision_practice": [
+      "Geography Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Map Work Practice"
+    ]
+  }
+]

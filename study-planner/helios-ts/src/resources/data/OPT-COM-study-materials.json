@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-COM",
+    "basics": [
+      "NCERT XII Accountancy - Company Accounts",
+      "NCERT XII Business Studies - Business Finance",
+      "Fundamentals of Financial Management - Van Horne",
+      "Principles of Management - Koontz and Weihrich"
+    ],
+    "textbooks": [
+      "Advanced Accountancy - R.L. Gupta",
+      "Cost Accounting - Horngren",
+      "Auditing - B.N. Tandon",
+      "Corporate Law - Avtar Singh",
+      "Financial Management - I.M. Pandey"
+    ],
+    "value_addition": [
+      "Economic Times - Business Section",
+      "Business Standard",
+      "Ministry of Corporate Affairs Reports",
+      "RBI Annual Reports",
+      "SEBI Reports",
+      "Comptroller and Auditor General Reports",
+      "Corporate Governance Reports"
+    ],
+    "rapid_revision_practice": [
+      "Commerce Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Case Study Analysis"
+    ]
+  }
+]

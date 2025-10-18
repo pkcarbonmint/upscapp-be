@@ -1,0 +1,34 @@
+[
+  {
+    "subjectCode": "OPT-BOT",
+    "basics": [
+      "NCERT XI Biology - Plant Kingdom",
+      "NCERT XII Biology - Sexual Reproduction in Plants",
+      "NCERT XII Biology - Plant Growth and Development",
+      "NCERT XII Biology - Photosynthesis"
+    ],
+    "textbooks": [
+      "Plant Physiology - Taiz and Zeiger",
+      "Plant Anatomy - Esau",
+      "Plant Taxonomy - Singh, Jain, Rao and Sharma",
+      "Plant Ecology - Misra",
+      "Cell and Molecular Biology - De Robertis"
+    ],
+    "value_addition": [
+      "Current Science Journal",
+      "Indian Journal of Plant Physiology",
+      "Botanical Survey of India Reports",
+      "Forest Survey of India Reports",
+      "Ministry of Environment Reports",
+      "Biodiversity Reports",
+      "IUCN Red List Updates"
+    ],
+    "rapid_revision_practice": [
+      "Botany Optional Material",
+      "Mains RRP + Prelims RRP",
+      "Previous Year Question Papers",
+      "Mock Tests",
+      "Plant Identification Practical"
+    ]
+  }
+]
