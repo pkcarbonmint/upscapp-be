@@ -3,13 +3,17 @@ import type { StudyPlan, StudentIntake } from '../types/models';
 import { CycleType } from '../types/Types';
 import { ResourceService } from './ResourceService';
 import { SubjectLoader } from './SubjectLoader';
+import { DayOfWeek } from 'scheduler';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { type Writable } from 'stream';
+import optionalSubjectsData from '../config/optional_subjects.json';
+
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
 
+const genOverview = false, genInspirationQuote = false, genStrategyOverview = false;
 // Color mapping for different cycle types (matching the PDF service)
 const CYCLE_TYPE_COLORS = {
   [CycleType.C1]: { bg: 'E3F2FD', border: '3B82F6', fg: '1976D2' }, // Very light blue with dark blue text
@@ -70,7 +74,7 @@ const TABLE_STYLE_NAMES = {
   coverTitle: 'CoverTitleTable'
 } as const;
 
-const createDocument = (studyPlan: StudyPlan,  studentIntake: StudentIntake) => (coverPageElements: (Paragraph | Table)[], mainContentElements: (Paragraph | Table)[]) => {
+const createDocument = (studyPlan: StudyPlan, studentIntake: StudentIntake) => (coverPageElements: (Paragraph | Table)[], mainContentElements: (Paragraph | Table)[]) => {
   return new Document({
     styles: getDocumentStyles(),
     sections: [
@@ -125,12 +129,12 @@ async function generateStructuredDocx(
   studentIntake: StudentIntake,
   filename?: string
 ): Promise<void> {
-    // Create high-quality Word document
-    const [coverPageElements, mainContentElements] = await createStructuredWordDocument(studyPlan, studentIntake);
-    const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
-  
-    // Save the document
-    await saveDocx(document, filename || `study-plan-${studyPlan.study_plan_id || 'plan'}.docx`);
+  // Create high-quality Word document
+  const [coverPageElements, mainContentElements] = await createStructuredWordDocument(studyPlan, studentIntake);
+  const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
+
+  // Save the document
+  await saveDocx(document, filename || `study-plan-${studyPlan.study_plan_id || 'plan'}.docx`);
 }
 
 /**
@@ -187,7 +191,7 @@ async function generateStructuredDocxToStream(
         },
       ],
     });
-  
+
     // Generate document buffer and stream to output
     const buffer = await Packer.toBuffer(document);
     outputStream.write(buffer);
@@ -240,7 +244,7 @@ export class CalendarDocxService {
     try {
       const [coverPageElements, mainContentElements] = await createStructuredWordDocument(studyPlan, studentIntake);
       const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
-        return await Packer.toBuffer(document);
+      return await Packer.toBuffer(document);
     } catch (error) {
       console.error('Failed to generate Word document buffer:', error);
       throw new Error('Word document buffer generation failed');
@@ -273,45 +277,48 @@ async function createStructuredWordDocument(studyPlan: StudyPlan, studentIntake:
   const year = studyPlan.targeted_year || new Date().getFullYear();
 
   // Build cover page elements
-  const coverPageElements = await generateCoverPage(studentIntake, year);
-  
+  const coverPageElements = await generateCoverPage(studentIntake, studyPlan, year);
+
   // Build main content elements
   const mainContentElements: (Paragraph | Table)[] = [];
-  
+
   // Birds Eye View
   mainContentElements.push(...generateBirdsEyeView(studyPlan));
-  
+
+  // Birds Eye View Legend
+  mainContentElements.push(...generateBirdsEyeLegend(studyPlan));
+
   // Page break before Monthly Views
   mainContentElements.push(new Paragraph({
     children: [new PageBreak()]
   }));
-  
+
   // Monthly Views with Daily/Weekly Pages
-  const monthlyElements = await generateMonthViewWithDailyPages(studyPlan);
+  const monthlyElements = await generateMonthViewWithDailyPages(studyPlan, studentIntake);
   mainContentElements.push(...monthlyElements.filter(item => item instanceof Paragraph || item instanceof Table));
-  
+
   // Page break before Resources Table
   mainContentElements.push(new Paragraph({
     children: [new PageBreak()]
   }));
-  
+
   // Resources Table
   mainContentElements.push(...await generateResourcesTable(studyPlan));
-  
+
   // Page break before Legend
   mainContentElements.push(new Paragraph({
     children: [new PageBreak()]
   }));
-  
+
   // Legend
   mainContentElements.push(...generateLegend(studyPlan));
-  return [ coverPageElements, mainContentElements ];
+  return [coverPageElements, mainContentElements];
 }
 
 /**
  * Generate cover page content
  */
-async function generateCoverPage(studentIntake: StudentIntake, year: number): Promise<(Paragraph | Table)[]> {
+async function generateCoverPage(studentIntake: StudentIntake, studyPlan: StudyPlan, year: number): Promise<(Paragraph | Table)[]> {
   const pd = studentIntake.personal_details;
   const ss = studentIntake.study_strategy;
   const ps = studentIntake.preparation_background;
@@ -320,21 +327,21 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
 
   // Professional branding header
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: '🎓 LA MENTORA'
     })],
     style: 'CompanyBrand'
   }));
 
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: 'Study Planner v1.0'
     })],
     style: 'VersionInfo'
   }));
 
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: '"Your Path to UPSC Success"'
     })],
     style: 'CompanyTagline'
@@ -350,13 +357,13 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
           new TableCell({
             children: [
               new Paragraph({
-                children: [new TextRun({ 
+                children: [new TextRun({
                   text: 'UPSC STUDY PLANNER'
                 })],
                 style: 'CoverPageTitle'
               }),
               new Paragraph({
-                children: [new TextRun({ 
+                children: [new TextRun({
                   text: year.toString()
                 })],
                 style: 'CoverPageYear'
@@ -386,11 +393,11 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
     }
   }));
 
-  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+  elements.push(new Paragraph({ text: '', spacing: { after: 200 } }));
 
   // Student name with elegant styling
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: pd?.full_name?.toUpperCase() || 'STUDENT NAME'
     })],
     style: 'StudentName'
@@ -398,142 +405,143 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
 
   // Subtitle
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: 'Personalized Study Plan & Calendar'
     })],
     style: 'CoverPageSubtitle'
   }));
 
-  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+  elements.push(new Paragraph({ text: '', spacing: { after: 200 } }));
 
-        // Student Profile heading
-        elements.push(new Paragraph({
-          children: [new TextRun({ 
-            text: 'STUDENT PROFILE'
-          })],
-          style: 'CardTitle'
-        }));
+  // Student Profile heading
+  elements.push(new Paragraph({
+    children: [new TextRun({
+      text: 'STUDENT PROFILE'
+    })],
+    style: 'CardTitle'
+  }));
 
-        // Enhanced student profile card
-        const profileCardRows: TableRow[] = [
-          new TableRow({
-            children: [
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📧 '
-                      }),
-                      new TextRun({ 
-                        text: pd?.email || 'N/A'
-                      })
-                    ],
-                    style: 'ProfileData'
-                  }),
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📱 '
-                      }),
-                      new TextRun({ 
-                        text: pd?.phone_number || 'N/A'
-                      })
-                    ],
-                    style: 'ProfileData'
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 200, right: 100 }
-              }),
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📍 '
-                      }),
-                      new TextRun({ 
-                        text: pd?.present_location || 'N/A'
-                      })
-                    ],
-                    style: 'ProfileData'
-                  }),
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '🎯 Target: UPSC '
-                      }),
-                      new TextRun({ 
-                        text: year.toString()
-                      })
-                    ],
-                    style: 'ProfileData'
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 100, right: 200 }
-              })
-            ]
-          }),
-          new TableRow({
-            children: [
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📚 Optional: '
-                      }),
-                      new TextRun({ 
-                        text: studentIntake.optional_subject?.optional_subject_name || 'N/A'
-                      })
-                    ],
-                    style: 'ProfileData'
-                  }),
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '🏆 Previous Attempts: '
-                      }),
-                      new TextRun({ 
-                        text: ps?.number_of_attempts || 'N/A'
-                      })
-                    ],
-                    style: 'ProfileData'
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 200, right: 100 }
-              }),
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '⏰ Study Hours: '
-                      }),
-                      new TextRun({ 
-                        text: ss?.weekly_study_hours || 'N/A'
-                      })
-                    ],
-                    style: 'ProfileData'
-                  }),
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📅 Plan Duration: 12 months'
-                      })
-                    ],
-                    style: 'ProfileData'
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 100, right: 200 }
-              })
-            ]
-          })
-        ];
+  // Enhanced student profile card
+  const profileCardRows: TableRow[] = [
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: '📧 '
+                }),
+                new TextRun({
+                  text: pd?.email || 'N/A'
+                })
+              ],
+              style: 'ProfileData'
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: '📱 '
+                }),
+                new TextRun({
+                  text: pd?.phone_number || 'N/A'
+                })
+              ],
+              style: 'ProfileData'
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 200, right: 100 }
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: '📍 '
+                }),
+                new TextRun({
+                  text: pd?.present_location || 'N/A'
+                })
+              ],
+              style: 'ProfileData'
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: '🎯 Target: UPSC '
+                }),
+                new TextRun({
+                  text: year.toString()
+                })
+              ],
+              style: 'ProfileData'
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 100, right: 200 }
+        })
+      ]
+    }),
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: '📚 Optional: '
+                }),
+                new TextRun({
+                  text: studentIntake.optional_subject?.optional_subject_name ||
+                    getOptionalSubjectName(studentIntake.study_strategy?.upsc_optional_subject || '') || 'N/A'
+                })
+              ],
+              style: 'ProfileData'
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: '🏆 Previous Attempts: '
+                }),
+                new TextRun({
+                  text: ps?.number_of_attempts || 'N/A'
+                })
+              ],
+              style: 'ProfileData'
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 200, right: 100 }
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: '⏰ Study Hours: '
+                }),
+                new TextRun({
+                  text: ss?.weekly_study_hours || 'N/A'
+                })
+              ],
+              style: 'ProfileData'
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: `📅 Plan Duration: ${calculatePlanDuration(studyPlan)} months`
+                })
+              ],
+              style: 'ProfileData'
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 100, right: 200 }
+        })
+      ]
+    })
+  ];
 
   elements.push(new Table({
     rows: profileCardRows,
@@ -549,223 +557,231 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
     }
   }));
 
-  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+  elements.push(new Paragraph({ text: '', spacing: { after: 200 } }));
+  if (genOverview) {
+    // Study Plan Overview heading
+    elements.push(new Paragraph({
+      children: [new TextRun({
+        text: 'STUDY PLAN OVERVIEW'
+      })],
+      style: 'CardTitle'
+    }));
 
-        // Study Plan Overview heading
-        elements.push(new Paragraph({
-          children: [new TextRun({ 
-            text: 'STUDY PLAN OVERVIEW'
-          })],
-          style: 'CardTitle'
-        }));
-
-        // Study plan overview section
-        const overviewCardRows: TableRow[] = [
-          new TableRow({
-            children: [
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📊 Total Cycles: 8'
-                      })
-                    ],
-                    style: 'OverviewData'
-                  }),
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '🗓️ Start Date: Jan '
-                      }),
-                      new TextRun({ 
-                        text: year.toString()
-                      })
-                    ],
-                    style: 'OverviewData'
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 200, right: 100 }
-              }),
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📈 Study Phases: Foundation → Mains'
-                      })
-                    ],
-                    style: 'OverviewData'
-                  }),
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '🎯 Target Exam: Aug '
-                      }),
-                      new TextRun({ 
-                        text: year.toString()
-                      })
-                    ],
-                    style: 'OverviewData'
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 100, right: 200 }
-              })
-            ]
-          }),
-          new TableRow({
-            children: [
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '📚 Subjects Covered: 9'
-                      })
-                    ],
-                    style: 'OverviewData'
-                  }),
-                  new Paragraph({
-                    children: [
-                      new TextRun({ 
-                        text: '⏱️ Total Study Hours: 2,920'
-                      })
-                    ],
-                    style: 'OverviewData'
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 200, right: 100 }
-              }),
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    children: [new TextRun({ 
-                      text: ''
-                    })]
-                  })
-                ],
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                margins: { top: 150, bottom: 150, left: 100, right: 200 }
-              })
-            ]
-          })
-        ];
-
-  elements.push(new Table({
-    rows: overviewCardRows,
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    style: TABLE_STYLE_NAMES.studentInfo,
-    borders: {
-      top: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
-      bottom: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
-      left: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
-      right: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
-    }
-  }));
-
-  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
-
-  // Study strategy highlights
-  elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: 'Study Strategy Overview'
-    })],
-    style: 'StrategyOverviewTitle'
-  }));
-
-  // Strategy cards in 2x2 grid
-  const strategyRows: TableRow[] = [
-    new TableRow({
-      children: [
-        createStrategyCard('⏰', 'Weekly Hours', ss?.weekly_study_hours || 'N/A'),
-        createStrategyCard('🎯', 'Study Approach', ss?.study_approach || 'N/A')
-      ]
-    }),
-    new TableRow({
-      children: [
-        createStrategyCard('📚', 'Optional Subject', studentIntake.optional_subject?.optional_subject_name || 'N/A'),
-        createStrategyCard('🏆', 'Previous Attempts', ps?.number_of_attempts || 'N/A')
-      ]
-    })
-  ];
-
-  elements.push(new Table({
-    rows: strategyRows,
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    columnWidths: [4000, 4000],
-    style: TABLE_STYLE_NAMES.strategyCards,
-    borders: {
-      top: { style: BorderStyle.NONE, size: 0 },
-      bottom: { style: BorderStyle.NONE, size: 0 },
-      left: { style: BorderStyle.NONE, size: 0 },
-      right: { style: BorderStyle.NONE, size: 0 },
-      insideHorizontal: { style: BorderStyle.NONE, size: 0 },
-      insideVertical: { style: BorderStyle.NONE, size: 0 }
-    }
-  }));
-
-  elements.push(new Paragraph({ text: '', spacing: { after: 800 } }));
-
-  // Inspirational quote with better styling
-  elements.push(new Table({
-    rows: [
+    // Study plan overview section
+    const overviewCardRows: TableRow[] = [
       new TableRow({
         children: [
           new TableCell({
             children: [
               new Paragraph({
-                children: [new TextRun({ 
-                  text: '"Success is the sum of small efforts repeated day in and day out."'
-                })],
-                style: 'QuoteText'
+                children: [
+                  new TextRun({
+                    text: '📊 Total Cycles: 8'
+                  })
+                ],
+                style: 'OverviewData'
               }),
               new Paragraph({
-                children: [new TextRun({ 
-                  text: '— Robert Collier'
-                })],
-                style: 'QuoteAuthor'
+                children: [
+                  new TextRun({
+                    text: '🗓️ Start Date: '
+                  }),
+                  new TextRun({
+                    text: studentIntake.start_date ?
+                      new Date(studentIntake.start_date).toLocaleDateString('en-IN', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      }) : 'Not specified'
+                  })
+                ],
+                style: 'OverviewData'
               })
             ],
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            margins: { top: 400, bottom: 400, left: 400, right: 400 },
-            borders: {
-              top: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
-              bottom: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
-              left: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
-              right: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary }
-            }
+            width: { size: 50, type: WidthType.PERCENTAGE },
+            margins: { top: 150, bottom: 150, left: 200, right: 100 }
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: '📈 Study Phases: Foundation → Mains'
+                  })
+                ],
+                style: 'OverviewData'
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: '🎯 Target Exam: Aug '
+                  }),
+                  new TextRun({
+                    text: year.toString()
+                  })
+                ],
+                style: 'OverviewData'
+              })
+            ],
+            width: { size: 50, type: WidthType.PERCENTAGE },
+            margins: { top: 150, bottom: 150, left: 100, right: 200 }
+          })
+        ]
+      }),
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `📚 Subjects Covered: ${calculateSubjectsCount(studyPlan)}`
+                  })
+                ],
+                style: 'OverviewData'
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `⏱️ Total Study Hours: ${calculateTotalStudyHours(studyPlan).toLocaleString()}`
+                  })
+                ],
+                style: 'OverviewData'
+              })
+            ],
+            width: { size: 50, type: WidthType.PERCENTAGE },
+            margins: { top: 150, bottom: 150, left: 200, right: 100 }
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [new TextRun({
+                  text: ''
+                })]
+              })
+            ],
+            width: { size: 50, type: WidthType.PERCENTAGE },
+            margins: { top: 150, bottom: 150, left: 100, right: 200 }
           })
         ]
       })
-    ],
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    style: TABLE_STYLE_NAMES.quote,
-    borders: {
-      top: { style: BorderStyle.NONE, size: 0 },
-      bottom: { style: BorderStyle.NONE, size: 0 },
-      left: { style: BorderStyle.NONE, size: 0 },
-      right: { style: BorderStyle.NONE, size: 0 },
-      insideHorizontal: { style: BorderStyle.NONE, size: 0 },
-      insideVertical: { style: BorderStyle.NONE, size: 0 }
-    }
-  }));
+    ];
 
-  elements.push(new Paragraph({ text: '', spacing: { after: 600 } }));
+    elements.push(new Table({
+      rows: overviewCardRows,
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      style: TABLE_STYLE_NAMES.studentInfo,
+      borders: {
+        top: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+        bottom: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+        left: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+        right: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+        insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+        insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+      }
+    }));
+
+    elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+  }
+  if (genStrategyOverview) {
+    // Study strategy highlights
+    elements.push(new Paragraph({
+      children: [new TextRun({
+        text: 'Study Strategy Overview'
+      })],
+      style: 'StrategyOverviewTitle'
+    }));
+
+    // Strategy cards in 2x2 grid
+    const strategyRows: TableRow[] = [
+      new TableRow({
+        children: [
+          createStrategyCard('⏰', 'Weekly Hours', ss?.weekly_study_hours || 'N/A'),
+          createStrategyCard('🎯', 'Study Approach', ss?.study_approach || 'N/A')
+        ]
+      }),
+      new TableRow({
+        children: [
+          createStrategyCard('📚', 'Optional Subject', studentIntake.optional_subject?.optional_subject_name || 'N/A'),
+          createStrategyCard('🏆', 'Previous Attempts', ps?.number_of_attempts || 'N/A')
+        ]
+      })
+    ];
+
+    elements.push(new Table({
+      rows: strategyRows,
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      columnWidths: [4000, 4000],
+      style: TABLE_STYLE_NAMES.strategyCards,
+      borders: {
+        top: { style: BorderStyle.NONE, size: 0 },
+        bottom: { style: BorderStyle.NONE, size: 0 },
+        left: { style: BorderStyle.NONE, size: 0 },
+        right: { style: BorderStyle.NONE, size: 0 },
+        insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+        insideVertical: { style: BorderStyle.NONE, size: 0 }
+      }
+    }));
+
+    elements.push(new Paragraph({ text: '', spacing: { after: 200 } }));
+  }
+  if (genInspirationQuote) {
+    // Inspirational quote with better styling
+    elements.push(new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [new TextRun({
+                    text: '"Success is the sum of small efforts repeated day in and day out."'
+                  })],
+                  style: 'QuoteText'
+                }),
+                new Paragraph({
+                  children: [new TextRun({
+                    text: '— Robert Collier'
+                  })],
+                  style: 'QuoteAuthor'
+                })
+              ],
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              margins: { top: 400, bottom: 400, left: 400, right: 400 },
+              borders: {
+                top: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
+                bottom: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
+                left: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary },
+                right: { style: BorderStyle.SINGLE, size: 1, color: DOCUMENT_STYLES.colors.primary }
+              }
+            })
+          ]
+        })
+      ],
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      style: TABLE_STYLE_NAMES.quote,
+      borders: {
+        top: { style: BorderStyle.NONE, size: 0 },
+        bottom: { style: BorderStyle.NONE, size: 0 },
+        left: { style: BorderStyle.NONE, size: 0 },
+        right: { style: BorderStyle.NONE, size: 0 },
+        insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+        insideVertical: { style: BorderStyle.NONE, size: 0 }
+      }
+    }));
+
+    elements.push(new Paragraph({ text: '', spacing: { after: 600 } }));
+  }
 
   // Contact & Support heading
+  elements.push(new Paragraph({ text: '', spacing: { after: 600 } }));
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: 'CONTACT & SUPPORT'
     })],
     style: 'CardTitle'
   }));
 
-  // Enhanced contact and support section
   const contactCardRows: TableRow[] = [
     new TableRow({
       children: [
@@ -773,7 +789,7 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
           children: [
             new Paragraph({
               children: [
-                new TextRun({ 
+                new TextRun({
                   text: '🌐 www.lamentora.com'
                 })
               ],
@@ -781,7 +797,7 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
             }),
             new Paragraph({
               children: [
-                new TextRun({ 
+                new TextRun({
                   text: '📧 support@lamentora.com'
                 })
               ],
@@ -795,7 +811,7 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
           children: [
             new Paragraph({
               children: [
-                new TextRun({ 
+                new TextRun({
                   text: '📱 +91 98765 43210'
                 })
               ],
@@ -803,7 +819,7 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
             }),
             new Paragraph({
               children: [
-                new TextRun({ 
+                new TextRun({
                   text: '💬 WhatsApp Support Available'
                 })
               ],
@@ -815,43 +831,6 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
         })
       ]
     }),
-    new TableRow({
-      children: [
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ 
-                text: `Generated on ${new Date().toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}`
-              })],
-              style: 'FooterDate'
-            }),
-            new Paragraph({
-              children: [new TextRun({ 
-                text: '© 2025-2026 La Mentora. All Rights Reserved.'
-              })],
-              style: 'FooterBranding'
-            })
-          ],
-          width: { size: 50, type: WidthType.PERCENTAGE },
-          margins: { top: 150, bottom: 150, left: 200, right: 100 }
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ 
-                text: ''
-              })]
-            })
-          ],
-          width: { size: 50, type: WidthType.PERCENTAGE },
-          margins: { top: 150, bottom: 150, left: 100, right: 200 }
-        })
-      ]
-    })
   ];
 
   elements.push(new Table({
@@ -880,7 +859,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
 
   // Title
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: 'Birds Eye View - Yearly Calendar'
     })],
     style: 'SectionHeading1'
@@ -892,7 +871,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
 
   // Create monthly calendar grid (6 months per row)
   const months: Array<{ month: dayjs.Dayjs; cycle: any }> = [];
-  
+
   for (
     let currentDate = minDate.startOf('month');
     currentDate.isSameOrBefore(endDate, 'month');
@@ -900,7 +879,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
   ) {
     const monthDate = currentDate;
     let cycle = null;
-    
+
     for (const c of cycles) {
       const cycleStart = dayjs(c.cycleStartDate);
       const cycleEnd = dayjs(c.cycleEndDate);
@@ -909,7 +888,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         break;
       }
     }
-    
+
     months.push({ month: monthDate, cycle });
   }
 
@@ -921,23 +900,23 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
 
   // Create single table with all month rows
   const allTableRows: TableRow[] = [];
-  
+
   monthRows.forEach(async (monthRow) => {
     // Header row with month names
     const headerCells: TableCell[] = monthRow.map(({ month, cycle }) => {
       const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
       const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
-      
+
       return new TableCell({
         children: [
           new Paragraph({
-            children: [new TextRun({ 
+            children: [new TextRun({
               text: cycleName
             })],
             style: 'TableCellMonthName'
           }),
           new Paragraph({
-            children: [new TextRun({ 
+            children: [new TextRun({
               text: month.format('MMM YYYY').toUpperCase()
             })],
             style: 'TableCellMonthYear'
@@ -948,7 +927,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         margins: { top: 200, bottom: 200, left: 100, right: 100 }
       });
     });
-    
+
     // Fill remaining cells if less than 6 months
     while (headerCells.length < 6) {
       headerCells.push(new TableCell({
@@ -956,23 +935,23 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         width: { size: 16.67, type: WidthType.PERCENTAGE }
       }));
     }
-    
+
     allTableRows.push(new TableRow({ children: headerCells }));
-    
+
     // Calendar grid for each month - use table structure for perfect alignment
     const calendarCells: TableCell[] = monthRow.map(({ month }) => {
       const daysInMonth = month.daysInMonth();
       const firstDayOfMonth = month.startOf('month').day();
-      
+
       // Create a mini table for the calendar with proper alignment
       const calendarTableRows: TableRow[] = [];
-      
+
       // Header row with day names
-      const dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => 
+      const dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day =>
         new TableCell({
           children: [
             new Paragraph({
-              children: [new TextRun({ 
+              children: [new TextRun({
                 text: day
               })],
               style: 'TableCellBirdsEyeDay'
@@ -983,10 +962,10 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         })
       );
       calendarTableRows.push(new TableRow({ children: dayHeaders }));
-      
+
       // Create calendar weeks
       let currentWeek: TableCell[] = [];
-      
+
       // Add empty cells for days before month starts
       for (let i = 0; i < firstDayOfMonth; i++) {
         currentWeek.push(new TableCell({
@@ -995,13 +974,13 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
           margins: { top: 20, bottom: 20, left: 10, right: 10 }
         }));
       }
-      
+
       // Add days of the month
       for (let day = 1; day <= daysInMonth; day++) {
         currentWeek.push(new TableCell({
           children: [
             new Paragraph({
-              children: [new TextRun({ 
+              children: [new TextRun({
                 text: day.toString()
               })],
               style: 'TableCellBirdsEyeDayNumber'
@@ -1010,14 +989,14 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
           width: { size: 14.28, type: WidthType.PERCENTAGE },
           margins: { top: 20, bottom: 20, left: 10, right: 10 }
         }));
-        
+
         // Start new week if we have 7 days
         if (currentWeek.length === 7) {
           calendarTableRows.push(new TableRow({ children: currentWeek }));
           currentWeek = [];
         }
       }
-      
+
       // Fill remaining cells in the last week
       while (currentWeek.length < 7) {
         currentWeek.push(new TableCell({
@@ -1029,7 +1008,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
       if (currentWeek.length > 0) {
         calendarTableRows.push(new TableRow({ children: currentWeek }));
       }
-      
+
       // Create the mini calendar table
       const calendarTable = new Table({
         rows: calendarTableRows,
@@ -1044,14 +1023,14 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
           insideVertical: { style: BorderStyle.NONE, size: 0 }
         }
       });
-      
+
       return new TableCell({
         children: [calendarTable],
         width: { size: 16.67, type: WidthType.PERCENTAGE },
         margins: { top: 100, bottom: 100, left: 50, right: 50 }
       });
     });
-    
+
     // Fill remaining cells
     while (calendarCells.length < 6) {
       calendarCells.push(new TableCell({
@@ -1059,10 +1038,10 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         width: { size: 16.67, type: WidthType.PERCENTAGE }
       }));
     }
-    
+
     allTableRows.push(new TableRow({ children: calendarCells }));
   });
-  
+
   // Create single table with all rows
   elements.push(new Table({
     rows: allTableRows,
@@ -1082,9 +1061,148 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
 }
 
 /**
+ * Generate birds eye view legend with cycle descriptions
+ */
+function generateBirdsEyeLegend(studyPlan: StudyPlan): (Paragraph | Table)[] {
+  const elements: (Paragraph | Table)[] = [];
+  
+  // Get unique cycles from the study plan
+  const cycles = studyPlan.cycles || [];
+  const uniqueCycles = cycles.filter((cycle, index, self) => 
+    index === self.findIndex(c => c.cycleType === cycle.cycleType)
+  );
+
+  if (uniqueCycles.length === 0) {
+    return elements;
+  }
+
+  // Legend title
+  elements.push(new Paragraph({
+    children: [new TextRun({
+      text: '📋 Study Cycle Legend'
+    })],
+    style: 'SectionHeading2'
+  }));
+
+  // Create legend table with cycle descriptions
+  const legendRows: TableRow[] = [];
+
+  // Group cycles into pairs for 2-column layout
+  for (let i = 0; i < uniqueCycles.length; i += 2) {
+    const firstCycle = uniqueCycles[i];
+    const secondCycle = uniqueCycles[i + 1];
+
+    const rowCells: TableCell[] = [];
+    // First cycle cell
+    const firstCycleColor = CYCLE_TYPE_COLORS[firstCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS];
+    rowCells.push(new TableCell({
+      children: [
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: firstCycle.cycleName.replace(/ Cycle$/, ''),
+              bold: true,
+              color: firstCycleColor?.fg || DOCUMENT_STYLES.colors.primary
+            }),
+            ],
+          style: 'TableCellBold'
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({
+            text: getCycleDescription(firstCycle.cycleType)
+          })
+        ],
+          style: 'BodyText'
+        })
+      ],
+      width: { size: 50, type: WidthType.PERCENTAGE },
+      margins: { top: 100, bottom: 100, left: 200, right: 100 },
+      shading: { fill: firstCycleColor?.bg || 'FFFFFF' }
+    }));
+
+    // Second cycle cell (if exists)
+    if (secondCycle) {
+      const secondCycleColor = CYCLE_TYPE_COLORS[secondCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS];
+      rowCells.push(new TableCell({
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: secondCycle.cycleName.replace(/ Cycle$/, ''),
+                bold: true,
+                color: secondCycleColor?.fg || DOCUMENT_STYLES.colors.primary
+              })
+            ],
+            style: 'TableCellBold'
+          }),
+          new Paragraph({
+            children: [new TextRun({
+              text: getCycleDescription(secondCycle.cycleType)
+            })],
+            style: 'BodyText'
+          })
+        ],
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        margins: { top: 200, bottom: 200, left: 100, right: 200 },
+        shading: { fill: secondCycleColor?.bg || 'FFFFFF' }
+      }));
+    } else {
+      // Empty cell for odd number of cycles
+      rowCells.push(new TableCell({
+        children: [],
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        margins: { top: 200, bottom: 200, left: 100, right: 200 }
+      }));
+    }
+
+    legendRows.push(new TableRow({ children: rowCells }));
+  }
+
+  // Add the legend table
+  elements.push(new Table({
+    rows: legendRows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    style: TABLE_STYLE_NAMES.legend,
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+    }
+  }));
+
+  // Add spacing after legend
+  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+
+  return elements;
+}
+
+/**
+ * Get one-liner description for each cycle type
+ */
+function getCycleDescription(cycleType: string): string {
+  const descriptions: { [key: string]: string } = {
+    'C1': 'NCERT Foundation - Building core concepts from NCERT textbooks',
+    'C2': 'Comprehensive Foundation - Deep dive into all subjects with standard books',
+    'C3': 'Mains Revision Pre-Prelims - Focused preparation for Mains exam',
+    'C4': 'Prelims Reading - Comprehensive reading for Prelims preparation',
+    'C5': 'Prelims Revision - Intensive revision and practice for Prelims',
+    'C5.b': 'Prelims Rapid Revision - Quick revision and mock tests',
+    'C6': 'Mains Revision - Comprehensive revision for Mains exam',
+    'C7': 'Mains Rapid Revision - Quick revision and answer writing practice',
+    'C8': 'Mains Foundation - Building strong foundation for Mains preparation'
+  };
+  
+  return descriptions[cycleType] || 'Study cycle for comprehensive preparation';
+}
+
+/**
  * Generate monthly views with daily/weekly pages
  */
-async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(Paragraph | Table)[]> {
+async function generateMonthViewWithDailyPages(studyPlan: StudyPlan, studentIntake: StudentIntake): Promise<(Paragraph | Table)[]> {
   const cycles = studyPlan.cycles || [];
   const elements: (Paragraph | Table)[] = [];
 
@@ -1126,7 +1244,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
     // Month title with cycle name using table for proper alignment
     const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
     const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
-    
+
     elements.push(new Table({
       rows: [
         new TableRow({
@@ -1134,7 +1252,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
             new TableCell({
               children: [
                 new Paragraph({
-                  children: [new TextRun({ 
+                  children: [new TextRun({
                     text: `${monthName.toUpperCase()} ${monthYear}`,
                     color: cycleColor
                   })],
@@ -1147,7 +1265,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
             new TableCell({
               children: [
                 new Paragraph({
-                  children: [new TextRun({ 
+                  children: [new TextRun({
                     text: cycleName,
                     color: cycleColor
                   })],
@@ -1171,22 +1289,22 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
         insideVertical: { style: BorderStyle.NONE, size: 0 }
       }
     }));
-    
+
     // Add spacing after the title
     elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
 
     // Monthly calendar grid
     const daysInMonth = monthDate.daysInMonth();
     const firstDayOfMonth = monthDate.startOf('month').day();
-    
+
     const calendarRows: TableRow[] = [];
-    
+
     // Header row
-    const headerCells = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day => 
+    const headerCells = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day =>
       new TableCell({
         children: [
           new Paragraph({
-            children: [new TextRun({ 
+            children: [new TextRun({
               text: day
             })],
             style: 'TableCellCalendarHeader'
@@ -1201,7 +1319,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
 
     // Calendar days
     let currentWeek: TableCell[] = [];
-    
+
     // Add empty cells for days before month starts
     for (let i = 0; i < firstDayOfMonth; i++) {
       currentWeek.push(new TableCell({
@@ -1213,7 +1331,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
 
     for (let day = 1; day <= daysInMonth; day++) {
       const currentDay = monthDate.date(day);
-      
+
       // Determine which cycle this day belongs to for background color
       let dayCycle = null;
       for (const cycle of cycles) {
@@ -1226,14 +1344,14 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
       }
 
       const cycleColor = dayCycle ? CYCLE_TYPE_COLORS[dayCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
-      
+
       // Get subjects for this day
       const daySubjects: string[] = [];
       for (const cycle of cycles) {
         for (const block of cycle.cycleBlocks) {
           const blockStart = dayjs(block.block_start_date);
           const blockEnd = dayjs(block.block_end_date);
-          
+
           if (currentDay.isBetween(blockStart, blockEnd, 'day', '[]')) {
             for (const subject of block.subjects) {
               const subjectName = getSubjectName(subject);
@@ -1245,7 +1363,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
 
       const cellContent = [
         new Paragraph({
-          children: [new TextRun({ 
+          children: [new TextRun({
             text: day.toString()
           })],
           style: 'TableCellCalendarDayNumberBold'
@@ -1255,7 +1373,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
       // Add subjects
       daySubjects.forEach(subject => {
         cellContent.push(new Paragraph({
-          children: [new TextRun({ 
+          children: [new TextRun({
             text: subject
           })],
           style: 'TableCellCalendarSubject'
@@ -1308,7 +1426,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
 
     // Add weekly views for this month
     elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
-    elements.push(...await generateWeeklyViews(studyPlan, monthDate));
+    elements.push(...await generateWeeklyViews(studyPlan, studentIntake, monthDate));
 
     monthCount++;
   }
@@ -1319,47 +1437,47 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
 /**
  * Generate weekly views for a specific month
  */
-async function generateWeeklyViews(studyPlan: StudyPlan, monthDate: dayjs.Dayjs): Promise<(Paragraph | Table)[]> {
+async function generateWeeklyViews(studyPlan: StudyPlan, studentIntake: StudentIntake, monthDate: dayjs.Dayjs): Promise<(Paragraph | Table)[]> {
   const elements: (Paragraph | Table)[] = [];
-  
+
   const monthStart = monthDate.startOf('month');
   const monthEnd = monthDate.endOf('month');
-  
+
   // Get all weeks in this month
   const weeksInMonth: dayjs.Dayjs[] = [];
   let currentWeek = monthStart.startOf('week');
-  
+
   while (currentWeek.isBefore(monthEnd) || currentWeek.isSame(monthEnd, 'week')) {
     weeksInMonth.push(currentWeek);
     currentWeek = currentWeek.add(1, 'week');
   }
-  
+
   // Generate weekly view for each week
   for (let i = 0; i < weeksInMonth.length; i++) {
     const weekStart = weeksInMonth[i];
     const weekEnd = weekStart.endOf('week');
-    
+
     // Find which cycle this week belongs to
     let weekCycle = null;
     for (const cycle of studyPlan.cycles || []) {
       const cycleStart = dayjs(cycle.cycleStartDate);
       const cycleEnd = dayjs(cycle.cycleEndDate);
-      if (weekStart.isBetween(cycleStart, cycleEnd, 'week', '[]') || 
-          weekEnd.isBetween(cycleStart, cycleEnd, 'week', '[]')) {
+      if (weekStart.isBetween(cycleStart, cycleEnd, 'week', '[]') ||
+        weekEnd.isBetween(cycleStart, cycleEnd, 'week', '[]')) {
         weekCycle = cycle;
         break;
       }
     }
-    
+
     // Page break before each week
     elements.push(new Paragraph({
       children: [new PageBreak()]
     }));
-    
+
     // Week title with cycle name - same layout as month view
     const cycleName = weekCycle ? weekCycle.cycleName.replace(/ Cycle$/, '') : '';
     const cycleColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
-    
+
     // Week title with cycle name using table for proper alignment
     elements.push(new Table({
       rows: [
@@ -1368,7 +1486,7 @@ async function generateWeeklyViews(studyPlan: StudyPlan, monthDate: dayjs.Dayjs)
             new TableCell({
               children: [
                 new Paragraph({
-                  children: [new TextRun({ 
+                  children: [new TextRun({
                     text: `📅 ${weekStart.format('MMM DD')} - ${weekEnd.format('MMM DD, YYYY')}`,
                     color: cycleColor
                   })],
@@ -1381,7 +1499,7 @@ async function generateWeeklyViews(studyPlan: StudyPlan, monthDate: dayjs.Dayjs)
             new TableCell({
               children: [
                 new Paragraph({
-                  children: [new TextRun({ 
+                  children: [new TextRun({
                     text: cycleName,
                     color: cycleColor
                   })],
@@ -1405,89 +1523,89 @@ async function generateWeeklyViews(studyPlan: StudyPlan, monthDate: dayjs.Dayjs)
         insideVertical: { style: BorderStyle.NONE, size: 0 }
       }
     }));
-    
+
     // Add spacing between title and calendar
     elements.push(new Paragraph({ text: '', spacing: { after: 200 } }));
-    
+
     // Generate weekly content
-    elements.push(...await generateWeekContent(studyPlan, weekStart, weekEnd, weekCycle));
-    
+    elements.push(...await generateWeekContent(studyPlan, studentIntake, weekStart, weekEnd, weekCycle));
+
     // Add weekly resources
     elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
     elements.push(...await generateWeeklyResources(studyPlan, weekStart, weekEnd));
   }
-  
+
   return elements;
 }
 
 /**
  * Generate content for a specific week in calendar layout
  */
-async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs, weekEnd: dayjs.Dayjs, weekCycle?: any): Promise<(Paragraph | Table)[]> {
+async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentIntake, weekStart: dayjs.Dayjs, weekEnd: dayjs.Dayjs, weekCycle?: any): Promise<(Paragraph | Table)[]> {
   const cycles = studyPlan.cycles || [];
   const elements: (Paragraph | Table)[] = [];
-  
+
   // Find blocks that overlap with this week
   const weekBlocks: Array<{ block: any; cycle: any }> = [];
-  
+
   for (const cycle of cycles) {
     for (const block of cycle.cycleBlocks) {
       const blockStart = dayjs(block.block_start_date);
       const blockEnd = dayjs(block.block_end_date);
-      
+
       // Check if block overlaps with this week
       if (blockStart.isBefore(weekEnd) && blockEnd.isAfter(weekStart)) {
         weekBlocks.push({ block, cycle });
       }
     }
   }
-  
+
   if (weekBlocks.length === 0) {
     elements.push(new Paragraph({
-      children: [new TextRun({ 
+      children: [new TextRun({
         text: 'No study activities scheduled for this week.'
       })],
       style: 'NoActivitiesText'
     }));
     return elements;
   }
-  
+
   // Create weekly calendar table with 7 day columns
   const calendarRows: TableRow[] = [];
-  
+
   // Header row with day names and dates
   const headerCells: TableCell[] = [];
   const cycleBgColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'F8F9FA' : 'F8F9FA';
   const cycleFgColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
-  
+
   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
     const currentDay = weekStart.add(dayOffset, 'day');
     const dayName = currentDay.format('dddd');
     const dayDate = currentDay.format('MMM DD');
-    const isCatchupDay = isCatchupDayCheck(currentDay, studyPlan);
-    
+    const isCatchupDay = isCatchupDayCheck(currentDay, studentIntake.study_strategy?.catch_up_day_preference);
+
     // Use cycle color for header, but keep catchup day highlighting
     const headerBgColor = isCatchupDay ? 'FFF3E0' : cycleBgColor;
     const headerFgColor = isCatchupDay ? 'F57C00' : cycleFgColor;
-    
+
     headerCells.push(new TableCell({
       children: [
         new Paragraph({
-          children: [new TextRun({ 
+          children: [new TextRun({
             text: dayName,
             color: headerFgColor
           })],
           style: 'TableCellCalendarDayHeader'
         }),
         new Paragraph({
-          children: [new TextRun({ 
+          children: [new TextRun({
             text: dayDate,
             color: headerFgColor
           })],
           style: 'TableCellCalendarDateHeader'
         }),
         new Paragraph({
-          children: [new TextRun({ 
+          children: [new TextRun({
             text: isCatchupDay ? 'Catchup Day' : '',
             color: headerFgColor
           })],
@@ -1499,32 +1617,32 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
       margins: { top: 200, bottom: 200, left: 100, right: 100 }
     }));
   }
-  
+
   calendarRows.push(new TableRow({ children: headerCells }));
-  
+
   // Get all tasks for the week organized by day
   const weekTasks: Array<{ day: number; tasks: Array<{ task: any; subject: string; block: any; cycle: any }> }> = [];
-  
+
   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
     const currentDay = weekStart.add(dayOffset, 'day');
     const dayTasks: Array<{ task: any; subject: string; block: any; cycle: any }> = [];
-    
+
     for (const { block, cycle } of weekBlocks) {
       const blockStart = dayjs(block.block_start_date);
       const blockEnd = dayjs(block.block_end_date);
-      
+
       if (currentDay.isBetween(blockStart, blockEnd, 'day', '[]')) {
         // Find weekly plan for this week
         // Calculate which week of the block this day falls into
         const daysFromStart = currentDay.diff(blockStart, 'day');
         const weekNumber = Math.floor(daysFromStart / 7) + 1;
         const weeklyPlan = block.weekly_plan?.find((wp: any) => wp.week === weekNumber);
-        
+
         if (weeklyPlan) {
           // Match by day of week (0=Sunday, 1=Monday, etc.)
           const dayOfWeek = currentDay.day();
           const dayPlan = weeklyPlan.daily_plans?.find((dp: any) => dp.day === dayOfWeek);
-          
+
           if (dayPlan && dayPlan.tasks) {
             for (const task of dayPlan.tasks) {
               // Only add the task once, not for each subject
@@ -1536,47 +1654,47 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
         }
       }
     }
-    
+
     weekTasks.push({ day: dayOffset, tasks: dayTasks });
   }
-  
+
   // Find the maximum number of tasks in any day to determine table height
   const maxTasks = Math.max(...weekTasks.map(day => day.tasks.length), 1);
-  
+
   // Create rows for each task slot
   for (let taskIndex = 0; taskIndex < maxTasks; taskIndex++) {
     const taskRowCells: TableCell[] = [];
-    
+
     for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
       const dayTasks = weekTasks[dayOffset].tasks;
       const currentDay = weekStart.add(dayOffset, 'day');
-      const isCatchupDay = isCatchupDayCheck(currentDay, studyPlan);
-      
+      const isCatchupDay = isCatchupDayCheck(currentDay, studentIntake.study_strategy?.catch_up_day_preference);
+
       if (taskIndex < dayTasks.length) {
         const { task, subject } = dayTasks[taskIndex];
         const subjectName = getSubjectName(subject);
         const taskType = task.taskType || 'study';
         const duration = formatDuration(task.duration_minutes);
-        
+
         // Use cycle color for task cells, but keep catchup day highlighting
         const taskCellColor = isCatchupDay ? 'FFF3E0' : cycleBgColor;
-        
+
         taskRowCells.push(new TableCell({
           children: [
             new Paragraph({
-              children: [new TextRun({ 
+              children: [new TextRun({
                 text: subjectName
               })],
               style: 'TableCellTaskSubject'
             }),
             new Paragraph({
-              children: [new TextRun({ 
+              children: [new TextRun({
                 text: task.title
               })],
               style: 'TableCellTaskTitle'
             }),
             new Paragraph({
-              children: [new TextRun({ 
+              children: [new TextRun({
                 text: duration
               })],
               style: 'TableCellTaskDuration'
@@ -1598,10 +1716,10 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
         }));
       }
     }
-    
+
     calendarRows.push(new TableRow({ children: taskRowCells }));
   }
-  
+
   // Add the weekly calendar table
   elements.push(new Table({
     rows: calendarRows,
@@ -1616,7 +1734,7 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
       insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
     }
   }));
-  
+
   return elements;
 }
 
@@ -1642,7 +1760,7 @@ function formatDuration(minutes: number): string {
  */
 function createTaskTypeBadge(taskType: string): Paragraph {
   const badgeConfig = getTaskTypeBadgeConfig(taskType);
-  
+
   return new Paragraph({
     children: [
       new TextRun({
@@ -1669,18 +1787,100 @@ function getTaskTypeBadgeConfig(taskType: string): { text: string; backgroundCol
     current_affairs: { text: 'CA', backgroundColor: 'F3E5F5', textColor: '7B1FA2' },
     optional: { text: 'OPTIONAL', backgroundColor: 'E1F5FE', textColor: '0288D1' }
   };
-  
+
   return configs[taskType as keyof typeof configs] || { text: taskType.toUpperCase(), backgroundColor: 'F5F5F5', textColor: '757575' };
 }
 
 /**
- * Check if a day is a catchup day
+ * Get the optional subject name from the subject code
  */
-function isCatchupDayCheck(day: dayjs.Dayjs, _studyPlan: StudyPlan): boolean {
-  // Simple catchup day logic - you can enhance this based on your requirements
-  // For now, marking weekends as potential catchup days
+function getOptionalSubjectName(subjectCode: string): string {
+  const optionalSubject = optionalSubjectsData.subjects.find(
+    subject => subject.code === subjectCode
+  );
+  return optionalSubject?.name || subjectCode;
+}
+
+/**
+ * Calculate the total duration of the study plan in months
+ */
+function calculatePlanDuration(studyPlan: StudyPlan): number {
+  if (!studyPlan.cycles) return 0;
+
+  const totalWeeks = studyPlan.cycles.reduce((total: number, cycle: any) => {
+    if (cycle.cycleBlocks) {
+      return total + cycle.cycleBlocks.reduce((cycleTotal: number, block: any) => {
+        return cycleTotal + (block.duration_weeks || 0);
+      }, 0);
+    }
+    return total;
+  }, 0);
+
+  // Convert weeks to months (approximate: 4.33 weeks per month)
+  return Math.round(totalWeeks / 4.33);
+}
+
+/**
+ * Calculate the total study hours across all blocks in the study plan
+ */
+function calculateTotalStudyHours(studyPlan: StudyPlan): number {
+  if (!studyPlan.cycles) return 0;
+
+  return studyPlan.cycles.reduce((total: number, cycle: any) => {
+    if (cycle.cycleBlocks) {
+      return total + cycle.cycleBlocks.reduce((cycleTotal: number, block: any) => {
+        return cycleTotal + (block.estimated_hours || 0);
+      }, 0);
+    }
+    return total;
+  }, 0);
+}
+
+/**
+ * Calculate the number of unique subjects covered in the study plan
+ */
+function calculateSubjectsCount(studyPlan: StudyPlan): number {
+  if (!studyPlan.cycles) return 0;
+
+  const allSubjects = new Set<string>();
+
+  studyPlan.cycles.forEach((cycle: any) => {
+    if (cycle.cycleBlocks) {
+      cycle.cycleBlocks.forEach((block: any) => {
+        if (block.subjects) {
+          block.subjects.forEach((subject: string) => allSubjects.add(subject));
+        }
+      });
+    }
+  });
+
+  return allSubjects.size;
+}
+
+/**
+ * Check if a day is a catchup day based on the actual study plan configuration
+ */
+function isCatchupDayCheck(day: dayjs.Dayjs, catchUpPreference?: string): boolean {
   const dayOfWeek = day.day();
-  return dayOfWeek === 0 || dayOfWeek === 6; // Sunday or Saturday
+
+  // Map day names to dayjs day numbers (0=Sunday, 1=Monday, ..., 6=Saturday)
+  const dayMap: { [key in DayOfWeek]: number } = {
+    [DayOfWeek.SUNDAY]: 0,
+    [DayOfWeek.MONDAY]: 1,
+    [DayOfWeek.TUESDAY]: 2,
+    [DayOfWeek.WEDNESDAY]: 3,
+    [DayOfWeek.THURSDAY]: 4,
+    [DayOfWeek.FRIDAY]: 5,
+    [DayOfWeek.SATURDAY]: 6
+  };
+
+  // Use provided preference
+  if (catchUpPreference && Object.values(DayOfWeek).includes(catchUpPreference as DayOfWeek)) {
+    return dayOfWeek === dayMap[catchUpPreference as DayOfWeek];
+  }
+
+  // Default to no catchup days if not specified or invalid
+  return false;
 }
 
 /**
@@ -1689,7 +1889,7 @@ function isCatchupDayCheck(day: dayjs.Dayjs, _studyPlan: StudyPlan): boolean {
 async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Dayjs, weekEnd: dayjs.Dayjs): Promise<(Paragraph | Table)[]> {
   const cycles = studyPlan.cycles || [];
   const elements: (Paragraph | Table)[] = [];
-  
+
   // Get all subjects that are active in this week
   const weeklySubjects = new Set<string>();
 
@@ -1709,7 +1909,7 @@ async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Da
 
   if (weeklySubjects.size === 0) {
     elements.push(new Paragraph({
-      children: [new TextRun({ 
+      children: [new TextRun({
         text: 'No resources for this week.'
       })],
       style: 'NoResourcesText'
@@ -1719,7 +1919,7 @@ async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Da
 
   // Resources title
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: `📚 Resources for ${weekStart.format('MMM DD')} - ${weekEnd.format('MMM DD')}`
     })],
     style: 'ResourceTitle'
@@ -1728,7 +1928,7 @@ async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Da
   // Create single table with 3-column card layout for all subjects
   const subjectsArray = Array.from(weeklySubjects);
   const subjectTriplets: Array<[string, string?, string?]> = [];
-  
+
   // Group subjects into triplets for 3-column layout
   for (let i = 0; i < subjectsArray.length; i += 3) {
     subjectTriplets.push([subjectsArray[i], subjectsArray[i + 1], subjectsArray[i + 2]]);
@@ -1736,15 +1936,15 @@ async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Da
 
   // Create a single table with all subject card rows
   const allCardRows: TableRow[] = [];
-  
+
   for (const [firstSubject, secondSubject, thirdSubject] of subjectTriplets) {
     // Create card row with three subject cards
     const cardCells: TableCell[] = [];
-    
+
     // First subject card
     const firstResources = await ResourceService.getResourcesForSubject(firstSubject);
     cardCells.push(createSubjectCard(firstSubject, firstResources));
-    
+
     // Second subject card (if exists)
     if (secondSubject) {
       const secondResources = await ResourceService.getResourcesForSubject(secondSubject);
@@ -1756,7 +1956,7 @@ async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Da
         width: { size: 33.33, type: WidthType.PERCENTAGE }
       }));
     }
-    
+
     // Third subject card (if exists)
     if (thirdSubject) {
       const thirdResources = await ResourceService.getResourcesForSubject(thirdSubject);
@@ -1768,10 +1968,10 @@ async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Da
         width: { size: 33.33, type: WidthType.PERCENTAGE }
       }));
     }
-    
+
     allCardRows.push(new TableRow({ children: cardCells }));
   }
-  
+
   // Add the single table with all subject cards
   elements.push(new Table({
     rows: allCardRows,
@@ -1796,7 +1996,7 @@ async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Da
 async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.Dayjs): Promise<(Paragraph | Table)[]> {
   const cycles = studyPlan.cycles || [];
   const elements: (Paragraph | Table)[] = [];
-  
+
   const monthStart = monthDate.startOf('month');
   const monthEnd = monthDate.endOf('month');
 
@@ -1819,7 +2019,7 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
 
   if (monthlySubjects.size === 0) {
     elements.push(new Paragraph({
-      children: [new TextRun({ 
+      children: [new TextRun({
         text: 'No resources for this month.'
       })],
       style: 'NoResourcesText'
@@ -1829,7 +2029,7 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
 
   // Resources title
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: `📚 Resources for ${monthDate.format('MMMM YYYY')}`
     })],
     style: 'ResourceTitle'
@@ -1838,7 +2038,7 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
   // Create single table with 3-column card layout for all subjects
   const subjectsArray = Array.from(monthlySubjects);
   const subjectTriplets: Array<[string, string?, string?]> = [];
-  
+
   // Group subjects into triplets for 3-column layout
   for (let i = 0; i < subjectsArray.length; i += 3) {
     subjectTriplets.push([subjectsArray[i], subjectsArray[i + 1], subjectsArray[i + 2]]);
@@ -1846,15 +2046,15 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
 
   // Create a single table with all subject card rows
   const allCardRows: TableRow[] = [];
-  
+
   for (const [firstSubject, secondSubject, thirdSubject] of subjectTriplets) {
     // Create card row with three subject cards
     const cardCells: TableCell[] = [];
-    
+
     // First subject card
     const firstResources = await ResourceService.getResourcesForSubject(firstSubject);
     cardCells.push(createSubjectCard(firstSubject, firstResources));
-    
+
     // Second subject card (if exists)
     if (secondSubject) {
       const secondResources = await ResourceService.getResourcesForSubject(secondSubject);
@@ -1866,7 +2066,7 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
         width: { size: 33.33, type: WidthType.PERCENTAGE }
       }));
     }
-    
+
     // Third subject card (if exists)
     if (thirdSubject) {
       const thirdResources = await ResourceService.getResourcesForSubject(thirdSubject);
@@ -1878,10 +2078,10 @@ async function generateMonthlyResources(studyPlan: StudyPlan, monthDate: dayjs.D
         width: { size: 33.33, type: WidthType.PERCENTAGE }
       }));
     }
-    
+
     allCardRows.push(new TableRow({ children: cardCells }));
   }
-  
+
   // Add the single table with all subject cards
   elements.push(new Table({
     rows: allCardRows,
@@ -1909,7 +2109,7 @@ async function generateResourcesTable(studyPlan: StudyPlan): Promise<(Paragraph 
 
   // Title
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: '📊 Comprehensive Resources by Subject'
     })],
     style: 'SectionHeading1'
@@ -1917,7 +2117,7 @@ async function generateResourcesTable(studyPlan: StudyPlan): Promise<(Paragraph 
 
   // Create resources table
   const resourceRows: TableRow[] = [];
-  
+
   // Header row
   resourceRows.push(new TableRow({
     children: [
@@ -1977,7 +2177,7 @@ function generateLegend(studyPlan: StudyPlan): (Paragraph | Table)[] {
 
   // Title
   elements.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: 'ℹ️ Legend & Study Phases'
     })],
     style: 'SectionHeading1'
@@ -1985,7 +2185,7 @@ function generateLegend(studyPlan: StudyPlan): (Paragraph | Table)[] {
 
   // Create legend table
   const legendRows: TableRow[] = [];
-  
+
   // Header row
   legendRows.push(new TableRow({
     children: [
@@ -2054,18 +2254,18 @@ function generateLegend(studyPlan: StudyPlan): (Paragraph | Table)[] {
  */
 function createSubjectCard(subjectCode: string, resources: any): TableCell {
   const subjectName = getSubjectName(subjectCode);
-  
+
   // Create card content with header and resource sections
   const cardContent: Paragraph[] = [];
-  
+
   // Card header with subject name
   cardContent.push(new Paragraph({
-    children: [new TextRun({ 
+    children: [new TextRun({
       text: subjectName
     })],
     style: 'TableCellSubjectName'
   }));
-  
+
   // Resource categories with bullet points
   const resourceCategories = [
     { name: '📚 Primary Books', resources: resources.primary_books },
@@ -2073,21 +2273,21 @@ function createSubjectCard(subjectCode: string, resources: any): TableCell {
     { name: '📝 Practice Materials', resources: resources.practice_resources },
     { name: '📰 Current Affairs', resources: resources.current_affairs_sources }
   ];
-  
+
   for (const category of resourceCategories) {
     if (category.resources && category.resources.length > 0) {
       // Category title
       cardContent.push(new Paragraph({
-        children: [new TextRun({ 
+        children: [new TextRun({
           text: category.name
         })],
         style: 'TableCellCategoryTitle'
       }));
-      
+
       // Resource items as bullet points
       category.resources.forEach((resource: any) => {
         cardContent.push(new Paragraph({
-          children: [new TextRun({ 
+          children: [new TextRun({
             text: `• ${resource.resource_title}`
           })],
           style: 'TableCellResourceItem'
@@ -2095,7 +2295,7 @@ function createSubjectCard(subjectCode: string, resources: any): TableCell {
       });
     }
   }
-  
+
   return new TableCell({
     children: cardContent,
     width: { size: 33.33, type: WidthType.PERCENTAGE },
@@ -2117,7 +2317,7 @@ function createTableCell(text: string, _color: string, bold = false): TableCell 
   return new TableCell({
     children: [
       new Paragraph({
-        children: [new TextRun({ 
+        children: [new TextRun({
           text
         })],
         style: bold ? 'TableCellHeader' : 'TableCellData'
@@ -2134,19 +2334,19 @@ function createStrategyCard(icon: string, title: string, value: string): TableCe
   return new TableCell({
     children: [
       new Paragraph({
-        children: [new TextRun({ 
+        children: [new TextRun({
           text: icon
         })],
         style: 'TableCellIconLarge'
       }),
       new Paragraph({
-        children: [new TextRun({ 
+        children: [new TextRun({
           text: title
         })],
         style: 'TableCellTitle'
       }),
       new Paragraph({
-        children: [new TextRun({ 
+        children: [new TextRun({
           text: value
         })],
         style: 'TableCellValue'
@@ -2197,11 +2397,11 @@ function getDocumentStyles() {
         id: 'CompanyBrand',
         name: 'Company Brand',
         basedOn: 'Normal',
-        run: { 
-          size: 32, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 32,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
       },
@@ -2209,10 +2409,10 @@ function getDocumentStyles() {
         id: 'VersionInfo',
         name: 'Version Info',
         basedOn: 'Normal',
-        run: { 
-          size: 18, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 18,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
       },
@@ -2220,11 +2420,11 @@ function getDocumentStyles() {
         id: 'CompanyTagline',
         name: 'Company Tagline',
         basedOn: 'Normal',
-        run: { 
-          size: 16, 
-          italics: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 16,
+          italics: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 400 } }
       },
@@ -2232,11 +2432,11 @@ function getDocumentStyles() {
         id: 'CoverPageTitle',
         name: 'Cover Page Title',
         basedOn: 'Normal',
-        run: { 
-          size: 36, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 36,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 100 } }
       },
@@ -2244,11 +2444,11 @@ function getDocumentStyles() {
         id: 'CoverPageYear',
         name: 'Cover Page Year',
         basedOn: 'Normal',
-        run: { 
-          size: 28, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 28,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 0 } }
       },
@@ -2256,14 +2456,14 @@ function getDocumentStyles() {
         id: 'CardTitle',
         name: 'Card Title',
         basedOn: 'Heading1',
-        run: { 
-          size: 20, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 20,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
-        paragraph: { 
-          alignment: AlignmentType.CENTER, 
+        paragraph: {
+          alignment: AlignmentType.CENTER,
           spacing: { before: 400, after: 200 },
           outlineLevel: 1
         }
@@ -2272,10 +2472,10 @@ function getDocumentStyles() {
         id: 'ProfileData',
         name: 'Profile Data',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 100 } }
       },
@@ -2283,10 +2483,10 @@ function getDocumentStyles() {
         id: 'OverviewData',
         name: 'Overview Data',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 100 } }
       },
@@ -2294,10 +2494,10 @@ function getDocumentStyles() {
         id: 'ContactData',
         name: 'Contact Data',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 100 } }
       },
@@ -2305,11 +2505,11 @@ function getDocumentStyles() {
         id: 'StudentName',
         name: 'Student Name',
         basedOn: 'Normal',
-        run: { 
-          size: 36, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 36,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 100 } }
       },
@@ -2317,10 +2517,10 @@ function getDocumentStyles() {
         id: 'CoverPageSubtitle',
         name: 'Cover Page Subtitle',
         basedOn: 'Normal',
-        run: { 
-          size: 18, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 18,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
       },
@@ -2328,11 +2528,11 @@ function getDocumentStyles() {
         id: 'StrategyOverviewTitle',
         name: 'Strategy Overview Title',
         basedOn: 'Normal',
-        run: { 
-          size: 24, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 24,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 400 } }
       },
@@ -2340,11 +2540,11 @@ function getDocumentStyles() {
         id: 'QuoteText',
         name: 'Quote Text',
         basedOn: 'Normal',
-        run: { 
-          size: 18, 
-          italics: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 18,
+          italics: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2352,10 +2552,10 @@ function getDocumentStyles() {
         id: 'QuoteAuthor',
         name: 'Quote Author',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 200 } }
       },
@@ -2363,10 +2563,10 @@ function getDocumentStyles() {
         id: 'FooterBranding',
         name: 'Footer Branding',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
       },
@@ -2374,10 +2574,10 @@ function getDocumentStyles() {
         id: 'FooterDate',
         name: 'Footer Date',
         basedOn: 'Normal',
-        run: { 
-          size: 12, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 12,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2387,11 +2587,11 @@ function getDocumentStyles() {
         id: 'SectionHeading1',
         name: 'Section Heading 1',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.heading1, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.heading1,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 400 } }
       },
@@ -2399,11 +2599,11 @@ function getDocumentStyles() {
         id: 'SectionHeading2',
         name: 'Section Heading 2',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.heading2, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.heading2,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 400 } }
       },
@@ -2411,11 +2611,11 @@ function getDocumentStyles() {
         id: 'MonthTitle',
         name: 'Month Title',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.heading1, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.heading1,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.LEFT }
       },
@@ -2423,11 +2623,11 @@ function getDocumentStyles() {
         id: 'CycleName',
         name: 'Cycle Name',
         basedOn: 'Normal',
-        run: { 
-          size: 25, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 25,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.RIGHT }
       },
@@ -2435,11 +2635,11 @@ function getDocumentStyles() {
         id: 'ResourceTitle',
         name: 'Resource Title',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.heading2, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.heading2,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 400 } }
       },
@@ -2447,10 +2647,10 @@ function getDocumentStyles() {
         id: 'NoResourcesText',
         name: 'No Resources Text',
         basedOn: 'Normal',
-        run: { 
-          italics: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          italics: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 400 } }
       },
@@ -2458,11 +2658,11 @@ function getDocumentStyles() {
         id: 'WeekTitle',
         name: 'Week Title',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.heading2, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.heading2,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 200 } }
       },
@@ -2470,11 +2670,11 @@ function getDocumentStyles() {
         id: 'WeekCycleName',
         name: 'Week Cycle Name',
         basedOn: 'Normal',
-        run: { 
-          size: 25, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 25,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.RIGHT }
       },
@@ -2482,10 +2682,10 @@ function getDocumentStyles() {
         id: 'NoActivitiesText',
         name: 'No Activities Text',
         basedOn: 'Normal',
-        run: { 
-          italics: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          italics: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 400 } }
       },
@@ -2493,25 +2693,25 @@ function getDocumentStyles() {
         id: 'BodyText',
         name: 'Body Text',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.body, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.body,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
-        paragraph: { 
-          spacing: { 
-            after: DOCUMENT_STYLES.spacing.paragraphAfter 
-          } 
+        paragraph: {
+          spacing: {
+            after: DOCUMENT_STYLES.spacing.paragraphAfter
+          }
         }
       },
       {
         id: 'SmallText',
         name: 'Small Text',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.small, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.small,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2521,11 +2721,11 @@ function getDocumentStyles() {
         id: 'TableCellHeader',
         name: 'Table Cell Header',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.body, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.body,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.LEFT }
       },
@@ -2533,10 +2733,10 @@ function getDocumentStyles() {
         id: 'TableCellData',
         name: 'Table Cell Data',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.body, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.body,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.LEFT }
       },
@@ -2544,10 +2744,10 @@ function getDocumentStyles() {
         id: 'TableCellCenter',
         name: 'Table Cell Center',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.body, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.body,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2555,11 +2755,11 @@ function getDocumentStyles() {
         id: 'TableCellBold',
         name: 'Table Cell Bold',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.body, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.body,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.LEFT }
       },
@@ -2567,11 +2767,11 @@ function getDocumentStyles() {
         id: 'TableCellSecondary',
         name: 'Table Cell Secondary',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.LEFT }
       },
@@ -2579,10 +2779,10 @@ function getDocumentStyles() {
         id: 'TableCellSecondaryData',
         name: 'Table Cell Secondary Data',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.LEFT }
       },
@@ -2590,10 +2790,10 @@ function getDocumentStyles() {
         id: 'TableCellIcon',
         name: 'Table Cell Icon',
         basedOn: 'Normal',
-        run: { 
-          size: 16, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 16,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2601,10 +2801,10 @@ function getDocumentStyles() {
         id: 'TableCellIconLarge',
         name: 'Table Cell Icon Large',
         basedOn: 'Normal',
-        run: { 
-          size: 20, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 20,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
       },
@@ -2612,10 +2812,10 @@ function getDocumentStyles() {
         id: 'TableCellIconSmall',
         name: 'Table Cell Icon Small',
         basedOn: 'Normal',
-        run: { 
-          size: 16, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 16,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2623,11 +2823,11 @@ function getDocumentStyles() {
         id: 'TableCellTitle',
         name: 'Table Cell Title',
         basedOn: 'Normal',
-        run: { 
-          size: 12, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 12,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 100 } }
       },
@@ -2635,10 +2835,10 @@ function getDocumentStyles() {
         id: 'TableCellValue',
         name: 'Table Cell Value',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2646,11 +2846,11 @@ function getDocumentStyles() {
         id: 'TableCellSubjectName',
         name: 'Table Cell Subject Name',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
       },
@@ -2658,11 +2858,11 @@ function getDocumentStyles() {
         id: 'TableCellCategoryTitle',
         name: 'Table Cell Category Title',
         basedOn: 'Normal',
-        run: { 
-          size: 10, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 10,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { before: 100, after: 50 } }
       },
@@ -2670,10 +2870,10 @@ function getDocumentStyles() {
         id: 'TableCellResourceItem',
         name: 'Table Cell Resource Item',
         basedOn: 'Normal',
-        run: { 
-          size: 9, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 9,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 50 } }
       },
@@ -2681,11 +2881,11 @@ function getDocumentStyles() {
         id: 'TableCellCalendarDay',
         name: 'Table Cell Calendar Day',
         basedOn: 'Normal',
-        run: { 
-          size: 8, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 8,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2693,10 +2893,10 @@ function getDocumentStyles() {
         id: 'TableCellCalendarDayNumber',
         name: 'Table Cell Calendar Day Number',
         basedOn: 'Normal',
-        run: { 
-          size: 8, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 8,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2704,11 +2904,11 @@ function getDocumentStyles() {
         id: 'TableCellCalendarDayBold',
         name: 'Table Cell Calendar Day Bold',
         basedOn: 'Normal',
-        run: { 
-          size: 8, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 8,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2716,11 +2916,11 @@ function getDocumentStyles() {
         id: 'TableCellCalendarDayNumberBold',
         name: 'Table Cell Calendar Day Number Bold',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2728,10 +2928,10 @@ function getDocumentStyles() {
         id: 'TableCellCalendarSubject',
         name: 'Table Cell Calendar Subject',
         basedOn: 'Normal',
-        run: { 
-          size: 8, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 8,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2739,11 +2939,11 @@ function getDocumentStyles() {
         id: 'TableCellMonthName',
         name: 'Table Cell Month Name',
         basedOn: 'Normal',
-        run: { 
-          size: 10, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 10,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2751,11 +2951,11 @@ function getDocumentStyles() {
         id: 'TableCellMonthYear',
         name: 'Table Cell Month Year',
         basedOn: 'Normal',
-        run: { 
-          size: 12, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 12,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2763,11 +2963,11 @@ function getDocumentStyles() {
         id: 'TableCellCalendarHeader',
         name: 'Table Cell Calendar Header',
         basedOn: 'Normal',
-        run: { 
-          size: 12, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 12,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2775,11 +2975,11 @@ function getDocumentStyles() {
         id: 'TableCellCalendarDayHeader',
         name: 'Table Cell Calendar Day Header',
         basedOn: 'Normal',
-        run: { 
-          size: 14, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 14,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 100 } }
       },
@@ -2787,10 +2987,10 @@ function getDocumentStyles() {
         id: 'TableCellCalendarDateHeader',
         name: 'Table Cell Calendar Date Header',
         basedOn: 'Normal',
-        run: { 
-          size: 12, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 12,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 100 } }
       },
@@ -2798,11 +2998,11 @@ function getDocumentStyles() {
         id: 'TableCellCatchupLabel',
         name: 'Table Cell Catchup Label',
         basedOn: 'Normal',
-        run: { 
-          size: 10, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.warning, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 10,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.warning,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2810,11 +3010,11 @@ function getDocumentStyles() {
         id: 'TableCellTaskSubject',
         name: 'Table Cell Task Subject',
         basedOn: 'Normal',
-        run: { 
-          size: 10, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 10,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 50 } }
       },
@@ -2822,10 +3022,10 @@ function getDocumentStyles() {
         id: 'TableCellTaskTitle',
         name: 'Table Cell Task Title',
         basedOn: 'Normal',
-        run: { 
-          size: 9, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 9,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 50 } }
       },
@@ -2833,10 +3033,10 @@ function getDocumentStyles() {
         id: 'TableCellTaskDetails',
         name: 'Table Cell Task Details',
         basedOn: 'Normal',
-        run: { 
-          size: 8, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 8,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 0 } }
       },
@@ -2844,10 +3044,10 @@ function getDocumentStyles() {
         id: 'TableCellTaskDuration',
         name: 'Table Cell Task Duration',
         basedOn: 'Normal',
-        run: { 
-          size: 8, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 8,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { spacing: { after: 50 } }
       },
@@ -2855,11 +3055,11 @@ function getDocumentStyles() {
         id: 'TableCellTaskBadge',
         name: 'Table Cell Task Badge',
         basedOn: 'Normal',
-        run: { 
-          size: 8, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 8,
+          font: DOCUMENT_STYLES.font
         },
-        paragraph: { 
+        paragraph: {
           alignment: AlignmentType.CENTER,
           spacing: { after: 0 }
         }
@@ -2870,11 +3070,11 @@ function getDocumentStyles() {
         id: 'TableCellBirdsEyeDay',
         name: 'Table Cell Birds Eye Day',
         basedOn: 'Normal',
-        run: { 
-          size: 6, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 6,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2882,10 +3082,10 @@ function getDocumentStyles() {
         id: 'TableCellBirdsEyeDayNumber',
         name: 'Table Cell Birds Eye Day Number',
         basedOn: 'Normal',
-        run: { 
-          size: 6, 
-          color: DOCUMENT_STYLES.colors.text, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: 6,
+          color: DOCUMENT_STYLES.colors.text,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER }
       },
@@ -2895,11 +3095,11 @@ function getDocumentStyles() {
         id: 'HeaderText',
         name: 'Header Text',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.small, 
-          bold: true, 
-          color: DOCUMENT_STYLES.colors.primary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.small,
+          bold: true,
+          color: DOCUMENT_STYLES.colors.primary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.JUSTIFIED, spacing: { after: 100 } }
       },
@@ -2907,10 +3107,10 @@ function getDocumentStyles() {
         id: 'FooterText',
         name: 'Footer Text',
         basedOn: 'Normal',
-        run: { 
-          size: DOCUMENT_STYLES.sizes.small, 
-          color: DOCUMENT_STYLES.colors.secondary, 
-          font: DOCUMENT_STYLES.font 
+        run: {
+          size: DOCUMENT_STYLES.sizes.small,
+          color: DOCUMENT_STYLES.colors.secondary,
+          font: DOCUMENT_STYLES.font
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { before: 100 } }
       }
@@ -3060,11 +3260,11 @@ async function generateStyledTemplate(): Promise<void> {
 async function loadTemplateDocument(templatePath?: string): Promise<Document> {
   const fs = await import('fs');
   const path = await import('path');
-  
+
   // Default template path
   const defaultTemplatePath = path.join(process.cwd(), 'templates', 'calendar-template.docx');
   const templateFile = templatePath || defaultTemplatePath;
-  
+
   if (fs.existsSync(templateFile)) {
     try {
       // Read template file (currently not used due to docx library limitations)
@@ -3079,7 +3279,7 @@ async function loadTemplateDocument(templatePath?: string): Promise<Document> {
     console.log(`📁 No template found at: ${templateFile}`);
     console.log(`   Using default styles. Run 'npm run generate-template' to create a template.`);
   }
-  
+
   // Fallback to creating new document with styles
   return new Document({
     styles: getDocumentStyles(),

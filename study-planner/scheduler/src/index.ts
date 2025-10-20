@@ -9,3 +9,8 @@ export {
   validateGSOptionalRatio,
   createOptionalSubject
 } from './blocks';
+export {
+  distributeTasksIntoDays,
+  assignHumanReadableIDs,
+  createWeeklyPlan
+} from './tasks';

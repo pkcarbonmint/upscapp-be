@@ -161,9 +161,72 @@ export type ScheduledTask = {
   effortPercentage: number;
 };
 
+// Weekly task scheduling types
+export type WeeklyTask = {
+  task_id: string;
+  humanReadableId: string;
+  title: string;
+  duration_minutes: number;
+  taskType?: 'study' | 'practice' | 'revision' | 'test';
+  currentAffairsType?: any;
+  resources?: string[];
+};
+
+export type DayState = {
+  dayTasks: WeeklyTask[];
+  hours: number;
+};
+
+export type DailyPlan = {
+  day: number;
+  tasks: WeeklyTask[];
+};
+
+export type WeeklyPlan = {
+  week: number;
+  daily_plans: DailyPlan[];
+};
+
+export type DailyHourLimits = {
+  regular_day: number;
+  test_day: number;
+};
+
+// Day of week enums
+export enum DayOfWeek {
+  SUNDAY = 'Sunday',
+  MONDAY = 'Monday',
+  TUESDAY = 'Tuesday',
+  WEDNESDAY = 'Wednesday',
+  THURSDAY = 'Thursday',
+  FRIDAY = 'Friday',
+  SATURDAY = 'Saturday'
+}
+
+export type WeeklyTaskSchedulingInput = {
+  tasks: WeeklyTask[];
+  dailyLimits: DailyHourLimits;
+  catchupDayPreference?: DayOfWeek;
+  testDayPreference?: DayOfWeek;
+};
+
+export type WeeklyTaskSchedulingResult = {
+  dailyPlans: DailyPlan[];
+  totalScheduledHours: number;
+  conflicts: TaskSchedulingConflict[];
+};
+
+export type TaskSchedulingConflict = {
+  type: 'insufficient_time' | 'task_too_large' | 'day_overload' | 'catchup_day_violation';
+  message: string;
+  affectedTasks: string[];
+  affectedDays: number[];
+};
+
 // Main scheduling functions
 export type SubjectScheduler = (input: SchedulingInput) => SchedulingResult;
 export type TaskScheduler = (input: TaskSchedulingInput) => ScheduledTask[];
+export type WeeklyTaskScheduler = (input: WeeklyTaskSchedulingInput) => WeeklyTaskSchedulingResult;
 
 // Specific scheduling strategies
 export type ParallelSubjectScheduler = SubjectScheduler;
