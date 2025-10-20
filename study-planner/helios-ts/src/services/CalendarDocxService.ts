@@ -12,15 +12,15 @@ dayjs.extend(isSameOrBefore);
 
 // Color mapping for different cycle types (matching the PDF service)
 const CYCLE_TYPE_COLORS = {
-  [CycleType.C1]: { bg: 'E3F2FD', border: '3B82F6' }, // Very light blue
-  [CycleType.C2]: { bg: 'E8F5E8', border: '22C55E' }, // Very light green  
-  [CycleType.C3]: { bg: 'FCE4EC', border: 'EC4899' }, // Very light pink
-  [CycleType.C4]: { bg: 'FFEBEE', border: 'EF4444' }, // Very light red
-  [CycleType.C5]: { bg: 'F3E5F5', border: 'A855F7' }, // Very light purple
-  [CycleType.C5B]: { bg: 'F3E5F5', border: 'A855F7' }, // Very light purple
-  [CycleType.C6]: { bg: 'E1F5FE', border: '06B6D4' }, // Very light cyan
-  [CycleType.C7]: { bg: 'FFF3E0', border: 'F59E0B' }, // Very light orange
-  [CycleType.C8]: { bg: 'F1F8E9', border: '84CC16' }, // Very light lime
+  [CycleType.C1]: { bg: 'E3F2FD', border: '3B82F6', fg: '1976D2' }, // Very light blue with dark blue text
+  [CycleType.C2]: { bg: 'E8F5E8', border: '22C55E', fg: '2E7D32' }, // Very light green with dark green text
+  [CycleType.C3]: { bg: 'FCE4EC', border: 'EC4899', fg: 'C2185B' }, // Very light pink with dark pink text
+  [CycleType.C4]: { bg: 'FFEBEE', border: 'EF4444', fg: 'D32F2F' }, // Very light red with dark red text
+  [CycleType.C5]: { bg: 'F3E5F5', border: 'A855F7', fg: '7B1FA2' }, // Very light purple with dark purple text
+  [CycleType.C5B]: { bg: 'F3E5F5', border: 'A855F7', fg: '7B1FA2' }, // Very light purple with dark purple text
+  [CycleType.C6]: { bg: 'E1F5FE', border: '06B6D4', fg: '0277BD' }, // Very light cyan with dark cyan text
+  [CycleType.C7]: { bg: 'FFF3E0', border: 'F59E0B', fg: 'F57C00' }, // Very light orange with dark orange text
+  [CycleType.C8]: { bg: 'F1F8E9', border: '84CC16', fg: '689F38' }, // Very light lime with dark lime text
 } as const;
 
 // Document styles configuration
@@ -825,6 +825,8 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
 
     // Month title with cycle name using table for proper alignment
     const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
+    const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
+    
     elements.push(new Table({
       rows: [
         new TableRow({
@@ -833,7 +835,8 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
               children: [
                 new Paragraph({
                   children: [new TextRun({ 
-                    text: `${monthName.toUpperCase()} ${monthYear}`
+                    text: `${monthName.toUpperCase()} ${monthYear}`,
+                    color: cycleColor
                   })],
                   style: 'MonthTitle'
                 })
@@ -845,7 +848,8 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
               children: [
                 new Paragraph({
                   children: [new TextRun({ 
-                    text: cycleName
+                    text: cycleName,
+                    color: cycleColor
                   })],
                   style: 'CycleName'
                 })
@@ -1054,6 +1058,7 @@ async function generateWeeklyViews(studyPlan: StudyPlan, monthDate: dayjs.Dayjs)
     
     // Week title with cycle name - same layout as month view
     const cycleName = weekCycle ? weekCycle.cycleName.replace(/ Cycle$/, '') : '';
+    const cycleColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
     
     // Week title with cycle name using table for proper alignment
     elements.push(new Table({
@@ -1064,7 +1069,8 @@ async function generateWeeklyViews(studyPlan: StudyPlan, monthDate: dayjs.Dayjs)
               children: [
                 new Paragraph({
                   children: [new TextRun({ 
-                    text: `📅 ${weekStart.format('MMM DD')} - ${weekEnd.format('MMM DD, YYYY')}`
+                    text: `📅 ${weekStart.format('MMM DD')} - ${weekEnd.format('MMM DD, YYYY')}`,
+                    color: cycleColor
                   })],
                   style: 'WeekTitle'
                 })
@@ -1076,7 +1082,8 @@ async function generateWeeklyViews(studyPlan: StudyPlan, monthDate: dayjs.Dayjs)
               children: [
                 new Paragraph({
                   children: [new TextRun({ 
-                    text: cycleName
+                    text: cycleName,
+                    color: cycleColor
                   })],
                   style: 'WeekCycleName'
                 })
@@ -1150,7 +1157,8 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
   
   // Header row with day names and dates
   const headerCells: TableCell[] = [];
-  const cycleColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'F8F9FA' : 'F8F9FA';
+  const cycleBgColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'F8F9FA' : 'F8F9FA';
+  const cycleFgColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
   
   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
     const currentDay = weekStart.add(dayOffset, 'day');
@@ -1159,31 +1167,35 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
     const isCatchupDay = isCatchupDayCheck(currentDay, studyPlan);
     
     // Use cycle color for header, but keep catchup day highlighting
-    const headerColor = isCatchupDay ? 'FFF3E0' : cycleColor;
+    const headerBgColor = isCatchupDay ? 'FFF3E0' : cycleBgColor;
+    const headerFgColor = isCatchupDay ? 'F57C00' : cycleFgColor;
     
     headerCells.push(new TableCell({
       children: [
         new Paragraph({
           children: [new TextRun({ 
-            text: dayName
+            text: dayName,
+            color: headerFgColor
           })],
           style: 'TableCellCalendarDayHeader'
         }),
         new Paragraph({
           children: [new TextRun({ 
-            text: dayDate
+            text: dayDate,
+            color: headerFgColor
           })],
           style: 'TableCellCalendarDateHeader'
         }),
         new Paragraph({
           children: [new TextRun({ 
-            text: isCatchupDay ? 'Catchup Day' : ''
+            text: isCatchupDay ? 'Catchup Day' : '',
+            color: headerFgColor
           })],
           style: 'TableCellCatchupLabel'
         })
       ],
       width: { size: 14.28, type: WidthType.PERCENTAGE },
-      shading: { fill: headerColor },
+      shading: { fill: headerBgColor },
       margins: { top: 200, bottom: 200, left: 100, right: 100 }
     }));
   }
@@ -1247,7 +1259,7 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
         const duration = formatDuration(task.duration_minutes);
         
         // Use cycle color for task cells, but keep catchup day highlighting
-        const taskCellColor = isCatchupDay ? 'FFF3E0' : cycleColor;
+        const taskCellColor = isCatchupDay ? 'FFF3E0' : cycleBgColor;
         
         taskRowCells.push(new TableCell({
           children: [
@@ -1277,7 +1289,7 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
         }));
       } else {
         // Empty cell for days with fewer tasks - use cycle color
-        const emptyCellColor = isCatchupDay ? 'FFF3E0' : cycleColor;
+        const emptyCellColor = isCatchupDay ? 'FFF3E0' : cycleBgColor;
         taskRowCells.push(new TableCell({
           children: [new Paragraph({ text: '' })],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
