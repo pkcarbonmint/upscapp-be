@@ -66,7 +66,8 @@ const TABLE_STYLE_NAMES = {
   legend: 'LegendTable',
   monthTitle: 'MonthTitleTable',
   weeklySchedule: 'WeeklyScheduleTable',
-  weekTitle: 'WeekTitleTable'
+  weekTitle: 'WeekTitleTable',
+  coverTitle: 'CoverTitleTable'
 } as const;
 
 const createDocument = (studyPlan: StudyPlan,  studentIntake: StudentIntake) => (coverPageElements: (Paragraph | Table)[], mainContentElements: (Paragraph | Table)[]) => {
@@ -317,15 +318,75 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
 
   const elements: (Paragraph | Table)[] = [];
 
-  // Top decorative line
-
-  // Main title with gradient effect simulation
+  // Professional branding header
   elements.push(new Paragraph({
     children: [new TextRun({ 
-      text: 'UPSC STUDY PLANNER - ' + year.toString()
+      text: '🎓 LA MENTORA'
     })],
-    style: 'CoverPageTitle'
+    style: 'CompanyBrand'
   }));
+
+  elements.push(new Paragraph({
+    children: [new TextRun({ 
+      text: 'Study Planner v1.0'
+    })],
+    style: 'VersionInfo'
+  }));
+
+  elements.push(new Paragraph({
+    children: [new TextRun({ 
+      text: '"Your Path to UPSC Success"'
+    })],
+    style: 'CompanyTagline'
+  }));
+
+  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+
+  // Main title with enhanced styling
+  elements.push(new Table({
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [new TextRun({ 
+                  text: 'UPSC STUDY PLANNER'
+                })],
+                style: 'CoverPageTitle'
+              }),
+              new Paragraph({
+                children: [new TextRun({ 
+                  text: year.toString()
+                })],
+                style: 'CoverPageYear'
+              })
+            ],
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            margins: { top: 300, bottom: 300, left: 200, right: 200 },
+            borders: {
+              top: { style: BorderStyle.DOUBLE, size: 3, color: DOCUMENT_STYLES.colors.primary },
+              bottom: { style: BorderStyle.DOUBLE, size: 3, color: DOCUMENT_STYLES.colors.primary },
+              left: { style: BorderStyle.DOUBLE, size: 3, color: DOCUMENT_STYLES.colors.primary },
+              right: { style: BorderStyle.DOUBLE, size: 3, color: DOCUMENT_STYLES.colors.primary }
+            }
+          })
+        ]
+      })
+    ],
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    style: TABLE_STYLE_NAMES.coverTitle,
+    borders: {
+      top: { style: BorderStyle.NONE, size: 0 },
+      bottom: { style: BorderStyle.NONE, size: 0 },
+      left: { style: BorderStyle.NONE, size: 0 },
+      right: { style: BorderStyle.NONE, size: 0 },
+      insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+      insideVertical: { style: BorderStyle.NONE, size: 0 }
+    }
+  }));
+
+  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
 
   // Student name with elegant styling
   elements.push(new Paragraph({
@@ -343,124 +404,271 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
     style: 'CoverPageSubtitle'
   }));
 
-  // Student info card with modern design
-  const infoCardRows: TableRow[] = [
-    new TableRow({
-      children: [
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ 
-                text: '📧'
-              })],
-              style: 'TableCellIcon'
-            })
-          ],
-          width: { size: 15, type: WidthType.PERCENTAGE },
-          margins: { top: 200, bottom: 200, left: 100, right: 100 }
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({ 
-                  text: 'Email: '
-                }),
-                new TextRun({ 
-                  text: pd?.email || 'N/A'
-                })
-              ],
-              style: 'TableCellSecondaryData'
-            })
-          ],
-          width: { size: 85, type: WidthType.PERCENTAGE },
-          margins: { top: 200, bottom: 200, left: 100, right: 100 }
-        })
-      ]
-    }),
-    new TableRow({
-      children: [
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ 
-                text: '📱'
-              })],
-              style: 'TableCellIcon'
-            })
-          ],
-          width: { size: 15, type: WidthType.PERCENTAGE },
-          margins: { top: 200, bottom: 200, left: 100, right: 100 }
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({ 
-                  text: 'Phone: '
-                }),
-                new TextRun({ 
-                  text: pd?.phone_number || 'N/A'
-                })
-              ],
-              style: 'TableCellSecondaryData'
-            })
-          ],
-          width: { size: 85, type: WidthType.PERCENTAGE },
-          margins: { top: 200, bottom: 200, left: 100, right: 100 }
-        })
-      ]
-    }),
-    new TableRow({
-      children: [
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ 
-                text: '📍'
-              })],
-              style: 'TableCellIcon'
-            })
-          ],
-          width: { size: 15, type: WidthType.PERCENTAGE },
-          margins: { top: 200, bottom: 200, left: 100, right: 100 }
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({ 
-                  text: 'Location: '
-                }),
-                new TextRun({ 
-                  text: pd?.present_location || 'N/A'
-                })
-              ],
-              style: 'TableCellSecondaryData'
-            })
-          ],
-          width: { size: 85, type: WidthType.PERCENTAGE },
-          margins: { top: 200, bottom: 200, left: 100, right: 100 }
-        })
-      ]
-    })
-  ];
+  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+
+        // Student Profile heading
+        elements.push(new Paragraph({
+          children: [new TextRun({ 
+            text: 'STUDENT PROFILE'
+          })],
+          style: 'CardTitle'
+        }));
+
+        // Enhanced student profile card
+        const profileCardRows: TableRow[] = [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📧 '
+                      }),
+                      new TextRun({ 
+                        text: pd?.email || 'N/A'
+                      })
+                    ],
+                    style: 'ProfileData'
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📱 '
+                      }),
+                      new TextRun({ 
+                        text: pd?.phone_number || 'N/A'
+                      })
+                    ],
+                    style: 'ProfileData'
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 200, right: 100 }
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📍 '
+                      }),
+                      new TextRun({ 
+                        text: pd?.present_location || 'N/A'
+                      })
+                    ],
+                    style: 'ProfileData'
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '🎯 Target: UPSC '
+                      }),
+                      new TextRun({ 
+                        text: year.toString()
+                      })
+                    ],
+                    style: 'ProfileData'
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 100, right: 200 }
+              })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📚 Optional: '
+                      }),
+                      new TextRun({ 
+                        text: studentIntake.optional_subject?.optional_subject_name || 'N/A'
+                      })
+                    ],
+                    style: 'ProfileData'
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '🏆 Previous Attempts: '
+                      }),
+                      new TextRun({ 
+                        text: ps?.number_of_attempts || 'N/A'
+                      })
+                    ],
+                    style: 'ProfileData'
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 200, right: 100 }
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '⏰ Study Hours: '
+                      }),
+                      new TextRun({ 
+                        text: ss?.weekly_study_hours || 'N/A'
+                      })
+                    ],
+                    style: 'ProfileData'
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📅 Plan Duration: 12 months'
+                      })
+                    ],
+                    style: 'ProfileData'
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 100, right: 200 }
+              })
+            ]
+          })
+        ];
 
   elements.push(new Table({
-    rows: infoCardRows,
+    rows: profileCardRows,
     width: { size: 100, type: WidthType.PERCENTAGE },
     style: TABLE_STYLE_NAMES.studentInfo,
     borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      top: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      bottom: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      left: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      right: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
       insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideVertical: { style: BorderStyle.NONE, size: 0 }
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
     }
   }));
 
-  elements.push(new Paragraph({ text: '', spacing: { after: 600 } }));
+  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+
+        // Study Plan Overview heading
+        elements.push(new Paragraph({
+          children: [new TextRun({ 
+            text: 'STUDY PLAN OVERVIEW'
+          })],
+          style: 'CardTitle'
+        }));
+
+        // Study plan overview section
+        const overviewCardRows: TableRow[] = [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📊 Total Cycles: 8'
+                      })
+                    ],
+                    style: 'OverviewData'
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '🗓️ Start Date: Jan '
+                      }),
+                      new TextRun({ 
+                        text: year.toString()
+                      })
+                    ],
+                    style: 'OverviewData'
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 200, right: 100 }
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📈 Study Phases: Foundation → Mains'
+                      })
+                    ],
+                    style: 'OverviewData'
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '🎯 Target Exam: Aug '
+                      }),
+                      new TextRun({ 
+                        text: year.toString()
+                      })
+                    ],
+                    style: 'OverviewData'
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 100, right: 200 }
+              })
+            ]
+          }),
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '📚 Subjects Covered: 9'
+                      })
+                    ],
+                    style: 'OverviewData'
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ 
+                        text: '⏱️ Total Study Hours: 2,920'
+                      })
+                    ],
+                    style: 'OverviewData'
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 200, right: 100 }
+              }),
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [new TextRun({ 
+                      text: ''
+                    })]
+                  })
+                ],
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                margins: { top: 150, bottom: 150, left: 100, right: 200 }
+              })
+            ]
+          })
+        ];
+
+  elements.push(new Table({
+    rows: overviewCardRows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    style: TABLE_STYLE_NAMES.studentInfo,
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      bottom: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      left: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      right: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+    }
+  }));
+
+  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
 
   // Study strategy highlights
   elements.push(new Paragraph({
@@ -549,23 +757,115 @@ async function generateCoverPage(studentIntake: StudentIntake, year: number): Pr
 
   elements.push(new Paragraph({ text: '', spacing: { after: 600 } }));
 
-  // Footer with branding
+  // Contact & Support heading
   elements.push(new Paragraph({
     children: [new TextRun({ 
-      text: 'La Mentora Study Planner v1.0 - © 2025-2026 All Rights Reserved'
+      text: 'CONTACT & SUPPORT'
     })],
-    style: 'FooterBranding'
+    style: 'CardTitle'
   }));
 
-  elements.push(new Paragraph({
-    children: [new TextRun({ 
-      text: `Generated on ${new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })}`
-    })],
-    style: 'FooterDate'
+  // Enhanced contact and support section
+  const contactCardRows: TableRow[] = [
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({ 
+                  text: '🌐 www.lamentora.com'
+                })
+              ],
+              style: 'ContactData'
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ 
+                  text: '📧 support@lamentora.com'
+                })
+              ],
+              style: 'ContactData'
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 200, right: 100 }
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({ 
+                  text: '📱 +91 98765 43210'
+                })
+              ],
+              style: 'ContactData'
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ 
+                  text: '💬 WhatsApp Support Available'
+                })
+              ],
+              style: 'ContactData'
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 100, right: 200 }
+        })
+      ]
+    }),
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ 
+                text: `Generated on ${new Date().toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}`
+              })],
+              style: 'FooterDate'
+            }),
+            new Paragraph({
+              children: [new TextRun({ 
+                text: '© 2025-2026 La Mentora. All Rights Reserved.'
+              })],
+              style: 'FooterBranding'
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 200, right: 100 }
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ 
+                text: ''
+              })]
+            })
+          ],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          margins: { top: 150, bottom: 150, left: 100, right: 200 }
+        })
+      ]
+    })
+  ];
+
+  elements.push(new Table({
+    rows: contactCardRows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    style: TABLE_STYLE_NAMES.studentInfo,
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      bottom: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      left: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      right: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.primary },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+    }
   }));
 
   return elements;
@@ -1894,16 +2194,112 @@ function getDocumentStyles() {
     paragraphStyles: [
       // Cover Page Styles
       {
+        id: 'CompanyBrand',
+        name: 'Company Brand',
+        basedOn: 'Normal',
+        run: { 
+          size: 32, 
+          bold: true, 
+          color: DOCUMENT_STYLES.colors.primary, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
+      },
+      {
+        id: 'VersionInfo',
+        name: 'Version Info',
+        basedOn: 'Normal',
+        run: { 
+          size: 18, 
+          color: DOCUMENT_STYLES.colors.secondary, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 200 } }
+      },
+      {
+        id: 'CompanyTagline',
+        name: 'Company Tagline',
+        basedOn: 'Normal',
+        run: { 
+          size: 16, 
+          italics: true, 
+          color: DOCUMENT_STYLES.colors.secondary, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 400 } }
+      },
+      {
         id: 'CoverPageTitle',
         name: 'Cover Page Title',
         basedOn: 'Normal',
         run: { 
-          size: 42, 
+          size: 36, 
+          bold: true, 
+          color: DOCUMENT_STYLES.colors.primary, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 100 } }
+      },
+      {
+        id: 'CoverPageYear',
+        name: 'Cover Page Year',
+        basedOn: 'Normal',
+        run: { 
+          size: 28, 
           bold: true, 
           color: DOCUMENT_STYLES.colors.primary, 
           font: DOCUMENT_STYLES.font 
         },
         paragraph: { alignment: AlignmentType.CENTER, spacing: { after: 0 } }
+      },
+      {
+        id: 'CardTitle',
+        name: 'Card Title',
+        basedOn: 'Heading1',
+        run: { 
+          size: 20, 
+          bold: true, 
+          color: DOCUMENT_STYLES.colors.primary, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { 
+          alignment: AlignmentType.CENTER, 
+          spacing: { before: 400, after: 200 },
+          outlineLevel: 1
+        }
+      },
+      {
+        id: 'ProfileData',
+        name: 'Profile Data',
+        basedOn: 'Normal',
+        run: { 
+          size: 14, 
+          color: DOCUMENT_STYLES.colors.text, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { spacing: { after: 100 } }
+      },
+      {
+        id: 'OverviewData',
+        name: 'Overview Data',
+        basedOn: 'Normal',
+        run: { 
+          size: 14, 
+          color: DOCUMENT_STYLES.colors.text, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { spacing: { after: 100 } }
+      },
+      {
+        id: 'ContactData',
+        name: 'Contact Data',
+        basedOn: 'Normal',
+        run: { 
+          size: 14, 
+          color: DOCUMENT_STYLES.colors.text, 
+          font: DOCUMENT_STYLES.font 
+        },
+        paragraph: { spacing: { after: 100 } }
       },
       {
         id: 'StudentName',
@@ -2778,3 +3174,5 @@ async function saveDocx(document: Document, filename: string): Promise<void> {
     console.log(`   📁 Location: ${outputPath}`);
   }
 }
+
+
