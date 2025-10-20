@@ -23,6 +23,7 @@ import { DocumentService } from '../src/services/DocumentService';
 import { CalendarDocxService } from '../src/services/CalendarDocxService';
 import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
+import { DayOfWeek } from 'scheduler';
 import * as path from 'path';
 import * as fs from 'fs';
 import { createWriteStream } from 'fs';
@@ -30,6 +31,7 @@ import { LogEntry, Logger } from '../src/types/Types';
 
 interface CliArgs {
   scenarios?: string[];
+  format?: string;
   help?: boolean;
 }
 
@@ -50,6 +52,15 @@ function parseCliArgs(): CliArgs {
         i++; // Skip the next argument as it's the value
       } else {
         console.error('❌ Error: -s/--scenarios requires a value (e.g., -s T1,T2,T3)');
+        process.exit(1);
+      }
+    } else if (arg === '-f' || arg === '--format') {
+      const nextArg = argv[i + 1];
+      if (nextArg && !nextArg.startsWith('-')) {
+        args.format = nextArg.toLowerCase();
+        i++; // Skip the next argument as it's the value
+      } else {
+        console.error('❌ Error: -f/--format requires a value (e.g., -f js)');
         process.exit(1);
       }
     } else if (arg === '-h' || arg === '--help') {
@@ -74,12 +85,15 @@ Usage: node generate-test-documents2.ts [options]
 
 Options:
   -s, --scenarios <list>    Comma-separated list of scenarios to run (e.g., T1,T2,T12)
+  -f, --format <format>     Output format: js, json, markdown (default: js)
   -h, --help               Show this help message
 
 Examples:
-  node generate-test-documents2.ts                    # Run all scenarios
+  node generate-test-documents2.ts                    # Run all scenarios with JS format
   node generate-test-documents2.ts -s T1,T2          # Run only T1 and T2 scenarios
   node generate-test-documents2.ts -s T1,T2,T12      # Run T1, T2, and T12 scenarios
+  node generate-test-documents2.ts -f json           # Generate JSON format for all scenarios
+  node generate-test-documents2.ts -s T1 -f markdown # Generate markdown for T1 only
 
 Available Scenarios:
   T1-T15: Test scenarios with different start dates and configurations
@@ -124,6 +138,7 @@ interface DocumentGeneratorOptions {
   generateJson: boolean;
   generateWeeklySchedules: boolean;
   generatePDFs: boolean; // Generate PDF versions alongside Word documents
+  format?: string; // Output format: js, json, markdown
 }
 
 
@@ -162,7 +177,9 @@ const dummyStuff = {
 		college_university: 'Hyderabad University',
 		year_of_passing: 2023
 	},
-
+	optional_subject: {
+		optional_subject_name: 'Agriculture'
+	}
 }
 
 class TestDocumentGenerator {
@@ -171,6 +188,7 @@ class TestDocumentGenerator {
   private generateJson: boolean;
   private generateWeeklySchedules: boolean;
   private generatePDFs: boolean;
+  private format: string;
 
   constructor(options: DocumentGeneratorOptions) {
     this.outputDir = options.outputDir || './generated-docs';
@@ -178,6 +196,7 @@ class TestDocumentGenerator {
     this.generateJson = options.generateJson;
     this.generateWeeklySchedules= options.generateWeeklySchedules;
     this.generatePDFs = options.generatePDFs; // Default to true to generate PDFs
+    this.format = options.format || 'js';
   }
 
   /**
@@ -336,7 +355,43 @@ class TestDocumentGenerator {
           console.log(`📅 Generated weekly schedule: ${scenario.name}-WeeklySchedule.docx`);
         }
 
-        // Generate Markdown file for debugging
+        // Generate format-specific output based on format parameter
+        if (this.format === 'js') {
+          const jsStartTime = Date.now();
+          const jsContent = this.generateJSFormatDocument(result.plan, result.intake, scenario);
+          const jsGenTime = Date.now() - jsStartTime;
+          console.log(`  ⏱️  JS format generation took: ${jsGenTime}ms`);
+          
+          const jsSaveStartTime = Date.now();
+          await this.saveJS(jsContent, scenario.name);
+          const jsSaveTime = Date.now() - jsSaveStartTime;
+          console.log(`  ⏱️  JS format save took: ${jsSaveTime}ms`);
+          console.log(`📄 Generated JS format: ${scenario.name}.js`);
+        } else if (this.format === 'json') {
+          const jsonStartTime = Date.now();
+          const jsonData = this.generateJsonData(result, result.intake);
+          const jsonGenTime = Date.now() - jsonStartTime;
+          console.log(`  ⏱️  JSON format generation took: ${jsonGenTime}ms`);
+          
+          const jsonSaveStartTime = Date.now();
+          await this.saveJson(jsonData, scenario.name);
+          const jsonSaveTime = Date.now() - jsonSaveStartTime;
+          console.log(`  ⏱️  JSON format save took: ${jsonSaveTime}ms`);
+          console.log(`📄 Generated JSON format: ${scenario.name}.js`);
+        } else if (this.format === 'markdown') {
+          const markdownStartTime = Date.now();
+          const markdown = this.generateMarkdownDocument(result.plan, scenario);
+          const markdownGenTime = Date.now() - markdownStartTime;
+          console.log(`  ⏱️  Markdown format generation took: ${markdownGenTime}ms`);
+          
+          const markdownSaveStartTime = Date.now();
+          await this.saveMarkdown(markdown, scenario.name);
+          const markdownSaveTime = Date.now() - markdownSaveStartTime;
+          console.log(`  ⏱️  Markdown format save took: ${markdownSaveTime}ms`);
+          console.log(`📄 Generated Markdown format: ${scenario.name}.md`);
+        }
+
+        // Generate Markdown file for debugging (legacy)
         if (this.generateMarkdown) {
           const markdownStartTime = Date.now();
           const markdown = this.generateMarkdownDocument(result.plan, scenario);
@@ -543,6 +598,30 @@ class TestDocumentGenerator {
   }
 
   /**
+   * Generate a JavaScript format document
+   */
+  private generateJSFormatDocument(plan: StudyPlan, intake: StudentIntake, scenario: TestScenario): string {
+    const jsContent = `// Generated Study Plan for ${scenario.name}
+// Start Date: ${intake.start_date}
+// Target Year: ${intake.target_year}
+// Catch-up Day Preference: ${intake.study_strategy?.catch_up_day_preference || 'Not set'}
+// Test Day Preference: ${intake.study_strategy?.test_day_preference || 'Not set'}
+
+const studyPlan = ${JSON.stringify(plan, null, 2)};
+
+const studentIntake = ${JSON.stringify(intake, null, 2)};
+
+module.exports = {
+  studyPlan,
+  studentIntake,
+  scenario: '${scenario.name}',
+  generatedAt: new Date().toISOString()
+};
+`;
+    return jsContent;
+  }
+
+  /**
    * Generate Markdown document for debugging
    */
   private generateMarkdownDocument(studyPlan: StudyPlan, scenario: any): string {
@@ -676,6 +755,13 @@ ${studyPlan.cycles?.map(cycle =>
   /**
    * Save JSON debug file
    */
+  private async saveJS(content: string, filename: string): Promise<void> {
+    const filePath = path.join(this.outputDir, `${filename}.js`);
+    fs.writeFileSync(filePath, content, 'utf8');
+    console.log(`📊 JS saved: ${filename}.js`);
+    console.log(`   📁 Location: ${path.resolve(filePath)}`);
+  }
+
   private async saveJson(content: string, filename: string): Promise<void> {
     const filePath = path.join(this.outputDir, `${filename}.js`);
     const wrappedContent = `window.studyPlanData = ${content};`;
@@ -765,7 +851,6 @@ ${studyPlan.cycles?.map(cycle =>
         revision_strategy: 'Weekly',
         test_frequency: 'Weekly',
         seasonal_windows: ['Foundation', 'Revision', 'Intensive'],
-        catch_up_day_preference: 'Sunday',
         upsc_optional_subject: 'OPT-AGR'
       },
       target_year: targetYear,
@@ -871,7 +956,8 @@ async function main() {
       generateMarkdown: false,
       generateJson: false,
       generateWeeklySchedules: false, // Disabled for performance testing
-      generatePDFs: false // Enable PDF generation
+      generatePDFs: false, // Enable PDF generation
+      format: cliArgs.format || 'js'
     });
 
     await generator.generateAllTestDocuments(cliArgs.scenarios);

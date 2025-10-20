@@ -42,7 +42,6 @@ class ResourceLoader {
     
     // Handle optional subjects with dynamic imports
     if (subjectCode.startsWith('OPT-')) {
-      console.log("=x".repeat(40));
       return await this.loadOptionalSubjectMaterials(subjectCode);
     }
     

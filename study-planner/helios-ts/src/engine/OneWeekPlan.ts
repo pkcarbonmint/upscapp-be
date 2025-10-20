@@ -5,6 +5,13 @@ import { getTopicEstimatedHours } from '../types/Subjects';
 import type { ConfidenceLevel, Logger } from '../types/Types';
 import { v4 as uuidv4 } from 'uuid';
 import { Config } from './engine-types';
+import { 
+  distributeTasksIntoDays as schedulerDistributeTasksIntoDays,
+  assignHumanReadableIDs as schedulerAssignHumanReadableIDs,
+  WeeklyTask,
+  DailyHourLimits,
+  DayOfWeek
+} from 'scheduler';
 
 // Task definition interfaces
 export interface StudyTaskDef {
@@ -34,10 +41,33 @@ export interface CurrentAffairsTaskDef {
   ca_subjects: string[];
 }
 
-// Day state for task distribution
-interface DayState {
-  dayTasks: Task[];
-  hours: number;
+// Helper function to convert Task to WeeklyTask
+function convertTaskToWeeklyTask(task: Task): WeeklyTask {
+  return {
+    task_id: task.task_id,
+    humanReadableId: task.humanReadableId,
+    title: task.title,
+    duration_minutes: task.duration_minutes,
+    taskType: task.taskType,
+    currentAffairsType: task.currentAffairsType,
+    resources: task.task_resources?.map((r: any) => r.resource_title)
+  };
+}
+
+// Helper function to convert WeeklyTask back to Task
+function convertWeeklyTaskToTask(weeklyTask: WeeklyTask, originalTask: Task): Task {
+  return {
+    ...originalTask,
+    humanReadableId: weeklyTask.humanReadableId
+  };
+}
+
+// Helper function to convert DailyHourLimits
+function convertDailyHourLimits(config: Config): DailyHourLimits {
+  return {
+    regular_day: config.daily_hour_limits.regular_day,
+    test_day: config.daily_hour_limits.test_day
+  };
 }
 
 /**
@@ -73,16 +103,49 @@ export async function createPlanForOneWeek(
 
   logger.logDebug('OneWeekPlan', `Week ${weekNum} generated ${tasksForWeek.length} tasks`);
 
-  // 3. Distribute this list of tasks across the 7 days of the week
-  const dailyPlans = distributeTasksIntoDays(tasksForWeek, config.daily_hour_limits, logger, studentIntake);
+  // 3. Distribute this list of tasks across the 7 days of the week using scheduler library
+  const weeklyTasks = tasksForWeek.map(convertTaskToWeeklyTask);
+  const dailyHourLimits = convertDailyHourLimits(config);
   
-  // 4. Assign the simple, human-readable IDs to each task
-  const finalDailyPlans = assignHumanReadableIDs(dailyPlans, blockIndex, weekNum);
+  const schedulingResult = schedulerDistributeTasksIntoDays({
+    tasks: weeklyTasks,
+    dailyLimits: dailyHourLimits,
+    catchupDayPreference: (studentIntake.study_strategy?.catch_up_day_preference as DayOfWeek) || DayOfWeek.SATURDAY,
+    testDayPreference: DayOfWeek.SUNDAY // Default to Sunday for test day
+  });
+  
+  // Convert back to helios-ts format and preserve original task data
+  const dailyPlans: DailyPlan[] = schedulingResult.dailyPlans.map((dayPlan: any) => ({
+    day: dayPlan.day,
+    tasks: dayPlan.tasks.map((weeklyTask: any) => {
+      const originalTask = tasksForWeek.find(t => t.task_id === weeklyTask.task_id);
+      return originalTask ? convertWeeklyTaskToTask(weeklyTask, originalTask) : {
+        task_id: weeklyTask.task_id,
+        humanReadableId: weeklyTask.humanReadableId,
+        title: weeklyTask.title,
+        duration_minutes: weeklyTask.duration_minutes,
+        taskType: weeklyTask.taskType,
+        currentAffairsType: weeklyTask.currentAffairsType,
+        resources: weeklyTask.resources?.map((title: any) => ({ resource_title: title }))
+      } as Task;
+    })
+  }));
+  
+  // Log any scheduling conflicts
+  if (schedulingResult.conflicts.length > 0) {
+    logger.logWarn('OneWeekPlan', `Week ${weekNum} scheduling conflicts: ${schedulingResult.conflicts.length}`);
+    schedulingResult.conflicts.forEach((conflict: any) => {
+      logger.logWarn('OneWeekPlan', `Conflict: ${conflict.message}`);
+    });
+  }
+  
+  // 4. Assign the simple, human-readable IDs to each task using scheduler library
+  const finalDailyPlans = schedulerAssignHumanReadableIDs(dailyPlans, blockIndex, weekNum);
   
   // Log final week summary
-  const totalTasks = finalDailyPlans.reduce((sum, day) => sum + day.tasks.length, 0);
-  const totalMinutes = finalDailyPlans.reduce((sum, day) => 
-    sum + day.tasks.reduce((daySum, task) => daySum + task.duration_minutes, 0), 0
+  const totalTasks = finalDailyPlans.reduce((sum: number, day: any) => sum + day.tasks.length, 0);
+  const totalMinutes = finalDailyPlans.reduce((sum: number, day: any) => 
+    sum + day.tasks.reduce((daySum: number, task: any) => daySum + task.duration_minutes, 0), 0
   );
   const totalHours = Math.round(totalMinutes / 60 * 100) / 100;
   
@@ -398,168 +461,18 @@ async function createTask(
 }
 
 /**
- * Distribute tasks into 7 days using greedy bin-packing
- */
-function distributeTasksIntoDays(tasks: Task[], dailyLimits: Config['daily_hour_limits'], _logger: Logger, studentIntake?: StudentIntake): DailyPlan[] {
-  // Initialize 7 days, each with 0 hours used
-  const initialDays: DayState[] = Array(7).fill(null).map(() => ({ dayTasks: [], hours: 0 }));
-  
-  // Sort tasks from longest to shortest for efficient packing
-  const sortedTasks = [...tasks].sort((a, b) => b.duration_minutes - a.duration_minutes);
-  
-  // Distribute tasks
-  const finalDays = sortedTasks.reduce((days, task) => 
-    distributeTaskToDay(dailyLimits, days, task, studentIntake), initialDays
-  );
-  
-  // Convert to DailyPlan format
-  return finalDays.map((dayState, dayNum) => ({
-    day: dayNum + 1,
-    tasks: dayState.dayTasks
-  }));
-}
-
-/**
- * Distribute a single task to the best available day
- */
-function distributeTaskToDay(dailyLimits: Config['daily_hour_limits'], days: DayState[], task: Task, studentIntake?: StudentIntake): DayState[] {
-  const taskHours = task.duration_minutes / 60.0;
-  
-  // Determine catchup day based on student preference
-  const catchupDayIndex = getCatchupDayIndex(studentIntake);
-  const testDayIndex = getTestDayIndex(studentIntake);
-  
-  const dayLimits = Array(7).fill(dailyLimits.regular_day);
-  dayLimits[catchupDayIndex] = 0; // Catchup day should be empty - for student to catch up on missed work
-  dayLimits[testDayIndex] = dailyLimits.test_day;
-  
-  // Debug logging for catchup day assignment
-  if (studentIntake?.study_strategy?.catch_up_day_preference === 'Saturday') {
-  }
-  
-  // Find the day with the most available space that can fit the task
-  const findBestSlot = (days: DayState[], limits: number[], dayIndex: number): { index: number; space: number } | null => {
-    if (dayIndex >= days.length) return null;
-    
-    const day = days[dayIndex];
-    const limit = limits[dayIndex];
-    const availableSpace = limit - day.hours;
-    
-    if (availableSpace >= taskHours) {
-      const nextResult = findBestSlot(days, limits, dayIndex + 1);
-      if (!nextResult) {
-        return { index: dayIndex, space: availableSpace };
-      }
-      return availableSpace > nextResult.space 
-        ? { index: dayIndex, space: availableSpace }
-        : nextResult;
-    }
-    
-    return findBestSlot(days, limits, dayIndex + 1);
-  };
-  
-  const bestSlot = findBestSlot(days, dayLimits, 0);
-  
-  if (bestSlot) {
-    // Place task in the best available slot
-    const newDays = [...days];
-    const targetDay = newDays[bestSlot.index];
-    newDays[bestSlot.index] = {
-      dayTasks: [...targetDay.dayTasks, task],
-      hours: targetDay.hours + taskHours
-    };
-    return newDays;
-  } else {
-    // If no slot found, split the task across multiple days
-    return splitTaskAcrossDays(days, task, dayLimits, taskHours);
-  }
-}
-
-/**
- * Split a large task across multiple days when it doesn't fit in any single day
- */
-function splitTaskAcrossDays(days: DayState[], task: Task, dayLimits: number[], taskHours: number): DayState[] {
-  const daySpaces = days.map((day, index) => dayLimits[index] - day.hours);
-  const totalAvailableSpace = daySpaces.reduce((sum, space) => sum + space, 0);
-  
-  if (totalAvailableSpace >= taskHours) {
-    return distributeTaskProportionally(days, task, dayLimits, taskHours, daySpaces);
-  } else {
-    // If even total space is insufficient, add to day with most space (emergency fallback)
-    const bestDayIndex = daySpaces.indexOf(Math.max(...daySpaces));
-    const newDays = [...days];
-    const targetDay = newDays[bestDayIndex];
-    newDays[bestDayIndex] = {
-      dayTasks: [...targetDay.dayTasks, task],
-      hours: targetDay.hours + taskHours
-    };
-    return newDays;
-  }
-}
-
-/**
- * Distribute task proportionally across days with available space
- */
-function distributeTaskProportionally(
-  days: DayState[],
-  task: Task,
-  _dayLimits: number[],
-  taskHours: number,
-  daySpaces: number[]
-): DayState[] {
-  const availableDays = daySpaces
-    .map((space, index) => ({ index, space }))
-    .filter(({ space }) => space > 0);
-  
-  const totalSpace = availableDays.reduce((sum, { space }) => sum + space, 0);
-  const originalMinutes = task.duration_minutes;
-  
-  // Calculate how much to allocate to each available day
-  const allocations = availableDays.map(({ index, space }) => ({
-    dayIdx: index,
-    allocHours: Math.min(space, (taskHours * space) / totalSpace)
-  }));
-  
-  // Ensure total allocated time equals original task time
-  const totalAllocated = allocations.reduce((sum, { allocHours }) => sum + allocHours, 0);
-  const adjustmentFactor = totalAllocated > 0 ? originalMinutes / (totalAllocated * 60) : 1.0;
-  
-  // Apply allocations to days
-  let newDays = [...days];
-  allocations.forEach(({ dayIdx, allocHours }) => {
-    const adjustedHours = allocHours * adjustmentFactor;
-    const subTaskMinutes = Math.round(adjustedHours * 60);
-    const subTask = { ...task, duration_minutes: subTaskMinutes };
-    
-    const targetDay = newDays[dayIdx];
-    newDays[dayIdx] = {
-      dayTasks: [...targetDay.dayTasks, subTask],
-      hours: targetDay.hours + adjustedHours
-    };
-  });
-  
-  return newDays;
-}
-
-/**
- * Assign human-readable IDs to all tasks in a week
- */
-function assignHumanReadableIDs(dailyPlans: DailyPlan[], blockIndex: number, weekNum: number): DailyPlan[] {
-  let counter = 1;
-  
-  return dailyPlans.map(dayPlan => ({
-    ...dayPlan,
-    tasks: dayPlan.tasks.map(task => ({
-      ...task,
-      humanReadableId: `b${blockIndex}w${weekNum}t${counter++}`
-    }))
-  }));
-}
-
-/**
  * Helper function to safely read hours from text
+ * Handles range formats like "45-55" by using the midpoint
  */
 function safeReadHours(text: string): number {
+  // Handle range format like "45-55"
+  if (text.includes('-')) {
+    const [min, max] = text.split('-').map(s => parseInt(s.trim(), 10));
+    if (!isNaN(min) && !isNaN(max)) {
+      return Math.round((min + max) / 2); // Use midpoint
+    }
+  }
+  
   const parsed = parseInt(text, 10);
   return isNaN(parsed) ? 40 : parsed; // Default fallback
 }
@@ -627,50 +540,5 @@ async function getResourcesForStudyTask(studyTaskDef: StudyTaskDef, studentProfi
 }
 
 /**
- * Get catchup day index based on student preference
- * @param studentIntake Student intake with catchup day preference
- * @returns Day index (0-6, where 0=Monday, 6=Sunday)
+ * Get resources for study task with NCERT materials support for C1 cycle
  */
-function getCatchupDayIndex(studentIntake?: StudentIntake): number {
-  if (!studentIntake?.study_strategy?.catch_up_day_preference) {
-    return 5; // Default to Saturday (day 6, index 5)
-  }
-  
-  const preference = studentIntake.study_strategy.catch_up_day_preference.toLowerCase();
-  
-  switch (preference) {
-    case 'monday': return 0;
-    case 'tuesday': return 1;
-    case 'wednesday': return 2;
-    case 'thursday': return 3;
-    case 'friday': return 4;
-    case 'saturday': return 5;
-    case 'sunday': return 6;
-    default: return 5; // Default to Saturday
-  }
-}
-
-/**
- * Get test day index based on student preference
- * @param studentIntake Student intake with test frequency preference
- * @returns Day index (0-6, where 0=Monday, 6=Sunday)
- */
-function getTestDayIndex(studentIntake?: StudentIntake): number {
-  if (!studentIntake?.study_strategy?.test_frequency) {
-    return 6; // Default to Sunday (day 7, index 6)
-  }
-  
-  // const frequency = studentIntake.study_strategy.test_frequency.toLowerCase();
-  
-  // Get catchup day to avoid conflict
-  const catchupDayIndex = getCatchupDayIndex(studentIntake);
-  
-  // Choose a different day for test day to avoid conflict with catchup day
-  if (catchupDayIndex === 5) { // If Saturday is catchup day
-    return 6; // Use Sunday for test day
-  } else if (catchupDayIndex === 6) { // If Sunday is catchup day
-    return 5; // Use Saturday for test day
-  } else {
-    return 6; // Default to Sunday
-  }
-}
