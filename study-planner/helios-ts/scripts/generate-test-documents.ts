@@ -766,7 +766,7 @@ ${studyPlan.cycles?.map(cycle =>
         test_frequency: 'Weekly',
         seasonal_windows: ['Foundation', 'Revision', 'Intensive'],
         catch_up_day_preference: 'Sunday',
-        upsc_optional_subject: 'OPT-SOC'
+        upsc_optional_subject: 'OPT-AGR'
       },
       target_year: targetYear,
       start_date: startDate
@@ -869,7 +869,7 @@ async function main() {
     const generator = new TestDocumentGenerator({
       outputDir: './generated-docs',
       generateMarkdown: false,
-      generateJson: true,
+      generateJson: false,
       generateWeeklySchedules: false, // Disabled for performance testing
       generatePDFs: false // Enable PDF generation
     });
