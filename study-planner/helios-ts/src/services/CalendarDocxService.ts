@@ -70,6 +70,32 @@ const TABLE_STYLE_NAMES = {
   coverTitle: 'CoverTitleTable'
 } as const;
 
+// Helpers to produce a subtle raised 3D look using light/dark borders
+function getRaised3DTableBorders() {
+  const light = 'FFFFFF'; // highlight edge (top/left)
+  const dark = 'B0B7C3'; // shadow edge (bottom/right)
+  const inside = 'E6E9EF'; // grid lines
+  return {
+    top: { style: BorderStyle.SINGLE, size: 1, color: light },
+    left: { style: BorderStyle.SINGLE, size: 1, color: light },
+    bottom: { style: BorderStyle.SINGLE, size: 2, color: dark },
+    right: { style: BorderStyle.SINGLE, size: 2, color: dark },
+    insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: inside },
+    insideVertical: { style: BorderStyle.SINGLE, size: 1, color: inside }
+  } as const;
+}
+
+function getRaised3DCellBorders() {
+  const light = 'FFFFFF';
+  const dark = 'C0C6D4';
+  return {
+    top: { style: BorderStyle.SINGLE, size: 1, color: light },
+    left: { style: BorderStyle.SINGLE, size: 1, color: light },
+    bottom: { style: BorderStyle.SINGLE, size: 1, color: dark },
+    right: { style: BorderStyle.SINGLE, size: 1, color: dark }
+  } as const;
+}
+
 const createDocument = (studyPlan: StudyPlan,  studentIntake: StudentIntake) => (coverPageElements: (Paragraph | Table)[], mainContentElements: (Paragraph | Table)[]) => {
   return new Document({
     styles: getDocumentStyles(),
@@ -945,7 +971,8 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         ],
         width: { size: 16.67, type: WidthType.PERCENTAGE },
         shading: { fill: cycleColor },
-        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        margins: { top: 200, bottom: 200, left: 100, right: 100 },
+        borders: getRaised3DCellBorders()
       });
     });
     
@@ -979,7 +1006,8 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
             })
           ],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 50, bottom: 50, left: 20, right: 20 }
+          margins: { top: 50, bottom: 50, left: 20, right: 20 },
+          borders: getRaised3DCellBorders()
         })
       );
       calendarTableRows.push(new TableRow({ children: dayHeaders }));
@@ -992,7 +1020,8 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         currentWeek.push(new TableCell({
           children: [new Paragraph({ text: '' })],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 20, bottom: 20, left: 10, right: 10 }
+          margins: { top: 20, bottom: 20, left: 10, right: 10 },
+          borders: getRaised3DCellBorders()
         }));
       }
       
@@ -1008,7 +1037,8 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
             })
           ],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 20, bottom: 20, left: 10, right: 10 }
+          margins: { top: 20, bottom: 20, left: 10, right: 10 },
+          borders: getRaised3DCellBorders()
         }));
         
         // Start new week if we have 7 days
@@ -1023,7 +1053,8 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         currentWeek.push(new TableCell({
           children: [new Paragraph({ text: '' })],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 20, bottom: 20, left: 10, right: 10 }
+          margins: { top: 20, bottom: 20, left: 10, right: 10 },
+          borders: getRaised3DCellBorders()
         }));
       }
       if (currentWeek.length > 0) {
@@ -1035,14 +1066,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
         rows: calendarTableRows,
         width: { size: 100, type: WidthType.PERCENTAGE },
         style: TABLE_STYLE_NAMES.miniCalendar,
-        borders: {
-          top: { style: BorderStyle.NONE, size: 0 },
-          bottom: { style: BorderStyle.NONE, size: 0 },
-          left: { style: BorderStyle.NONE, size: 0 },
-          right: { style: BorderStyle.NONE, size: 0 },
-          insideHorizontal: { style: BorderStyle.NONE, size: 0 },
-          insideVertical: { style: BorderStyle.NONE, size: 0 }
-        }
+        borders: getRaised3DTableBorders()
       });
       
       return new TableCell({
@@ -1068,14 +1092,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
     rows: allTableRows,
     width: { size: 100, type: WidthType.PERCENTAGE },
     style: TABLE_STYLE_NAMES.birdsEyeView,
-    borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
-    }
+    borders: getRaised3DTableBorders()
   }));
 
   return elements;
@@ -1194,7 +1211,8 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
         ],
         width: { size: 14.28, type: WidthType.PERCENTAGE },
         shading: { fill: 'F8F9FA' },
-        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        margins: { top: 200, bottom: 200, left: 100, right: 100 },
+        borders: getRaised3DCellBorders()
       })
     );
     calendarRows.push(new TableRow({ children: headerCells }));
@@ -1207,7 +1225,8 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
       currentWeek.push(new TableCell({
         children: [new Paragraph({ text: '' })],
         width: { size: 14.28, type: WidthType.PERCENTAGE },
-        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        margins: { top: 200, bottom: 200, left: 100, right: 100 },
+        borders: getRaised3DCellBorders()
       }));
     }
 
@@ -1266,7 +1285,8 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
         children: cellContent,
         width: { size: 14.28, type: WidthType.PERCENTAGE },
         shading: { fill: cycleColor },
-        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        margins: { top: 200, bottom: 200, left: 100, right: 100 },
+        borders: getRaised3DCellBorders()
       }));
 
       // Start new week if we have 7 days
@@ -1281,7 +1301,8 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
       currentWeek.push(new TableCell({
         children: [new Paragraph({ text: '' })],
         width: { size: 14.28, type: WidthType.PERCENTAGE },
-        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+        margins: { top: 200, bottom: 200, left: 100, right: 100 },
+        borders: getRaised3DCellBorders()
       }));
     }
     if (currentWeek.length > 0) {
@@ -1292,14 +1313,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan): Promise<(P
       rows: calendarRows,
       width: { size: 100, type: WidthType.PERCENTAGE },
       style: TABLE_STYLE_NAMES.monthlyCalendar,
-      borders: {
-        top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
-      }
+      borders: getRaised3DTableBorders()
     }));
 
     // Add monthly resources
@@ -1496,7 +1510,8 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
       ],
       width: { size: 14.28, type: WidthType.PERCENTAGE },
       shading: { fill: headerBgColor },
-      margins: { top: 200, bottom: 200, left: 100, right: 100 }
+      margins: { top: 200, bottom: 200, left: 100, right: 100 },
+      borders: getRaised3DCellBorders()
     }));
   }
   
@@ -1585,7 +1600,8 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
           ],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
           shading: { fill: taskCellColor },
-          margins: { top: 150, bottom: 150, left: 100, right: 100 }
+          margins: { top: 150, bottom: 150, left: 100, right: 100 },
+          borders: getRaised3DCellBorders()
         }));
       } else {
         // Empty cell for days with fewer tasks - use cycle color
@@ -1594,7 +1610,8 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
           children: [new Paragraph({ text: '' })],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
           shading: { fill: emptyCellColor },
-          margins: { top: 150, bottom: 150, left: 100, right: 100 }
+          margins: { top: 150, bottom: 150, left: 100, right: 100 },
+          borders: getRaised3DCellBorders()
         }));
       }
     }
@@ -1607,14 +1624,7 @@ async function generateWeekContent(studyPlan: StudyPlan, weekStart: dayjs.Dayjs,
     rows: calendarRows,
     width: { size: 100, type: WidthType.PERCENTAGE },
     style: TABLE_STYLE_NAMES.weeklySchedule,
-    borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
-    }
+    borders: getRaised3DTableBorders()
   }));
   
   return elements;
