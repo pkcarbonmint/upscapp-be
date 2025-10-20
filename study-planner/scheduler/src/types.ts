@@ -160,17 +160,64 @@ export type ScheduledTask = {
   durationHours: number;
   effortPercentage: number;
 };
+export type DifficultyLevel = "Beginner" | "Intermediate" | "Advanced";
 
-// Weekly task scheduling types
-export type WeeklyTask = {
-  task_id: string;
+export interface Resource {
+  resource_id: string; // UUID
+  resource_title: string;
+  resource_type: ResourceType;
+  resource_url?: string;
+  resource_description: string;
+  resource_subjects: string[];
+  difficulty_level: DifficultyLevel;
+  estimated_hours: number;
+  resource_priority: ResourcePriority;
+  resource_cost: ResourceCost;
+}
+
+export type ResourceType =
+  | "Book"
+  | "VideoLecture"
+  | "OnlineCourse"
+  | "PracticePaper"
+  | "CurrentAffairsSource"
+  | "RevisionNotes"
+  | "MockTest";
+
+export type ResourcePriority = "Essential" | "Recommended" | "Optional";
+
+export type ResourceCost =
+  | { type: "Free" }
+  | { type: "Paid", amount: number }
+  | { type: "Subscription", plan: string };
+
+// Current Affairs task types
+export type CurrentAffairsTaskType =
+  | { type: "CAReading" }
+  | { type: "CAQuiz" }
+  | { type: "CACompilation" }
+  | { type: "CARevision" }
+  | { type: "CASubjectSpecific"; subject: string }
+  | { type: "CAWeeklyTest" }
+  | { type: "CAMonthlyReview" }
+  | { type: "CAAnalysis" }
+  | { type: "CAEssayPractice" };
+
+
+export interface Task {
+  task_id: string; // UUID
   humanReadableId: string;
   title: string;
   duration_minutes: number;
-  taskType?: 'study' | 'practice' | 'revision' | 'test';
-  currentAffairsType?: any;
-  resources?: string[];
-};
+  taskType: 'study' | 'practice' | 'revision' | 'test'; // Task category
+  currentAffairsType?: CurrentAffairsTaskType;
+  
+  details_link?: string;
+  task_resources?: Resource[];
+  subjectCode: string; // Subject code (e.g., H01, G01, P01) - REQUIRED for proper subject identification
+  topicCode?: string; // Track which topic this task belongs to
+}
+export type WeeklyTask = Task;
 
 export type DayState = {
   dayTasks: WeeklyTask[];
@@ -179,6 +226,7 @@ export type DayState = {
 
 export type DailyPlan = {
   day: number;
+  date: Dayjs;
   tasks: WeeklyTask[];
 };
 
@@ -253,6 +301,41 @@ export type CycleTypeEffects = {
     minBlockDuration: number;
     maxBlockDuration: number;
   };
+};
+
+// Weekly subject allocation types (per calendar week)
+export type DayPreferences = {
+  testDay: DayOfWeek;
+  catchupDay: DayOfWeek;
+};
+
+export type DailyHourLimitsInput = {
+  regular_day: number;
+  test_day: number;
+};
+
+export type WeeklySubjectDaySlice = {
+  hours: number;
+  byTaskType: { study: number; practice: number; revision: number; test: number };
+};
+
+export type WeeklySubjectAllocation = {
+  totalHours: number;
+  byTaskType: { study: number; practice: number; revision: number; test: number };
+  byDay: { [dayNum: number]: WeeklySubjectDaySlice };
+  sourceBlocks: string[];
+};
+
+export type WeeklySubjectAllocations = {
+  // weekKey can be ISO week start date (YYYY-MM-DD)
+  [weekKey: string]: {
+    [subjectCode: string]: WeeklySubjectAllocation;
+  };
+};
+
+export type DetermineBlockScheduleResult = {
+  blockSchedules: BlockSchedule[];
+  weeklySubjectAllocations: WeeklySubjectAllocations;
 };
 
 export interface ScenarioResult {

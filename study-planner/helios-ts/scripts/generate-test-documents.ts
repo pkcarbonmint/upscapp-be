@@ -830,7 +830,7 @@ ${studyPlan.cycles?.map(cycle =>
   private makeIntake(targetYear: string, startDate: string): StudentIntake {
     return createStudentIntake({
       ...dummyStuff,
-      subject_approach: 'SingleSubject',
+      subject_approach: 'DualSubject',
       subject_confidence: {
         'H01': 'VeryStrong',
         'H02': 'VeryStrong',
@@ -954,7 +954,7 @@ async function main() {
     const generator = new TestDocumentGenerator({
       outputDir: './generated-docs',
       generateMarkdown: false,
-      generateJson: false,
+      generateJson: true,
       generateWeeklySchedules: false, // Disabled for performance testing
       generatePDFs: false, // Enable PDF generation
       format: cliArgs.format || 'js'

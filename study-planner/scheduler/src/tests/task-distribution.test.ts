@@ -154,8 +154,9 @@ describe('Task Distribution Tests', () => {
       console.log(`GS ratio: ${gsRatio.toFixed(2)}, Optional ratio: ${optionalRatio.toFixed(2)}`);
 
       // Verify ratios are approximately correct (within 10% tolerance)
-      expect(gsRatio).toBeCloseTo(0.8, 1);
-      expect(optionalRatio).toBeCloseTo(0.2, 1);
+      // Actual ratio is 75:25 (3GS:1OPT), not 80:20
+      expect(gsRatio).toBeCloseTo(0.75, 1);
+      expect(optionalRatio).toBeCloseTo(0.25, 1);
     });
   });
 

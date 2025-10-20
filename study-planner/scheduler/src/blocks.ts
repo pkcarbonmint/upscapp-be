@@ -14,10 +14,38 @@ import {
   AdjustedSubtopic,
   PrioritizedItem,
   bandOrder,
-  GSOptionalRatio
+  GSOptionalRatio,
+  DailyHourLimitsInput,
+  DayPreferences,
+  WeeklySubjectAllocations,
+  DetermineBlockScheduleResult,
+  TaskEffortSplit
 } from "./types";
 
 // return a set of block schedules for a given cycle schedule
+// Overloads: legacy (returns BlockSchedule[]) and extended (returns DetermineBlockScheduleResult)
+export function determineBlockSchedule(
+  cycleSchedule: CycleSchedule,
+  subjects: Subject[],
+  confidenceMap: ConfidenceMap,
+  totalHours: number,
+  studyApproach: StudyApproach,
+  workingHoursPerDay?: number,
+  gsOptionalRatio?: GSOptionalRatio
+): BlockSchedule[];
+export function determineBlockSchedule(
+  cycleSchedule: CycleSchedule,
+  subjects: Subject[],
+  confidenceMap: ConfidenceMap,
+  totalHours: number,
+  studyApproach: StudyApproach,
+  workingHoursPerDay: number,
+  gsOptionalRatio: GSOptionalRatio,
+  dailyHourLimits: DailyHourLimitsInput,
+  dayPreferences: DayPreferences,
+  taskEffortSplit?: TaskEffortSplit,
+  weeklyStudyHours?: number
+): DetermineBlockScheduleResult;
 export function determineBlockSchedule(
   cycleSchedule: CycleSchedule,
   subjects: Subject[],
@@ -25,8 +53,12 @@ export function determineBlockSchedule(
   totalHours: number,
   studyApproach: StudyApproach,
   workingHoursPerDay: number = 8,
-  gsOptionalRatio?: GSOptionalRatio
-): BlockSchedule[] {
+  gsOptionalRatio?: GSOptionalRatio,
+  dailyHourLimits?: DailyHourLimitsInput,
+  dayPreferences?: DayPreferences,
+  taskEffortSplit?: TaskEffortSplit,
+  _weeklyStudyHours?: number
+): any {
   const cycleStart = dayjs(cycleSchedule.startDate);
   const cycleEnd = dayjs(cycleSchedule.endDate);
   
@@ -77,11 +109,74 @@ export function determineBlockSchedule(
   const result = scheduleParallel(trimmedInput, confidenceMap);
   
   // Convert to BlockSchedule format
-  return result.scheduledSubjects.map(scheduled => ({
+  const blockSchedules: BlockSchedule[] = result.scheduledSubjects.map(scheduled => ({
     subjectCode: scheduled.subject.subjectCode,
     startDate: scheduled.startDate.format('YYYY-MM-DD'),
     endDate: scheduled.endDate.format('YYYY-MM-DD')
   }));
+  // If no weekly allocation parameters provided, return legacy array
+  if (!dailyHourLimits || !dayPreferences) {
+    return blockSchedules;
+  }
+
+  // Build weekly subject allocations across calendar weeks
+  const weeklySubjectAllocations: WeeklySubjectAllocations = {};
+  const weekStart = (d: dayjs.Dayjs) => d.startOf('week'); // Sunday as week start
+
+  // Helper to split task effort (use provided split or default)
+  const defaultSplit = { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05 };
+  const split = taskEffortSplit || defaultSplit;
+  
+  // weeklyStudyHours currently not used directly; allocations are bounded by day capacities and remaining subject hours
+
+  for (const scheduled of result.scheduledSubjects) {
+    let cursor = scheduled.startDate.startOf('day');
+    const end = scheduled.endDate.startOf('day');
+    let remainingHours = scheduled.allocatedHours; // subject-level remaining hours to place across days
+    while (cursor.isBefore(end) || cursor.isSame(end, 'day')) {
+      const wkStart = weekStart(cursor);
+      const weekKey = wkStart.format('YYYY-MM-DD');
+      const dayNum = cursor.day(); // 0..6
+
+      const testDayNum = {
+        Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6
+      } as any;
+      const isTestDay = dayNum === testDayNum[dayPreferences.testDay as any];
+      const dayCapacity = isTestDay ? dailyHourLimits.test_day : dailyHourLimits.regular_day;
+
+      const sliceHours = Math.min(dayCapacity, Math.max(0, remainingHours)); // cap by day capacity and remaining subject hours
+      if (sliceHours > 0) {
+        weeklySubjectAllocations[weekKey] ||= {};
+        const subjKey = scheduled.subject.subjectCode;
+        weeklySubjectAllocations[weekKey][subjKey] ||= {
+          totalHours: 0,
+          byTaskType: { study: 0, practice: 0, revision: 0, test: 0 },
+          byDay: {},
+          sourceBlocks: []
+        };
+        const alloc = weeklySubjectAllocations[weekKey][subjKey];
+        alloc.totalHours += sliceHours;
+        alloc.byTaskType.study += sliceHours * split.study;
+        alloc.byTaskType.practice += sliceHours * split.practice;
+        alloc.byTaskType.revision += sliceHours * split.revision;
+        alloc.byTaskType.test += sliceHours * split.test;
+        alloc.byDay[dayNum] ||= { hours: 0, byTaskType: { study: 0, practice: 0, revision: 0, test: 0 } };
+        alloc.byDay[dayNum].hours += sliceHours;
+        alloc.byDay[dayNum].byTaskType.study += sliceHours * split.study;
+        alloc.byDay[dayNum].byTaskType.practice += sliceHours * split.practice;
+        alloc.byDay[dayNum].byTaskType.revision += sliceHours * split.revision;
+        alloc.byDay[dayNum].byTaskType.test += sliceHours * split.test;
+        if (!alloc.sourceBlocks.includes(scheduled.subject.subjectCode)) {
+          alloc.sourceBlocks.push(scheduled.subject.subjectCode);
+        }
+      }
+
+      cursor = cursor.add(1, 'day');
+      remainingHours -= sliceHours;
+    }
+  }
+
+  return { blockSchedules, weeklySubjectAllocations };
 }
 
 

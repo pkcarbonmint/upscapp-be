@@ -4,6 +4,7 @@
 
 export type Multiplier = number;
 export type SubjectCode = string;
+export type { CurrentAffairsTaskType } from 'scheduler';
 
 export type RebalancingNeed =
   | { type: "NoRebalancingNeeded" }
@@ -40,8 +41,7 @@ export type ConfidenceLevel =
 export type SubjectConfidenceMap = Record<SubjectCode, ConfidenceLevel>;
 
 // Difficulty level of resources
-export type DifficultyLevel = "Beginner" | "Intermediate" | "Advanced";
-
+export type { DifficultyLevel } from 'scheduler';
 // Budget preference for resource selection
 export type BudgetPreference = "BudgetFree" | "BudgetLow" | "BudgetMedium" | "BudgetHigh";
 
@@ -52,18 +52,6 @@ export type LearningStyle =
   | "ReadingWriting"
   | "Kinesthetic"
   | "Mixed";
-
-// Current Affairs task types
-export type CurrentAffairsTaskType =
-  | { type: "CAReading" }
-  | { type: "CAQuiz" }
-  | { type: "CACompilation" }
-  | { type: "CARevision" }
-  | { type: "CASubjectSpecific"; subject: string }
-  | { type: "CAWeeklyTest" }
-  | { type: "CAMonthlyReview" }
-  | { type: "CAAnalysis" }
-  | { type: "CAEssayPractice" };
 
 // Study season for exam-specific preparation
 export type StudySeason = "PrelimsPrep" | "MainsPrep" | "YearRound";
