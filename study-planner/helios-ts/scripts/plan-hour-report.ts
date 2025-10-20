@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+import { Dayjs } from "dayjs";
 import type { StudyPlan } from "../src/types/models";
 
 type Row = {
@@ -5,6 +7,7 @@ type Row = {
     blockIndex: number;
     week: number;
     day: number;
+    date: Dayjs;
     duration: number;
 };
 const m2h = (m: number) => `${Math.floor(m / 60)}h ${m % 60}m`;
@@ -18,7 +21,8 @@ export function publishPlanHourReport(plan: StudyPlan) {
                 return week.daily_plans.flatMap((day): Row => {
                     const durations = day.tasks.map((t) => t.duration_minutes);
                     const total_duration = durations.reduce((a, b) => a + b, 0);
-                    return { cycleType, blockIndex: (blockIndex+1), week: week.week, day: day.day, duration: total_duration } as Row;
+                    const date = day.date;
+                    return { cycleType, blockIndex: (blockIndex+1), week: week.week, date, day: day.day, duration: total_duration } as Row;
                 });
             });
         });
@@ -27,7 +31,8 @@ export function publishPlanHourReport(plan: StudyPlan) {
         .sort((a: Row, b: Row) => b.duration - a.duration)
         .map((row: Row) => {
             const pad2 = (n: number) => String(n).padStart(2, '0');
-            return `${row.cycleType} ${pad2(row.blockIndex)} ${pad2(row.week)} ${pad2(row.day)} ${row.duration} minutes`;
+            const date = dayjs(row.date).format('YYYY/MM/DD')
+            return `[${row.cycleType}][${date}] ${pad2(row.blockIndex)} ${pad2(row.week)} ${pad2(row.day)} ${row.duration} minutes`;
         });
     return report;
 }
