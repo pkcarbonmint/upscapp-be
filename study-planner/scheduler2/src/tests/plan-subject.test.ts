@@ -464,9 +464,357 @@ describe('planSubjectTasks', () => {
       expect(tasks.every(task => task.minutes > 0)).toBe(true);
     });
   });
-});
 
-// Helper functions for testing
+  describe('Topic Configuration Variations', () => {
+    it('should handle topics with only essential subtopics', () => {
+      const essentialOnlySubject: Subject = {
+        code: 'PHYS',
+        name: 'Physics',
+        baselineMinutes: 1200, // 20 hours
+        topics: [
+          {
+            code: 'MECH',
+            subtopics: [
+              { code: 'MECH1', name: 'Kinematics', isEssential: true, priorityLevel: 5 },
+              { code: 'MECH2', name: 'Dynamics', isEssential: true, priorityLevel: 4 },
+            ],
+          },
+          {
+            code: 'THERM',
+            subtopics: [
+              { code: 'THERM1', name: 'Heat Transfer', isEssential: true, priorityLevel: 3 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, essentialOnlySubject, constraints);
+      
+      // All topics should be included since all subtopics are essential
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes).toContain('MECH');
+      expect(topicCodes).toContain('THERM');
+      
+      // All tasks should have valid topic codes
+      expect(tasks.every(task => task.topicCode && task.topicCode.length > 0)).toBe(true);
+    });
+
+    it('should handle topics with only non-essential subtopics', () => {
+      const nonEssentialOnlySubject: Subject = {
+        code: 'CHEM',
+        name: 'Chemistry',
+        baselineMinutes: 600, // 10 hours
+        topics: [
+          {
+            code: 'ORG',
+            subtopics: [
+              { code: 'ORG1', name: 'Organic Reactions', isEssential: false, priorityLevel: 2 },
+              { code: 'ORG2', name: 'Synthesis', isEssential: false, priorityLevel: 1 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, nonEssentialOnlySubject, constraints);
+      
+      // Non-essential topics should be included if time allows
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes).toContain('ORG');
+      
+      // All tasks should have valid topic codes
+      expect(tasks.every(task => task.topicCode && task.topicCode.length > 0)).toBe(true);
+    });
+
+    it('should handle topics with predefined baselineMinutes', () => {
+      const predefinedSubject: Subject = {
+        code: 'BIO',
+        name: 'Biology',
+        baselineMinutes: 1800, // 30 hours
+        topics: [
+          {
+            code: 'CELL',
+            baselineMinutes: 600, // 10 hours
+            subtopics: [
+              { code: 'CELL1', name: 'Cell Structure', isEssential: true, priorityLevel: 5 },
+              { code: 'CELL2', name: 'Cell Division', isEssential: true, priorityLevel: 4 },
+            ],
+          },
+          {
+            code: 'GEN',
+            baselineMinutes: 900, // 15 hours
+            subtopics: [
+              { code: 'GEN1', name: 'Genetics', isEssential: true, priorityLevel: 3 },
+              { code: 'GEN2', name: 'Evolution', isEssential: false, priorityLevel: 2 },
+            ],
+          },
+          {
+            code: 'ECO',
+            subtopics: [
+              { code: 'ECO1', name: 'Ecosystems', isEssential: false, priorityLevel: 1 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, predefinedSubject, constraints);
+      
+      // Topics with predefined minutes should be included
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes).toContain('CELL');
+      expect(topicCodes).toContain('GEN');
+      
+      // Total time should respect predefined allocations
+      const cellTasks = tasks.filter(task => task.topicCode === 'CELL');
+      const genTasks = tasks.filter(task => task.topicCode === 'GEN');
+      
+      const cellTotalMinutes = cellTasks.reduce((sum, task) => sum + task.minutes, 0);
+      const genTotalMinutes = genTasks.reduce((sum, task) => sum + task.minutes, 0);
+      
+      // Should be close to predefined values (within 10% tolerance)
+      expect(Math.abs(cellTotalMinutes - 600)).toBeLessThanOrEqual(60);
+      expect(Math.abs(genTotalMinutes - 900)).toBeLessThanOrEqual(90);
+    });
+
+    it('should handle topics without baselineMinutes (auto-distributed)', () => {
+      const autoDistributedSubject: Subject = {
+        code: 'HIST',
+        name: 'History',
+        baselineMinutes: 1200, // 20 hours
+        topics: [
+          {
+            code: 'ANCIENT',
+            subtopics: [
+              { code: 'ANC1', name: 'Ancient Civilizations', isEssential: true, priorityLevel: 5 },
+              { code: 'ANC2', name: 'Classical Period', isEssential: true, priorityLevel: 4 },
+            ],
+          },
+          {
+            code: 'MEDIEVAL',
+            subtopics: [
+              { code: 'MED1', name: 'Middle Ages', isEssential: true, priorityLevel: 3 },
+              { code: 'MED2', name: 'Renaissance', isEssential: false, priorityLevel: 2 },
+            ],
+          },
+          {
+            code: 'MODERN',
+            subtopics: [
+              { code: 'MOD1', name: 'Industrial Revolution', isEssential: false, priorityLevel: 1 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, autoDistributedSubject, constraints);
+      
+      // All topics should be included
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes).toContain('ANCIENT');
+      expect(topicCodes).toContain('MEDIEVAL');
+      expect(topicCodes).toContain('MODERN');
+      
+      // Time should be distributed based on priority and essential status
+      const ancientTasks = tasks.filter(task => task.topicCode === 'ANCIENT');
+      const medievalTasks = tasks.filter(task => task.topicCode === 'MEDIEVAL');
+      const modernTasks = tasks.filter(task => task.topicCode === 'MODERN');
+      
+      const ancientMinutes = ancientTasks.reduce((sum, task) => sum + task.minutes, 0);
+      const medievalMinutes = medievalTasks.reduce((sum, task) => sum + task.minutes, 0);
+      const modernMinutes = modernTasks.reduce((sum, task) => sum + task.minutes, 0);
+      
+      // Higher priority topics should get more time
+      expect(ancientMinutes).toBeGreaterThanOrEqual(medievalMinutes);
+      expect(medievalMinutes).toBeGreaterThanOrEqual(modernMinutes);
+    });
+
+    it('should handle mixed essential/non-essential subtopics within same topic', () => {
+      const mixedSubject: Subject = {
+        code: 'GEO',
+        name: 'Geography',
+        baselineMinutes: 900, // 15 hours
+        topics: [
+          {
+            code: 'PHYS',
+            subtopics: [
+              { code: 'PHYS1', name: 'Physical Geography', isEssential: true, priorityLevel: 5 },
+              { code: 'PHYS2', name: 'Climate', isEssential: true, priorityLevel: 4 },
+              { code: 'PHYS3', name: 'Weather Patterns', isEssential: false, priorityLevel: 2 },
+            ],
+          },
+          {
+            code: 'HUMAN',
+            subtopics: [
+              { code: 'HUM1', name: 'Population', isEssential: true, priorityLevel: 3 },
+              { code: 'HUM2', name: 'Urban Planning', isEssential: false, priorityLevel: 1 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, mixedSubject, constraints);
+      
+      // Both topics should be included
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes).toContain('PHYS');
+      expect(topicCodes).toContain('HUMAN');
+      
+      // Should have tasks for both topics
+      expect(tasks.length).toBeGreaterThan(0);
+      expect(tasks.every(task => task.topicCode && task.topicCode.length > 0)).toBe(true);
+    });
+
+    it('should handle topics with varying priority levels', () => {
+      const prioritySubject: Subject = {
+        code: 'LIT',
+        name: 'Literature',
+        baselineMinutes: 1500, // 25 hours
+        topics: [
+          {
+            code: 'POETRY',
+            subtopics: [
+              { code: 'POE1', name: 'Classical Poetry', isEssential: true, priorityLevel: 5 },
+              { code: 'POE2', name: 'Modern Poetry', isEssential: true, priorityLevel: 4 },
+            ],
+          },
+          {
+            code: 'PROSE',
+            subtopics: [
+              { code: 'PRO1', name: 'Fiction', isEssential: true, priorityLevel: 3 },
+              { code: 'PRO2', name: 'Non-fiction', isEssential: false, priorityLevel: 2 },
+            ],
+          },
+          {
+            code: 'DRAMA',
+            subtopics: [
+              { code: 'DRA1', name: 'Classical Drama', isEssential: false, priorityLevel: 1 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, prioritySubject, constraints);
+      
+      // All topics should be included
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes).toContain('POETRY');
+      expect(topicCodes).toContain('PROSE');
+      expect(topicCodes).toContain('DRAMA');
+      
+      // Tasks should be sorted by priority
+      const poetryTasks = tasks.filter(task => task.topicCode === 'POETRY');
+      const proseTasks = tasks.filter(task => task.topicCode === 'PROSE');
+      const dramaTasks = tasks.filter(task => task.topicCode === 'DRAMA');
+      
+      const poetryMinutes = poetryTasks.reduce((sum, task) => sum + task.minutes, 0);
+      const proseMinutes = proseTasks.reduce((sum, task) => sum + task.minutes, 0);
+      const dramaMinutes = dramaTasks.reduce((sum, task) => sum + task.minutes, 0);
+      
+      // Higher priority topics should get more time
+      expect(poetryMinutes).toBeGreaterThanOrEqual(proseMinutes);
+      expect(proseMinutes).toBeGreaterThanOrEqual(dramaMinutes);
+    });
+
+    it('should handle single subtopic per topic', () => {
+      const singleSubtopicSubject: Subject = {
+        code: 'ART',
+        name: 'Art',
+        baselineMinutes: 600, // 10 hours
+        topics: [
+          {
+            code: 'PAINT',
+            subtopics: [
+              { code: 'PAI1', name: 'Painting Techniques', isEssential: true, priorityLevel: 5 },
+            ],
+          },
+          {
+            code: 'SCULP',
+            subtopics: [
+              { code: 'SCU1', name: 'Sculpture Basics', isEssential: true, priorityLevel: 4 },
+            ],
+          },
+          {
+            code: 'DRAW',
+            subtopics: [
+              { code: 'DRA1', name: 'Drawing Fundamentals', isEssential: false, priorityLevel: 2 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, singleSubtopicSubject, constraints);
+      
+      // All topics should be included
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes).toContain('PAINT');
+      expect(topicCodes).toContain('SCULP');
+      expect(topicCodes).toContain('DRAW');
+      
+      // Each topic should have tasks for its single subtopic
+      const paintTasks = tasks.filter(task => task.topicCode === 'PAINT');
+      const sculpTasks = tasks.filter(task => task.topicCode === 'SCULP');
+      const drawTasks = tasks.filter(task => task.topicCode === 'DRAW');
+      
+      expect(paintTasks.length).toBeGreaterThan(0);
+      expect(sculpTasks.length).toBeGreaterThan(0);
+      expect(drawTasks.length).toBeGreaterThan(0);
+      
+      // All tasks should have valid topic codes
+      expect(tasks.every(task => task.topicCode && task.topicCode.length > 0)).toBe(true);
+    });
+
+    it('should handle many subtopics per topic', () => {
+      const manySubtopicsSubject: Subject = {
+        code: 'SCI',
+        name: 'Science',
+        baselineMinutes: 2400, // 40 hours
+        topics: [
+          {
+            code: 'PHYSICS',
+            subtopics: [
+              { code: 'PHY1', name: 'Mechanics', isEssential: true, priorityLevel: 5 },
+              { code: 'PHY2', name: 'Thermodynamics', isEssential: true, priorityLevel: 4 },
+              { code: 'PHY3', name: 'Electromagnetism', isEssential: true, priorityLevel: 3 },
+              { code: 'PHY4', name: 'Quantum Physics', isEssential: false, priorityLevel: 2 },
+              { code: 'PHY5', name: 'Relativity', isEssential: false, priorityLevel: 1 },
+            ],
+          },
+          {
+            code: 'CHEMISTRY',
+            subtopics: [
+              { code: 'CHE1', name: 'Organic Chemistry', isEssential: true, priorityLevel: 4 },
+              { code: 'CHE2', name: 'Inorganic Chemistry', isEssential: true, priorityLevel: 3 },
+              { code: 'CHE3', name: 'Physical Chemistry', isEssential: false, priorityLevel: 2 },
+            ],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, manySubtopicsSubject, constraints);
+      
+      // At least one topic should be included
+      const topicCodes = tasks.map(task => task.topicCode).filter(Boolean);
+      expect(topicCodes.length).toBeGreaterThan(0);
+      expect(topicCodes).toContain('PHYSICS');
+      
+      // Should have tasks for at least one topic
+      const physicsTasks = tasks.filter(task => task.topicCode === 'PHYSICS');
+      const chemistryTasks = tasks.filter(task => task.topicCode === 'CHEMISTRY');
+      
+      expect(physicsTasks.length).toBeGreaterThan(0);
+      
+      // Chemistry should be dropped because:
+      // 1. PHYSICS has higher priority essential subtopics (priority 5 vs 4)
+      // 2. Limited available time: 40 hours over 7 days with catchup/test days reducing slots
+      // 3. PHYSICS has 5 subtopics (3 essential, 2 non-essential) requiring significant time
+      // 4. CHEMISTRY has 3 subtopics (2 essential, 1 non-essential) but lower priority
+      // 5. Scheduler prioritizes higher priority topics when time is constrained
+      expect(chemistryTasks.length).toBe(0);
+      
+      // Should have tasks for at least one topic
+      expect(tasks.length).toBeGreaterThan(0);
+      expect(tasks.every(task => task.topicCode && task.topicCode.length > 0)).toBe(true);
+    });
+  });
+
 function isCatchupDay(date: dayjs.Dayjs): boolean {
   return date.day() === Weekday.Sunday;
 }
@@ -474,3 +822,4 @@ function isCatchupDay(date: dayjs.Dayjs): boolean {
 function isTestDay(date: dayjs.Dayjs): boolean {
   return date.day() === Weekday.Saturday;
 }
+});
