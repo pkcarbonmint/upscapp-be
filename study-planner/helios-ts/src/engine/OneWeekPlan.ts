@@ -1,4 +1,5 @@
-import type { WeeklyPlan, DailyPlan, Task, Resource } from '../types/models';
+import type { Dayjs } from 'dayjs';
+import type { WeeklyPlan, Task, Resource, DailyPlan } from 'scheduler';
 import type { StudentIntake } from '../types/models';
 import type { Subject, ExamFocus } from '../types/Subjects';
 import { getTopicEstimatedHours } from '../types/Subjects';
@@ -8,10 +9,22 @@ import { Config } from './engine-types';
 import { 
   distributeTasksIntoDays as schedulerDistributeTasksIntoDays,
   assignHumanReadableIDs as schedulerAssignHumanReadableIDs,
-  WeeklyTask,
   DailyHourLimits,
   DayOfWeek
 } from 'scheduler';
+
+// Re-export types from scheduler library - using the _2 versions that include subjectCode
+type WeeklyTask = {
+  task_id: string;
+  humanReadableId: string;
+  title: string;
+  duration_minutes: number;
+  taskType: 'study' | 'practice' | 'revision' | 'test';
+  resources: string[];
+  subjectCode: string;
+  priority?: number;
+};
+
 
 // Task definition interfaces
 export interface StudyTaskDef {
@@ -48,9 +61,9 @@ function convertTaskToWeeklyTask(task: Task): WeeklyTask {
     humanReadableId: task.humanReadableId,
     title: task.title,
     duration_minutes: task.duration_minutes,
-    taskType: task.taskType,
-    currentAffairsType: task.currentAffairsType,
-    resources: task.task_resources?.map((r: any) => r.resource_title)
+    taskType: task.taskType || 'study',
+    resources: task.task_resources?.map((r: any) => r.resource_title) || [],
+    subjectCode: task.subjectCode
   };
 }
 
@@ -75,23 +88,75 @@ function convertDailyHourLimits(config: Config): DailyHourLimits {
  */
 export async function createPlanForOneWeek(
   blockIndex: number,
-  blkSubjects: Subject[],
+  weekStartDate: Dayjs,
+  blkSubject: Subject,
   studentIntake: StudentIntake,
   archetype: any, // Archetype type
   config: Config,
   weekNum: number,
   blockDurationWeeks: number,
-  logger: Logger
+  logger: Logger,
+  allocationGuidance?: { weekStart: string; byTaskType: any; byDay: any }
 ): Promise<WeeklyPlan> {
   logger.logDebug('OneWeekPlan', `Creating week ${weekNum}/${blockDurationWeeks} for block ${blockIndex}`);
-  
-  // 1. Calculate the total time available for each task category this week
+  // 1. If scheduler provided per-day guidance, build daily plans directly from it (no local scheduling)
+  if (allocationGuidance?.byDay) {
+    const guidedDailyPlans: DailyPlan[] = [];
+    for (let dow = 0; dow < 7; dow++) {
+      const dayAlloc = allocationGuidance.byDay[dow];
+      const tasks: Task[] = [];
+      if (dayAlloc && dayAlloc.byTaskType) {
+        const toMinutes = (hours?: number) => Math.max(0, Math.round((hours || 0) * 60));
+        const studyMin = toMinutes(dayAlloc.byTaskType.study);
+        const practiceMin = toMinutes(dayAlloc.byTaskType.practice);
+        const revisionMin = toMinutes(dayAlloc.byTaskType.revision);
+        const testMin = toMinutes(dayAlloc.byTaskType.test);
+
+        if (studyMin > 0) {
+          const t = await createStudyTask(
+            `Study: ${blkSubject.subjectName}`,
+            studyMin,
+            blkSubject.subjectCode,
+            undefined,
+            undefined
+          );
+          tasks.push(t);
+        }
+        if (practiceMin > 0) {
+          tasks.push(await createTask(`Practice: ${blkSubject.subjectName}`, practiceMin, blkSubject.subjectCode, undefined, 'practice'));
+        }
+        if (revisionMin > 0) {
+          tasks.push(await createTask(`Revision: ${blkSubject.subjectName}`, revisionMin, blkSubject.subjectCode, undefined, 'revision'));
+        }
+        if (testMin > 0) {
+          tasks.push(await createTask(`Test: ${blkSubject.subjectName}`, testMin, blkSubject.subjectCode, undefined, 'test'));
+        }
+      }
+      guidedDailyPlans.push({ 
+        date: weekStartDate.add(dow, 'day'),
+        day: dow + 1, tasks: tasks.map(convertTaskToWeeklyTask) });
+    }
+
+    const blockNUmber = 0;
+    const finalGuided = schedulerAssignHumanReadableIDs(guidedDailyPlans, blockNUmber, weekNum);
+    const totalTasks = finalGuided.reduce((sum: number, day: any) => sum + day.tasks.length, 0);
+    const totalMinutes = finalGuided.reduce((sum: number, day: any) =>
+      sum + day.tasks.reduce((daySum: number, task: any) => daySum + task.duration_minutes, 0), 0
+    );
+    const totalHours = Math.round(totalMinutes / 60 * 100) / 100;
+    logger.logDebug('OneWeekPlan', `Week ${weekNum} final guided plan: ${totalTasks} tasks, ${totalHours} hours across 7 days`);
+
+    return { week: weekNum, daily_plans: finalGuided };
+  }
+
+  // 1. Calculate the total time available for each task category this week (local weekly split when no guidance)
   const weeklyTimeSplit = timeSplitInOneWeek(studentIntake, config);
   logger.logDebug('OneWeekPlan', `Week ${weekNum} time split: Study=${weeklyTimeSplit.study}h, Practice=${weeklyTimeSplit.practice}h, Test=${weeklyTimeSplit.test}h, Revision=${weeklyTimeSplit.revision}h`);
   
   // 2. Generate a flat list of all tasks required for the week
   const tasksForWeek = await tasksForOneWeek(
-    blkSubjects,
+    weekStartDate,
+    blkSubject,
     weeklyTimeSplit,
     studentIntake,
     archetype,
@@ -108,15 +173,17 @@ export async function createPlanForOneWeek(
   const dailyHourLimits = convertDailyHourLimits(config);
   
   const schedulingResult = schedulerDistributeTasksIntoDays({
+    weekStartDate,
     tasks: weeklyTasks,
     dailyLimits: dailyHourLimits,
     catchupDayPreference: (studentIntake.study_strategy?.catch_up_day_preference as DayOfWeek) || DayOfWeek.SATURDAY,
     testDayPreference: DayOfWeek.SUNDAY // Default to Sunday for test day
   });
-  
+
   // Convert back to helios-ts format and preserve original task data
   const dailyPlans: DailyPlan[] = schedulingResult.dailyPlans.map((dayPlan: any) => ({
     day: dayPlan.day,
+    date: weekStartDate.add(dayPlan.day - 1, 'day'),
     tasks: dayPlan.tasks.map((weeklyTask: any) => {
       const originalTask = tasksForWeek.find(t => t.task_id === weeklyTask.task_id);
       return originalTask ? convertWeeklyTaskToTask(weeklyTask, originalTask) : {
@@ -126,7 +193,8 @@ export async function createPlanForOneWeek(
         duration_minutes: weeklyTask.duration_minutes,
         taskType: weeklyTask.taskType,
         currentAffairsType: weeklyTask.currentAffairsType,
-        resources: weeklyTask.resources?.map((title: any) => ({ resource_title: title }))
+        resources: weeklyTask.resources?.map((title: any) => ({ resource_title: title })),
+        subjectCode: weeklyTask.subjectCode
       } as Task;
     })
   }));
@@ -139,8 +207,29 @@ export async function createPlanForOneWeek(
     });
   }
   
+  // DIAGNOSTIC: Log after conversion but before human ID assignment
+  if (weekNum === 3 && blkSubject.subjectCode === 'OPT-AGR') {
+    console.log(`\n🔍 DIAGNOSTIC: After conversion to DailyPlan`);
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    dailyPlans.forEach((dayPlan, _) => {
+      const dayName = dayNames[dayPlan.day] || `Day${dayPlan.day}`;
+      console.log(`   ${dayName} (day ${dayPlan.day}): ${dayPlan.tasks.length} tasks`);
+    });
+  }
+
   // 4. Assign the simple, human-readable IDs to each task using scheduler library
-  const finalDailyPlans = schedulerAssignHumanReadableIDs(dailyPlans, blockIndex, weekNum);
+  const blockNumber = 0;
+  const finalDailyPlans = schedulerAssignHumanReadableIDs(dailyPlans, blockNumber, weekNum);
+
+  // DIAGNOSTIC: Log final result
+  if (weekNum === 3 && blkSubject.subjectCode === 'OPT-AGR') {
+    console.log(`\n🔍 DIAGNOSTIC: Final result after human ID assignment`);
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    finalDailyPlans.forEach((dayPlan, _) => {
+      const dayName = dayNames[dayPlan.day] || `Day${dayPlan.day}`;
+      console.log(`   ${dayName} (day ${dayPlan.day}): ${dayPlan.tasks.length} tasks`);
+    });
+  }
   
   // Log final week summary
   const totalTasks = finalDailyPlans.reduce((sum: number, day: any) => sum + day.tasks.length, 0);
@@ -177,7 +266,8 @@ function timeSplitInOneWeek(studentIntake: StudentIntake, config: Config): Recor
  * Generate all tasks for a given week
  */
 async function tasksForOneWeek(
-  blkSubjects: Subject[],
+  weekStartDate: Dayjs,
+  theSubject: Subject,
   timeSplit: Record<string, number>,
   studentIntake: StudentIntake,
   archetype: any,
@@ -186,44 +276,29 @@ async function tasksForOneWeek(
   blockDurationWeeks: number,
   logger: Logger
 ): Promise<Task[]> {
-  const studyHoursPerSubject = timeSplit.study / blkSubjects.length;
-  const practiceHoursPerSubject = timeSplit.practice / blkSubjects.length;
-  const testHoursPerSubject = timeSplit.test / blkSubjects.length;
+  const studyHoursPerSubject = timeSplit.study;
+  const practiceHoursPerSubject = timeSplit.practice;
+  const testHoursPerSubject = timeSplit.test;
   const revisionHours = timeSplit.revision;
-  
-  logger.logDebug('OneWeekPlan', `Week ${weekNum} task generation: ${studyHoursPerSubject.toFixed(2)}h study, ${practiceHoursPerSubject.toFixed(2)}h practice, ${testHoursPerSubject.toFixed(2)}h test, ${revisionHours.toFixed(2)}h revision per subject`);
-  
+    
   // Create a mock student profile for now
   const studentProfile = createStudentProfile(archetype, studentIntake);
 
   // Generate study tasks with resources
-  const studyTasks = await Promise.all(
-    blkSubjects.map(subject => 
-      generateStudyTasks(studyHoursPerSubject, studentIntake, archetype, studentProfile, config, subject, weekNum, blockDurationWeeks, logger)
-    )
-  );
-  const flatStudyTasks = studyTasks.flat();
-  
+  const studyTasks = await 
+    generateStudyTasks(studyHoursPerSubject, studentIntake, archetype, studentProfile, config, theSubject, weekNum, blockDurationWeeks, logger)
+
+
   // Generate practice tasks (no resources needed)
-  const practiceTasks = await Promise.all(
-    blkSubjects.map(subject => generatePracticeTasks(practiceHoursPerSubject, subject, logger))
-  );
-  const flatPracticeTasks = practiceTasks.flat();
+  const practiceTasks = await generatePracticeTasks(weekStartDate, practiceHoursPerSubject, theSubject, logger)
   
   // Generate test tasks (no resources needed)
-  const testTasks = await Promise.all(
-    blkSubjects.map(subject => generateTestTasks(testHoursPerSubject, subject, logger))
-  );
-  const flatTestTasks = testTasks.flat();
+  const testTasks = await generateTestTasks(weekStartDate, testHoursPerSubject, theSubject, logger)
   
   // Generate revision task (no resources needed)
-  const revisionTask = await generateRevisionTask(revisionHours, logger);
+  const revisionTask = await generateRevisionTask(weekStartDate, revisionHours, logger);
   
-  // Current affairs are integrated into study tasks, not generated separately
-  
-  logger.logDebug('OneWeekPlan', `Week ${weekNum} task breakdown: ${flatStudyTasks.length} study, ${flatPracticeTasks.length} practice, ${flatTestTasks.length} test, 1 revision`);
-  
-  return [...flatStudyTasks, ...flatPracticeTasks, ...flatTestTasks, revisionTask];
+  return [...studyTasks, ...practiceTasks, ...testTasks, revisionTask];
 }
 
 /**
@@ -240,7 +315,7 @@ async function generateStudyTasks(
   blockDurationWeeks: number,
   logger: Logger
 ): Promise<Task[]> {
-  const topicsForSubject = subject.topics;
+  const topicsForSubject = subject.topics || [];
   const subjectCodeText = subject.subjectCode;
   const confidenceMap = studentIntake.subject_confidence;
   const subjectConfidence = confidenceMap[subjectCodeText] || 'Moderate';
@@ -263,6 +338,7 @@ async function generateStudyTasks(
     const task = await createStudyTask(
       `Study: ${subject.subjectName}`,
       Math.round(studyHoursPerSubject * 60),
+      subjectCodeText,
       undefined,
       taskResources
     );
@@ -308,6 +384,7 @@ async function generateStudyTasks(
         return createStudyTask(
           `Study: ${topic.topicName}`,
           topicDurationMinutes,
+          subjectCodeText,
           topic.resourceLink,
           taskResources,
           topic.topicCode // Pass the topic code for resource matching
@@ -322,12 +399,13 @@ async function generateStudyTasks(
 /**
  * Generate practice tasks for a subject
  */
-async function generatePracticeTasks(practiceHoursPerSubject: number, subject: Subject, _logger: Logger): Promise<Task[]> {
+async function generatePracticeTasks(_configweekStartDate: Dayjs, practiceHoursPerSubject: number, subject: Subject, _logger: Logger): Promise<Task[]> {
   switch (subject.examFocus) {
     case 'PrelimsOnly':
       const prelimsTask = await createTask(
         `Practice (MCQs): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60),
+        subject.subjectCode,
         undefined,
         'practice'
       );
@@ -336,6 +414,7 @@ async function generatePracticeTasks(practiceHoursPerSubject: number, subject: S
       const mainsTask = await createTask(
         `Practice (Answer Writing): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60),
+        subject.subjectCode,
         undefined,
         'practice'
       );
@@ -345,12 +424,14 @@ async function generatePracticeTasks(practiceHoursPerSubject: number, subject: S
       const mcqTask = await createTask(
         `Practice (MCQs): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60 / 2),
+        subject.subjectCode,
         undefined,
         'practice'
       );
       const writingTask = await createTask(
         `Practice (Answer Writing): ${subject.subjectName}`,
         Math.round(practiceHoursPerSubject * 60 / 2),
+        subject.subjectCode,
         undefined,
         'practice'
       );
@@ -363,13 +444,14 @@ async function generatePracticeTasks(practiceHoursPerSubject: number, subject: S
 /**
  * Generate test tasks for a subject
  */
-async function generateTestTasks(testHoursPerSubject: number, subject: Subject, _logger: Logger): Promise<Task[]> {
+async function generateTestTasks(_weekStartDate: Dayjs, testHoursPerSubject: number, subject: Subject, _logger: Logger): Promise<Task[]> {
   switch (subject.examFocus) {
     case 'PrelimsOnly': {
 
         const prelimsTestTask = await createTask(
             `Test (MCQs): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60),
+            subject.subjectCode,
             undefined,
             'test'
         );
@@ -380,6 +462,7 @@ async function generateTestTasks(testHoursPerSubject: number, subject: Subject, 
         const mainsTestTask = await createTask(
             `Test (Mains): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60),
+            subject.subjectCode,
             undefined,
             'test'
         );
@@ -391,27 +474,29 @@ async function generateTestTasks(testHoursPerSubject: number, subject: Subject, 
         const mcqTestTask = await createTask(
             `Test (MCQs): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60 / 2),
+            subject.subjectCode,
             undefined,
             'test'
         );
         const mainsTestTask = await createTask(
             `Test (Mains): ${subject.subjectName}`,
             Math.round(testHoursPerSubject * 60 / 2),
+            subject.subjectCode,
             undefined,
             'test'
         );
         return [mcqTestTask, mainsTestTask];
     }
     default:
-      return [];
+        return [];
   }
 }
 
 /**
  * Generate revision task
  */
-async function generateRevisionTask(revisionHours: number, _logger: Logger): Promise<Task> {
-  return createTask('Weekly Revision', Math.round(revisionHours * 60), undefined, 'revision');
+async function generateRevisionTask(_weekStartDate: Dayjs, revisionHours: number, _logger: Logger): Promise<Task> {
+  return createTask('Weekly Revision', Math.round(revisionHours * 60), 'REVISION', undefined, 'revision');
 }
 
 /**
@@ -420,6 +505,7 @@ async function generateRevisionTask(revisionHours: number, _logger: Logger): Pro
 async function createStudyTask(
   title: string,
   durationMinutes: number,
+  subjectCode: string,
   resourceLink?: string,
   taskResources?: Resource[],
   topicCode?: string
@@ -433,6 +519,7 @@ async function createStudyTask(
     details_link: resourceLink,
     currentAffairsType: undefined, // Not a CA task
     task_resources: taskResources,
+    subjectCode: subjectCode, // Include subject code for proper subject identification
     taskType: 'study',
     topicCode: topicCode // Include topic code for NCERT materials matching
   };
@@ -444,6 +531,7 @@ async function createStudyTask(
 async function createTask(
   title: string,
   durationMinutes: number,
+  subjectCode: string,
   resourceLink?: string,
   taskType: 'practice' | 'revision' | 'test' = 'practice'
 ): Promise<Task> {
@@ -456,6 +544,7 @@ async function createTask(
     details_link: resourceLink,
     currentAffairsType: undefined, // Not a CA task
     task_resources: undefined, // No resources for non-study tasks
+    subjectCode: subjectCode, // Include subject code for proper subject identification
     taskType: taskType
   };
 }

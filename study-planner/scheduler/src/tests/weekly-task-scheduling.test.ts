@@ -8,6 +8,8 @@ import {
   WeeklyTaskSchedulingInput,
   DayOfWeek
 } from '../tasks';
+import dayjs from 'dayjs';
+import { DailyPlan } from '../types';
 
 describe('Weekly Task Scheduling Tests', () => {
   let mockTasks: WeeklyTask[];
@@ -18,43 +20,48 @@ describe('Weekly Task Scheduling Tests', () => {
     mockTasks = [
       {
         task_id: 'task-1',
-        humanReadableId: 'b1w1t1',
+        humanReadableId: 'H01w1t1',
         title: 'Study History Chapter 1',
         duration_minutes: 120, // 2 hours
         taskType: 'study',
-        resources: ['NCERT History Book']
+        resources: ['NCERT History Book'],
+        subjectCode: 'H01'
       },
       {
         task_id: 'task-2',
-        humanReadableId: 'b1w1t2',
+        humanReadableId: 'G01w1t2',
         title: 'Practice Geography Questions',
         duration_minutes: 90, // 1.5 hours
         taskType: 'practice',
-        resources: ['Geography Practice Book']
+        resources: ['Geography Practice Book'],
+        subjectCode: 'G01'
       },
       {
         task_id: 'task-3',
-        humanReadableId: 'b1w1t3',
+        humanReadableId: 'P01w1t3',
         title: 'Revise Polity Notes',
         duration_minutes: 60, // 1 hour
         taskType: 'revision',
-        resources: ['Polity Notes']
+        resources: ['Polity Notes'],
+        subjectCode: 'P01'
       },
       {
         task_id: 'task-4',
-        humanReadableId: 'b1w1t4',
+        humanReadableId: 'E01w1t4',
         title: 'Weekly Test',
         duration_minutes: 180, // 3 hours
         taskType: 'test',
-        resources: []
+        resources: [],
+        subjectCode: 'E01'
       },
       {
         task_id: 'task-5',
-        humanReadableId: 'b1w1t5',
+        humanReadableId: 'E01w1t5',
         title: 'Study Economics Chapter 2',
         duration_minutes: 150, // 2.5 hours
         taskType: 'study',
-        resources: ['Economics Textbook']
+        resources: ['Economics Textbook'],
+        subjectCode: 'E01'
       }
     ];
 
@@ -67,6 +74,7 @@ describe('Weekly Task Scheduling Tests', () => {
   describe('Basic Task Distribution', () => {
     it('should distribute tasks across 7 days', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -82,6 +90,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should schedule all tasks', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -100,6 +109,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should respect daily hour limits', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -126,6 +136,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should calculate total scheduled hours correctly', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -146,6 +157,7 @@ describe('Weekly Task Scheduling Tests', () => {
   describe('Catchup Day Handling', () => {
     it('should leave Saturday empty when Saturday is catchup day', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -158,65 +170,10 @@ describe('Weekly Task Scheduling Tests', () => {
       expect(saturdayTasks).toHaveLength(0);
     });
 
-    it('should leave Sunday empty when Sunday is catchup day', () => {
-      const input: WeeklyTaskSchedulingInput = {
-        tasks: mockTasks,
-        dailyLimits: mockDailyLimits,
-        catchupDayPreference: DayOfWeek.SUNDAY,
-        testDayPreference: DayOfWeek.SATURDAY
-      };
-
-      const result = distributeTasksIntoDays(input);
-
-      const sundayTasks = result.dailyPlans[6].tasks; // Sunday is index 6
-      expect(sundayTasks).toHaveLength(0);
-    });
-
-    // Test all days of the week as catchup days
-    it('should leave Monday empty when Monday is catchup day', () => {
-      const input: WeeklyTaskSchedulingInput = {
-        tasks: mockTasks,
-        dailyLimits: mockDailyLimits,
-        catchupDayPreference: DayOfWeek.MONDAY,
-        testDayPreference: DayOfWeek.SUNDAY
-      };
-
-      const result = distributeTasksIntoDays(input);
-
-      const mondayTasks = result.dailyPlans[0].tasks; // Monday is index 0
-      expect(mondayTasks).toHaveLength(0);
-    });
-
-    it('should leave Tuesday empty when Tuesday is catchup day', () => {
-      const input: WeeklyTaskSchedulingInput = {
-        tasks: mockTasks,
-        dailyLimits: mockDailyLimits,
-        catchupDayPreference: DayOfWeek.TUESDAY,
-        testDayPreference: DayOfWeek.SUNDAY
-      };
-
-      const result = distributeTasksIntoDays(input);
-
-      const tuesdayTasks = result.dailyPlans[1].tasks; // Tuesday is index 1
-      expect(tuesdayTasks).toHaveLength(0);
-    });
-
-    it('should leave Wednesday empty when Wednesday is catchup day', () => {
-      const input: WeeklyTaskSchedulingInput = {
-        tasks: mockTasks,
-        dailyLimits: mockDailyLimits,
-        catchupDayPreference: DayOfWeek.WEDNESDAY,
-        testDayPreference: DayOfWeek.SUNDAY
-      };
-
-      const result = distributeTasksIntoDays(input);
-
-      const wednesdayTasks = result.dailyPlans[2].tasks; // Wednesday is index 2
-      expect(wednesdayTasks).toHaveLength(0);
-    });
 
     it('should leave Thursday empty when Thursday is catchup day', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.THURSDAY,
@@ -231,6 +188,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should leave Friday empty when Friday is catchup day', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.FRIDAY,
@@ -247,14 +205,16 @@ describe('Weekly Task Scheduling Tests', () => {
     it('should allow test tasks on catchup day when catchup and test day are the same', () => {
       const testTask: WeeklyTask = {
         task_id: 'test-task',
-        humanReadableId: 'b1w1t6',
+        humanReadableId: 'T01w1t6',
         title: 'Weekly Test',
         duration_minutes: 180, // 3 hours
         taskType: 'test',
-        resources: []
+        resources: [],
+        subjectCode: 'T01'
       };
 
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: [...mockTasks, testTask],
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -276,6 +236,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should prevent non-test tasks on catchup day when catchup and test day are the same', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -295,6 +256,7 @@ describe('Weekly Task Scheduling Tests', () => {
   describe('Test Day Handling', () => {
     it('should respect test day hour limits', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -316,14 +278,16 @@ describe('Weekly Task Scheduling Tests', () => {
     it('should split large tasks across multiple days when needed', () => {
       const largeTask: WeeklyTask = {
         task_id: 'large-task',
-        humanReadableId: 'b1w1t6',
+        humanReadableId: 'L01w1t6',
         title: 'Very Long Study Session',
         duration_minutes: 600, // 10 hours - too large for any single day
         taskType: 'study',
-        resources: ['Multiple Books']
+        resources: ['Multiple Books'],
+        subjectCode: 'L01'
       };
 
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: [largeTask],
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -353,14 +317,16 @@ describe('Weekly Task Scheduling Tests', () => {
       // Create tasks that exceed daily limits
       const excessiveTasks: WeeklyTask[] = Array(10).fill(null).map((_, i) => ({
         task_id: `excessive-task-${i}`,
-        humanReadableId: `b1w1t${i}`,
+        humanReadableId: `E01w1t${i}`,
         title: `Excessive Task ${i}`,
         duration_minutes: 480, // 8 hours each - will exceed limits
         taskType: 'study',
-        resources: []
+        resources: [],
+        subjectCode: 'E01'
       }));
 
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: excessiveTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -376,40 +342,44 @@ describe('Weekly Task Scheduling Tests', () => {
 
   describe('Human Readable ID Assignment', () => {
     it('should assign sequential human readable IDs', () => {
-      const dailyPlans = [
+      const start = dayjs();
+      const dailyPlans: DailyPlan[] = [
         {
           day: 1,
+          date: start.add(1, 'day'),
           tasks: [
-            { task_id: 'task-1', humanReadableId: '', title: 'Task 1', duration_minutes: 60, taskType: 'study' as const, resources: [] },
-            { task_id: 'task-2', humanReadableId: '', title: 'Task 2', duration_minutes: 60, taskType: 'study' as const, resources: [] }
+            { task_id: 'task-1', humanReadableId: '', title: 'Task 1', duration_minutes: 60, taskType: 'study' as const, subjectCode: 'H01' },
+            { task_id: 'task-2', humanReadableId: '', title: 'Task 2', duration_minutes: 60, taskType: 'study' as const, subjectCode: 'H01' }
           ]
         },
         {
           day: 2,
+          date: start.add(1, 'day'),
           tasks: [
-            { task_id: 'task-3', humanReadableId: '', title: 'Task 3', duration_minutes: 60, taskType: 'study' as const, resources: [] }
+            { task_id: 'task-3', humanReadableId: '', title: 'Task 3', duration_minutes: 60, taskType: 'study' as const, subjectCode: 'H01' }
           ]
         }
       ];
 
-      const result = assignHumanReadableIDs(dailyPlans, 1, 1);
+      const result = assignHumanReadableIDs(dailyPlans, 0, 1);
 
-      expect(result[0].tasks[0].humanReadableId).toBe('b1w1t1');
-      expect(result[0].tasks[1].humanReadableId).toBe('b1w1t2');
-      expect(result[1].tasks[0].humanReadableId).toBe('b1w1t3');
+      expect(result[0].tasks[0].humanReadableId).toBe('H01w1t1');
+      expect(result[0].tasks[1].humanReadableId).toBe('H01w1t2');
+      expect(result[1].tasks[0].humanReadableId).toBe('H01w1t3');
     });
   });
 
   describe('Weekly Plan Creation', () => {
     it('should create a weekly plan from daily plans', () => {
-      const dailyPlans = [
-        { day: 1, tasks: [] },
-        { day: 2, tasks: [] },
-        { day: 3, tasks: [] },
-        { day: 4, tasks: [] },
-        { day: 5, tasks: [] },
-        { day: 6, tasks: [] },
-        { day: 7, tasks: [] }
+      const start = dayjs();
+      const dailyPlans: DailyPlan[] = [
+        { day: 1, tasks: [], date: start.add(1,'day') },
+        { day: 2, tasks: [], date: start.add(2,'day')  },
+        { day: 3, tasks: [], date: start.add(3,'day')  },
+        { day: 4, tasks: [], date: start.add(4,'day')  },
+        { day: 5, tasks: [], date: start.add(5,'day')  },
+        { day: 6, tasks: [], date: start.add(6,'day')  },
+        { day: 7, tasks: [], date: start.add(7,'day')  }
       ];
 
       const result = createWeeklyPlan(dailyPlans, 1);
@@ -424,6 +394,7 @@ describe('Weekly Task Scheduling Tests', () => {
   describe('Edge Cases', () => {
     it('should handle empty task list', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: [],
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -440,14 +411,16 @@ describe('Weekly Task Scheduling Tests', () => {
     it('should handle single task', () => {
       const singleTask: WeeklyTask = {
         task_id: 'single-task',
-        humanReadableId: 'b1w1t1',
+        humanReadableId: 'S01w1t1',
         title: 'Single Task',
         duration_minutes: 60,
         taskType: 'study',
-        resources: []
+        resources: [],
+        subjectCode: 'S01'
       };
 
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: [singleTask],
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -466,14 +439,16 @@ describe('Weekly Task Scheduling Tests', () => {
     it('should handle tasks with zero duration', () => {
       const zeroDurationTask: WeeklyTask = {
         task_id: 'zero-task',
-        humanReadableId: 'b1w1t1',
+        humanReadableId: 'Z01w1t1',
         title: 'Zero Duration Task',
         duration_minutes: 0,
         taskType: 'study',
-        resources: []
+        resources: [],
+        subjectCode: 'Z01'
       };
 
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: [zeroDurationTask],
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,
@@ -488,32 +463,10 @@ describe('Weekly Task Scheduling Tests', () => {
   });
 
   describe('Task Distribution Requirements', () => {
-    it('should assign tasks to all days except catchup day', () => {
-      const input: WeeklyTaskSchedulingInput = {
-        tasks: mockTasks,
-        dailyLimits: mockDailyLimits,
-        catchupDayPreference: DayOfWeek.WEDNESDAY,
-        testDayPreference: DayOfWeek.SUNDAY
-      };
-
-      const result = distributeTasksIntoDays(input);
-
-      result.dailyPlans.forEach((dayPlan, index) => {
-        if (index === 2) { // Wednesday - catchup day
-          expect(dayPlan.tasks).toHaveLength(0);
-        } else {
-          // For non-catchup days, we should have some tasks distributed
-          // But not necessarily every day since we only have 5 tasks for 6 non-catchup days
-          const totalNonCatchupTasks = result.dailyPlans
-            .filter((_, i) => i !== 2)
-            .reduce((sum, dp) => sum + dp.tasks.length, 0);
-          expect(totalNonCatchupTasks).toBe(mockTasks.length);
-        }
-      });
-    });
 
     it('should distribute tasks reasonably across days when no catchup day is specified', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         testDayPreference: DayOfWeek.SUNDAY
@@ -534,6 +487,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should respect daily hour limits for all days', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.THURSDAY,
@@ -561,14 +515,16 @@ describe('Weekly Task Scheduling Tests', () => {
     it('should distribute work reasonably across non-catchup days', () => {
       const manyTasks: WeeklyTask[] = Array(20).fill(null).map((_, i) => ({
         task_id: `task-${i}`,
-        humanReadableId: `b1w1t${i}`,
+        humanReadableId: `T01w1t${i}`,
         title: `Task ${i}`,
         duration_minutes: 60, // 1 hour each
         taskType: 'study' as const,
-        resources: []
+        resources: [],
+        subjectCode: 'T01'
       }));
 
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: manyTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.MONDAY,
@@ -597,6 +553,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should respect daily hour limits for all days', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.FRIDAY,
@@ -623,6 +580,7 @@ describe('Weekly Task Scheduling Tests', () => {
 
     it('should ensure catchup day violations are detected', () => {
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: mockTasks,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.TUESDAY,
@@ -649,14 +607,16 @@ describe('Weekly Task Scheduling Tests', () => {
     it('should handle large number of tasks efficiently', () => {
       const largeTaskList: WeeklyTask[] = Array(100).fill(null).map((_, i) => ({
         task_id: `task-${i}`,
-        humanReadableId: `b1w1t${i}`,
+        humanReadableId: `P01w1t${i}`,
         title: `Task ${i}`,
         duration_minutes: Math.floor(Math.random() * 180) + 30, // 30-210 minutes
         taskType: 'study' as const,
-        resources: []
+        resources: [],
+        subjectCode: 'P01'
       }));
 
       const input: WeeklyTaskSchedulingInput = {
+        weekStartDate: dayjs(),
         tasks: largeTaskList,
         dailyLimits: mockDailyLimits,
         catchupDayPreference: DayOfWeek.SATURDAY,

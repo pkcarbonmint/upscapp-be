@@ -4,7 +4,8 @@ import { makeLogger } from '../services/Log';
 import { generateInitialPlan } from '../engine/NewEngine-generate-plan';
 import { loadAllSubjects } from '../services/SubjectLoader';
 import dayjs from 'dayjs';
-import { Block, DailyPlan, StudentIntake, StudyPlan, Task, WeeklyPlan, createStudentIntake } from '../types/models';
+import { Block, DailyPlan, StudentIntake, StudyPlan, WeeklyPlan, createStudentIntake } from '../types/models';
+import { Task } from 'scheduler';
 import { CycleType } from '../types/Types';
 
 const dummyStuff = {

@@ -13,10 +13,10 @@ import {
   LearningStyle,
   EffectiveStudySeason,
   CycleType,
-  CurrentAffairsTaskType,
-  DifficultyLevel
 } from "./Types";
 import dayjs from 'dayjs';
+export type { WeeklyPlan, DailyPlan, Resource } from 'scheduler';
+import type { Resource, WeeklyPlan, } from 'scheduler';
 
 // From src/Types/Student.hs
 
@@ -423,27 +423,6 @@ export interface SyllabusAwareness {
 
 // From src/Types/Planning.hs
 
-export interface Task {
-  task_id: string; // UUID
-  humanReadableId: string;
-  title: string;
-  duration_minutes: number;
-  details_link?: string;
-  currentAffairsType?: CurrentAffairsTaskType;
-  task_resources?: Resource[];
-  topicCode?: string; // Track which topic this task belongs to
-  taskType?: 'study' | 'practice' | 'revision' | 'test'; // Task category
-}
-
-export interface DailyPlan {
-  day: number;
-  tasks: Task[];
-}
-
-export interface WeeklyPlan {
-  week: number;
-  daily_plans: DailyPlan[];
-}
 
 export interface Block {
   block_id: string; // UUID
@@ -697,35 +676,6 @@ export interface LogEntry {
 }
 
 // From src/Types/Resource.hs
-
-export interface Resource {
-  resource_id: string; // UUID
-  resource_title: string;
-  resource_type: ResourceType;
-  resource_url?: string;
-  resource_description: string;
-  resource_subjects: string[];
-  difficulty_level: DifficultyLevel;
-  estimated_hours: number;
-  resource_priority: ResourcePriority;
-  resource_cost: ResourceCost;
-}
-
-export type ResourceType =
-  | "Book"
-  | "VideoLecture"
-  | "OnlineCourse"
-  | "PracticePaper"
-  | "CurrentAffairsSource"
-  | "RevisionNotes"
-  | "MockTest";
-
-export type ResourcePriority = "Essential" | "Recommended" | "Optional";
-
-export type ResourceCost =
-  | { type: "Free" }
-  | { type: "Paid", amount: number }
-  | { type: "Subscription", plan: string };
 
 export interface BlockResources {
   primary_books: Resource[];

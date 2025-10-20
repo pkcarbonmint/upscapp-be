@@ -1553,8 +1553,8 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
       const blockStart = dayjs(block.block_start_date);
       const blockEnd = dayjs(block.block_end_date);
 
-      // Check if block overlaps with this week
-      if (blockStart.isBefore(weekEnd) && blockEnd.isAfter(weekStart)) {
+      // Check if block overlaps with this week (inclusive boundaries)
+      if (blockStart.isBefore(weekEnd) && (blockEnd.isAfter(weekStart) || blockEnd.isSame(weekStart, 'day'))) {
         weekBlocks.push({ block, cycle });
       }
     }

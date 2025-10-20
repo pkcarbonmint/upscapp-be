@@ -1,4 +1,5 @@
-import { DayOfWeek } from './types';
+import type { Dayjs } from 'dayjs';
+import { DailyPlan, DayOfWeek } from './types';
 
 export interface WeeklyTask {
   task_id: string;
@@ -7,6 +8,7 @@ export interface WeeklyTask {
   duration_minutes: number;
   taskType: 'study' | 'practice' | 'revision' | 'test';
   resources: string[];
+  subjectCode: string; // Subject code (e.g., H01, G01, P01) - REQUIRED for proper subject identification
   priority?: number;
 }
 
@@ -15,17 +17,13 @@ export interface DayState {
   hours: number;
 }
 
-export interface DailyPlan {
-  day: number;
-  tasks: WeeklyTask[];
-}
-
 export interface DailyHourLimits {
   regular_day: number;
   test_day: number;
 }
 
 export interface WeeklyTaskSchedulingInput {
+  weekStartDate: Dayjs;
   tasks: WeeklyTask[];
   dailyLimits: DailyHourLimits;
   catchupDayPreference?: DayOfWeek;
@@ -51,7 +49,7 @@ export interface TaskSchedulingConflict {
 export function distributeTasksIntoDays(
   input: WeeklyTaskSchedulingInput
 ): WeeklyTaskSchedulingResult {
-  const { tasks, dailyLimits, catchupDayPreference, testDayPreference } = input;
+  const { tasks, dailyLimits, catchupDayPreference, testDayPreference, weekStartDate } = input;
   
   // Set defaults for day preferences
   // Default: Saturday for catchup day, Sunday for test day
@@ -74,7 +72,7 @@ export function distributeTasksIntoDays(
     // If catchup day and test day are the same, allow test tasks on that day
     dayLimits[catchupDayIndex] = dailyLimits.test_day;
   } else {
-    // Set catchup day to 0 hours (empty for catchup)
+    // Set catchup day to 0 hours to prevent non-test tasks
     dayLimits[catchupDayIndex] = 0;
     // Set test day to test day hours
     dayLimits[testDayIndex] = dailyLimits.test_day;
@@ -90,10 +88,10 @@ export function distributeTasksIntoDays(
   );
 
   // Convert to DailyPlan format
-  // Map from standard JavaScript day numbering (Sunday=0) to dailyPlans indexing (Monday=0)
-  const dayIndexMap = [1, 2, 3, 4, 5, 6, 0]; // [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
-  const dailyPlans: DailyPlan[] = dayIndexMap.map((dayNum) => ({
-    day: dayIndexMap.indexOf(dayNum) + 1,
+  // Use 1-based day numbering in the day field (Monday=1, Tuesday=2, ..., Sunday=7) but 0-based array indexing
+  const dailyPlans: DailyPlan[] = Array(7).fill(null).map((_, dayNum) => ({
+    day: dayNum + 1, // Use 1-based day numbering (Monday=1, Tuesday=2, ..., Sunday=7)
+    date: weekStartDate.add(dayNum, 'day'),
     tasks: finalDays[dayNum].dayTasks
   }));
 
@@ -155,12 +153,17 @@ function findBestSlot(
   const availableSlots: { index: number; availableSpace: number; currentHours: number }[] = [];
   
   for (let i = 0; i < days.length; i++) {
-    const isCatchupDay = (catchupDayIndex === testDayIndex && i === catchupDayIndex) ||
-                        (catchupDayIndex !== testDayIndex && i === catchupDayIndex);
-    const isTestTask = task.taskType === 'test';
+    // Check catchup day restrictions
+    const isCatchupDay = i === catchupDayIndex;
     
-    if (isCatchupDay && !isTestTask) {
-      continue; // Skip catchup days for non-test tasks
+    // If it's a catchup day and test day are different, no tasks allowed on catchup day
+    if (isCatchupDay && catchupDayIndex !== testDayIndex) {
+      continue; // Skip catchup day completely when it's different from test day
+    }
+    
+    // If it's a catchup day and test day are the same, only allow test tasks
+    if (isCatchupDay && catchupDayIndex === testDayIndex && task.taskType !== 'test') {
+      continue; // Skip catchup day for non-test tasks even when it's also test day
     }
     
     const availableSpace = limits[i] - days[i].hours;
@@ -177,16 +180,42 @@ function findBestSlot(
     return -1; // No suitable slot found
   }
   
-  // For test tasks, prioritize the test day
+  // For test tasks, check if there's already a test task for the same subject on the test day
   if (task.taskType === 'test' && testDayIndex !== -1) {
     const testDaySlot = availableSlots.find(slot => slot.index === testDayIndex);
     if (testDaySlot) {
-      return testDaySlot.index;
+      // Check if there's already a test task for the same subject on the test day
+      const existingTestTasks = days[testDayIndex].dayTasks.filter(t => t.taskType === 'test');
+      const hasSameSubjectTest = existingTestTasks.some(existingTask => {
+        return existingTask.subjectCode === task.subjectCode;
+      });
+      
+      // If no test task for same subject exists on test day, use it
+      if (!hasSameSubjectTest) {
+        return testDaySlot.index;
+      }
     }
   }
   
-  // For non-test tasks, find the day with the least current hours (most balanced distribution)
+  // For all tasks (including test tasks that can't go to test day), find the day with the least current hours
+  // But ensure catchup day gets some tasks if other days are getting too full
   const bestSlot = availableSlots.reduce((best, current) => {
+    const isCurrentCatchupDay = current.index === catchupDayIndex;
+    const isBestCatchupDay = best.index === catchupDayIndex;
+    
+    // If current is catchup day and best is not, prefer catchup day if other days are getting full
+    if (isCurrentCatchupDay && !isBestCatchupDay) {
+      const otherDaysAverageHours = days
+        .filter((_, dayIndex) => dayIndex !== catchupDayIndex)
+        .reduce((sum, day) => sum + day.hours, 0) / 6;
+      
+      // If other days average more than 5 hours, use catchup day
+      if (otherDaysAverageHours > 5) {
+        return current;
+      }
+    }
+    
+    // Otherwise, use the day with least hours
     if (current.currentHours < best.currentHours) {
       return current;
     }
@@ -209,15 +238,20 @@ function splitTaskAcrossDays(
 ): DayState[] {
   const catchupDayIndex = getCatchupDayIndex(catchupDayPreference);
   const testDayIndex = getTestDayIndex(testDayPreference);
-  const isTestTask = task.taskType === 'test';
   
-  // Filter out catchup days for non-test tasks
+  // Calculate available space for each day
   const daySpaces = days.map((day, index) => {
-    const isCatchupDay = (catchupDayIndex === testDayIndex && index === catchupDayIndex) || 
-                        (catchupDayIndex !== testDayIndex && index === catchupDayIndex);
+    // Check catchup day restrictions
+    const isCatchupDay = index === catchupDayIndex;
     
-    if (isCatchupDay && !isTestTask) {
-      return 0; // No space for non-test tasks on catchup days
+    // If it's a catchup day and test day are different, no tasks allowed on catchup day
+    if (isCatchupDay && catchupDayIndex !== testDayIndex) {
+      return 0; // No space for any tasks on catchup day when it's different from test day
+    }
+    
+    // If it's a catchup day and test day are the same, only allow test tasks
+    if (isCatchupDay && catchupDayIndex === testDayIndex && task.taskType !== 'test') {
+      return 0; // No space for non-test tasks on catchup day even when it's also test day
     }
     
     return dayLimits[index] - day.hours;
@@ -226,7 +260,7 @@ function splitTaskAcrossDays(
   const totalAvailableSpace = daySpaces.reduce((sum, space) => sum + space, 0);
   
   if (totalAvailableSpace >= taskHours) {
-    return distributeTaskProportionally(days, task, taskHours, daySpaces);
+    return distributeTaskProportionally(days, task, taskHours, daySpaces, catchupDayPreference, testDayPreference);
   } else {
     // If even total space is insufficient, add to day with most space (emergency fallback)
     // But respect catchup day constraints
@@ -235,18 +269,18 @@ function splitTaskAcrossDays(
       .filter(({ space }) => space > 0);
     
     if (availableDays.length === 0) {
-      // If no available days, force to test day if it's a test task
-      if (isTestTask) {
-        const newDays = [...days];
-        const targetDay = newDays[testDayIndex];
-        newDays[testDayIndex] = {
-          dayTasks: [...targetDay.dayTasks, task],
-          hours: targetDay.hours + taskHours
-        };
-        return newDays;
-      }
-      // For non-test tasks, this shouldn't happen as we should have caught this earlier
-      return days;
+      // If no available days, force to the day with most space (emergency fallback)
+      const dayWithMostSpace = days.reduce((best, day, index) => 
+        dayLimits[index] - day.hours > dayLimits[best] - days[best].hours ? index : best, 0
+      );
+      
+      const newDays = [...days];
+      const targetDay = newDays[dayWithMostSpace];
+      newDays[dayWithMostSpace] = {
+        dayTasks: [...targetDay.dayTasks, task],
+        hours: targetDay.hours + taskHours
+      };
+      return newDays;
     }
     
     const bestDayIndex = availableDays.reduce((best, current) => 
@@ -270,7 +304,9 @@ function distributeTaskProportionally(
   days: DayState[],
   task: WeeklyTask,
   taskHours: number,
-  daySpaces: number[]
+  daySpaces: number[],
+  catchupDayPreference?: DayOfWeek,
+  testDayPreference?: DayOfWeek
 ): DayState[] {
   const newDays = [...days];
   let remainingHours = taskHours;
@@ -278,6 +314,23 @@ function distributeTaskProportionally(
   // Distribute hours proportionally
   for (let i = 0; i < days.length && remainingHours > 0; i++) {
     if (daySpaces[i] > 0) {
+      // Check catchup day restrictions
+      if (catchupDayPreference && testDayPreference) {
+        const catchupDayIndex = getCatchupDayIndex(catchupDayPreference);
+        const testDayIndex = getTestDayIndex(testDayPreference);
+        const isCatchupDay = i === catchupDayIndex;
+        
+        // If it's a catchup day and test day are different, no tasks allowed on catchup day
+        if (isCatchupDay && catchupDayIndex !== testDayIndex) {
+          continue; // Skip catchup day completely when it's different from test day
+        }
+        
+        // If it's a catchup day and test day are the same, only allow test tasks
+        if (isCatchupDay && catchupDayIndex === testDayIndex && task.taskType !== 'test') {
+          continue; // Skip catchup day for non-test tasks even when it's also test day
+        }
+      }
+      
       const proportionalHours = Math.min(
         Math.ceil((daySpaces[i] / daySpaces.reduce((sum, space) => sum + space, 0)) * taskHours),
         remainingHours
@@ -321,18 +374,32 @@ function detectSchedulingConflicts(
     }
     
     // Check for catchup day violations
-    const isCatchupDay = (catchupDayIndex === testDayIndex && index === catchupDayIndex) ||
-                        (catchupDayIndex !== testDayIndex && index === catchupDayIndex);
+    const isCatchupDay = index === catchupDayIndex;
     
     if (isCatchupDay) {
-      const nonTestTasks = day.dayTasks.filter(task => task.taskType !== 'test');
-      if (nonTestTasks.length > 0) {
+      // If catchup day and test day are different, no non-test tasks allowed
+      if (catchupDayIndex !== testDayIndex) {
+        const nonTestTasks = day.dayTasks.filter(task => task.taskType !== 'test');
+        if (nonTestTasks.length > 0) {
         conflicts.push({
           type: 'catchup_day_violation',
           message: `Day ${index + 1} is a catchup day but has non-test tasks scheduled`,
           affectedTasks: nonTestTasks.map(task => task.task_id),
           affectedDays: [index + 1]
         });
+        }
+      }
+      // If catchup day and test day are the same, only test tasks allowed
+      else {
+        const nonTestTasks = day.dayTasks.filter(task => task.taskType !== 'test');
+        if (nonTestTasks.length > 0) {
+        conflicts.push({
+          type: 'catchup_day_violation',
+          message: `Day ${index + 1} is a catchup day but has non-test tasks scheduled`,
+          affectedTasks: nonTestTasks.map(task => task.task_id),
+          affectedDays: [index + 1]
+        });
+        }
       }
     }
   });
@@ -344,15 +411,15 @@ function detectSchedulingConflicts(
  * Get catchup day index (0-based)
  */
 function getCatchupDayIndex(preference: DayOfWeek): number {
-  // Standard JavaScript day numbering (Sunday = 0, Monday = 1, ..., Saturday = 6)
+  // Test expects Monday=0, Tuesday=1, ..., Sunday=6
   const dayMap: { [key in DayOfWeek]: number } = {
-    [DayOfWeek.SUNDAY]: 0,
-    [DayOfWeek.MONDAY]: 1,
-    [DayOfWeek.TUESDAY]: 2,
-    [DayOfWeek.WEDNESDAY]: 3,
-    [DayOfWeek.THURSDAY]: 4,
-    [DayOfWeek.FRIDAY]: 5,
-    [DayOfWeek.SATURDAY]: 6
+    [DayOfWeek.MONDAY]: 0,
+    [DayOfWeek.TUESDAY]: 1,
+    [DayOfWeek.WEDNESDAY]: 2,
+    [DayOfWeek.THURSDAY]: 3,
+    [DayOfWeek.FRIDAY]: 4,
+    [DayOfWeek.SATURDAY]: 5,
+    [DayOfWeek.SUNDAY]: 6
   };
   return dayMap[preference];
 }
@@ -361,30 +428,32 @@ function getCatchupDayIndex(preference: DayOfWeek): number {
  * Get test day index (0-based)
  */
 function getTestDayIndex(preference: DayOfWeek): number {
-  // Standard JavaScript day numbering (Sunday = 0, Monday = 1, ..., Saturday = 6)
+  // Test expects Monday=0, Tuesday=1, ..., Sunday=6
   const dayMap: { [key in DayOfWeek]: number } = {
-    [DayOfWeek.SUNDAY]: 0,
-    [DayOfWeek.MONDAY]: 1,
-    [DayOfWeek.TUESDAY]: 2,
-    [DayOfWeek.WEDNESDAY]: 3,
-    [DayOfWeek.THURSDAY]: 4,
-    [DayOfWeek.FRIDAY]: 5,
-    [DayOfWeek.SATURDAY]: 6
+    [DayOfWeek.MONDAY]: 0,
+    [DayOfWeek.TUESDAY]: 1,
+    [DayOfWeek.WEDNESDAY]: 2,
+    [DayOfWeek.THURSDAY]: 3,
+    [DayOfWeek.FRIDAY]: 4,
+    [DayOfWeek.SATURDAY]: 5,
+    [DayOfWeek.SUNDAY]: 6
   };
   return dayMap[preference];
 }
 
 /**
  * Assign human-readable IDs to all tasks in a week
+ * Format: {subjectCode}w{weekNumber}t{taskCounter}
+ * Example: H01w1t1, G01w1t2, P01w1t3
  */
-export function assignHumanReadableIDs(dailyPlans: DailyPlan[], blockNumber: number, weekNumber: number): DailyPlan[] {
+export function assignHumanReadableIDs(dailyPlans: DailyPlan[], _blockNumber: number, weekNumber: number): DailyPlan[] {
   let taskCounter = 1;
   
   return dailyPlans.map(day => ({
     ...day,
     tasks: day.tasks.map(task => ({
       ...task,
-      humanReadableId: `b${blockNumber}w${weekNumber}t${taskCounter++}`
+      humanReadableId: `${task.subjectCode}w${weekNumber}t${taskCounter++}`
     }))
   }));
 }
