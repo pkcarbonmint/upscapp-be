@@ -1,0 +1,139 @@
+import type { Dayjs } from "dayjs";
+import { Constraints, Slot, SlotType, Subject, Weekday } from "./types";
+import { planSubjectTasks } from "./plan-subject";
+
+export function planBlock(subject: Subject,
+  from: Dayjs,
+  to: Dayjs,
+  constraints: Constraints
+) {
+  const slots = scheduleDailyWorkSlots(from, to, constraints);
+  const tasks = planSubjectTasks(slots, subject, constraints);
+  return tasks;
+}
+
+export function scheduleDailyWorkSlots(
+  from: Dayjs,
+  to: Dayjs,
+  constraints: Constraints,
+) {
+  const availableDays = from.diff(to, 'day');
+  const numCatchupDays = countCatchupDays(from, to, constraints.catchupDay);
+  const numTestDays = countTestDays(from, to, constraints.testDay);
+
+  const allDates = Array(availableDays).fill(0).map((_, i) => from.add(i, 'day'));
+
+  // distribute among available days - 
+  const catchupSlots: Slot[] = allDates.filter(isCatchupDay).map((date) => allocateCatchupSlots(date, constraints.dayMaxHours));
+  const testSlots: Slot[] = allDates.filter(isTestDay).map((date) => allocateTestTasks(date, constraints.testHours));
+
+  const minHoursAvailable = calcMinHoursAvailable(availableDays, numCatchupDays, numTestDays, constraints);
+  const maxHoursAvailable = calcMaxHoursAvailable(availableDays, numCatchupDays, numTestDays, constraints);
+  const averageHoursAvailable = (minHoursAvailable + maxHoursAvailable) / 2;
+  const studyHoursAvailable = Math.floor(averageHoursAvailable * constraints.taskEffortSplit[SlotType.STUDY]);
+  const revisionHoursAvailable = Math.floor(averageHoursAvailable * constraints.taskEffortSplit[SlotType.REVISION]);
+  const practiceHoursAvailable = Math.floor(averageHoursAvailable * constraints.taskEffortSplit[SlotType.PRACTICE]);
+
+  const studySlots = allDates
+    .filter((date) => !isCatchupDay(date, constraints.catchupDay) && !isTestDay(date, constraints.testDay))
+    .map((date) => allocateStudyTasks(date, studyHoursAvailable));
+  const revisionSlots = allDates
+    .filter((date) => !isCatchupDay(date, constraints.catchupDay) && !isTestDay(date, constraints.testDay))
+    .map((date) => allocateRevisionTasks(date, revisionHoursAvailable));
+  const practiceSlots = allDates
+    .filter((date) => !isCatchupDay(date, constraints.catchupDay) && !isTestDay(date, constraints.testDay))
+    .map((date) => allocatePracticeTasks(date, practiceHoursAvailable));
+
+  return {
+    catchupSlots,
+    testSlots,
+    studySlots,
+    revisionSlots,
+    practiceSlots,
+  };
+}
+
+function allocateStudyTasks(date: Dayjs, studyHours: number) {
+  return {
+    date: date,
+    type: SlotType.STUDY,
+    hours: studyHours,
+  };
+}
+
+function allocateRevisionTasks(date: Dayjs, revisionHours: number) {
+  return {
+    date: date,
+    type: SlotType.REVISION,
+    hours: revisionHours,
+  };
+}
+
+function allocatePracticeTasks(date: Dayjs, practiceHours: number) {
+  return {
+    date: date,
+    type: SlotType.PRACTICE,
+    hours: practiceHours,
+  };
+}
+
+function allocateCatchupSlots(date: Dayjs, catchupHours: number) {
+  return {
+    date: date,
+    type: SlotType.CATCHUP,
+    hours: catchupHours,
+  };
+}
+
+function allocateTestTasks(date: Dayjs, testHours: number) {
+  return {
+    date: date,
+    type: SlotType.TEST,
+    hours: testHours,
+  };
+}
+function calcMinHoursAvailable(availableDays: number, numCatchupDays: number, numTestDays: number, constraints: Constraints) {
+  return constraints.dayMinHours * availableDays - numCatchupDays * constraints.catchupDay - numTestDays * constraints.testHours;
+}
+
+function calcMaxHoursAvailable(availableDays: number, numCatchupDays: number, numTestDays: number, constraints: Constraints) {
+  return constraints.dayMaxHours * availableDays - numCatchupDays * constraints.catchupDay - numTestDays * constraints.testHours;
+}
+
+function countCatchupDays(from: Dayjs, to: Dayjs, catchupDay: Weekday) {
+  const days = from.diff(to, 'day');
+  // Check how many catchup days are there between from and to
+  // use map and filter
+  return Array(days)
+    .map((_, i) => from.add(i, 'day'))
+    .filter((date) => date.day() === catchupDay)
+    .length;
+}
+
+function countTestDays(from: Dayjs, to: Dayjs, testDay: Weekday) {
+  const days = from.diff(to, 'day');
+  return Array(days)
+    .map((_, i) => from.add(i, 'day'))
+    .filter((date) => date.day() === testDay)
+    .length;
+}
+
+function isCatchupDay(date: Dayjs, catchupDay: Weekday) {
+  return date.day() === catchupDay;
+}
+
+function isTestDay(date: Dayjs, testDay: Weekday) {
+  return date.day() === testDay;
+}
+
+export function calcAvailableTime(from: Dayjs, to: Dayjs, constraints: Constraints) {
+  const availableDays = from.diff(to, 'day');
+  const numCatchupDays = countCatchupDays(from, to, constraints.catchupDay);
+  const numTestDays = countTestDays(from, to, constraints.testDay);
+
+  const minHoursAvailable = calcMinHoursAvailable(availableDays, numCatchupDays, numTestDays, constraints);
+  const maxHoursAvailable = calcMaxHoursAvailable(availableDays, numCatchupDays, numTestDays, constraints);
+  const hoursAvailable = (minHoursAvailable + maxHoursAvailable) / 2;
+
+  return hoursAvailable;
+}
