@@ -12,7 +12,7 @@ import { planSubjectTasks } from './plan-subject';
 * 4. Determine subject relative weights based on confidence map
 * 5. GS:Optional weight should be reflected in the relative weights
 */
-export function planAll(context: PlanningContext) {
+export function planMain(context: PlanningContext) {
   // setup relative weights and subject order
   const scenario: ScenarioResult = planCycles(context);
   const cycles = scenario.schedules;
@@ -94,7 +94,7 @@ const BASE_TASK_RATIOS = {
   'C2': { [S2SlotType.STUDY]: 0.6, [S2SlotType.PRACTICE]: 0.2, [S2SlotType.REVISION]: 0.2 },
   'C3': { [S2SlotType.STUDY]: 0.7, [S2SlotType.PRACTICE]: 0.1, [S2SlotType.REVISION]: 0.2 },
   'C4': { [S2SlotType.STUDY]: 0.2, [S2SlotType.PRACTICE]: 0.4, [S2SlotType.REVISION]: 0.4 },
-  'C5': { [S2SlotType.STUDY]: 0.1, [S2SlotType.PRACTICE]: 0.5, [S2SlotType.REVISION]: 0.5 },
+  'C5': { [S2SlotType.STUDY]: 0.1, [S2SlotType.PRACTICE]: 0.5, [S2SlotType.REVISION]: 0.4 },
   'C5.b': { [S2SlotType.STUDY]: 0.1, [S2SlotType.PRACTICE]: 0.5, [S2SlotType.REVISION]: 0.4 },
   'C6': { [S2SlotType.STUDY]: 0.2, [S2SlotType.PRACTICE]: 0.3, [S2SlotType.REVISION]: 0.5 },
   'C7': { [S2SlotType.STUDY]: 0.1, [S2SlotType.PRACTICE]: 0.4, [S2SlotType.REVISION]: 0.5 },
