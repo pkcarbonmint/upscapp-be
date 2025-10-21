@@ -549,7 +549,6 @@ async function createEnhancedWeeklyPlan(
   const weeklyPlans: WeeklyPlan[] = [];
   for (let week = 1; week <= durationWeeks; week++) {
     const weekStartDate = blockStartDate.add((week - 1) * 7, 'day');
-    try {
       const weekPlan = await createPlanForOneWeek(
         0, // blockIndex
         weekStartDate,
@@ -563,13 +562,6 @@ async function createEnhancedWeeklyPlan(
         guidanceByWeek?.[week - 1]
       );
       weeklyPlans.push(weekPlan);
-    } catch (error) {
-      console.warn(`Failed to generate week ${week} with OneWeekPlan.ts, falling back to basic plan:`, error);
-      // Fallback to basic plan for this week
-      const basicWeek = createBasicWeeklyPlan(weekStartDate, 1, subjectCode)[0];
-      basicWeek.week = week;
-      weeklyPlans.push(basicWeek);
-    }
   }
 
   return weeklyPlans;

@@ -176,6 +176,55 @@ export function determineBlockSchedule(
     }
   }
 
+  // Add hole detection assertions for the entire block schedule
+  console.log(`🔍 Checking for holes in block schedule...`);
+  
+  // Check for days with no subjects scheduled
+  const allScheduledDays = new Set<string>();
+  blockSchedules.forEach(block => {
+    block.weeklySchedules.forEach(week => {
+      week.dailySchedules.forEach(day => {
+        const dateKey = day.date.format('YYYY-MM-DD');
+        allScheduledDays.add(dateKey);
+      });
+    });
+  });
+  
+  // Check for gaps in the schedule (days with no work)
+  const startDate = blockSchedules[0]?.weeklySchedules[0]?.dailySchedules[0]?.date;
+  const endDate = blockSchedules[blockSchedules.length - 1]?.weeklySchedules[blockSchedules[blockSchedules.length - 1].weeklySchedules.length - 1]?.dailySchedules[6]?.date;
+  
+  if (startDate && endDate) {
+    let currentDate = startDate;
+    const holes: string[] = [];
+    
+    while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
+      const dateKey = currentDate.format('YYYY-MM-DD');
+      
+      // Skip weekends (Saturday=6, Sunday=0) for hole detection
+      const dayOfWeek = currentDate.day();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      
+      if (!isWeekend && !allScheduledDays.has(dateKey)) {
+        holes.push(dateKey);
+      }
+      
+      currentDate = currentDate.add(1, 'day');
+    }
+    
+    // Assert no holes in the schedule
+    console.assert(
+      holes.length === 0,
+      `SCHEDULE HOLES DETECTED: ${holes.length} days have no work assigned: ${holes.join(', ')}`
+    );
+    
+    if (holes.length > 0) {
+      console.warn(`⚠️  Schedule holes found:`, holes);
+    } else {
+      console.log(`✅ No holes detected in schedule`);
+    }
+  }
+  
   return { blockSchedules, weeklySubjectAllocations };
 }
 
@@ -256,12 +305,21 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
     
     console.log(`Debug allocation adjustment: cycleDurationDays=${cycleDurationDays}, maxHoursPerSubject=${maxHoursPerSubject}, subjects.length=${subjects.length}`);
     
+    // Add assertions to catch allocation problems early
+    console.assert(cycleDurationDays > 0, `Invalid cycle duration: ${cycleDurationDays} days`);
+    console.assert(maxHoursPerSubject > 0, `Invalid maxHoursPerSubject: ${maxHoursPerSubject} (cycleDurationDays=${cycleDurationDays}, workingHoursPerDay=${workingHoursPerDay}, subjects.length=${subjects.length})`);
+    
     // Adjust allocations to fit within cycle duration
     subjects.forEach(subject => {
       const currentAllocation = subjectAllocations.get(subject.subjectCode) || 4;
       const adjustedAllocation = Math.min(currentAllocation, maxHoursPerSubject);
-      subjectAllocations.set(subject.subjectCode, Math.max(1, adjustedAllocation));
-      console.log(`Debug ${subject.subjectCode}: ${currentAllocation} -> ${adjustedAllocation} hours`);
+      const finalAllocation = Math.max(1, adjustedAllocation);
+      
+      console.assert(finalAllocation > 0, `Subject ${subject.subjectCode} has zero allocation: ${finalAllocation}`);
+      console.assert(finalAllocation <= maxHoursPerSubject, `Subject ${subject.subjectCode} allocation ${finalAllocation} exceeds max ${maxHoursPerSubject}`);
+      
+      subjectAllocations.set(subject.subjectCode, finalAllocation);
+      console.log(`Debug ${subject.subjectCode}: ${currentAllocation} -> ${adjustedAllocation} -> ${finalAllocation} hours`);
     });
   }
   
@@ -528,6 +586,11 @@ export function calculateSubjectAllocations(
   cycleType: CycleType,
   gsOptionalRatio?: GSOptionalRatio
 ): Map<string, number> {
+  // Add assertions to catch problems early
+  console.assert(subjects.length > 0, 'No subjects provided to calculateSubjectAllocations');
+  console.assert(totalHours > 0, `Invalid totalHours: ${totalHours}`);
+  console.assert(confidenceMap.size > 0, 'Empty confidenceMap provided');
+  
   // If no GS:Optional ratio specified, use proportional allocation
   if (!gsOptionalRatio) {
     return calculateProportionalAllocations(subjects, totalHours, confidenceMap, cycleType);
@@ -562,6 +625,11 @@ export function calculateSubjectAllocations(
     const otherAllocations = calculateProportionalAllocations(otherSubjects, otherHours, confidenceMap, cycleType);
     otherAllocations.forEach((hours, code) => allocations.set(code, hours));
   }
+
+  // Final validation
+  const totalAllocated = Array.from(allocations.values()).reduce((sum, hours) => sum + hours, 0);
+  console.assert(totalAllocated <= totalHours, `Total allocated ${totalAllocated} exceeds total hours ${totalHours}`);
+  console.log(`📊 Final allocations: ${Array.from(allocations.entries()).map(([code, hours]) => `${code}:${hours}h`).join(', ')}`);
 
   return allocations;
 }
