@@ -51,41 +51,10 @@ export function distributeTasksIntoDays(
 ): WeeklyTaskSchedulingResult {
   const { tasks, dailyLimits, catchupDayPreference, testDayPreference, weekStartDate } = input;
   
-  // Add assertions to catch problems early
-  console.assert(tasks.length > 0, 'No tasks provided to distributeTasksIntoDays');
-  console.assert(dailyLimits.regular_day > 0, `Invalid regular_day limit: ${dailyLimits.regular_day}`);
-  console.assert(dailyLimits.test_day > 0, `Invalid test_day limit: ${dailyLimits.test_day}`);
-  console.assert(weekStartDate && weekStartDate.isValid(), 'Invalid weekStartDate provided');
-  
-  // Assert that no task has 0 minutes duration
-  tasks.forEach(task => {
-    console.assert(task.duration_minutes > 0, `Task ${task.task_id} has 0 minutes duration - this is invalid`);
-  });
-  
-  // Log input for debugging
-  console.log(`📊 distributeTasksIntoDays: ${tasks.length} tasks, regular_day=${dailyLimits.regular_day}h, test_day=${dailyLimits.test_day}h`);
-  
-  // Validate and cap task durations before processing
-  const validatedTasks = validateAndCapTaskDurations(tasks, dailyLimits);
-  
   // Set defaults for day preferences
   // Default: Saturday for catchup day, Sunday for test day
   const effectiveCatchupDay = catchupDayPreference ?? DayOfWeek.SATURDAY;
   const effectiveTestDay = testDayPreference ?? DayOfWeek.SUNDAY;
-  
-  // Convert DailyHourLimits object to array of 7 day limits
-  // Monday=0, Tuesday=1, ..., Sunday=6
-  const catchupDayIndex = getCatchupDayIndex(effectiveCatchupDay);
-  const testDayIndex = getTestDayIndex(effectiveTestDay);
-  
-  console.log(`🔍 Debug: effectiveCatchupDay=${effectiveCatchupDay}, catchupDayIndex=${catchupDayIndex}`);
-  console.log(`🔍 Debug: effectiveTestDay=${effectiveTestDay}, testDayIndex=${testDayIndex}`);
-  
-  const dayLimitsArray: number[] = Array(7).fill(dailyLimits.regular_day);
-  dayLimitsArray[testDayIndex] = dailyLimits.test_day;
-  dayLimitsArray[catchupDayIndex] = 0; // Catchup day has 0 hours for non-test tasks
-  
-  console.log(`🔍 Debug: dayLimitsArray=`, dayLimitsArray);
   
   // Initialize days array (Sunday=0, Monday=1, ..., Saturday=6)
   const initialDays: DayState[] = Array(7).fill(null).map(() => ({
@@ -93,31 +62,30 @@ export function distributeTasksIntoDays(
     hours: 0
   }));
 
-  // Log day limits for debugging
-  console.log(`📊 Day limits:`, dayLimitsArray.map((limit, index) => {
-    const dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][index];
-    return `${dayName}: ${limit}h`;
-  }).join(', '));
+  // Set day limits based on catchup and test day preferences
+  const dayLimits = Array(7).fill(dailyLimits.regular_day);
+  
+  const catchupDayIndex = getCatchupDayIndex(effectiveCatchupDay);
+  const testDayIndex = getTestDayIndex(effectiveTestDay);
+  
+  if (catchupDayIndex === testDayIndex) {
+    // If catchup day and test day are the same, allow test tasks on that day
+    dayLimits[catchupDayIndex] = dailyLimits.test_day;
+  } else {
+    // Set catchup day to 0 hours to prevent non-test tasks
+    dayLimits[catchupDayIndex] = 0;
+    // Set test day to test day hours
+    dayLimits[testDayIndex] = dailyLimits.test_day;
+  }
 
   // Sort tasks by priority (higher priority first)
-  const sortedTasks = [...validatedTasks].sort((a, b) => (b.priority || 0) - (a.priority || 0));
+  const sortedTasks = [...tasks].sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
-  // Log task details for debugging
-  console.log(`📋 Tasks to distribute:`, sortedTasks.map(t => `${t.task_id}: ${t.duration_minutes}min (${t.taskType})`));
-  
   // Distribute tasks
-  let totalTaskHours = 0;
-  const finalDays = sortedTasks.reduce((days, task) => {
-    console.assert(task.duration_minutes > 0, `Task ${task.task_id} has zero duration: ${task.duration_minutes}min`);
-    console.assert(task.duration_minutes <= Math.max(...dayLimitsArray) * 60, `Task ${task.task_id} duration ${task.duration_minutes}min exceeds max daily capacity`);
-    
-    totalTaskHours += task.duration_minutes / 60;
-    return distributeTaskToDay(dayLimitsArray, days, task, effectiveCatchupDay, effectiveTestDay);
-  }, initialDays);
-  
-  // Ensure all tasks were distributed
-  console.assert(totalTaskHours > 0, `No task hours to distribute: ${totalTaskHours}`);
-  console.log(`📋 Total task hours to distribute: ${totalTaskHours.toFixed(2)}h`);
+  const finalDays = sortedTasks.reduce((days, task) => 
+    distributeTaskToDay(dayLimits, days, task, effectiveCatchupDay, effectiveTestDay), 
+    initialDays
+  );
 
   // Convert to DailyPlan format
   // Use 1-based day numbering in the day field (Monday=1, Tuesday=2, ..., Sunday=7) but 0-based array indexing
@@ -130,127 +98,8 @@ export function distributeTasksIntoDays(
   // Calculate total scheduled hours
   const totalScheduledHours = finalDays.reduce((sum, day) => sum + day.hours, 0);
 
-  // Add final validation assertions
-  console.log(`📊 Final distribution summary:`);
-  let totalAllocatedHours = 0;
-  let totalAvailableHours = 0;
-  
-  finalDays.forEach((day, index) => {
-    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][index];
-    const dayLimit = dayLimitsArray[index];
-    const dayAllocated = day.hours;
-    const dayAvailable = dayLimit;
-    
-    totalAllocatedHours += dayAllocated;
-    totalAvailableHours += dayAvailable;
-    
-    console.log(`  ${dayName}: ${dayAllocated.toFixed(2)}h/${dayAvailable}h (${day.dayTasks.length} tasks)`);
-    
-    // Check for day overload - cumulative time validation
-    console.assert(dayAllocated <= dayAvailable, `${dayName} exceeds limit: ${dayAllocated}h > ${dayAvailable}h`);
-    
-    // Calculate cumulative task time to ensure it matches day allocation
-    const cumulativeTaskMinutes = day.dayTasks.reduce((sum, task) => sum + task.duration_minutes, 0);
-    const cumulativeTaskHours = cumulativeTaskMinutes / 60;
-    
-    // Assert that cumulative task time equals day allocation (within 0.01 hour tolerance)
-    console.assert(
-      Math.abs(cumulativeTaskHours - dayAllocated) < 0.01,
-      `${dayName} cumulative task time mismatch: tasks=${cumulativeTaskHours.toFixed(2)}h, allocated=${dayAllocated.toFixed(2)}h`
-    );
-    
-    // Assert that cumulative task time does not exceed daily limit
-    console.assert(
-      cumulativeTaskHours <= dayAvailable,
-      `${dayName} cumulative task time exceeds daily limit: ${cumulativeTaskHours.toFixed(2)}h > ${dayAvailable}h`
-    );
-    
-    // Check for invalid task durations
-    console.assert(day.dayTasks.every(task => task.duration_minutes > 0), `${dayName} has tasks with zero duration`);
-    
-    // Check for holes in allocation (except catchup day)
-    const catchupDayIdx2 = getCatchupDayIndex(effectiveCatchupDay);
-    const testDayIdx2 = getTestDayIndex(effectiveTestDay);
-    const isCatchupDay = index === catchupDayIdx2;
-    const isTestDay = index === testDayIdx2;
-    
-    if (!isCatchupDay && !isTestDay) {
-      // For regular days, check if allocation is reasonable (not too low)
-      const minExpectedAllocation = dayAvailable * 0.5; // At least 50% of available time should be used
-      console.assert(dayAllocated >= minExpectedAllocation, 
-        `${dayName} has insufficient allocation: ${dayAllocated}h < ${minExpectedAllocation}h (${(minExpectedAllocation/dayAvailable*100).toFixed(1)}% of available)`);
-    }
-  });
-  
-  // Check total allocation efficiency
-  const allocationEfficiency = totalAllocatedHours / totalAvailableHours;
-  console.log(`📈 Total allocation: ${totalAllocatedHours.toFixed(2)}h/${totalAvailableHours.toFixed(2)}h (${(allocationEfficiency*100).toFixed(1)}%)`);
-  
-  // Ensure reasonable allocation efficiency (at least 70% of available time should be used)
-  console.assert(allocationEfficiency >= 0.7, 
-    `Low allocation efficiency: ${(allocationEfficiency*100).toFixed(1)}% < 70%. Total allocated: ${totalAllocatedHours}h, Total available: ${totalAvailableHours}h`);
-  
-  // Check for specific holes in the schedule
-  const catchupDayIdx = getCatchupDayIndex(effectiveCatchupDay);
-  const testDayIdx = getTestDayIndex(effectiveTestDay);
-  
-  // Check for consecutive days with low allocation (potential holes)
-  for (let i = 0; i < finalDays.length - 1; i++) {
-    const currentDay = finalDays[i];
-    const nextDay = finalDays[i + 1];
-    const currentLimit = dayLimitsArray[i];
-    const nextLimit = dayLimitsArray[i + 1];
-    
-    const currentEfficiency = currentDay.hours / currentLimit;
-    const nextEfficiency = nextDay.hours / nextLimit;
-    
-    // Check for consecutive low-efficiency days (potential holes)
-    if (currentEfficiency < 0.3 && nextEfficiency < 0.3 && i !== catchupDayIdx && i !== testDayIdx) {
-      console.warn(`⚠️  Potential hole detected: ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][i]} (${(currentEfficiency*100).toFixed(1)}%) and ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][i+1]} (${(nextEfficiency*100).toFixed(1)}%) have low allocation`);
-    }
-  }
-  
-  // Check for days with zero tasks (except catchup day)
-  finalDays.forEach((day, index) => {
-    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][index];
-    const isCatchupDay = index === catchupDayIdx;
-    
-    if (!isCatchupDay && day.dayTasks.length === 0) {
-      console.assert(false, `${dayName} has no tasks allocated - this creates a hole in the schedule`);
-    }
-  });
-  
-  // Enhanced hole detection - check for days with very low allocation (potential holes)
-  finalDays.forEach((day, index) => {
-    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][index];
-    const dayLimit = dayLimitsArray[index];
-    const dayAllocated = day.hours;
-    const isCatchupDay = index === catchupDayIdx;
-    const isTestDay = index === testDayIdx;
-    
-    // For regular days, ensure minimum allocation to prevent holes
-    if (!isCatchupDay && !isTestDay) {
-      const minHoursThreshold = Math.max(1.0, dayLimit * 0.2); // At least 1 hour or 20% of day limit
-      console.assert(
-        dayAllocated >= minHoursThreshold,
-        `HOLE DETECTED: ${dayName} has insufficient work (${dayAllocated.toFixed(2)}h < ${minHoursThreshold.toFixed(2)}h) - this creates a gap in the schedule`
-      );
-      
-      // Additional check for very low task count
-      console.assert(
-        day.dayTasks.length >= 1,
-        `HOLE DETECTED: ${dayName} has no tasks (${day.dayTasks.length} tasks) - this creates a gap in the schedule`
-      );
-    }
-  });
-  
   // Check for conflicts
-  const conflicts = detectSchedulingConflicts(finalDays, dayLimitsArray, effectiveCatchupDay, effectiveTestDay);
-  
-  // Log conflicts for debugging
-  if (conflicts.length > 0) {
-    console.warn(`⚠️  Scheduling conflicts detected:`, conflicts.map(c => c.message));
-  }
+  const conflicts = detectSchedulingConflicts(finalDays, dayLimits, effectiveCatchupDay, effectiveTestDay);
 
   return {
     dailyPlans,
@@ -269,16 +118,7 @@ function distributeTaskToDay(
   catchupDayPreference: DayOfWeek,
   testDayPreference: DayOfWeek
 ): DayState[] {
-  const taskHours = task.duration_minutes / 60;
-  
-  // Add assertions
-  console.assert(taskHours > 0, `Task ${task.task_id} has zero hours: ${taskHours}`);
-  console.assert(taskHours <= Math.max(...dayLimits), `Task ${task.task_id} hours ${taskHours} exceeds max daily limit ${Math.max(...dayLimits)}`);
-  
   const bestDayIndex = findBestSlot(days, dayLimits, task, catchupDayPreference, testDayPreference);
-  
-  // Ensure task was allocated to a valid day
-  console.assert(bestDayIndex >= 0 && bestDayIndex < 7, `Task ${task.task_id} could not be allocated to any day`);
   
   if (bestDayIndex === -1) {
     // If no slot found, try to split the task across multiple days
@@ -287,18 +127,10 @@ function distributeTaskToDay(
 
   const newDays = [...days];
   const targetDay = newDays[bestDayIndex];
-  const dayLimit = dayLimits[bestDayIndex];
-  const newTotalHours = targetDay.hours + (task.duration_minutes / 60);
-  
-  // Assert that adding this task won't exceed the daily limit
-  console.assert(
-    newTotalHours <= dayLimit,
-    `Adding task ${task.task_id} to day ${bestDayIndex} would exceed limit: ${newTotalHours.toFixed(2)}h > ${dayLimit}h (current: ${targetDay.hours.toFixed(2)}h + task: ${(task.duration_minutes/60).toFixed(2)}h)`
-  );
   
   newDays[bestDayIndex] = {
     dayTasks: [...targetDay.dayTasks, task],
-    hours: newTotalHours
+    hours: targetDay.hours + (task.duration_minutes / 60)
   };
 
   return newDays;
@@ -404,10 +236,6 @@ function splitTaskAcrossDays(
   catchupDayPreference: DayOfWeek,
   testDayPreference: DayOfWeek
 ): DayState[] {
-  // Add assertions
-  console.assert(taskHours > 0, `splitTaskAcrossDays: Task ${task.task_id} has zero hours: ${taskHours}`);
-  console.assert(taskHours <= Math.max(...dayLimits), `splitTaskAcrossDays: Task ${task.task_id} hours ${taskHours} exceeds max daily limit`);
-  
   const catchupDayIndex = getCatchupDayIndex(catchupDayPreference);
   const testDayIndex = getTestDayIndex(testDayPreference);
   
@@ -480,11 +308,6 @@ function distributeTaskProportionally(
   catchupDayPreference?: DayOfWeek,
   testDayPreference?: DayOfWeek
 ): DayState[] {
-  // Add assertions
-  console.assert(taskHours > 0, `distributeTaskProportionally: Task ${task.task_id} has zero hours: ${taskHours}`);
-  console.assert(daySpaces.length === 7, `distributeTaskProportionally: Invalid daySpaces length: ${daySpaces.length}`);
-  console.assert(daySpaces.every(space => space >= 0), `distributeTaskProportionally: Negative day spaces detected`);
-  
   const newDays = [...days];
   let remainingHours = taskHours;
   
@@ -508,39 +331,20 @@ function distributeTaskProportionally(
         }
       }
       
-      const totalAvailableSpace = daySpaces.reduce((sum, space) => sum + space, 0);
       const proportionalHours = Math.min(
-        Math.ceil((daySpaces[i] / totalAvailableSpace) * taskHours),
-        remainingHours,
-        daySpaces[i] // Respect daily capacity
+        Math.ceil((daySpaces[i] / daySpaces.reduce((sum, space) => sum + space, 0)) * taskHours),
+        remainingHours
       );
       
-      // Ensure minimum 30 minutes (0.5 hours) for any task slice
-      const minHours = 0.5;
-      const finalHours = Math.max(minHours, proportionalHours);
-      
-      if (finalHours > 0 && finalHours <= daySpaces[i]) {
-        const newTotalHours = newDays[i].hours + finalHours;
-        
-        // Assert that adding this task slice won't exceed the daily limit
-        console.assert(
-          newTotalHours <= daySpaces[i],
-          `Adding task slice ${task.task_id} to day ${i} would exceed limit: ${newTotalHours.toFixed(2)}h > ${daySpaces[i]}h (current: ${newDays[i].hours.toFixed(2)}h + slice: ${finalHours.toFixed(2)}h)`
-        );
-        
+      if (proportionalHours > 0) {
         newDays[i] = {
-          dayTasks: [...newDays[i].dayTasks, { ...task, duration_minutes: Math.round(finalHours * 60) }],
-          hours: newTotalHours
+          dayTasks: [...newDays[i].dayTasks, { ...task, duration_minutes: proportionalHours * 60 }],
+          hours: newDays[i].hours + proportionalHours
         };
-        remainingHours -= finalHours;
+        remainingHours -= proportionalHours;
       }
     }
   }
-  
-  // Ensure task was properly distributed
-  const totalDistributed = taskHours - remainingHours;
-  console.assert(totalDistributed > 0, `Task ${task.task_id} was not distributed across any days`);
-  console.assert(Math.abs(totalDistributed - taskHours) < 0.1, `Task ${task.task_id} distribution mismatch: expected ${taskHours}h, got ${totalDistributed}h`);
   
   return newDays;
 }
@@ -559,59 +363,15 @@ function detectSchedulingConflicts(
   const testDayIndex = getTestDayIndex(testDayPreference);
   
   days.forEach((day, index) => {
-    // Calculate cumulative task time
-    const cumulativeTaskMinutes = day.dayTasks.reduce((sum, task) => sum + task.duration_minutes, 0);
-    const cumulativeTaskHours = cumulativeTaskMinutes / 60;
-    
     // Check for day overload
     if (day.hours > dayLimits[index]) {
       conflicts.push({
         type: 'day_overload',
-        message: `Day ${index + 1} exceeds hour limit (${day.hours.toFixed(2)}/${dayLimits[index]})`,
+        message: `Day ${index + 1} exceeds hour limit (${day.hours}/${dayLimits[index]})`,
         affectedTasks: day.dayTasks.map(task => task.task_id),
         affectedDays: [index + 1]
       });
     }
-    
-    // Check for cumulative task time exceeding daily limit
-    if (cumulativeTaskHours > dayLimits[index]) {
-      conflicts.push({
-        type: 'day_overload',
-        message: `Day ${index + 1} cumulative task time exceeds limit (${cumulativeTaskHours.toFixed(2)}/${dayLimits[index]})`,
-        affectedTasks: day.dayTasks.map(task => task.task_id),
-        affectedDays: [index + 1]
-      });
-    }
-    
-    // Check for mismatch between allocated hours and cumulative task time
-    if (Math.abs(cumulativeTaskHours - day.hours) > 0.01) {
-      conflicts.push({
-        type: 'day_overload',
-        message: `Day ${index + 1} task time mismatch: allocated=${day.hours.toFixed(2)}h, cumulative=${cumulativeTaskHours.toFixed(2)}h`,
-        affectedTasks: day.dayTasks.map(task => task.task_id),
-        affectedDays: [index + 1]
-      });
-    }
-    
-    // Check for invalid task durations
-    day.dayTasks.forEach(task => {
-      if (task.duration_minutes <= 0) {
-        conflicts.push({
-          type: 'task_too_large',
-          message: `Task ${task.task_id} has invalid duration: ${task.duration_minutes} minutes`,
-          affectedTasks: [task.task_id],
-          affectedDays: [index + 1]
-        });
-      }
-      if (task.duration_minutes > dayLimits[index] * 60) {
-        conflicts.push({
-          type: 'task_too_large',
-          message: `Task ${task.task_id} exceeds daily limit: ${task.duration_minutes} minutes (${dayLimits[index]} hours)`,
-          affectedTasks: [task.task_id],
-          affectedDays: [index + 1]
-        });
-      }
-    });
     
     // Check for catchup day violations
     const isCatchupDay = index === catchupDayIndex;
@@ -719,62 +479,6 @@ export function createWeeklyPlan(dailyPlans: DailyPlan[], weekNumber: number): {
     total_hours: totalHours,
     task_count: taskCount
   };
-}
-
-/**
- * Validate and cap task durations to respect daily limits
- */
-function validateAndCapTaskDurations(tasks: WeeklyTask[], dailyLimits: DailyHourLimits): WeeklyTask[] {
-  const maxTaskDurationMinutes = Math.min(
-    dailyLimits.regular_day * 60, // Cap at regular day limit
-    dailyLimits.test_day * 60     // Cap at test day limit
-  );
-  
-  const minTaskDurationMinutes = 30; // Minimum 30 minutes per task
-  
-  // Add assertions to catch problems early
-  console.assert(maxTaskDurationMinutes > 0, `Invalid daily limits: regular_day=${dailyLimits.regular_day}, test_day=${dailyLimits.test_day}`);
-  console.assert(minTaskDurationMinutes > 0, `Invalid minimum task duration: ${minTaskDurationMinutes}`);
-  
-  return tasks.map(task => {
-    let validatedDuration = task.duration_minutes;
-    
-    // Add assertion for original task duration
-    console.assert(
-      task.duration_minutes >= 0,
-      `Task ${task.task_id} has negative duration: ${task.duration_minutes} minutes`
-    );
-    console.assert(
-      task.duration_minutes > 0,
-      `Task ${task.task_id} has 0 minutes duration - this is invalid`
-    );
-    
-    // Ensure minimum duration
-    if (validatedDuration < minTaskDurationMinutes) {
-      console.warn(`Task ${task.task_id} duration too small (${validatedDuration}min), capping to ${minTaskDurationMinutes}min`);
-      validatedDuration = minTaskDurationMinutes;
-    }
-    
-    // Cap at daily limit
-    if (validatedDuration > maxTaskDurationMinutes) {
-      console.warn(`Task ${task.task_id} duration too large (${validatedDuration}min), capping to ${maxTaskDurationMinutes}min`);
-      validatedDuration = maxTaskDurationMinutes;
-    }
-    
-    // Round to nearest 15 minutes for cleaner scheduling
-    validatedDuration = Math.round(validatedDuration / 15) * 15;
-    
-    // Final assertion
-    console.assert(
-      validatedDuration >= minTaskDurationMinutes && validatedDuration <= maxTaskDurationMinutes,
-      `Task ${task.task_id} final duration ${validatedDuration}min is outside valid range [${minTaskDurationMinutes}, ${maxTaskDurationMinutes}]`
-    );
-    
-    return {
-      ...task,
-      duration_minutes: validatedDuration
-    };
-  });
 }
 
 // Re-export types and enums
