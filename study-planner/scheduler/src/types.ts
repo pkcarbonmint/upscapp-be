@@ -129,7 +129,7 @@ export type ScheduledSubject = {
   subject: Subject;
   startDate: Dayjs;
   endDate: Dayjs;
-  durationWeeks: number;
+  durationDays: number;
   allocatedHours: number;
   studyApproach: StudyApproach;
 };

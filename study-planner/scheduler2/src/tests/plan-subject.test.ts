@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import dayjs from 'dayjs';
 import { planSubjectTasks, calcAvailableTime } from '../plan-subject';
-import { Weekday, S2SlotType, S2Constraints, S2Subject, } from '../types';
+import { S2WeekDay, S2SlotType, S2Constraints, S2Subject, CycleType } from '../types';
 
 describe('planSubjectTasks', () => {
   let from: dayjs.Dayjs;
@@ -13,10 +13,11 @@ describe('planSubjectTasks', () => {
     from = dayjs('2024-01-01');
     to = dayjs('2024-01-08'); // 7 days
     constraints = {
+      cycleType: CycleType.C1,
       dayMaxMinutes: 480, // 8 hours
       dayMinMinutes: 240, // 4 hours
-      catchupDay: Weekday.Sunday,
-      testDay: Weekday.Saturday,
+      catchupDay: S2WeekDay.Sunday,
+      testDay: S2WeekDay.Saturday,
       testMinutes: 180, // 3 hours
       taskEffortSplit: {
         [S2SlotType.STUDY]: 0.5,
@@ -27,9 +28,10 @@ describe('planSubjectTasks', () => {
       },
     };
     subject = {
-      code: 'MATH',
-      name: 'Mathematics',
+      subjectCode: 'MATH',
+      subjectNname: 'Mathematics',
       baselineMinutes: 2400, // 40 hours
+      examFocus: "BothExams",
       topics: [
         {
           code: 'ALG',
@@ -468,8 +470,9 @@ describe('planSubjectTasks', () => {
   describe('Topic Configuration Variations', () => {
     it('should handle topics with only essential subtopics', () => {
       const essentialOnlySubject: S2Subject = {
-        code: 'PHYS',
-        name: 'Physics',
+        examFocus: "BothExams",
+        subjectCode: 'PHYS',
+        subjectNname: 'Physics',
         baselineMinutes: 1200, // 20 hours
         topics: [
           {
@@ -501,8 +504,9 @@ describe('planSubjectTasks', () => {
 
     it('should handle topics with only non-essential subtopics', () => {
       const nonEssentialOnlySubject: S2Subject = {
-        code: 'CHEM',
-        name: 'Chemistry',
+        examFocus: "BothExams",
+        subjectCode: 'CHEM',
+        subjectNname: 'Chemistry',
         baselineMinutes: 600, // 10 hours
         topics: [
           {
@@ -527,8 +531,9 @@ describe('planSubjectTasks', () => {
 
     it('should handle topics with predefined baselineMinutes', () => {
       const predefinedSubject: S2Subject = {
-        code: 'BIO',
-        name: 'Biology',
+        examFocus: "BothExams",
+        subjectCode: 'BIO',
+        subjectNname: 'Biology',
         baselineMinutes: 1800, // 30 hours
         topics: [
           {
@@ -577,8 +582,9 @@ describe('planSubjectTasks', () => {
 
     it('should handle topics without baselineMinutes (auto-distributed)', () => {
       const autoDistributedSubject: S2Subject = {
-        code: 'HIST',
-        name: 'History',
+        examFocus: "BothExams",
+        subjectCode: 'HIST',
+        subjectNname: 'History',
         baselineMinutes: 1200, // 20 hours
         topics: [
           {
@@ -628,8 +634,9 @@ describe('planSubjectTasks', () => {
 
     it('should handle mixed essential/non-essential subtopics within same topic', () => {
       const mixedSubject: S2Subject = {
-        code: 'GEO',
-        name: 'Geography',
+        examFocus: "BothExams",
+        subjectCode: 'GEO',
+        subjectNname: 'Geography',
         baselineMinutes: 900, // 15 hours
         topics: [
           {
@@ -664,8 +671,9 @@ describe('planSubjectTasks', () => {
 
     it('should handle topics with varying priority levels', () => {
       const prioritySubject: S2Subject = {
-        code: 'LIT',
-        name: 'Literature',
+        examFocus: "BothExams",
+        subjectCode: 'LIT',
+        subjectNname: 'Literature',
         baselineMinutes: 1500, // 25 hours
         topics: [
           {
@@ -715,8 +723,9 @@ describe('planSubjectTasks', () => {
 
     it('should handle single subtopic per topic', () => {
       const singleSubtopicSubject: S2Subject = {
-        code: 'ART',
-        name: 'Art',
+        examFocus: "BothExams",
+        subjectCode: 'ART',
+        subjectNname: 'Art',
         baselineMinutes: 600, // 10 hours
         topics: [
           {
@@ -763,8 +772,9 @@ describe('planSubjectTasks', () => {
 
     it('should handle many subtopics per topic', () => {
       const manySubtopicsSubject: S2Subject = {
-        code: 'SCI',
-        name: 'Science',
+        examFocus: "BothExams",
+        subjectCode: 'SCI',
+        subjectNname: 'Science',
         baselineMinutes: 2400, // 40 hours
         topics: [
           {
@@ -816,10 +826,10 @@ describe('planSubjectTasks', () => {
   });
 
 function isCatchupDay(date: dayjs.Dayjs): boolean {
-  return date.day() === Weekday.Sunday;
+  return date.day() === S2WeekDay.Sunday;
 }
 
 function isTestDay(date: dayjs.Dayjs): boolean {
-  return date.day() === Weekday.Saturday;
+  return date.day() === S2WeekDay.Saturday;
 }
 });

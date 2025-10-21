@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import { S2Constraints, S2Slot, S2SlotType, S2Subject, S2Task, S2Topic, S2TopicWithMinutes, Weekday } from "./types";
+import { S2Constraints, S2Slot, S2SlotType, S2Subject, S2Task, S2Topic, S2TopicWithMinutes, S2WeekDay } from "./types";
 
 export function planSubjectTasks(
   from: Dayjs,
@@ -162,7 +162,7 @@ function createTasks(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], fro
   const catchupTasks: S2Task[] = catchupSlots.map((catchupSlot) => {
     return {
       topicCode: 'CATCHUP',
-      subjectCode: subject.code,
+      subjectCode: subject.subjectCode,
       taskType: S2SlotType.CATCHUP,
       minutes: catchupSlot.minutes,
       date: catchupSlot.date,
@@ -172,7 +172,7 @@ function createTasks(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], fro
   const testTasks: S2Task[] = testSlots.map((testSlot) => {
     return {
       topicCode: 'TEST',
-      subjectCode: subject.code,
+      subjectCode: subject.subjectCode,
       taskType: S2SlotType.TEST,
       minutes: testSlot.minutes,
       date: testSlot.date,
@@ -211,7 +211,7 @@ function distributeTopicsAcrossAllSlots(
     if (minutesToAllocate > 0) {
       allTasks.push({
         topicCode: topic.code,
-        subjectCode: subject.code,
+        subjectCode: subject.subjectCode,
         taskType: slot.type,
         minutes: minutesToAllocate,
         date: slot.date,
@@ -288,7 +288,7 @@ function calcMaxMinutesAvailable(availableDays: number, numCatchupDays: number, 
   return constraints.dayMaxMinutes * availableDays - numCatchupDays * constraints.dayMaxMinutes - numTestDays * constraints.testMinutes;
 }
 
-function countCatchupDays(from: Dayjs, to: Dayjs, catchupDay: Weekday) {
+function countCatchupDays(from: Dayjs, to: Dayjs, catchupDay: S2WeekDay) {
 
   if (to.isBefore(from)) {
     throw new Error('to date must be after from date');
@@ -303,7 +303,7 @@ function countCatchupDays(from: Dayjs, to: Dayjs, catchupDay: Weekday) {
     .length;
 }
 
-function countTestDays(from: Dayjs, to: Dayjs, testDay: Weekday) {
+function countTestDays(from: Dayjs, to: Dayjs, testDay: S2WeekDay) {
   if (to.isBefore(from)) {
     throw new Error('to date must be after from date');
   }
@@ -315,11 +315,11 @@ function countTestDays(from: Dayjs, to: Dayjs, testDay: Weekday) {
     .length;
 }
 
-function isCatchupDay(date: Dayjs, catchupDay: Weekday) {
+function isCatchupDay(date: Dayjs, catchupDay: S2WeekDay) {
   return date.day() === catchupDay;
 }
 
-function isTestDay(date: Dayjs, testDay: Weekday) {
+function isTestDay(date: Dayjs, testDay: S2WeekDay) {
   return date.day() === testDay;
 }
 

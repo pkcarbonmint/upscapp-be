@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "scheduler": "workspace:*",
+    "scheduler2": "workspace:*",
     "@types/uuid": "^10.0.0",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",

@@ -1,6 +1,83 @@
 import type { Dayjs } from "dayjs";
 
-export enum Weekday {
+
+export type Break = {
+  from: Dayjs;
+  to: Dayjs;
+}
+
+export type PlannerConstraints = {
+  optionalSubjectCode: string;
+  confidenceMap: Record<SubjectCode, number>;
+  optionalFirst: boolean;
+  catchupDay: S2WeekDay;
+  testDay: S2WeekDay;
+  workingHoursPerDay: number;
+  breaks: Break[]; // not used for now
+  testMinutes: number; // Amount of time to allocate for taking tests
+}
+
+export type PlanningContext = {
+  optionalSubject: S2Subject;
+  startDate: Dayjs;
+  targetYear: number;
+  prelimsExamDate: Dayjs;
+  mainsExamDate: Dayjs;
+  constraints: PlannerConstraints;
+  subjects: S2Subject[];
+  relativeAllocationWeights: Record<SubjectCode, number>; //this should be based on relative baseline time
+}
+
+export interface ScenarioResult {
+  scenario: 'S1' | 'S2' | 'S3' | 'S4' | 'S4A' | 'S5' | 'S6' | 'S7' | 'S8'; // Updated to include S4A
+  totalTimeAvailable: number;
+  schedules: CycleSchedule[];
+}
+
+export enum CycleType {
+  C1 = "C1", // NCERT Foundation Cycle
+  C2 = "C2", // Comprehensive Foundation Cycle
+  C3 = "C3", // Mains Revision Pre-Prelims Cycle
+  C4 = "C4", // Prelims Reading Cycle
+  C5 = "C5", // Prelims Revision Cycle
+  C5B = "C5.b", // Prelims Rapid Revision Cycle
+  C6 = "C6", // Mains Revision Cycle
+  C7 = "C7", // Mains Rapid Revision Cycle
+  C8 = "C8" // Mains Foundation Cycle
+}
+
+export type SubjectCode = string;
+
+export interface CycleSchedule {
+  cycleType: CycleType;
+  startDate: string;
+  endDate: string;
+}
+export type BlockAllocConstraints = {
+  cycleType: CycleType;
+  relativeAllocationWeights: Record<SubjectCode, number>; //this should be based on relative baseline time
+  numParallel: number;
+  workingHoursPerDay: number;
+  catchupDay: S2WeekDay;
+  testDay: S2WeekDay;
+}
+
+export type BlockSlot = {
+  cycleType: CycleType;
+  subject: S2Subject;
+  from: Dayjs; to: Dayjs;
+}
+
+export type SubjectWithAllocation = S2Subject & { allocation: number };
+
+export type ActiveBlock = {
+  subject: S2Subject;
+  startTime: Dayjs;
+  endTime: Dayjs;
+  duration: number;
+};
+
+export enum S2WeekDay {
   Sunday = 0,
   Monday = 1,
   Tuesday = 2,
@@ -19,10 +96,11 @@ export enum S2SlotType {
 }
 
 export type S2Constraints = {
+  cycleType: CycleType;
   dayMaxMinutes: number;
   dayMinMinutes: number;
-  catchupDay: Weekday; // day to catch up on work
-  testDay: Weekday; // day to take a test
+  catchupDay: S2WeekDay; // day to catch up on work
+  testDay: S2WeekDay; // day to take a test
   testMinutes: number; // time needed to take a test
   taskEffortSplit: Record<S2SlotType, number>;
 };
@@ -33,9 +111,12 @@ export type S2Slot = {
   minutes: number;
 };
 
+export type S2ExamFocus = 'PrelimsOnly' | 'MainsOnly' | 'BothExams';
+
 export type S2Subject = {
-  code: string;
-  name: string;
+  subjectCode: string;
+  subjectNname: string;
+  examFocus: S2ExamFocus;
   topics: S2Topic[];
   baselineMinutes: number;
 }
