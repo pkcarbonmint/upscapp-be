@@ -16,8 +16,11 @@ export function planMain(context: PlanningContext) {
   // setup relative weights and subject order
   const scenario: ScenarioResult = planCycles(context);
   const cycles = scenario.schedules;
+  console.log("planMain", "cycles2Blocks");
   const blocks = cycles2Blocks(context, cycles);
+  console.log("planMain", "blocks2Tasks");
   const tasks = blocks2Tasks(context, blocks);
+  console.log("planMain", "blocks2Tasks returned");
   return { cycles, blocks, tasks };
 }
 
@@ -41,6 +44,7 @@ function cycles2Blocks(context: PlanningContext, schedules: CycleSchedule[]): Bl
       catchupDay: context.constraints.catchupDay,
       testDay: context.constraints.testDay,
     }
+    console.log("cycles2Blocks", "Calling planBlocks");
     return planBlocks(dayjs(startDate), dayjs(endDate), reorderedSubjects, blkConstraints);
   });
   return blocks;

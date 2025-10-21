@@ -72,15 +72,20 @@ export function planBlocks(
 
   // Split the available calendar time among the subjects, in the order provided.
   // If we have to prioritize optional subject, it should be first in the list.
-  const blockSlots: BlockSlot[] = [];
 
   // Step 1: Calculate proportional allocation
-  // relativeAllocationWeights are already fractions that sum to 1, so no normalization needed
-  const normalizedAllocation: Record<SubjectCode, number> = constraints.relativeAllocationWeights;
+  // Normalize relativeAllocationWeights to ensure they sum to 1
+  const rawWeights = constraints.relativeAllocationWeights;
+  const totalWeight = Object.values(rawWeights).reduce((sum, weight) => sum + weight, 0);
+  const normalizedAllocation: Record<SubjectCode, number> = {};
+  for (const [subjectCode, weight] of Object.entries(rawWeights)) {
+    normalizedAllocation[subjectCode] = weight / totalWeight;
+  }
 
   // Step 4: TIME SCALING BASED ON AVAILABLE CALENDAR TIME
   const totalBaselineTime = subjects.reduce((sum, subject) => sum + subject.baselineMinutes, 0);
   const scalingFactor = availableMinutes / totalBaselineTime;
+
 
   // Apply scaling to allocation weights
   const scaledAllocation: Map<SubjectCode, number> = new Map();
@@ -95,84 +100,139 @@ export function planBlocks(
       scaledAllocation.set(subjectCode, weight * scalingFactor);
     }
   }
-  // Step 2: Initialize tracking structures
-  const activeBlocks: ActiveBlock[] = [];
-  const remainingTime = new Map<SubjectCode, number>();
-  subjects.forEach(subject => {
-    const allocatedTime = availableMinutes * scaledAllocation.get(subject.subjectCode)!;
-    remainingTime.set(subject.subjectCode, allocatedTime);
-  });
-
-  // Step 3: Main allocation loop
+  // Step 2: Time Slice Algorithm (Fixed)
+  const SLICE_DURATION_MINUTES = 30;
+  const blockSlots: BlockSlot[] = [];
+  
+  // 1. Generate time slices with safety limits
+  const timeSlices: Array<{
+    startTime: Dayjs;
+    endTime: Dayjs;
+    subjectCode: SubjectCode | null;
+  }> = [];
+  
   let currentTime = timeWindowFrom;
-  while (hasRemainingTime(remainingTime)) {
-    if (activeBlocks.length < constraints.numParallel) {
-      // Start new block for highest priority subject with remaining time
-      const currentSubjectCode = findNextSubjectWithTime(remainingTime);
-      if (currentSubjectCode) {
-        const subject = subjects.find(s => s.subjectCode === currentSubjectCode);
-        if (subject) {
-          const subjectWithAllocation: SubjectWithAllocation = {
-            ...subject,
-            allocation: availableMinutes * scaledAllocation.get(subject.subjectCode)!
-          };
-          const blockDuration = calculateOptimalBlockDuration(subjectWithAllocation, availableMinutes, scaledAllocation, constraints);
-
-          // Find next available time slot respecting calendar constraints
-          const nextAvailableSlot = findNextAvailableTimeSlot(currentTime, blockDuration, constraints);
-          if (nextAvailableSlot) {
-            const blockEndTime = nextAvailableSlot.add(blockDuration, 'minutes');
-
-            activeBlocks.push({
-              subject: subjectMap[currentSubjectCode],
-              startTime: nextAvailableSlot,
-              endTime: blockEndTime,
-              duration: blockDuration
-            });
-
-            remainingTime.set(currentSubjectCode,
-              remainingTime.get(currentSubjectCode)! - blockDuration);
-
-            // Update currentTime to the end of this block
-            currentTime = blockEndTime;
-          } else {
-            // No available time slot found, break the loop
-            break;
-          }
+  let sliceCount = 0;
+  const maxSlices = Math.min(1000, Math.ceil(timeWindowTo.diff(timeWindowFrom, 'minutes') / SLICE_DURATION_MINUTES));
+  
+  while (currentTime.isBefore(timeWindowTo) && sliceCount < maxSlices) {
+    const dayOfWeek = currentTime.day();
+    const isRestricted = dayOfWeek === constraints.catchupDay || dayOfWeek === constraints.testDay;
+    
+    if (!isRestricted) {
+      // Calculate this day's working hours
+      const dayStart = currentTime.startOf('day');
+      const dayEnd = dayStart.add(constraints.workingHoursPerDay, 'hours');
+      
+      // Only create slices within this day's working hours
+      if (currentTime.isBefore(dayEnd)) {
+        const sliceEndTime = currentTime.add(SLICE_DURATION_MINUTES, 'minutes');
+        
+        // Don't exceed this day's working hours or the overall time window
+        if ((sliceEndTime.isBefore(dayEnd) || sliceEndTime.isSame(dayEnd)) &&
+            (sliceEndTime.isBefore(timeWindowTo) || sliceEndTime.isSame(timeWindowTo))) {
+          timeSlices.push({
+            startTime: currentTime,
+            endTime: sliceEndTime,
+            subjectCode: null
+          });
         }
       }
-    } else if (activeBlocks.length > 0) {
-      // Complete earliest ending block
-      const completedBlock = findEarliestEndingBlock(activeBlocks);
-      blockSlots.push({
-        cycleType: constraints.cycleType,
-        subject: completedBlock.subject,
-        from: completedBlock.startTime,
-        to: completedBlock.endTime
-      });
-      activeBlocks.splice(activeBlocks.indexOf(completedBlock), 1);
-      currentTime = completedBlock.endTime;
-    } else {
-      // No active blocks and no remaining time, break the loop
-      break;
+    }
+    
+    currentTime = currentTime.add(SLICE_DURATION_MINUTES, 'minutes');
+    sliceCount++;
+    
+    // If we've exceeded this day's working hours, move to next day
+    const dayStart = currentTime.startOf('day');
+    const dayEnd = dayStart.add(constraints.workingHoursPerDay, 'hours');
+    if (currentTime.isAfter(dayEnd)) {
+      currentTime = currentTime.add(1, 'day').startOf('day');
     }
   }
-  // Step 4: Complete remaining active blocks
-  activeBlocks.forEach(block => {
+  
+  // 2. Calculate subject requirements
+  const subjectRequirements = subjects.map(subject => ({
+    subjectCode: subject.subjectCode,
+    requiredSlices: Math.ceil(subject.baselineMinutes / SLICE_DURATION_MINUTES),
+    allocatedSlices: 0
+  }));
+  
+  // Handle empty subjects array
+  if (subjectRequirements.length === 0) {
+    return [];
+  }
+  
+  // 3. Scale down if needed
+  const totalRequiredSlices = subjectRequirements.reduce((sum, req) => sum + req.requiredSlices, 0);
+  if (timeSlices.length < totalRequiredSlices) {
+    const scalingFactor = timeSlices.length / totalRequiredSlices;
+    subjectRequirements.forEach(req => {
+      req.requiredSlices = Math.floor(req.requiredSlices * scalingFactor);
+    });
+  }
+  
+  // 4. Simple round-robin assignment
+  let sliceIndex = 0;
+  let subjectIndex = 0;
+  let iterations = 0;
+  const maxIterations = timeSlices.length * 2; // Safety limit
+  
+  while (sliceIndex < timeSlices.length && iterations < maxIterations) {
+    const subject = subjectRequirements[subjectIndex];
+    
+    if (subject.allocatedSlices < subject.requiredSlices) {
+      timeSlices[sliceIndex].subjectCode = subject.subjectCode;
+      subject.allocatedSlices++;
+      sliceIndex++;
+    }
+    
+    subjectIndex = (subjectIndex + 1) % subjectRequirements.length;
+    iterations++;
+  }
+  
+  // 5. Group consecutive slices into blocks
+  let i = 0;
+  while (i < timeSlices.length) {
+    const slice = timeSlices[i];
+    if (!slice.subjectCode) {
+      i++;
+      continue;
+    }
+    
+    const blockStartTime = slice.startTime;
+    let blockEndTime = slice.endTime;
+    let j = i + 1;
+    
+    // Find consecutive slices of same subject within the same day
+    while (j < timeSlices.length && 
+           timeSlices[j].subjectCode === slice.subjectCode &&
+           timeSlices[j].startTime.format('YYYY-MM-DD') === slice.startTime.format('YYYY-MM-DD')) {
+      blockEndTime = timeSlices[j].endTime;
+      j++;
+    }
+    
+    // Ensure block doesn't exceed time window
+    if (blockEndTime.isAfter(timeWindowTo)) {
+      blockEndTime = timeWindowTo;
+    }
+    
     blockSlots.push({
       cycleType: constraints.cycleType,
-      subject: block.subject,
-      from: block.startTime,
-      to: block.endTime
+      subject: subjectMap[slice.subjectCode],
+      from: blockStartTime,
+      to: blockEndTime
     });
-  });
+    
+    i = j;
+  }
 
   // Step 6: SCHEDULE OPTIMIZATION - Balance workload across days
-  const optimizedSlots = balanceWorkloadAcrossDays(blockSlots, constraints);
+  // const optimizedSlots = balanceWorkloadAcrossDays(blockSlots, constraints);
 
   // Step 7: Handle overflow beyond 'to' date
   const maxDailyMinutes = constraints.workingHoursPerDay * 60;
-  const finalSlots = optimizedSlots.map(block => {
+  const finalSlots = blockSlots.map(block => {
     if (block.to.isAfter(timeWindowTo)) {
       const overflowMinutes = block.to.diff(timeWindowTo, 'minutes');
       // If overflow is less than one day's work, cap it to 'to' date
@@ -197,94 +257,9 @@ export function planBlocks(
   return finalSlots;
 }
 
-function hasRemainingTime(remainingTime: Map<SubjectCode, number>): boolean {
-  return Array.from(remainingTime.values()).some(time => time > 0);
-}
 
-function findNextSubjectWithTime(remainingTime: Map<SubjectCode, number>): SubjectCode | null {
-  for (const [subjectCode, time] of remainingTime.entries()) {
-    if (time > 0) {
-      return subjectCode;
-    }
-  }
-  return null;
-}
 
-function calculateOptimalBlockDuration(
-  subject: SubjectWithAllocation,
-  availableMinutes: number,
-  scaledAllocation: Map<SubjectCode, number>,
-  constraints: BlockAllocConstraints
-): number {
-  // Calculate base duration based on proportional allocation
-  const baseDuration = Math.floor(availableMinutes * scaledAllocation.get(subject.subjectCode)!);
 
-  // Apply subject complexity factor (more topics = longer blocks)
-  const complexityFactor = Math.min(1.5, Math.max(0.5, subject.topics.length / 10));
-  const complexityAdjustedDuration = Math.floor(baseDuration * complexityFactor);
-
-  // Apply constraints
-  const dayMaxMinutes = constraints.workingHoursPerDay * 60; // Convert hours to minutes
-  const dayMinMinutes = Math.min(30, dayMaxMinutes * 0.1); // At least 10% of day or 30 minutes
-
-  // Ensure duration is within constraints - never exceed daily working hours
-  const constrainedDuration = Math.max(
-    dayMinMinutes,
-    Math.min(dayMaxMinutes, complexityAdjustedDuration)
-  );
-
-  // Final safety check - ensure it never exceeds daily working hours
-  return Math.min(constrainedDuration, dayMaxMinutes);
-}
-
-function findEarliestEndingBlock(activeBlocks: ActiveBlock[]): ActiveBlock {
-  if (activeBlocks.length === 0) {
-    throw new Error('Cannot find earliest ending block from empty array');
-  }
-  return activeBlocks.reduce((acc, block) => {
-    if (block.endTime.isBefore(acc.endTime)) {
-      return block;
-    }
-    return acc;
-  }, activeBlocks[0]);
-}
-
-function findNextAvailableTimeSlot(
-  startTime: Dayjs,
-  durationMinutes: number,
-  constraints: BlockAllocConstraints
-): Dayjs | null {
-  let currentTime = startTime;
-  const endTime = startTime.add(30, 'days'); // Reasonable search window
-
-  while (currentTime.isBefore(endTime)) {
-    // Check if current time is on a catchup day or test day
-    if (isRestrictedDay(currentTime, constraints)) {
-      currentTime = currentTime.add(1, 'day').startOf('day');
-      continue;
-    }
-
-    // Check if we can fit the block within working hours
-    const dayStart = currentTime.startOf('day');
-    const dayEnd = dayStart.add(constraints.workingHoursPerDay, 'hours');
-
-    // If the block duration exceeds working hours, it's invalid
-    if (durationMinutes > constraints.workingHoursPerDay * 60) {
-      return null;
-    }
-
-    // If we're past working hours for the day, move to next day
-    if (currentTime.isAfter(dayEnd.subtract(durationMinutes, 'minutes'))) {
-      currentTime = currentTime.add(1, 'day').startOf('day');
-      continue;
-    }
-
-    // Found available slot
-    return currentTime;
-  }
-
-  return null; // No available slot found
-}
 
 function isRestrictedDay(date: Dayjs, constraints: BlockAllocConstraints): boolean {
   const dayOfWeek = date.day();
@@ -344,6 +319,7 @@ function balanceWorkloadAcrossDays(blockSlots: BlockSlot[], constraints: BlockAl
 
   return optimizedSlots.sort((a, b) => a.from.diff(b.from));
 }
+
 
 function countCatchupDays(from: Dayjs, to: Dayjs, catchupDay: S2WeekDay) {
 
