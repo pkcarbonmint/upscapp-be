@@ -10,7 +10,7 @@ export enum Weekday {
   Saturday = 6,
 };
 
-export enum SlotType {
+export enum S2SlotType {
   STUDY = 0,
   REVISION = 1,
   PRACTICE = 2,
@@ -18,35 +18,35 @@ export enum SlotType {
   CATCHUP = 4,
 }
 
-export type Constraints = {
+export type S2Constraints = {
   dayMaxMinutes: number;
   dayMinMinutes: number;
   catchupDay: Weekday; // day to catch up on work
   testDay: Weekday; // day to take a test
   testMinutes: number; // time needed to take a test
-  taskEffortSplit: Record<SlotType, number>;
+  taskEffortSplit: Record<S2SlotType, number>;
 };
 
-export type Slot = {
+export type S2Slot = {
   date: Dayjs;
-  type: SlotType;
+  type: S2SlotType;
   minutes: number;
 };
 
-export type Subject = {
+export type S2Subject = {
   code: string;
   name: string;
-  topics: Topic[];
+  topics: S2Topic[];
   baselineMinutes: number;
 }
 
-export type Topic = {
+export type S2Topic = {
   code: string;
-  subtopics: Subtopic[];
+  subtopics: S2Subtopic[];
   baselineMinutes?: number;
 };
 
-export type Subtopic = {
+export type S2Subtopic = {
   code: string;
   name: string;
   baselineMinutes?: number;
@@ -54,14 +54,14 @@ export type Subtopic = {
   priorityLevel: number;
 };
 
-export type TopicWithMinutes = Topic & {
+export type S2TopicWithMinutes = S2Topic & {
   baselineMinutes: number;
 };
 
-export type Task = {
+export type S2Task = {
   topicCode?: string;
   subjectCode: string;
-  taskType: SlotType;
+  taskType: S2SlotType;
   minutes: number;
   date: Dayjs;
 };
