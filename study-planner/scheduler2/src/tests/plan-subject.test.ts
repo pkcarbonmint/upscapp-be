@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import dayjs from 'dayjs';
 import { planSubjectTasks, calcAvailableTime } from '../plan-subject';
-import { Weekday, SlotType, Constraints, Subject, } from '../types';
+import { Weekday, S2SlotType, S2Constraints, S2Subject, } from '../types';
 
 describe('planSubjectTasks', () => {
   let from: dayjs.Dayjs;
   let to: dayjs.Dayjs;
-  let constraints: Constraints;
-  let subject: Subject;
+  let constraints: S2Constraints;
+  let subject: S2Subject;
 
   beforeEach(() => {
     from = dayjs('2024-01-01');
@@ -19,11 +19,11 @@ describe('planSubjectTasks', () => {
       testDay: Weekday.Saturday,
       testMinutes: 180, // 3 hours
       taskEffortSplit: {
-        [SlotType.STUDY]: 0.5,
-        [SlotType.REVISION]: 0.3,
-        [SlotType.PRACTICE]: 0.2,
-        [SlotType.TEST]: 0,
-        [SlotType.CATCHUP]: 0,
+        [S2SlotType.STUDY]: 0.5,
+        [S2SlotType.REVISION]: 0.3,
+        [S2SlotType.PRACTICE]: 0.2,
+        [S2SlotType.TEST]: 0,
+        [S2SlotType.CATCHUP]: 0,
       },
     };
     subject = {
@@ -80,7 +80,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should throw error when task effort split does not sum to 1', () => {
-      const invalidConstraints = { ...constraints, taskEffortSplit: { ...constraints.taskEffortSplit, [SlotType.STUDY]: 0.8 } };
+      const invalidConstraints = { ...constraints, taskEffortSplit: { ...constraints.taskEffortSplit, [S2SlotType.STUDY]: 0.8 } };
       expect(() => planSubjectTasks(from, to, subject, invalidConstraints)).toThrow('Task effort split must sum to 1');
     });
   });
@@ -92,9 +92,9 @@ describe('planSubjectTasks', () => {
       
       // Calculate total minutes allocated for study topics only (excluding catchup and test)
       const studyTasks = tasks.filter(task => 
-        task.taskType === SlotType.STUDY || 
-        task.taskType === SlotType.REVISION || 
-        task.taskType === SlotType.PRACTICE
+        task.taskType === S2SlotType.STUDY || 
+        task.taskType === S2SlotType.REVISION || 
+        task.taskType === S2SlotType.PRACTICE
       );
       const totalStudyMinutes = studyTasks.reduce((sum, task) => sum + task.minutes, 0);
       
@@ -199,9 +199,9 @@ describe('planSubjectTasks', () => {
       
       // Calculate total minutes allocated for study topics only (excluding catchup and test)
       const studyTasks = tasks.filter(task => 
-        task.taskType === SlotType.STUDY || 
-        task.taskType === SlotType.REVISION || 
-        task.taskType === SlotType.PRACTICE
+        task.taskType === S2SlotType.STUDY || 
+        task.taskType === S2SlotType.REVISION || 
+        task.taskType === S2SlotType.PRACTICE
       );
       const totalStudyMinutes = studyTasks.reduce((sum, task) => sum + task.minutes, 0);
       
@@ -238,7 +238,7 @@ describe('planSubjectTasks', () => {
       const catchupDayTasks = tasks.filter(task => isCatchupDay(task.date));
       
       // All tasks on catchup days should be catchup tasks
-      expect(catchupDayTasks.every(task => task.taskType === SlotType.CATCHUP)).toBe(true);
+      expect(catchupDayTasks.every(task => task.taskType === S2SlotType.CATCHUP)).toBe(true);
       
       // Should have catchup tasks
       expect(catchupDayTasks.length).toBeGreaterThan(0);
@@ -252,7 +252,7 @@ describe('planSubjectTasks', () => {
       
       // Should not have study, revision, or practice tasks on catchup days
       const nonCatchupTasks = catchupDayTasks.filter(task => 
-        task.taskType !== SlotType.CATCHUP
+        task.taskType !== S2SlotType.CATCHUP
       );
       
       expect(nonCatchupTasks.length).toBe(0);
@@ -261,7 +261,7 @@ describe('planSubjectTasks', () => {
     it('should allocate correct hours for catchup tasks', () => {
       const tasks = planSubjectTasks(from, to, subject, constraints);
       
-      const catchupTasks = tasks.filter(task => task.taskType === SlotType.CATCHUP);
+      const catchupTasks = tasks.filter(task => task.taskType === S2SlotType.CATCHUP);
       
       // Each catchup task should have the correct minutes
       catchupTasks.forEach(task => {
@@ -278,7 +278,7 @@ describe('planSubjectTasks', () => {
       const testDayTasks = tasks.filter(task => isTestDay(task.date));
       
       // All tasks on test days should be test tasks
-      expect(testDayTasks.every(task => task.taskType === SlotType.TEST)).toBe(true);
+      expect(testDayTasks.every(task => task.taskType === S2SlotType.TEST)).toBe(true);
       
       // Should have test tasks
       expect(testDayTasks.length).toBeGreaterThan(0);
@@ -292,7 +292,7 @@ describe('planSubjectTasks', () => {
       
       // Should not have study, revision, practice, or catchup tasks on test days
       const nonTestTasks = testDayTasks.filter(task => 
-        task.taskType !== SlotType.TEST
+        task.taskType !== S2SlotType.TEST
       );
       
       expect(nonTestTasks.length).toBe(0);
@@ -301,7 +301,7 @@ describe('planSubjectTasks', () => {
     it('should allocate correct hours for test tasks', () => {
       const tasks = planSubjectTasks(from, to, subject, constraints);
       
-      const testTasks = tasks.filter(task => task.taskType === SlotType.TEST);
+      const testTasks = tasks.filter(task => task.taskType === S2SlotType.TEST);
       
       // Each test task should have the correct minutes
       testTasks.forEach(task => {
@@ -312,7 +312,7 @@ describe('planSubjectTasks', () => {
     it('should have correct topic code for test tasks', () => {
       const tasks = planSubjectTasks(from, to, subject, constraints);
       
-      const testTasks = tasks.filter(task => task.taskType === SlotType.TEST);
+      const testTasks = tasks.filter(task => task.taskType === S2SlotType.TEST);
       
       // All test tasks should have 'TEST' as topic code
       expect(testTasks.every(task => task.topicCode === 'TEST')).toBe(true);
@@ -323,9 +323,9 @@ describe('planSubjectTasks', () => {
     it('should distribute tasks according to effort split', () => {
       const tasks = planSubjectTasks(from, to, subject, constraints);
       
-      const studyTasks = tasks.filter(task => task.taskType === SlotType.STUDY);
-      const revisionTasks = tasks.filter(task => task.taskType === SlotType.REVISION);
-      const practiceTasks = tasks.filter(task => task.taskType === SlotType.PRACTICE);
+      const studyTasks = tasks.filter(task => task.taskType === S2SlotType.STUDY);
+      const revisionTasks = tasks.filter(task => task.taskType === S2SlotType.REVISION);
+      const practiceTasks = tasks.filter(task => task.taskType === S2SlotType.PRACTICE);
       
       const totalStudyMinutes = studyTasks.reduce((sum, task) => sum + task.minutes, 0);
       const totalRevisionMinutes = revisionTasks.reduce((sum, task) => sum + task.minutes, 0);
@@ -338,9 +338,9 @@ describe('planSubjectTasks', () => {
         const practiceRatio = totalPracticeMinutes / totalMinutes;
         
         // Allow for some tolerance due to rounding
-        expect(Math.abs(studyRatio - constraints.taskEffortSplit[SlotType.STUDY])).toBeLessThan(0.1);
-        expect(Math.abs(revisionRatio - constraints.taskEffortSplit[SlotType.REVISION])).toBeLessThan(0.1);
-        expect(Math.abs(practiceRatio - constraints.taskEffortSplit[SlotType.PRACTICE])).toBeLessThan(0.1);
+        expect(Math.abs(studyRatio - constraints.taskEffortSplit[S2SlotType.STUDY])).toBeLessThan(0.1);
+        expect(Math.abs(revisionRatio - constraints.taskEffortSplit[S2SlotType.REVISION])).toBeLessThan(0.1);
+        expect(Math.abs(practiceRatio - constraints.taskEffortSplit[S2SlotType.PRACTICE])).toBeLessThan(0.1);
       }
     });
   });
@@ -372,9 +372,9 @@ describe('planSubjectTasks', () => {
       
       // Calculate total minutes allocated for study topics only (excluding catchup and test)
       const studyTasks = tasks.filter(task => 
-        task.taskType === SlotType.STUDY || 
-        task.taskType === SlotType.REVISION || 
-        task.taskType === SlotType.PRACTICE
+        task.taskType === S2SlotType.STUDY || 
+        task.taskType === S2SlotType.REVISION || 
+        task.taskType === S2SlotType.PRACTICE
       );
       const totalStudyMinutes = studyTasks.reduce((sum, task) => sum + task.minutes, 0);
       
@@ -467,7 +467,7 @@ describe('planSubjectTasks', () => {
 
   describe('Topic Configuration Variations', () => {
     it('should handle topics with only essential subtopics', () => {
-      const essentialOnlySubject: Subject = {
+      const essentialOnlySubject: S2Subject = {
         code: 'PHYS',
         name: 'Physics',
         baselineMinutes: 1200, // 20 hours
@@ -500,7 +500,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should handle topics with only non-essential subtopics', () => {
-      const nonEssentialOnlySubject: Subject = {
+      const nonEssentialOnlySubject: S2Subject = {
         code: 'CHEM',
         name: 'Chemistry',
         baselineMinutes: 600, // 10 hours
@@ -526,7 +526,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should handle topics with predefined baselineMinutes', () => {
-      const predefinedSubject: Subject = {
+      const predefinedSubject: S2Subject = {
         code: 'BIO',
         name: 'Biology',
         baselineMinutes: 1800, // 30 hours
@@ -576,7 +576,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should handle topics without baselineMinutes (auto-distributed)', () => {
-      const autoDistributedSubject: Subject = {
+      const autoDistributedSubject: S2Subject = {
         code: 'HIST',
         name: 'History',
         baselineMinutes: 1200, // 20 hours
@@ -627,7 +627,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should handle mixed essential/non-essential subtopics within same topic', () => {
-      const mixedSubject: Subject = {
+      const mixedSubject: S2Subject = {
         code: 'GEO',
         name: 'Geography',
         baselineMinutes: 900, // 15 hours
@@ -663,7 +663,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should handle topics with varying priority levels', () => {
-      const prioritySubject: Subject = {
+      const prioritySubject: S2Subject = {
         code: 'LIT',
         name: 'Literature',
         baselineMinutes: 1500, // 25 hours
@@ -714,7 +714,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should handle single subtopic per topic', () => {
-      const singleSubtopicSubject: Subject = {
+      const singleSubtopicSubject: S2Subject = {
         code: 'ART',
         name: 'Art',
         baselineMinutes: 600, // 10 hours
@@ -762,7 +762,7 @@ describe('planSubjectTasks', () => {
     });
 
     it('should handle many subtopics per topic', () => {
-      const manySubtopicsSubject: Subject = {
+      const manySubtopicsSubject: S2Subject = {
         code: 'SCI',
         name: 'Science',
         baselineMinutes: 2400, // 40 hours
