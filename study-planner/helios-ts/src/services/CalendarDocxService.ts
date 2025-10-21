@@ -1620,8 +1620,8 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
 
   calendarRows.push(new TableRow({ children: headerCells }));
 
-  // Get all tasks for the week organized by day
-  const weekTasks: Array<{ day: number; tasks: Array<{ task: any; subject: string; block: any; cycle: any }> }> = [];
+  // Get all tasks for the week organized by actual date
+  const weekTasks: Array<{ day: number; date: dayjs.Dayjs; tasks: Array<{ task: any; subject: string; block: any; cycle: any }> }> = [];
 
   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
     const currentDay = weekStart.add(dayOffset, 'day');
@@ -1638,10 +1638,12 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
         const weekNumber = Math.floor(daysFromStart / 7) + 1;
         const weeklyPlan = block.weekly_plan?.find((wp: any) => wp.week === weekNumber);
 
-        if (weeklyPlan) {
-          // Match by day of week (0=Sunday, 1=Monday, etc.)
-          const dayOfWeek = currentDay.day();
-          const dayPlan = weeklyPlan.daily_plans?.find((dp: any) => dp.day === dayOfWeek);
+        if (weeklyPlan && weeklyPlan.daily_plans) {
+          // Find the daily plan that matches the current day's actual date
+          const dayPlan = weeklyPlan.daily_plans.find((dp: any) => {
+            const planDate = dayjs(dp.date);
+            return planDate.isSame(currentDay, 'day');
+          });
 
           if (dayPlan && dayPlan.tasks) {
             for (const task of dayPlan.tasks) {
@@ -1655,7 +1657,7 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
       }
     }
 
-    weekTasks.push({ day: dayOffset, tasks: dayTasks });
+    weekTasks.push({ day: dayOffset, date: currentDay, tasks: dayTasks });
   }
 
   // Find the maximum number of tasks in any day to determine table height
@@ -1667,7 +1669,7 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
 
     for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
       const dayTasks = weekTasks[dayOffset].tasks;
-      const currentDay = weekStart.add(dayOffset, 'day');
+      const currentDay = weekTasks[dayOffset].date;
       const isCatchupDay = isCatchupDayCheck(currentDay, studentIntake.study_strategy?.catch_up_day_preference);
 
       if (taskIndex < dayTasks.length) {
