@@ -190,15 +190,14 @@ function createTasks(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], fro
   // sortedTopics.forEach((topic, index) => {
     // console.log(`createTasks: Topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
   // });
-  
   const totalMinutes = to.diff(from, 'minutes');
-  
+
   // For single-day blocks, create tasks for the same day
   if (totalMinutes <= 24 * 60) {
     // console.log(`createTasks: Single-day block, creating tasks for ${from.format('YYYY-MM-DD')}`);
     
     // Calculate available minutes for this single day
-    const availableMinutes = totalMinutes;
+    const availableMinutes = Math.min(totalMinutes, constraints.dayMaxMinutes);  
     const studyMinutes = Math.round(availableMinutes * constraints.taskEffortSplit[S2SlotType.STUDY]);
     const revisionMinutes = Math.round(availableMinutes * constraints.taskEffortSplit[S2SlotType.REVISION]);
     const practiceMinutes = Math.round(availableMinutes * constraints.taskEffortSplit[S2SlotType.PRACTICE]);
@@ -238,9 +237,23 @@ function createTasks(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], fro
   const revisionMinutesPerDay = studyDays.length > 0 ? Math.round(revisionMinutesAvailable / studyDays.length) : 0;
   const practiceMinutesPerDay = studyDays.length > 0 ? Math.round(practiceMinutesAvailable / studyDays.length) : 0;
 
-  const studySlots = studyDays.map((date) => allocateStudySlots(date, studyMinutesPerDay));
-  const revisionSlots = studyDays.map((date) => allocateRevisionSlots(date, revisionMinutesPerDay));
-  const practiceSlots = studyDays.map((date) => allocatePracticeSlots(date, practiceMinutesPerDay));
+  // Ensure daily minutes don't exceed dayMaxMinutes constraint
+  const totalMinutesPerDay = studyMinutesPerDay + revisionMinutesPerDay + practiceMinutesPerDay;
+  let finalStudyMinutesPerDay = studyMinutesPerDay;
+  let finalRevisionMinutesPerDay = revisionMinutesPerDay;
+  let finalPracticeMinutesPerDay = practiceMinutesPerDay;
+  
+  if (totalMinutesPerDay > constraints.dayMaxMinutes) {
+    const scaleFactor = constraints.dayMaxMinutes / totalMinutesPerDay;
+    finalStudyMinutesPerDay = Math.round(studyMinutesPerDay * scaleFactor);
+    finalRevisionMinutesPerDay = Math.round(revisionMinutesPerDay * scaleFactor);
+    finalPracticeMinutesPerDay = Math.round(practiceMinutesPerDay * scaleFactor);
+    
+  }
+
+  const studySlots = studyDays.map((date) => allocateStudySlots(date, finalStudyMinutesPerDay));
+  const revisionSlots = studyDays.map((date) => allocateRevisionSlots(date, finalRevisionMinutesPerDay));
+  const practiceSlots = studyDays.map((date) => allocatePracticeSlots(date, finalPracticeMinutesPerDay));
 
   // Distribute topics across different slot types
   const allTasks = distributeTopicsAcrossAllSlots(subject, sortedTopics, studySlots, revisionSlots, practiceSlots);

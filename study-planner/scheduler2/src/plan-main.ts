@@ -55,7 +55,7 @@ function cycles2Blocks(context: PlanningContext, schedules: CycleSchedule[]): Bl
       cycleType,
       relativeAllocationWeights: context.relativeAllocationWeights,
       numParallel,
-      workingHoursPerDay: context.constraints.workingHoursPerDay,
+      workingHoursPerDay: context.constraints.workingHoursPerDay / numParallel,
       catchupDay: context.constraints.catchupDay,
       testDay: context.constraints.testDay,
     }
@@ -93,12 +93,12 @@ function cycleType2ExamFocus(cycleType: CycleType): S2ExamFocus {
 function blocks2Tasks(context: PlanningContext, blocks: BlockSlot[]): S2Task[] {
   // console.log(`blocks2Tasks: Processing ${blocks.length} blocks`);
   const tasks = blocks.flatMap((block, index) => {
-    const { cycleType } = block;
+    const { cycleType, numParallel } = block;
     const { subject, from, to } = block;
     const taskPlanConstraints: S2Constraints = {
       cycleType,
-      dayMaxMinutes: context.constraints.workingHoursPerDay * 60 * 1.1,
-      dayMinMinutes: context.constraints.workingHoursPerDay * 60 * 0.9,
+      dayMaxMinutes: (context.constraints.workingHoursPerDay * 60) / 3, // Split among up to 3 subjects per day
+      dayMinMinutes: (context.constraints.workingHoursPerDay * 60 * 0.9) / 3, // Split among up to 3 subjects per day
       catchupDay: context.constraints.catchupDay,
       testDay: context.constraints.testDay,
       testMinutes: context.constraints.testMinutes,

@@ -126,6 +126,40 @@ const sampleStudyPlan: StudyPlan = {
             revision_materials: [],
             expert_recommendations: []
           }
+        },
+        {
+          block_title: 'Geography - Physical Geography',
+          block_description: 'Physical geography fundamentals',
+          block_start_date: '2024-05-15',
+          block_end_date: '2024-05-28',
+          duration_weeks: 2,
+          subjects: ['G01'],
+          block_resources: {
+            primary_books: [],
+            supplementary_materials: [],
+            practice_resources: [],
+            video_content: [],
+            current_affairs_sources: [],
+            revision_materials: [],
+            expert_recommendations: []
+          }
+        },
+        {
+          block_title: 'Polity - Governance',
+          block_description: 'Indian governance and administration',
+          block_start_date: '2024-05-29',
+          block_end_date: '2024-06-11',
+          duration_weeks: 2,
+          subjects: ['P01'],
+          block_resources: {
+            primary_books: [],
+            supplementary_materials: [],
+            practice_resources: [],
+            video_content: [],
+            current_affairs_sources: [],
+            revision_materials: [],
+            expert_recommendations: []
+          }
         }
       ]
     }

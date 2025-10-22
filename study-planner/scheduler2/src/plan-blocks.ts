@@ -294,7 +294,8 @@ export function planBlocks(
           cycleType: constraints.cycleType,
           subject: subjectMap[subjectCode],
           from: blockStartTime,
-          to: blockEndTime
+          to: blockEndTime,
+          numParallel: constraints.numParallel
         });
       }
       
@@ -316,7 +317,8 @@ export function planBlocks(
           cycleType: constraints.cycleType,
           subject: block.subject,
           from: block.from,
-          to: timeWindowTo
+          to: timeWindowTo,
+          numParallel: constraints.numParallel
         };
       }
       // If overflow is more than one day's work, keep the original block
