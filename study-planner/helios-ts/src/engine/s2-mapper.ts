@@ -3,10 +3,11 @@ import type { CycleType, DailyPlan, TaskEffortSplit as S1TaskEffortSplit, Task, 
 import { S2SlotType, S2WeekDay } from 'scheduler2';
 import { StudentIntake } from '../types/models';
 import { Subject, Subtopic, Topic } from '../types/Subjects';
+import dayjs, { Dayjs } from 'dayjs';
 
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 
-export function mapFromS2Tasks(tasks: S2Task[]): WeeklyPlan[] {
+export function mapFromS2Tasks(tasks: S2Task[], blockStartDate?: Dayjs): WeeklyPlan[] {
   const weeklyPlans: WeeklyPlan[] = [];
 
   if (tasks.length === 0) {
@@ -17,7 +18,10 @@ export function mapFromS2Tasks(tasks: S2Task[]): WeeklyPlan[] {
   const tasksByWeek = new Map<number, S2Task[]>();
 
   tasks.forEach(task => {
-    const weekNumber = task.date.diff(task.date.startOf('year'), 'week') + 1;
+    // Calculate week number relative to block start date (like CalendarDocxService does)
+    const weekNumber = blockStartDate ? 
+      Math.floor(task.date.diff(blockStartDate, 'day') / 7) + 1 :
+      task.date.diff(task.date.startOf('year'), 'week') + 1;
     if (!tasksByWeek.has(weekNumber)) {
       tasksByWeek.set(weekNumber, []);
     }
