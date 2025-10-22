@@ -61,9 +61,7 @@ export function planBlocks(
   constraints: BlockAllocConstraints
 ): BlockSlot[] {
   const availableDays = timeWindowTo.diff(timeWindowFrom, 'day');
-  const numCatchupDays = countCatchupDays(timeWindowFrom, timeWindowTo, constraints.catchupDay);
-  const numTestDays = countTestDays(timeWindowFrom, timeWindowTo, constraints.testDay);
-  const availableHours = availableDays * constraints.workingHoursPerDay - numCatchupDays * constraints.workingHoursPerDay - numTestDays * constraints.workingHoursPerDay;
+  const availableHours = availableDays * constraints.workingHoursPerDay;
   const availableMinutes = availableHours * 60;
   const subjectMap = subjects.reduce((acc, subject) => {
     acc[subject.subjectCode] = subject;
@@ -113,7 +111,10 @@ export function planBlocks(
   
   let currentTime = timeWindowFrom;
   let sliceCount = 0;
-  const maxSlices = Math.min(1000, Math.ceil(timeWindowTo.diff(timeWindowFrom, 'minutes') / SLICE_DURATION_MINUTES));
+  
+  // Calculate maxSlices based on working hours, not total time window
+  const totalWorkingMinutes = availableMinutes; // This already accounts for working hours per day
+  const maxSlices = Math.min(10000, Math.ceil(totalWorkingMinutes / SLICE_DURATION_MINUTES));
   
   while (currentTime.isBefore(timeWindowTo) && sliceCount < maxSlices) {
     const dayOfWeek = currentTime.day();
@@ -158,6 +159,7 @@ export function planBlocks(
     allocatedSlices: 0
   }));
   
+  
   // Handle empty subjects array
   if (subjectRequirements.length === 0) {
     return [];
@@ -193,22 +195,40 @@ export function planBlocks(
   
   while (sliceIndex < timeSlices.length && iterations < maxIterations) {
     // Check if we have any active subjects
-    if (activeSubjects.length === 0) break;
+    if (activeSubjects.length === 0) {
+      break;
+    }
     
     const subject = activeSubjects[activeSubjectIndex];
     
     if (subject.allocatedSlices < subject.requiredSlices) {
       timeSlices[sliceIndex].subjectCode = subject.subjectCode;
       subject.allocatedSlices++;
+      
       sliceIndex++;
     } else {
       // This subject is done, remove it and add next subject
       activeSubjects.splice(activeSubjectIndex, 1);
       
-      // Add next subject if available
+      // Add next subject if available, or restart from beginning if all subjects have been processed
       if (nextSubjectIndex < subjectRequirements.length) {
         activeSubjects.push(subjectRequirements[nextSubjectIndex]);
         nextSubjectIndex++;
+      } else {
+        // All subjects have been processed once, restart round-robin
+        // Reset all subjects' allocated slices and restart from the beginning
+        subjectRequirements.forEach(req => {
+          req.allocatedSlices = 0;
+        });
+        nextSubjectIndex = 0;
+        
+        // Add subjects back to active pool
+        for (let i = 0; i < Math.min(constraints.numParallel, subjectRequirements.length); i++) {
+          if (nextSubjectIndex < subjectRequirements.length) {
+            activeSubjects.push(subjectRequirements[nextSubjectIndex]);
+            nextSubjectIndex++;
+          }
+        }
       }
       
       // Adjust index if we removed a subject
@@ -243,6 +263,7 @@ export function planBlocks(
   
   // Create blocks for each subject
   Object.entries(subjectSliceGroups).forEach(([subjectCode, slices]) => {
+    
     // Sort slices by start time
     slices.sort((a, b) => a.startTime.diff(b.startTime));
     
@@ -267,6 +288,7 @@ export function planBlocks(
       
       // Only create blocks that are at least 1 hour long
       const blockDurationMinutes = blockEndTime.diff(blockStartTime, 'minutes');
+      
       if (blockDurationMinutes >= 60) {
         blockSlots.push({
           cycleType: constraints.cycleType,
