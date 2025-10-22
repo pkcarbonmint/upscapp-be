@@ -412,7 +412,7 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
 function getHoursForSubject(subjectAllocations: Map<string, number>, subjectCode: string): number {
   const hours = subjectAllocations.get(subjectCode);
   if (!hours) {
-    throw new Error(`Error: No allocated hours for subject ${subject.subjectCode}`);
+    throw new Error(`Error: No allocated hours for subject ${subjectCode}`);
   }
   return hours;
 }
