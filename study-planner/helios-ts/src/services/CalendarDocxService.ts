@@ -16,28 +16,28 @@ dayjs.extend(isSameOrBefore);
 const genOverview = false, genInspirationQuote = false, genStrategyOverview = false;
 // Color mapping for different cycle types (matching the PDF service)
 const CYCLE_TYPE_COLORS = {
-  [CycleType.C1]: { bg: 'E3F2FD', border: '3B82F6', fg: '1976D2' }, // Very light blue with dark blue text
-  [CycleType.C2]: { bg: 'E8F5E8', border: '22C55E', fg: '2E7D32' }, // Very light green with dark green text
-  [CycleType.C3]: { bg: 'FCE4EC', border: 'EC4899', fg: 'C2185B' }, // Very light pink with dark pink text
-  [CycleType.C4]: { bg: 'FFEBEE', border: 'EF4444', fg: 'D32F2F' }, // Very light red with dark red text
-  [CycleType.C5]: { bg: 'F3E5F5', border: 'A855F7', fg: '7B1FA2' }, // Very light purple with dark purple text
-  [CycleType.C5B]: { bg: 'F3E5F5', border: 'A855F7', fg: '7B1FA2' }, // Very light purple with dark purple text
-  [CycleType.C6]: { bg: 'E1F5FE', border: '06B6D4', fg: '0277BD' }, // Very light cyan with dark cyan text
-  [CycleType.C7]: { bg: 'FFF3E0', border: 'F59E0B', fg: 'F57C00' }, // Very light orange with dark orange text
-  [CycleType.C8]: { bg: 'F1F8E9', border: '84CC16', fg: '689F38' }, // Very light lime with dark lime text
+  [CycleType.C1]: { bg: 'DBEAFE', border: '3B82F6', fg: '1D4ED8' }, // Light blue with vivid blue text
+  [CycleType.C2]: { bg: 'DCFCE7', border: '22C55E', fg: '15803D' }, // Light green with rich green text
+  [CycleType.C3]: { bg: 'FCE7F3', border: 'EC4899', fg: 'BE185D' }, // Light pink with elegant magenta text
+  [CycleType.C4]: { bg: 'FEE2E2', border: 'EF4444', fg: 'B91C1C' }, // Light red with deep red text
+  [CycleType.C5]: { bg: 'EDE9FE', border: '8B5CF6', fg: '6D28D9' }, // Light violet with royal purple text
+  [CycleType.C5B]: { bg: 'EDE9FE', border: '8B5CF6', fg: '6D28D9' }, // Light violet with royal purple text
+  [CycleType.C6]: { bg: 'E0F2FE', border: '06B6D4', fg: '0369A1' }, // Light sky with teal text
+  [CycleType.C7]: { bg: 'FFEDD5', border: 'F59E0B', fg: 'C2410C' }, // Light orange with warm orange text
+  [CycleType.C8]: { bg: 'ECFCCB', border: '84CC16', fg: '3F6212' }, // Light lime with olive text
 } as const;
 
 // Document styles configuration
 const DOCUMENT_STYLES = {
   font: 'Aptos',
   colors: {
-    primary: '2E5BBA',
-    secondary: '666666',
-    text: '333333',
-    success: '28A745',
-    warning: 'FFC107',
-    info: '17A2B8',
-    error: 'FF6B6B'
+    primary: '2563EB', // brighter primary blue
+    secondary: '64748B', // slate
+    text: '1F2937', // gray-800 for elegance and contrast
+    success: '16A34A',
+    warning: 'F59E0B',
+    info: '06B6D4',
+    error: 'EF4444'
   },
   sizes: {
     title: 36,
@@ -1663,66 +1663,66 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
     weekTasks.push({ day: dayOffset, date: currentDay, tasks: dayTasks });
   }
 
-  // Find the maximum number of tasks in any day to determine table height
-  const maxTasks = Math.max(...weekTasks.map(day => day.tasks.length), 1);
+  // Group tasks by subject for each day
+  const groupedByDay: Array<{ day: number; date: dayjs.Dayjs; groups: Array<{ subject: string; tasks: Array<{ task: any; subject: string; block: any; cycle: any }> }> }> = weekTasks.map(({ day, date, tasks }) => {
+    const groupsMap = new Map<string, Array<{ task: any; subject: string; block: any; cycle: any }>>();
+    for (const t of tasks) {
+      const key = t.subject;
+      if (!groupsMap.has(key)) groupsMap.set(key, []);
+      groupsMap.get(key)!.push(t);
+    }
+    const groups = Array.from(groupsMap.entries()).map(([subject, groupedTasks]) => ({ subject, tasks: groupedTasks }));
+    return { day, date, groups };
+  });
 
-  // Create rows for each task slot
-  for (let taskIndex = 0; taskIndex < maxTasks; taskIndex++) {
-    const taskRowCells: TableCell[] = [];
+  const maxGroups = Math.max(...groupedByDay.map(d => d.groups.length), 1);
+
+  // Create rows for each subject group index
+  for (let groupIndex = 0; groupIndex < maxGroups; groupIndex++) {
+    const rowCells: TableCell[] = [];
 
     for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-      const dayTasks = weekTasks[dayOffset].tasks;
-      const currentDay = weekTasks[dayOffset].date;
+      const { date: currentDay, groups } = groupedByDay[dayOffset];
       const isCatchupDay = isCatchupDayCheck(currentDay, studentIntake.study_strategy?.catch_up_day_preference);
+      const cellBg = isCatchupDay ? 'FFF3E0' : cycleBgColor;
 
-      if (taskIndex < dayTasks.length) {
-        const { task, subject } = dayTasks[taskIndex];
-        const subjectName = getSubjectName(subject);
-        const taskType = task.taskType || 'study';
-        const duration = formatDuration(task.duration_minutes);
+      if (groupIndex < groups.length) {
+        const group = groups[groupIndex];
+        const subjectName = getSubjectName(group.subject);
 
-        // Use cycle color for task cells, but keep catchup day highlighting
-        const taskCellColor = isCatchupDay ? 'FFF3E0' : cycleBgColor;
+        const children: Paragraph[] = [];
+        children.push(new Paragraph({
+          children: [new TextRun({ text: subjectName })],
+          style: 'TableCellTaskSubject'
+        }));
 
-        taskRowCells.push(new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({
-                text: subjectName
-              })],
-              style: 'TableCellTaskSubject'
-            }),
-            new Paragraph({
-              children: [new TextRun({
-                text: task.title
-              })],
-              style: 'TableCellTaskTitle'
-            }),
-            new Paragraph({
-              children: [new TextRun({
-                text: duration
-              })],
-              style: 'TableCellTaskDuration'
-            }),
-            createTaskTypeBadge(taskType)
-          ],
+        for (const { task } of group.tasks) {
+          const duration = formatDuration(task.duration_minutes);
+          const taskType = task.taskType || 'study';
+          children.push(new Paragraph({
+            children: [new TextRun({ text: `• ${task.title} — ${duration}` })],
+            style: 'TableCellTaskDetails'
+          }));
+          children.push(createTaskTypeBadge(taskType));
+        }
+
+        rowCells.push(new TableCell({
+          children,
           width: { size: 14.28, type: WidthType.PERCENTAGE },
-          shading: { fill: taskCellColor },
+          shading: { fill: cellBg },
           margins: { top: 150, bottom: 150, left: 100, right: 100 }
         }));
       } else {
-        // Empty cell for days with fewer tasks - use cycle color
-        const emptyCellColor = isCatchupDay ? 'FFF3E0' : cycleBgColor;
-        taskRowCells.push(new TableCell({
+        rowCells.push(new TableCell({
           children: [new Paragraph({ text: '' })],
           width: { size: 14.28, type: WidthType.PERCENTAGE },
-          shading: { fill: emptyCellColor },
+          shading: { fill: cellBg },
           margins: { top: 150, bottom: 150, left: 100, right: 100 }
         }));
       }
     }
 
-    calendarRows.push(new TableRow({ children: taskRowCells }));
+    calendarRows.push(new TableRow({ children: rowCells }));
   }
 
   // Add the weekly calendar table
@@ -2178,13 +2178,14 @@ async function generateResourcesTable(studyPlan: StudyPlan): Promise<(Paragraph 
     width: { size: 100, type: WidthType.PERCENTAGE },
     columnWidths: [2000, 3000, 3000, 3000, 3000],
     style: TABLE_STYLE_NAMES.resources,
+    shading: { fill: 'FFFFFF' },
     borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+      top: { style: BorderStyle.NONE, size: 0 },
+      left: { style: BorderStyle.NONE, size: 0 },
+      bottom: { style: BorderStyle.SINGLE, size: 2, color: 'D1D5DB' }, // bottom border for raised look
+      right: { style: BorderStyle.SINGLE, size: 2, color: 'D1D5DB' }, // right border for raised look
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E5E7EB' },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E5E7EB' }
     }
   }));
 
@@ -2324,12 +2325,12 @@ function createSubjectCard(subjectCode: string, resources: any): TableCell {
     children: cardContent,
     width: { size: 33.33, type: WidthType.PERCENTAGE },
     margins: { top: 200, bottom: 200, left: 150, right: 150 },
-    shading: { fill: 'F8F9FA' },
+    shading: { fill: 'FFFFFF' },
     borders: {
-      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+      top: { style: BorderStyle.NONE, size: 0 },
+      left: { style: BorderStyle.NONE, size: 0 },
+      bottom: { style: BorderStyle.SINGLE, size: 2, color: 'D1D5DB' },
+      right: { style: BorderStyle.SINGLE, size: 2, color: 'D1D5DB' }
     }
   });
 }
