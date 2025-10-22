@@ -4,6 +4,7 @@ import { S2SlotType, S2WeekDay } from 'scheduler2';
 import { StudentIntake } from '../types/models';
 import { Subject, Subtopic, Topic } from '../types/Subjects';
 import dayjs, { Dayjs } from 'dayjs';
+import { SubjectLoader } from '../services/SubjectLoader';
 
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 
@@ -48,14 +49,11 @@ export function mapFromS2Tasks(tasks: S2Task[], blockStartDate?: Dayjs): WeeklyP
       const firstTask = dayTasks[0];
       const date = firstTask.date;
 
-      // Convert S2Task to Task format
-      const convertedTasks: Task[] = dayTasks.map(task => ({
+    // Convert S2Task to Task format
+    const convertedTasks: Task[] = dayTasks.map(task => ({
         task_id: `${task.subjectCode}-${task.topicCode || 'general'}-${task.date.format('YYYY-MM-DD')}-${task.taskType}`,
         humanReadableId: `${task.subjectCode}-${task.topicCode || 'general'}-${task.date.format('YYYY-MM-DD')}-${task.taskType}`,
-        title: `${task.subjectCode} ${task.taskType === S2SlotType.STUDY ? 'Study' :
-          task.taskType === S2SlotType.PRACTICE ? 'Practice' :
-            task.taskType === S2SlotType.REVISION ? 'Revision' :
-              task.taskType === S2SlotType.TEST ? 'Test' : 'Catchup'}${task.topicCode ? ` - ${task.topicCode}` : ''}`,
+        title: formatS2TaskTitle(task),
         duration_minutes: task.minutes,
         taskType: task.taskType === S2SlotType.STUDY ? 'study' :
           task.taskType === S2SlotType.PRACTICE ? 'practice' :
@@ -85,6 +83,31 @@ export function mapFromS2Tasks(tasks: S2Task[], blockStartDate?: Dayjs): WeeklyP
   weeklyPlans.sort((a, b) => a.week - b.week);
 
   return weeklyPlans;
+}
+
+// Helper: Format S2 task title for Week/Month views
+function formatS2TaskTitle(task: S2Task): string {
+  const baseTitle = task.taskType === S2SlotType.STUDY ? 'Study'
+    : task.taskType === S2SlotType.PRACTICE ? 'Practice'
+    : task.taskType === S2SlotType.REVISION ? 'Revision'
+    : task.taskType === S2SlotType.TEST ? 'Test'
+    : 'Catchup';
+
+  // For study tasks, show topic name with code in parentheses; do not repeat subject code
+  if (task.taskType === S2SlotType.STUDY && task.topicCode) {
+    const topicName = getTopicNameFromCode(task.topicCode, task.subjectCode) || task.topicCode;
+    return `${baseTitle} - ${topicName} (${task.topicCode})`;
+  }
+
+  return baseTitle;
+}
+
+// Helper: Resolve topic name from code using SubjectLoader
+function getTopicNameFromCode(topicCode?: string, subjectCode?: string): string | undefined {
+  if (!topicCode) return undefined;
+  const subject = SubjectLoader.getSubjectByCode(subjectCode || topicCode.split('/')[0]);
+  const topic = subject?.topics?.find(t => t.topicCode === topicCode);
+  return topic?.topicName;
 }
 
 
