@@ -1699,8 +1699,9 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
         for (const { task } of group.tasks) {
           const duration = formatDuration(task.duration_minutes);
           const taskType = task.taskType || 'study';
+          const formattedTitle = formatTaskTitle(task.title);
           children.push(new Paragraph({
-            children: [new TextRun({ text: `• ${task.title} — ${duration}` })],
+            children: [new TextRun({ text: `• ${formattedTitle} — ${duration}` })],
             style: 'TableCellTaskDetails'
           }));
           children.push(createTaskTypeBadge(taskType));
@@ -1758,6 +1759,48 @@ function formatDuration(minutes: number): string {
   } else {
     return `${minutes}m`;
   }
+}
+
+/**
+ * Get topic name from topic code
+ * Looks up the topic in all subjects and returns the topic name
+ */
+function getTopicNameFromCode(topicCode: string): string | null {
+  const allSubjects = SubjectLoader.loadAllSubjects();
+  
+  for (const subject of allSubjects) {
+    const topic = subject.topics.find(t => t.topicCode === topicCode);
+    if (topic) {
+      return topic.topicName;
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Format task title by removing subject code prefix and replacing topic code with topic name
+ * Example: "H01 Study - H01/00" -> "Study - Topic Name (H01/00)"
+ */
+function formatTaskTitle(taskTitle: string): string {
+  // Pattern to match: "SUBJ_CODE TASK_TYPE - TOPIC_CODE"
+  // Example: "H01 Study - H01/00"
+  const match = taskTitle.match(/^([A-Z0-9-]+)\s+(.+?)\s+-\s+([A-Z0-9-]+\/[0-9]+)$/);
+  
+  if (match) {
+    const [, , taskType, topicCode] = match;
+    const topicName = getTopicNameFromCode(topicCode);
+    
+    if (topicName) {
+      return `${taskType} - ${topicName} (${topicCode})`;
+    } else {
+      // If topic name not found, still remove subject code prefix
+      return `${taskType} - ${topicCode}`;
+    }
+  }
+  
+  // If pattern doesn't match, return original title
+  return taskTitle;
 }
 
 /**
