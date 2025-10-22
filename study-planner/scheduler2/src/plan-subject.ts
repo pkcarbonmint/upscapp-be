@@ -293,59 +293,121 @@ function distributeTopicsAcrossAllSlots(
   // console.log(`distributeTopicsAcrossAllSlots: Called for ${subject.subjectCode}`);
   // console.log(`distributeTopicsAcrossAllSlots: studySlots: ${studySlots.length}, revisionSlots: ${revisionSlots.length}, practiceSlots: ${practiceSlots.length}`);
   // console.log(`distributeTopicsAcrossAllSlots: topics: ${topics.length}`);
-  
+
   const allTasks: S2Task[] = [];
-  
+
   // Combine all slots with their types
   const allSlots = [
     ...studySlots.map(slot => ({ ...slot, type: S2SlotType.STUDY })),
     ...revisionSlots.map(slot => ({ ...slot, type: S2SlotType.REVISION })),
     ...practiceSlots.map(slot => ({ ...slot, type: S2SlotType.PRACTICE }))
   ];
-  
-  // console.log(`distributeTopicsAcrossAllSlots: allSlots: ${allSlots.length}`);
-  allSlots.forEach((slot, index) => {
-    // console.log(`distributeTopicsAcrossAllSlots: Slot ${index}: type=${slot.type}, minutes=${slot.minutes}, date=${slot.date.format('YYYY-MM-DD')}`);
-  });
-  
-  let topicIndex = 0;
-  let remainingMinutes = topics[topicIndex]?.baselineMinutes || 0;
-  
-  // console.log(`distributeTopicsAcrossAllSlots: Initial topicIndex=${topicIndex}, remainingMinutes=${remainingMinutes}`);
-  topics.forEach((topic, index) => {
-    // console.log(`distributeTopicsAcrossAllSlots: Topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
-  });
 
-  for (const slot of allSlots) {
-    if (topicIndex >= topics.length) break;
-
-    const topic = topics[topicIndex];
-    const minutesToAllocate = Math.min(slot.minutes, remainingMinutes);
-
-    // console.log(`distributeTopicsAcrossAllSlots: Processing slot type=${slot.type}, minutes=${slot.minutes}, topic=${topic.code}, remainingMinutes=${remainingMinutes}, minutesToAllocate=${minutesToAllocate}`);
-
-    if (minutesToAllocate > 0) {
-      allTasks.push({
-        topicCode: topic.code,
-        subjectCode: subject.subjectCode,
-        taskType: slot.type,
-        minutes: minutesToAllocate,
-        date: slot.date,
-      });
-
-      remainingMinutes -= minutesToAllocate;
-
-      if (remainingMinutes <= 0) {
-        topicIndex++;
-        remainingMinutes = topics[topicIndex]?.baselineMinutes || 0;
-      }
-    }
+  // If there are no slots or topics, nothing to schedule
+  if (allSlots.length === 0 || topics.length === 0) {
+    return [];
   }
 
-  // console.log(`distributeTopicsAcrossAllSlots: Generated ${allTasks.length} tasks`);
-  allTasks.forEach((task, index) => {
-    // console.log(`distributeTopicsAcrossAllSlots: Task ${index}: type=${task.taskType}, minutes=${task.minutes}, topic=${task.topicCode}`);
-  });
+  // Calculate total minutes available across all slots for this block
+  const totalSlotMinutes = allSlots.reduce((sum, slot) => sum + slot.minutes, 0);
+  if (totalSlotMinutes <= 0) {
+    return [];
+  }
+
+  // Start from declared/extended baseline minutes for topics
+  const declaredMinutes = topics.map(t => Math.max(0, t.baselineMinutes));
+  const sumDeclared = declaredMinutes.reduce((a, b) => a + b, 0);
+
+  let targetMinutesPerTopic = declaredMinutes.slice();
+
+  if (sumDeclared === 0) {
+    // Fallback to equal split
+    targetMinutesPerTopic = topics.map(() => Math.floor(totalSlotMinutes / Math.max(1, topics.length)));
+    // Fix rounding leftovers
+    let leftover = totalSlotMinutes - targetMinutesPerTopic.reduce((a, b) => a + b, 0);
+    let i = 0;
+    while (leftover > 0) {
+      targetMinutesPerTopic[i % targetMinutesPerTopic.length] += 1;
+      leftover -= 1;
+      i += 1;
+    }
+  } else if (sumDeclared > totalSlotMinutes) {
+    // Not enough time for all declared minutes: scale down proportionally
+    const scale = totalSlotMinutes / sumDeclared;
+    targetMinutesPerTopic = declaredMinutes.map(m => Math.floor(m * scale));
+    // Adjust for rounding
+    let leftover = totalSlotMinutes - targetMinutesPerTopic.reduce((a, b) => a + b, 0);
+    if (leftover > 0) {
+      const indices = topics.map((_, i) => i).sort((a, b) => declaredMinutes[b] - declaredMinutes[a]);
+      let p = 0;
+      while (leftover > 0) {
+        targetMinutesPerTopic[indices[p % indices.length]] += 1;
+        leftover -= 1;
+        p += 1;
+      }
+    }
+  } else if (sumDeclared < totalSlotMinutes) {
+    // Extra time available: distribute by topic priority (essential first, higher priority more)
+    let extra = totalSlotMinutes - sumDeclared;
+    const priorityWeights = topics.map(topic => {
+      const maxPriority = topic.subtopics.length > 0 ? Math.max(...topic.subtopics.map(st => st.priorityLevel)) : 1;
+      const essentialBonus = topic.subtopics.some(st => st.isEssential) ? 2 : 1;
+      return maxPriority * essentialBonus;
+    });
+    let totalPriority = priorityWeights.reduce((a, b) => a + b, 0);
+    if (totalPriority <= 0) {
+      totalPriority = topics.length;
+      for (let i = 0; i < priorityWeights.length; i++) priorityWeights[i] = 1;
+    }
+    const extraAlloc = topics.map((_, i) => Math.floor((extra * priorityWeights[i]) / totalPriority));
+    // Fix rounding leftovers for extra
+    let leftover = extra - extraAlloc.reduce((a, b) => a + b, 0);
+    if (leftover > 0) {
+      const indices = topics.map((_, i) => i).sort((a, b) => priorityWeights[b] - priorityWeights[a]);
+      let p = 0;
+      while (leftover > 0) {
+        extraAlloc[indices[p % indices.length]] += 1;
+        leftover -= 1;
+        p += 1;
+      }
+    }
+    targetMinutesPerTopic = targetMinutesPerTopic.map((m, i) => m + extraAlloc[i]);
+  }
+
+  // Round-robin allocation across topics to ensure multiple topics appear within the block
+  let topicCursor = 0;
+  for (const slot of allSlots) {
+    let minutesLeftInSlot = slot.minutes;
+    let safety = 0;
+    while (minutesLeftInSlot > 0 && safety < topics.length * 2) {
+      // Find next topic with remaining minutes for this block
+      let searched = 0;
+      while (searched < topics.length && targetMinutesPerTopic[topicCursor] <= 0) {
+        topicCursor = (topicCursor + 1) % topics.length;
+        searched += 1;
+      }
+      if (searched >= topics.length && targetMinutesPerTopic[topicCursor] <= 0) {
+        // No topic has remaining minutes to allocate in this block
+        break;
+      }
+
+      const alloc = Math.min(minutesLeftInSlot, targetMinutesPerTopic[topicCursor]);
+      if (alloc > 0) {
+        allTasks.push({
+          topicCode: topics[topicCursor].code,
+          subjectCode: subject.subjectCode,
+          taskType: slot.type,
+          minutes: alloc,
+          date: slot.date,
+        });
+        targetMinutesPerTopic[topicCursor] -= alloc;
+        minutesLeftInSlot -= alloc;
+      }
+      // Move cursor so next allocation goes to the next topic
+      topicCursor = (topicCursor + 1) % topics.length;
+      safety += 1;
+    }
+  }
 
   return allTasks;
 }

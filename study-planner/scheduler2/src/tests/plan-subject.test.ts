@@ -87,6 +87,59 @@ describe('planSubjectTasks', () => {
     });
   });
 
+  describe('Multi-topic allocation across slots', () => {
+    it('should schedule tasks for multiple topics (not only the first) - multi-day', () => {
+      const multiTopicSubject: S2Subject = {
+        subjectCode: 'SCI',
+        subjectNname: 'Science',
+        examFocus: 'BothExams',
+        baselineMinutes: 1800,
+        topics: [
+          { code: 'T1', subtopics: [{ code: 'S1', name: 'S1', isEssential: true, priorityLevel: 5 }] },
+          { code: 'T2', subtopics: [{ code: 'S2', name: 'S2', isEssential: true, priorityLevel: 4 }] },
+          { code: 'T3', subtopics: [{ code: 'S3', name: 'S3', isEssential: false, priorityLevel: 3 }] },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, to, multiTopicSubject, constraints);
+      const topicCodes = tasks
+        .filter(t => t.taskType === S2SlotType.STUDY || t.taskType === S2SlotType.REVISION || t.taskType === S2SlotType.PRACTICE)
+        .map(t => t.topicCode)
+        .filter(Boolean) as string[];
+      const uniqueTopicCodes = new Set(topicCodes);
+      expect(uniqueTopicCodes.size).toBeGreaterThan(1);
+    });
+
+    it('should schedule tasks for multiple topics (not only the first) - single-day', () => {
+      const singleDayTo = from.add(1, 'day');
+      const singleDayConstraints = {
+        ...constraints,
+        dayMaxMinutes: 360,
+        dayMinMinutes: 240,
+      };
+
+      const singleDaySubject: S2Subject = {
+        subjectCode: 'HUM',
+        subjectNname: 'Humanities',
+        examFocus: 'BothExams',
+        baselineMinutes: 600,
+        topics: [
+          { code: 'HT1', subtopics: [{ code: 'h1', name: 'h1', isEssential: true, priorityLevel: 5 }] },
+          { code: 'HT2', subtopics: [{ code: 'h2', name: 'h2', isEssential: true, priorityLevel: 4 }] },
+          { code: 'HT3', subtopics: [{ code: 'h3', name: 'h3', isEssential: false, priorityLevel: 2 }] },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, singleDayTo, singleDaySubject, singleDayConstraints);
+      const topicCodes = tasks
+        .filter(t => t.taskType === S2SlotType.STUDY || t.taskType === S2SlotType.REVISION || t.taskType === S2SlotType.PRACTICE)
+        .map(t => t.topicCode)
+        .filter(Boolean) as string[];
+      const uniqueTopicCodes = new Set(topicCodes);
+      expect(uniqueTopicCodes.size).toBeGreaterThan(1);
+    });
+  });
+
   describe('No gaps - available time completely filled', () => {
     it('should fill all available time slots without gaps', () => {
       const tasks = planSubjectTasks(from, to, subject, constraints);
