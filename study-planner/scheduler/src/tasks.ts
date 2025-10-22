@@ -1,49 +1,12 @@
-import { DayOfWeek } from './types';
-
-export interface WeeklyTask {
-  task_id: string;
-  humanReadableId: string;
-  title: string;
-  duration_minutes: number;
-  taskType: 'study' | 'practice' | 'revision' | 'test';
-  resources: string[];
-  priority?: number;
-}
-
-export interface DayState {
-  dayTasks: WeeklyTask[];
-  hours: number;
-}
-
-export interface DailyPlan {
-  day: number;
-  tasks: WeeklyTask[];
-}
-
-export interface DailyHourLimits {
-  regular_day: number;
-  test_day: number;
-}
-
-export interface WeeklyTaskSchedulingInput {
-  tasks: WeeklyTask[];
-  dailyLimits: DailyHourLimits;
-  catchupDayPreference?: DayOfWeek;
-  testDayPreference?: DayOfWeek;
-}
-
-export interface WeeklyTaskSchedulingResult {
-  dailyPlans: DailyPlan[];
-  totalScheduledHours: number;
-  conflicts: TaskSchedulingConflict[];
-}
-
-export interface TaskSchedulingConflict {
-  type: 'insufficient_time' | 'task_too_large' | 'day_overload' | 'catchup_day_violation';
-  message: string;
-  affectedTasks: string[];
-  affectedDays: number[];
-}
+import { 
+  DayOfWeek, 
+  WeeklyTask, 
+  DayState, 
+  DailyPlan, 
+  WeeklyTaskSchedulingInput, 
+  WeeklyTaskSchedulingResult,
+  TaskSchedulingConflict
+} from './types';
 
 /**
  * Distribute tasks across days of the week

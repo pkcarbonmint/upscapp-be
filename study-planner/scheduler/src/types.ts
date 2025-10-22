@@ -167,9 +167,10 @@ export type WeeklyTask = {
   humanReadableId: string;
   title: string;
   duration_minutes: number;
-  taskType?: 'study' | 'practice' | 'revision' | 'test';
+  taskType: 'study' | 'practice' | 'revision' | 'test';
   currentAffairsType?: any;
-  resources?: string[];
+  resources: string[];
+  priority?: number;
 };
 
 export type DayState = {

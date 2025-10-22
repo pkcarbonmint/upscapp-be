@@ -3,11 +3,13 @@ import {
   distributeTasksIntoDays, 
   assignHumanReadableIDs, 
   createWeeklyPlan,
-  WeeklyTask,
-  DailyHourLimits,
-  WeeklyTaskSchedulingInput,
   DayOfWeek
 } from '../tasks';
+import { 
+  WeeklyTask,
+  DailyHourLimits,
+  WeeklyTaskSchedulingInput
+} from '../types';
 
 describe('Weekly Task Scheduling Tests', () => {
   let mockTasks: WeeklyTask[];

@@ -48,9 +48,9 @@ function convertTaskToWeeklyTask(task: Task): WeeklyTask {
     humanReadableId: task.humanReadableId,
     title: task.title,
     duration_minutes: task.duration_minutes,
-    taskType: task.taskType,
+    taskType: task.taskType || 'study', // Provide default value since scheduler expects it
     currentAffairsType: task.currentAffairsType,
-    resources: task.task_resources?.map((r: any) => r.resource_title)
+    resources: task.task_resources?.map((r: any) => r.resource_title) || []
   };
 }
 
@@ -124,9 +124,9 @@ export async function createPlanForOneWeek(
         humanReadableId: weeklyTask.humanReadableId,
         title: weeklyTask.title,
         duration_minutes: weeklyTask.duration_minutes,
-        taskType: weeklyTask.taskType,
+        taskType: weeklyTask.taskType || 'study',
         currentAffairsType: weeklyTask.currentAffairsType,
-        resources: weeklyTask.resources?.map((title: any) => ({ resource_title: title }))
+        task_resources: weeklyTask.resources?.map((title: any) => ({ resource_title: title }))
       } as Task;
     })
   }));
@@ -140,7 +140,30 @@ export async function createPlanForOneWeek(
   }
   
   // 4. Assign the simple, human-readable IDs to each task using scheduler library
-  const finalDailyPlans = schedulerAssignHumanReadableIDs(dailyPlans, blockIndex, weekNum);
+  // Convert to scheduler format for ID assignment
+  const schedulerDailyPlans = dailyPlans.map(dayPlan => ({
+    day: dayPlan.day,
+    tasks: dayPlan.tasks.map(convertTaskToWeeklyTask)
+  }));
+  
+  const schedulerResult = schedulerAssignHumanReadableIDs(schedulerDailyPlans, blockIndex, weekNum);
+  
+  // Convert back to helios format
+  const finalDailyPlans: DailyPlan[] = schedulerResult.map(dayPlan => ({
+    day: dayPlan.day,
+    tasks: dayPlan.tasks.map((weeklyTask: any) => {
+      const originalTask = tasksForWeek.find(t => t.task_id === weeklyTask.task_id);
+      return originalTask ? convertWeeklyTaskToTask(weeklyTask, originalTask) : {
+        task_id: weeklyTask.task_id,
+        humanReadableId: weeklyTask.humanReadableId,
+        title: weeklyTask.title,
+        duration_minutes: weeklyTask.duration_minutes,
+        taskType: weeklyTask.taskType || 'study',
+        currentAffairsType: weeklyTask.currentAffairsType,
+        task_resources: weeklyTask.resources?.map((title: any) => ({ resource_title: title }))
+      } as Task;
+    })
+  }));
   
   // Log final week summary
   const totalTasks = finalDailyPlans.reduce((sum: number, day: any) => sum + day.tasks.length, 0);
