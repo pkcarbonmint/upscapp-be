@@ -9,6 +9,7 @@ import { getOptionalSubjectByCode } from '../config';
 import { planMain, CycleType } from 'scheduler2';
 import type { PlanningContext, S2Subject,  S2ExamFocus } from 'scheduler2';
 import { S2WeekDay } from 'scheduler2';
+import { mapFromS2Tasks } from './s2-mapper';
 import crypto from 'crypto';
 
 /**
@@ -233,30 +234,39 @@ async function mapScheduler2ResultToStudyPlan(
       const cycleBlocks = result.blocks.filter(block => block.cycleType === cycle.cycleType);
       
       // Map blocks to the expected Block format
-      const mappedBlocks = cycleBlocks.map((block, blockIndex) => ({
-        block_id: `${cycle.cycleType}-${block.subject.subjectCode}-${blockIndex}`,
-        block_title: `${block.subject.subjectNname}`,
-        cycle_type: cycle.cycleType,
-        cycle_order: index + 1,
-        cycle_name: `${cycle.cycleType} Cycle`,
-        subjects: [block.subject.subjectCode],
-        duration_weeks: Math.ceil(block.to.diff(block.from, 'day') / 7),
-        weekly_plan: [], // TODO: Map from result.tasks
-        block_resources: {
-          primary_books: [],
-          supplementary_materials: [],
-          practice_resources: [],
-          video_content: [],
-          current_affairs_sources: [],
-          revision_materials: [],
-          expert_recommendations: []
-        },
-        block_start_date: block.from.format('YYYY-MM-DD'),
-        block_end_date: block.to.format('YYYY-MM-DD'),
-        block_description: `${cycle.cycleType} block for ${block.subject.subjectNname}`,
-        estimated_hours: block.to.diff(block.from, 'hours'),
-        actual_hours: block.to.diff(block.from, 'hours')
-      }));
+      const mappedBlocks = cycleBlocks.map((block, blockIndex) => {
+        // Get tasks for this specific block
+        const blockTasks = result.tasks.filter(task => 
+          task.subjectCode === block.subject.subjectCode &&
+          task.date.isBetween(block.from, block.to, 'day', '[]')
+        );
+        
+        
+        return {
+          block_id: `${cycle.cycleType}-${block.subject.subjectCode}-${blockIndex}`,
+          block_title: `${block.subject.subjectNname}`,
+          cycle_type: cycle.cycleType,
+          cycle_order: index + 1,
+          cycle_name: `${cycle.cycleType} Cycle`,
+          subjects: [block.subject.subjectCode],
+          duration_weeks: Math.ceil(block.to.diff(block.from, 'day') / 7),
+          weekly_plan: mapFromS2Tasks(blockTasks, block.from),
+          block_resources: {
+            primary_books: [],
+            supplementary_materials: [],
+            practice_resources: [],
+            video_content: [],
+            current_affairs_sources: [],
+            revision_materials: [],
+            expert_recommendations: []
+          },
+          block_start_date: block.from.format('YYYY-MM-DD'),
+          block_end_date: block.to.format('YYYY-MM-DD'),
+          block_description: `${cycle.cycleType} block for ${block.subject.subjectNname}`,
+          estimated_hours: block.to.diff(block.from, 'hours'),
+          actual_hours: block.to.diff(block.from, 'hours')
+        };
+      });
       
       return {
         cycleId: crypto.randomUUID(),

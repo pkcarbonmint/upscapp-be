@@ -142,6 +142,7 @@ export async function loadSubtopics(subjects: Subject[]): Promise<LoadSubtopicsR
 export class SubjectLoader {
   private static subjects: Subject[] | null = null;
   private static selectedOptionalSubject: string | null = null;
+  private static optionalSubjectsCache: Map<string, Subject> = new Map();
 
   /**
    * Load all subjects from the embedded JSON data
@@ -228,8 +229,13 @@ export class SubjectLoader {
       }
     }
     
-    // For optional subjects not in cache, try to load from optional_subjects.json
+    // For optional subjects, check the dedicated cache first
     if (subjectCode.startsWith('OPT-')) {
+      if (this.optionalSubjectsCache.has(subjectCode)) {
+        return this.optionalSubjectsCache.get(subjectCode);
+      }
+      
+      // Load from optional_subjects.json if not in cache
       const optionalSubjectData = optionalSubjectsData.subjects.find(
         subject => subject.code === subjectCode
       );
@@ -237,6 +243,10 @@ export class SubjectLoader {
       if (optionalSubjectData) {
         const optionalSubject = mapOptionalSubjectToSubject(optionalSubjectData);
         console.log(`✅ Loaded optional subject on-demand: ${optionalSubject.subjectName} (${optionalSubject.subjectCode})`);
+        
+        // Add to dedicated optional subjects cache
+        this.optionalSubjectsCache.set(subjectCode, optionalSubject);
+        
         return optionalSubject;
       }
     }
@@ -272,6 +282,7 @@ export class SubjectLoader {
   static clearCache(): void {
     this.subjects = null;
     this.selectedOptionalSubject = null;
+    this.optionalSubjectsCache.clear();
   }
 }
 
