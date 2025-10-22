@@ -1,0 +1,1 @@
+{"detail":"Test generation failed: 500: PDF generation failed: 'Canvas' object has no attribute 'drawCentredText'"}
