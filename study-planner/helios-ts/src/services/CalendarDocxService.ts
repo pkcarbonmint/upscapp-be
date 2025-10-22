@@ -1781,11 +1781,12 @@ function getTopicNameFromCode(topicCode: string): string | null {
 /**
  * Format task title by removing subject code prefix and replacing topic code with topic name
  * Example: "H01 Study - H01/00" -> "Study - Topic Name (H01/00)"
+ * Example: "B Study - B00" -> "Study - Topic Name (B00)"
  */
 function formatTaskTitle(taskTitle: string): string {
   // Pattern to match: "SUBJ_CODE TASK_TYPE - TOPIC_CODE"
-  // Example: "H01 Study - H01/00"
-  const match = taskTitle.match(/^([A-Z0-9-]+)\s+(.+?)\s+-\s+([A-Z0-9-]+\/[0-9]+)$/);
+  // Topic code can be with slash (H01/00) or without (B00)
+  const match = taskTitle.match(/^([A-Z0-9-]+)\s+(.+?)\s+-\s+([A-Z0-9-]+(?:\/[0-9]+)?)$/);
   
   if (match) {
     const [, , taskType, topicCode] = match;
