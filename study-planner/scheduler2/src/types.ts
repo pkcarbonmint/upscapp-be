@@ -66,6 +66,7 @@ export type BlockSlot = {
   cycleType: CycleType;
   subject: S2Subject;
   from: Dayjs; to: Dayjs;
+  numParallel: number;
 }
 
 export type SubjectWithAllocation = S2Subject & { allocation: number };

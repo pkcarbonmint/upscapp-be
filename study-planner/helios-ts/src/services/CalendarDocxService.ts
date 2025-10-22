@@ -1653,6 +1653,9 @@ async function generateWeekContent(studyPlan: StudyPlan, studentIntake: StudentI
               dayTasks.push({ task, subject: primarySubject, block, cycle });
             }
           }
+        } else {
+          // case where weekly_plan is empty
+          console.warn(`Weekly plan is empty for block ${block.block_id} on day ${currentDay.format('YYYY-MM-DD')}`);
         }
       }
     }
@@ -1801,6 +1804,25 @@ function getOptionalSubjectName(subjectCode: string): string {
     subject => subject.code === subjectCode
   );
   return optionalSubject?.name || subjectCode;
+}
+
+/**
+ * Get task types for a given cycle type
+ */
+function getTaskTypesForCycle(cycleType: string): string[] {
+  const taskTypeMap: { [key: string]: string[] } = {
+    'C1': ['study'],
+    'C2': ['study', 'practice', 'revision'],
+    'C3': ['study', 'revision'],
+    'C4': ['practice', 'revision'],
+    'C5': ['practice', 'revision'],
+    'C5.b': ['practice', 'revision'],
+    'C6': ['practice', 'revision'],
+    'C7': ['practice', 'revision'],
+    'C8': ['study', 'practice', 'revision']
+  };
+  
+  return taskTypeMap[cycleType] || ['study'];
 }
 
 /**
