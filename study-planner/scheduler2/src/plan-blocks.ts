@@ -60,6 +60,11 @@ export function planBlocks(
   subjects: S2Subject[],
   constraints: BlockAllocConstraints
 ): BlockSlot[] {
+  // Validate date range
+  if (timeWindowTo.isBefore(timeWindowFrom)) {
+    throw new Error('to date must be after from date');
+  }
+  
   const availableDays = timeWindowTo.diff(timeWindowFrom, 'day');
   const availableHours = availableDays * constraints.workingHoursPerDay;
   const availableMinutes = availableHours * 60;
@@ -82,8 +87,13 @@ export function planBlocks(
 
   // Step 4: TIME SCALING BASED ON AVAILABLE CALENDAR TIME
   const totalBaselineTime = subjects.reduce((sum, subject) => sum + subject.baselineMinutes, 0);
+  
+  // Handle edge case where all subjects have zero baseline minutes
+  if (totalBaselineTime === 0) {
+    return []; // No blocks to allocate if no time is needed
+  }
+  
   const scalingFactor = availableMinutes / totalBaselineTime;
-
 
   // Apply scaling to allocation weights
   const scaledAllocation: Map<SubjectCode, number> = new Map();
