@@ -33,6 +33,7 @@ export interface BlockSchedule {
   subjectCode: string;
   startDate: string;
   endDate: string;
+  allocatedHours: number;
 }
 export type TaskSchedule = Schedule<TaskContent>;
 export type CycleScheduler =

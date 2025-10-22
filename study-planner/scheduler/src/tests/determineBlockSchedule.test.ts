@@ -97,6 +97,7 @@ describe('determineBlockSchedule', () => {
       cycleSchedule,
       subjects,
       confidenceMap,
+      totalHours,
       studyApproach,
       workingHoursPerDay,
       gsOptionalRatio,
@@ -195,6 +196,7 @@ describe('determineBlockSchedule', () => {
       overlappingCycleSchedule,
       overlappingSubjects,
       testData.confidenceMap,
+      totalHours,
       'Balanced', // Use Sequential to ensure blocks fill the cycle
       workingHoursPerDay,
       { gs: 0.67, optional: 0.33 },
@@ -242,6 +244,7 @@ describe('determineBlockSchedule', () => {
         cycleSchedule,
         subjects,
         confidenceMap,
+        totalHours,
         studyApproach,
         8,
         { gs: 0.67, optional: 0.33 }
@@ -255,6 +258,7 @@ describe('determineBlockSchedule', () => {
         cycleSchedule,
         subjects,
         confidenceMap,
+        totalHours,
         studyApproach,
         8,
         { gs: 0.67, optional: 0.33 },
@@ -269,11 +273,13 @@ describe('determineBlockSchedule', () => {
     const subjects: Subject[] = testData.subjects;
     const confidenceMap: ConfidenceMap = testData.confidenceMap;
     const studyApproach: StudyApproach = 'Balanced';
+    const totalHours = 200;
 
     const result: DetermineBlockScheduleResult = determineBlockSchedule(
       cycleSchedule,
       subjects,
       confidenceMap,
+      totalHours,
       studyApproach,
       8,
       { gs: 0.67, optional: 0.33 },
@@ -281,7 +287,8 @@ describe('determineBlockSchedule', () => {
       testData.dayPreferences,
       testData.taskEffortSplit
     );
-console.log('Result:', result.blockSchedules);
+    
+    console.log('Result:', result.blockSchedules.map(block => ([block.subjectCode,block.allocatedHours, block.startDate,block.endDate])));
     expect(result.blockSchedules).toBeDefined();
     expect(result.blockSchedules.length).toBeGreaterThan(0);
 
@@ -289,4 +296,35 @@ console.log('Result:', result.blockSchedules);
     const lastBlockEndDate = result.blockSchedules.reduce((latest: BlockSchedule, current: BlockSchedule) => dayjs(current.endDate).isAfter(dayjs(latest.endDate)) ? current : latest).endDate;
     expect(dayjs(lastBlockEndDate).isSame(dayjs(cycleSchedule.endDate), 'day')).toBe(true);
   });
+
+  
+  it('should stretch the block schedule to fill the cycle - multiple parallel subjects', () => {
+    const cycleSchedule: CycleSchedule = testData.cycleSchedule;
+    const subjects: Subject[] = testData.subjects;
+    const confidenceMap: ConfidenceMap = testData.confidenceMap;
+    const studyApproach: StudyApproach = 'Balanced';
+    const totalHours = 200;
+
+    const result: DetermineBlockScheduleResult = determineBlockSchedule(
+      cycleSchedule,
+      subjects,
+      confidenceMap,
+      totalHours,
+      studyApproach,
+      8,
+      { gs: 0.67, optional: 0.33 },
+      testData.dailyHourLimits,
+      testData.dayPreferences,
+      testData.taskEffortSplit
+    );
+    
+    console.log('Result:', result.blockSchedules.map(block => ([block.subjectCode,block.allocatedHours, block.startDate,block.endDate])));
+    console.log('total allocated hours in blocks: ', result.blockSchedules.reduce((sum, block) => sum + block.allocatedHours, 0));
+    expect(result.blockSchedules).toBeDefined();
+    expect(result.blockSchedules.length).toBeGreaterThan(0);
+
+    // Verify that the block schedules stretch to fill the cycle
+    const lastBlockEndDate = result.blockSchedules.reduce((latest: BlockSchedule, current: BlockSchedule) => dayjs(current.endDate).isAfter(dayjs(latest.endDate)) ? current : latest).endDate;
+    expect(dayjs(lastBlockEndDate).isSame(dayjs(cycleSchedule.endDate), 'day')).toBe(true);
+  });  
 });

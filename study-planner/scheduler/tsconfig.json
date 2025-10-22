@@ -27,5 +27,6 @@
     "outDir": "dist"
   },
   "include": ["src", "src/vite-env.d.ts"],
+  "exclude": ["src/tests/**/*", "src/**/*.test.ts", "src/**/*.spec.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

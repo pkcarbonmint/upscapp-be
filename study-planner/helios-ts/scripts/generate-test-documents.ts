@@ -461,13 +461,16 @@ class TestDocumentGenerator {
   
     function makeLogger(_logs?: LogEntry[]): Logger {
       return {
-        logInfo() {
+        logInfo(source: string, message: string) {
+          console.log(`[${source}] ${message}`);
         },
     
-        logWarn() {
+        logWarn(source: string, message: string) {
+          console.log(`[${source}] ${message}`);
         },
     
-        logDebug() {
+        logDebug(source: string, message: string) {
+          console.log(`[${source}] ${message}`);
         },
     
         getLogs() {

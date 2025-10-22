@@ -31,25 +31,26 @@ export interface StudyPlanCalculator {
   getC6StartDate(prelimsDate: Date): Date;
   getC7StartDate(targetYear: string): Date;
   getGSOptionalRatio(studyApproach: StudyPacing): { gs: number; optional: number };
-  getTaskTypeRatios(cycleType: CycleType, timeDistribution?: string): { study: number; practice: number; revision: number; test: number };
+  getTaskTypeRatios(cycleType: CycleType, timeDistribution?: string): { study: number; practice: number; revision: number; };
   getTaskEffortSplit(cycleType: CycleType, intake: StudentIntake): TaskEffortSplit;
   getConfidenceFactor(level: ConfidenceLevel): number;
   getFoundationCycleEndDate(targetYear: string): Date;
   getPrelimsRevisionPeriod(targetYear: string): { start: Date; end: Date };
   getMainsRevisionPeriod(targetYear: string): { start: Date; end: Date };
   getTargetYear(targetYear?: string): number;
+  getTestDurationMinutes(cycleType: CycleType): number;
 }
 
 const BASE_TASK_RATIOS: Record<CycleType, TaskEffortSplit> = {
-  'C1': { study: 1.0, practice: 0, revision: 0, test: 0, gs_optional_ratio: 1 },
-  'C2': { study: 0.6, practice: 0.2, revision: 0.15, test: 0.05, gs_optional_ratio: 1 },
-  'C3': { study: 0.7, practice: 0.1, revision: 0.2, test: 0, gs_optional_ratio: 1 },
-  'C4': { study: 0.2, practice: 0.4, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
-  'C5': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
-  'C5.b': { study: 0.1, practice: 0.5, revision: 0.3, test: 0.1, gs_optional_ratio: 1 },
-  'C6': { study: 0.2, practice: 0.3, revision: 0.4, test: 0.1, gs_optional_ratio: 1 },
-  'C7': { study: 0.1, practice: 0.4, revision: 0.4, test: 0.1, gs_optional_ratio: 1  },
-  'C8': { study: 0.8, practice: 0.1, revision: 0.1, test: 0, gs_optional_ratio: 1 }
+  'C1': { study: 1.0, practice: 0, revision: 0, gs_optional_ratio: 1 },
+  'C2': { study: 0.6, practice: 0.2, revision: 0.2, gs_optional_ratio: 1 },
+  'C3': { study: 0.7, practice: 0.1, revision: 0.2, gs_optional_ratio: 1 },
+  'C4': { study: 0.2, practice: 0.4, revision: 0.4, gs_optional_ratio: 1 },
+  'C5': { study: 0.1, practice: 0.5, revision: 0.5, gs_optional_ratio: 1 },
+  'C5.b': { study: 0.1, practice: 0.5, revision: 0.4, gs_optional_ratio: 1 },
+  'C6': { study: 0.2, practice: 0.3, revision: 0.5, gs_optional_ratio: 1 },
+  'C7': { study: 0.1, practice: 0.4, revision: 0.5, gs_optional_ratio: 1  },
+  'C8': { study: 0.8, practice: 0.1, revision: 0.1, gs_optional_ratio: 1 }
 };
 
 function getTaskEffortSplit(cycleType: CycleType, intake: StudentIntake): TaskEffortSplit {
@@ -241,6 +242,10 @@ export class StudyPlanCalculatorImpl implements StudyPlanCalculator {
   getTargetYear(targetYear?: string): number {
     return parseInt(targetYear || this.DEFAULT_TARGET_YEAR);
   }
+
+  getTestDurationMinutes(_cycleType: CycleType): number {
+    return 3*60; // 3 hours
+  }
 }
 
 export interface Archetype {
@@ -337,7 +342,7 @@ export interface StudentIntake {
    * Get task type ratios for different cycle types
    * Move hardcoded ratios from cycle-utils.ts here
    */
-  getTaskTypeRatios(cycleType: CycleType): { study: number; practice: number; revision: number; test: number };
+  getTaskTypeRatios(cycleType: CycleType): { study: number; practice: number; revision: number; };
 
   /**
    * Get task effort split based on cycle type and intake properties
@@ -372,7 +377,14 @@ export interface StudentIntake {
    * Get target year as number
    */
   getTargetYear(): number;
+
+  /**
+   * Amount of time to be allocated for tests
+   */
+  getTestDurationMinutes(cycleType: CycleType): number;
 }
+
+export type StudentIntakeDataOnly = Omit<StudentIntake, 'calculator' | 'getDailyStudyHours' | 'getWeeklyStudyHours' | 'getPrelimsExamDate' | 'getMainsExamDate' | 'getC4StartDate' | 'getC5StartDate' | 'getC6StartDate' | 'getC7StartDate' | 'getGSOptionalRatio' | 'getTaskTypeRatios' | 'getTaskEffortSplit' | 'getConfidenceFactor' | 'getFoundationCycleEndDate' | 'getPrelimsRevisionPeriod' | 'getMainsRevisionPeriod' | 'getTargetYear' | 'getTestDurationMinutes'>;
 
 export interface PersonalDetails {
   full_name: string;
@@ -710,7 +722,7 @@ export interface BudgetSummary {
 
 // Helper function to create StudentIntake with calculator
 export function createStudentIntake(
-  data: Omit<StudentIntake, 'calculator' | 'getDailyStudyHours' | 'getWeeklyStudyHours' | 'getPrelimsExamDate' | 'getMainsExamDate' | 'getC4StartDate' | 'getC5StartDate' | 'getC6StartDate' | 'getC7StartDate' | 'getGSOptionalRatio' | 'getTaskTypeRatios' | 'getTaskEffortSplit' | 'getConfidenceFactor' | 'getFoundationCycleEndDate' | 'getPrelimsRevisionPeriod' | 'getMainsRevisionPeriod' | 'getTargetYear'>, 
+  data: StudentIntakeDataOnly,
   calculator?: StudyPlanCalculator
 ): StudentIntake {
   const calc = calculator || new StudyPlanCalculatorImpl();
@@ -763,7 +775,7 @@ export function createStudentIntake(
       return this.calculator.getGSOptionalRatio(this.study_strategy.study_approach);
     },
 
-    getTaskTypeRatios(cycleType: CycleType): { study: number; practice: number; revision: number; test: number } {
+    getTaskTypeRatios(cycleType: CycleType): { study: number; practice: number; revision: number; } {
       return this.calculator.getTaskTypeRatios(cycleType, this.study_strategy.time_distribution);
     },
 
@@ -789,6 +801,10 @@ export function createStudentIntake(
 
     getTargetYear(): number {
       return this.calculator.getTargetYear(this.target_year);
-    }
+    },
+
+    getTestDurationMinutes(cycleType: CycleType): number {
+      return this.calculator.getTestDurationMinutes(cycleType);
+    },
   };
 }

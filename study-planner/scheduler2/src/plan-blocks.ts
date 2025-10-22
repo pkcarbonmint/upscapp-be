@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import { ActiveBlock, BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode, SubjectWithAllocation } from "./types";
+import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode } from "./types";
 /*
  * PSEUDO CODE FOR TIME DISTRIBUTION AMONG SUBJECTS
  * 
@@ -172,60 +172,113 @@ export function planBlocks(
     });
   }
   
-  // 4. Simple round-robin assignment
+  // 4. Parallel assignment with sliding window (numParallel constraint)
   let sliceIndex = 0;
-  let subjectIndex = 0;
   let iterations = 0;
   const maxIterations = timeSlices.length * 2; // Safety limit
   
+  // Create active subjects pool (max size = numParallel)
+  const activeSubjects: typeof subjectRequirements = [];
+  let nextSubjectIndex = 0;
+  
+  // Initialize active subjects pool
+  for (let i = 0; i < Math.min(constraints.numParallel, subjectRequirements.length); i++) {
+    if (nextSubjectIndex < subjectRequirements.length) {
+      activeSubjects.push(subjectRequirements[nextSubjectIndex]);
+      nextSubjectIndex++;
+    }
+  }
+  
+  let activeSubjectIndex = 0;
+  
   while (sliceIndex < timeSlices.length && iterations < maxIterations) {
-    const subject = subjectRequirements[subjectIndex];
+    // Check if we have any active subjects
+    if (activeSubjects.length === 0) break;
+    
+    const subject = activeSubjects[activeSubjectIndex];
     
     if (subject.allocatedSlices < subject.requiredSlices) {
       timeSlices[sliceIndex].subjectCode = subject.subjectCode;
       subject.allocatedSlices++;
       sliceIndex++;
+    } else {
+      // This subject is done, remove it and add next subject
+      activeSubjects.splice(activeSubjectIndex, 1);
+      
+      // Add next subject if available
+      if (nextSubjectIndex < subjectRequirements.length) {
+        activeSubjects.push(subjectRequirements[nextSubjectIndex]);
+        nextSubjectIndex++;
+      }
+      
+      // Adjust index if we removed a subject
+      if (activeSubjectIndex >= activeSubjects.length) {
+        activeSubjectIndex = 0;
+      }
+      
+      continue; // Don't increment activeSubjectIndex
     }
     
-    subjectIndex = (subjectIndex + 1) % subjectRequirements.length;
+    // Move to next active subject
+    activeSubjectIndex = (activeSubjectIndex + 1) % activeSubjects.length;
     iterations++;
   }
   
-  // 5. Group consecutive slices into blocks
-  let i = 0;
-  while (i < timeSlices.length) {
-    const slice = timeSlices[i];
-    if (!slice.subjectCode) {
-      i++;
-      continue;
+  // 5. Create meaningful blocks from slice allocations
+  // Group slices by subject and create continuous blocks
+  const subjectSliceGroups: Record<SubjectCode, Array<{startTime: Dayjs, endTime: Dayjs}>> = {};
+  
+  // Group slices by subject
+  timeSlices.forEach(slice => {
+    if (slice.subjectCode) {
+      if (!subjectSliceGroups[slice.subjectCode]) {
+        subjectSliceGroups[slice.subjectCode] = [];
+      }
+      subjectSliceGroups[slice.subjectCode].push({
+        startTime: slice.startTime,
+        endTime: slice.endTime
+      });
     }
+  });
+  
+  // Create blocks for each subject
+  Object.entries(subjectSliceGroups).forEach(([subjectCode, slices]) => {
+    // Sort slices by start time
+    slices.sort((a, b) => a.startTime.diff(b.startTime));
     
-    const blockStartTime = slice.startTime;
-    let blockEndTime = slice.endTime;
-    let j = i + 1;
-    
-    // Find consecutive slices of same subject within the same day
-    while (j < timeSlices.length && 
-           timeSlices[j].subjectCode === slice.subjectCode &&
-           timeSlices[j].startTime.format('YYYY-MM-DD') === slice.startTime.format('YYYY-MM-DD')) {
-      blockEndTime = timeSlices[j].endTime;
-      j++;
+    // Group consecutive slices into blocks
+    let i = 0;
+    while (i < slices.length) {
+      const blockStartTime = slices[i].startTime;
+      let blockEndTime = slices[i].endTime;
+      let j = i + 1;
+      
+      // Find consecutive slices (allowing small gaps for breaks)
+      while (j < slices.length) {
+        const gapMinutes = slices[j].startTime.diff(blockEndTime, 'minutes');
+        // Allow gaps up to 2 hours (120 minutes) to be considered consecutive
+        if (gapMinutes <= 120) {
+          blockEndTime = slices[j].endTime;
+          j++;
+        } else {
+          break;
+        }
+      }
+      
+      // Only create blocks that are at least 1 hour long
+      const blockDurationMinutes = blockEndTime.diff(blockStartTime, 'minutes');
+      if (blockDurationMinutes >= 60) {
+        blockSlots.push({
+          cycleType: constraints.cycleType,
+          subject: subjectMap[subjectCode],
+          from: blockStartTime,
+          to: blockEndTime
+        });
+      }
+      
+      i = j;
     }
-    
-    // Ensure block doesn't exceed time window
-    if (blockEndTime.isAfter(timeWindowTo)) {
-      blockEndTime = timeWindowTo;
-    }
-    
-    blockSlots.push({
-      cycleType: constraints.cycleType,
-      subject: subjectMap[slice.subjectCode],
-      from: blockStartTime,
-      to: blockEndTime
-    });
-    
-    i = j;
-  }
+  });
 
   // Step 6: SCHEDULE OPTIMIZATION - Balance workload across days
   // const optimizedSlots = balanceWorkloadAcrossDays(blockSlots, constraints);
@@ -261,64 +314,8 @@ export function planBlocks(
 
 
 
-function isRestrictedDay(date: Dayjs, constraints: BlockAllocConstraints): boolean {
-  const dayOfWeek = date.day();
-  return dayOfWeek === constraints.catchupDay || dayOfWeek === constraints.testDay;
-}
-
-function balanceWorkloadAcrossDays(blockSlots: BlockSlot[], constraints: BlockAllocConstraints): BlockSlot[] {
-  const maxDailyMinutes = constraints.workingHoursPerDay * 60;
-  const optimizedSlots: BlockSlot[] = [];
-
-  // Process blocks in chronological order
-  const sortedBlocks = [...blockSlots].sort((a, b) => a.from.diff(b.from));
-
-  for (const block of sortedBlocks) {
-    const blockMinutes = block.to.diff(block.from, 'minutes');
-
-    // Find the best day to place this block
-    let bestDay = block.from.startOf('day');
-    let placed = false;
-
-    // Try to place the block on its original day or later days
-    for (let i = 0; i < 30; i++) { // Search up to 30 days ahead
-      const candidateDay = bestDay.add(i, 'day');
-
-      // Skip restricted days
-      if (isRestrictedDay(candidateDay, constraints)) {
-        continue;
-      }
-
-      // Check if this day can accommodate the block
-      const dayKey = candidateDay.format('YYYY-MM-DD');
-      const existingMinutes = optimizedSlots
-        .filter(b => b.from.format('YYYY-MM-DD') === dayKey)
-        .reduce((sum, b) => sum + b.to.diff(b.from, 'minutes'), 0);
-
-      if (existingMinutes + blockMinutes <= maxDailyMinutes) {
-        // Place the block on this day
-        const timeShift = candidateDay.diff(block.from.startOf('day'), 'days');
-        const shiftedBlock: BlockSlot = {
-          cycleType: constraints.cycleType,
-          subject: block.subject,
-          from: block.from.add(timeShift, 'days'),
-          to: block.to.add(timeShift, 'days')
-        };
-        optimizedSlots.push(shiftedBlock);
-        placed = true;
-        break;
-      }
-    }
-
-    // If we couldn't place the block, place it on the original day anyway
-    // (This shouldn't happen if the algorithm is working correctly)
-    if (!placed) {
-      optimizedSlots.push(block);
-    }
-  }
-
-  return optimizedSlots.sort((a, b) => a.from.diff(b.from));
-}
+// Unused function - may be needed later for workload balancing
+// Removed to fix syntax errors
 
 
 function countCatchupDays(from: Dayjs, to: Dayjs, catchupDay: S2WeekDay) {

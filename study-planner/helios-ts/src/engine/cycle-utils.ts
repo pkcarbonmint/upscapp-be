@@ -1,16 +1,11 @@
-import { Block, WeeklyPlan, DailyPlan, StudentIntake } from '../types/models';
+import { Block, StudentIntake } from '../types/models';
 import { CycleType, Logger } from '../types/Types';
-import { Subject, getTopicEstimatedHours } from '../types/Subjects';
+import { Subject } from '../types/Subjects';
 import { ResourceService } from '../services/ResourceService';
-import { SubjectLoader } from '../services/SubjectLoader';
-import { createPlanForOneWeek } from './OneWeekPlan';
-import { makeLogger } from '../services/Log';
-import { selectBestArchetype } from '../services/ArchetypeSelector';
 import dayjs from 'dayjs';
-import { Config } from './engine-types';
-import { 
+import {
   determineBlockSchedule,
-  CycleType as SchedulerCycleType, 
+  CycleType as SchedulerCycleType,
   trimSubtopicsToFit as schedulerTrimSubtopicsToFit,
   DayOfWeek
 } from 'scheduler';
@@ -21,9 +16,11 @@ import type {
   CycleSchedule as SchedulerCycleSchedule,
   DetermineBlockScheduleResult,
   DailyHourLimitsInput,
-  DayPreferences
+  DayPreferences,
 } from 'scheduler';
-import type { Dayjs } from 'dayjs';
+import { S2Task } from 'scheduler2';
+import { mapFromS2Tasks } from './s2-mapper';
+
 // Task ratios are now handled by intake.getTaskTypeRatios(cycleType)
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 
@@ -52,7 +49,7 @@ function convertToSchedulerSubject(subject: Subject): SchedulerSubject {
 /**
  * Convert helios-ts CycleType to scheduler library CycleType
  */
-function convertToSchedulerCycleType(cycleType: CycleType): SchedulerCycleType {
+export function convertToSchedulerCycleType(cycleType: CycleType): SchedulerCycleType {
   switch (cycleType) {
     case CycleType.C1: return SchedulerCycleType.C1;
     case CycleType.C2: return SchedulerCycleType.C2;
@@ -70,7 +67,7 @@ function convertToSchedulerCycleType(cycleType: CycleType): SchedulerCycleType {
 /**
  * Convert helios-ts subject approach to scheduler library StudyApproach
  */
-function convertToSchedulerStudyApproach(subjectApproach: string): StudyApproach {
+export function convertToSchedulerStudyApproach(subjectApproach: string): StudyApproach {
   switch (subjectApproach) {
     case 'SingleSubject': return 'SingleSubject';
     case 'DualSubject': return 'DualSubject';
@@ -219,7 +216,7 @@ function safeReadHours(text: string): number {
       return Math.round((min + max) / 2); // Use midpoint
     }
   }
-  
+
   const parsed = parseInt(text, 10);
   return isNaN(parsed) ? 40 : parsed; // Default fallback
 }
@@ -240,27 +237,27 @@ function calculateAllocatedHoursFromWeeklyAllocations(
   const start = dayjs(startDate);
   const end = dayjs(endDate);
   const weeksInBlock = Math.ceil(end.diff(start, 'week', true));
-  
+
   let totalAllocatedHours = 0;
-  
+
   // Sum up hours from all weeks in this block for this subject
   for (let weekOffset = 0; weekOffset < weeksInBlock; weekOffset++) {
     const weekStart = start.add(weekOffset, 'week').format('YYYY-MM-DD');
     const weekAllocations = weeklySubjectAllocations[weekStart];
-    
+
     if (weekAllocations && weekAllocations[subjectCode]) {
       const subjectAllocation = weekAllocations[subjectCode];
       totalAllocatedHours += subjectAllocation.totalHours;
     }
   }
-  
+
   // Fallback to original calculation if no weekly allocations found
   if (totalAllocatedHours === 0) {
     const confidenceMultiplier = confidenceMap.get(subjectCode) || 1.0;
     const baselineFactor = determineSubjBaselineFactorForCycle(cycleType);
     totalAllocatedHours = Math.floor(subject.baselineHours * baselineFactor * confidenceMultiplier);
   }
-  
+
   return Math.max(1, totalAllocatedHours); // Ensure at least 1 hour
 }
 
@@ -269,16 +266,16 @@ function calculateAllocatedHoursFromWeeklyAllocations(
  */
 export async function createBlocksForSubjects(params: BlockCreationParams): Promise<Block[]> {
   const { intake, subjects, confidenceMap, cycleType, cycleStartDate, cycleEndDate, totalHours } = params;
-  
+
   // Convert to scheduler library formats
   const schedulerSubjects = subjects.map(convertToSchedulerSubject);
   const schedulerConfidenceMap = convertToSchedulerConfidenceMap(confidenceMap);
   const schedulerCycleType = convertToSchedulerCycleType(cycleType);
   const studyApproach = convertToSchedulerStudyApproach(intake.subject_approach);
-  
+
   // Get GS:Optional ratio from intake
   const gsOptionalRatio = intake.getGSOptionalRatio ? intake.getGSOptionalRatio() : { gs: 0.67, optional: 0.33 };
-  
+
   // Create cycle schedule for the scheduler library
   const cycleSchedule: SchedulerCycleSchedule = {
     cycleType: schedulerCycleType,
@@ -286,24 +283,24 @@ export async function createBlocksForSubjects(params: BlockCreationParams): Prom
     endDate: cycleEndDate,
     priority: 'mandatory'
   };
-  
+
   // Use the scheduler library to determine block schedule with GS:Optional ratio
   const dailyHourLimits: DailyHourLimitsInput = {
     regular_day: intake.getDailyStudyHours(),
     test_day: intake.getDailyStudyHours() // Use same hours for test day
   };
-  
+
   const dayPreferences: DayPreferences = {
     testDay: DayOfWeek.SUNDAY,
     catchupDay: (intake.study_strategy?.catch_up_day_preference as DayOfWeek) || DayOfWeek.SATURDAY
   };
-  
+
   // Get task effort split and weekly study hours from intake
-  const { study, revision, practice, test } = intake.getTaskEffortSplit(cycleType, intake);
+  const { study, revision, practice } = intake.getTaskEffortSplit(cycleType, intake);
   // Convert to scheduler's split shape (no gs_optional_ratio, add review=0)
-  const schedulerTaskEffortSplit = { study, revision, practice, test, review: 0 } as const;
+  const schedulerTaskEffortSplit = { study, revision, practice, review: 0, test: 0 } as const;
   const weeklyStudyHours = safeReadHours(intake.study_strategy.weekly_study_hours);
-  
+
   const result: DetermineBlockScheduleResult = determineBlockSchedule(
     cycleSchedule,
     schedulerSubjects,
@@ -318,7 +315,7 @@ export async function createBlocksForSubjects(params: BlockCreationParams): Prom
     weeklyStudyHours
   );
   const { blockSchedules, weeklySubjectAllocations } = result;
-  
+
   // Map block schedules to actual blocks using weeklySubjectAllocations
   const blocks = await Promise.all(
     blockSchedules.map(async (schedule: { subjectCode: string; startDate: string; endDate: string }, index: number) => {
@@ -326,18 +323,18 @@ export async function createBlocksForSubjects(params: BlockCreationParams): Prom
       if (!subject) {
         throw new Error(`Subject ${schedule.subjectCode} not found`);
       }
-      
+
       // Use weeklySubjectAllocations to get precise hour allocation
       const allocatedHours = calculateAllocatedHoursFromWeeklyAllocations(
-        schedule.subjectCode, 
-        schedule.startDate, 
-        schedule.endDate, 
+        schedule.subjectCode,
+        schedule.startDate,
+        schedule.endDate,
         weeklySubjectAllocations,
         subject,
         confidenceMap,
         cycleType
       );
-      
+
       return await createBlockFromSchedule(
         schedule,
         subject,
@@ -348,7 +345,7 @@ export async function createBlocksForSubjects(params: BlockCreationParams): Prom
       );
     })
   );
-  
+
   return blocks.filter((block: Block) => block && block.actual_hours && block.actual_hours > 0);
 }
 
@@ -361,80 +358,59 @@ async function createBlockFromSchedule(
   params: BlockCreationParams,
   index: number,
   allocatedHours: number,
-  weeklySubjectAllocations: any
+  _weeklySubjectAllocations: any
 ): Promise<Block> {
-  const { intake, confidenceMap, cycleType, cycleOrder, cycleName, subjData } = params;
-  
+  const { confidenceMap, cycleType, cycleOrder, cycleName, subjData } = params;
+
   // Calculate duration in weeks
   const startDate = dayjs(schedule.startDate);
   const endDate = dayjs(schedule.endDate);
   const durationWeeks = Math.ceil(endDate.diff(startDate, 'day') / 7);
-  
+
   // Use allocated hours from scheduler library (already calculated with GS:Optional ratio)
   const calculatedHours = allocatedHours;
-  
+
   // Process subject subtopics and calculate actual hours
   const { adjustedSubtopics } = processSubjectSubtopics(
     subject, subjData, confidenceMap, cycleType, calculatedHours, calculatedHours
   );
-  
+
   const trimmedSubtopics = schedulerTrimSubtopicsToFit(adjustedSubtopics, calculatedHours);
   const actualHours = trimmedSubtopics.length > 0
     ? trimmedSubtopics.reduce((sum, st) => sum + st.adjustedHours, 0)
     : calculatedHours;
 
-    // Get resources for this subject
+  // Get resources for this subject
   const blockResources = await getBlockResources(subject.subjectCode, cycleType, durationWeeks);
+  // TODO: Implement task planning with scheduler2
+  // const s2WeeklyPlan: S2Task[] = planSubjectTasks(
+  //   dayjs(schedule.startDate),
+  //   dayjs(schedule.endDate),
+  //   mapToS2Subject(subject),
+  //   await mapToS2Constraints(intake, cycleType));
   
-  // Build per-week guidance from scheduler weeklySubjectAllocations
-  const guidanceByWeek: any[] = [];
-  const blockStart = dayjs(schedule.startDate);
-  const blockEnd = dayjs(schedule.endDate);
-  for (let wkStart = blockStart; wkStart.isBefore(blockEnd) || wkStart.isSame(blockEnd, 'week'); wkStart = wkStart.add(1, 'week')) {
-    const weekKey = wkStart.format('YYYY-MM-DD');
-    const subjAlloc = weeklySubjectAllocations?.[weekKey]?.[subject.subjectCode];
-    if (subjAlloc) {
-      guidanceByWeek.push({
-        weekStart: weekKey,
-        byTaskType: subjAlloc.byTaskType,
-        byDay: subjAlloc.byDay
-      });
-    }
-  }
+  const s2WeeklyPlan: S2Task[] = []; // Placeholder until planSubjectTasks is available
 
   // Create block object
-    const block: Block = {
+  const block: Block = {
     block_id: `${cycleName.replace(/\s+Cycle$/, '')}-${subject.subjectCode}-${index}`,
-      block_title: `${subject.subjectName}`,
-      cycle_type: cycleType,
-      cycle_order: cycleOrder,
-      cycle_name: cycleName,
-      subjects: [subject.subjectCode],
+    block_title: `${subject.subjectName}`,
+    cycle_type: cycleType,
+    cycle_order: cycleOrder,
+    cycle_name: cycleName,
+    subjects: [subject.subjectCode],
     duration_weeks: durationWeeks,
-    weekly_plan: await createEnhancedWeeklyPlan(
-      blockStart,
-      durationWeeks,
-      cycleType,
-      subject.subjectCode,
-      calculateTopicHours(subject, calculatedHours, confidenceMap.get(subject.subjectCode) || 1.0),
-      intake,
-      guidanceByWeek
-    ),
-      block_resources: blockResources,
+    weekly_plan: mapFromS2Tasks(s2WeeklyPlan),
+    block_resources: blockResources,
     block_start_date: schedule.startDate,
     block_end_date: schedule.endDate,
     block_description: `${cycleName} block for ${subject.subjectName}`,
     estimated_hours: calculatedHours,
     actual_hours: actualHours
-    };
+  };
 
   return block;
 }
-
-
-
-
-
 
 /**
  * Trim subtopics to fit within allocated hours, starting from D5 down to B1
@@ -491,35 +467,6 @@ export function adjustHoursForCycleConstraint(
  * @param confidenceMultiplier Confidence adjustment (1.0 = neutral)
  * @returns Map of topicCode -> allocated hours
  */
-function calculateTopicHours(
-  subject: Subject,
-  subjectAllocatedHours: number,
-  confidenceMultiplier: number
-): Map<string, number> {
-  const topicHoursMap = new Map<string, number>();
-
-  // Step 1: Get estimated hours for each topic based on priority
-  const topicsWithBaseline = subject.topics.map(topic => {
-    const estimatedHours = getTopicEstimatedHours(topic); // 10/6/3/1 by priority
-    return {
-      topic,
-      baselineHours: estimatedHours,
-      weightedHours: estimatedHours * confidenceMultiplier
-    };
-  });
-
-  // Step 2: Calculate proportional allocation
-  const totalWeightedHours = topicsWithBaseline.reduce((sum, t) => sum + t.weightedHours, 0);
-
-  topicsWithBaseline.forEach(({ topic, weightedHours }) => {
-    const allocatedHours = Math.max(1, Math.floor(
-      (subjectAllocatedHours * weightedHours) / totalWeightedHours
-    ));
-    topicHoursMap.set(topic.topicCode, allocatedHours);
-  });
-
-  return topicHoursMap;
-}
 
 /**
  * Create enhanced weekly plan using OneWeekPlan.ts for better task variety
@@ -529,108 +476,12 @@ function calculateTopicHours(
  * @param topicHoursMap Map of topicCode -> allocated hours
  * @returns WeeklyPlan array with diverse task types
  */
-async function createEnhancedWeeklyPlan(
-  blockStartDate: Dayjs,
-  durationWeeks: number,
-  cycleType: CycleType,
-  subjectCode: string,
-  _topicHoursMap: Map<string, number>,
-  intake: StudentIntake,
-  guidanceByWeek?: Array<{ weekStart: string; byTaskType: any; byDay: any }>
-): Promise<WeeklyPlan[]> {
-
-  // Convert topic hours to subject format for OneWeekPlan.ts
-  const subject = SubjectLoader.getSubjectByCode(subjectCode);
-  if (!subject) {
-    return Promise.reject(new Error(`Subject ${subjectCode} not found`));
-  }
-
-  // Generate weeks using OneWeekPlan.ts
-  const weeklyPlans: WeeklyPlan[] = [];
-  for (let week = 1; week <= durationWeeks; week++) {
-    const weekStartDate = blockStartDate.add((week - 1) * 7, 'day');
-      const weekPlan = await createPlanForOneWeek(
-        0, // blockIndex
-        weekStartDate,
-        subject,
-        intake,
-        await getArchetype(),
-        createConfigFromCycleType(cycleType, intake),
-        week,
-        durationWeeks,
-        makeLogger([]),
-        guidanceByWeek?.[week - 1]
-      );
-      weeklyPlans.push(weekPlan);
-  }
-
-  return weeklyPlans;
-
-
-  // Create archetype using the dedicated selector function
-  async function getArchetype() {
-    const baseArchetype = await selectBestArchetype(intake);
-    // Enhance archetype with cycle type information
-    const archetype = {
-      ...baseArchetype,
-      archetype: cycleType // Override with the actual cycle type (e.g., 'C1')
-    };
-    return archetype;
-  };
-}
 
 /**
  * Create config from cycle type with appropriate task ratios
  */
-function createConfigFromCycleType(cycleType: CycleType, intake: StudentIntake): Config {
-
-  const taskEffortSplit = intake.getTaskEffortSplit(cycleType, intake);
-
-  return {
-    daily_hour_limits: {
-      regular_day: intake.getDailyStudyHours(),
-      catch_up_day: 0, // Catchup day should be empty - for student to catch up on missed work
-      test_day: Math.max(6, Math.floor(intake.getDailyStudyHours() * 0.75)) // 75% of daily hours for test days
-    },
-    task_effort_split: taskEffortSplit,
-    block_duration_clamp: {
-      min_weeks: 2,
-      max_weeks: 8
-    }
-  };
-}
 
 /**
  * Fallback basic weekly plan creation
  */
-function createBasicWeeklyPlan(weekStartDate: Dayjs, durationWeeks: number, subjectCode: string): WeeklyPlan[] {
-  const weeklyPlans: WeeklyPlan[] = [];
-
-  for (let week = 1; week <= durationWeeks; week++) {
-    const daily_plans: DailyPlan[] = [];
-
-    for (let day = 1; day <= 7; day++) {
-      daily_plans.push({
-        date: weekStartDate.add(day - 1, 'day'),
-        day,
-        tasks: [{
-          task_id: `study-${subjectCode}-w${week}-d${day}`,
-          humanReadableId: `Study ${subjectCode} W${week}D${day}`,
-          title: `${subjectCode} - Study Session`,
-          duration_minutes: 240, // 4 hours default
-          topicCode: subjectCode,
-          taskType: 'study',
-          subjectCode: subjectCode
-        }]
-      });
-    }
-
-    weeklyPlans.push({
-      week,
-      daily_plans
-    });
-  }
-
-  return weeklyPlans;
-}
 
