@@ -140,6 +140,81 @@ describe('planSubjectTasks', () => {
     });
   });
 
+  describe('Maximize topics allocated given block time', () => {
+    it('allocates all topics when scaled minutes allow > 0 for each (single-day)', () => {
+      const singleDayTo = from.add(1, 'day');
+      const singleDayConstraints: S2Constraints = {
+        cycleType: CycleType.C1,
+        dayMaxMinutes: 360, // 6 hours
+        dayMinMinutes: 240, // 4 hours
+        catchupDay: S2WeekDay.Sunday,
+        testDay: S2WeekDay.Saturday,
+        testMinutes: 0,
+        taskEffortSplit: {
+          [S2SlotType.STUDY]: 1.0,
+          [S2SlotType.REVISION]: 0,
+          [S2SlotType.PRACTICE]: 0,
+          [S2SlotType.TEST]: 0,
+          [S2SlotType.CATCHUP]: 0,
+        },
+      };
+
+      const subjectAllTopics: S2Subject = {
+        subjectCode: 'SUB',
+        subjectNname: 'Subject',
+        examFocus: 'BothExams',
+        baselineMinutes: 6 * 60, // 360 minutes baseline (not critical for single-day path)
+        topics: Array.from({ length: 6 }).map((_, i) => ({
+          code: `T${i + 1}`,
+          baselineMinutes: 60,
+          subtopics: [ { code: `S${i + 1}`, name: 'st', isEssential: true, priorityLevel: 5 } ],
+        })),
+      };
+
+      const tasks = planSubjectTasks(from, singleDayTo, subjectAllTopics, singleDayConstraints);
+      const studyTasks = tasks.filter(t => t.taskType === S2SlotType.STUDY);
+      const uniqueTopics = new Set(studyTasks.map(t => t.topicCode).filter(Boolean) as string[]);
+      expect(uniqueTopics.size).toBe(6);
+    });
+
+    it('allocates as many topics as total minutes allow when too many topics (single-day)', () => {
+      const singleDayTo = from.add(1, 'day');
+      const singleDayConstraints: S2Constraints = {
+        cycleType: CycleType.C1,
+        dayMaxMinutes: 5, // 5 minutes total
+        dayMinMinutes: 1,
+        catchupDay: S2WeekDay.Sunday,
+        testDay: S2WeekDay.Saturday,
+        testMinutes: 0,
+        taskEffortSplit: {
+          [S2SlotType.STUDY]: 1.0,
+          [S2SlotType.REVISION]: 0,
+          [S2SlotType.PRACTICE]: 0,
+          [S2SlotType.TEST]: 0,
+          [S2SlotType.CATCHUP]: 0,
+        },
+      };
+
+      const subjectManyTopics: S2Subject = {
+        subjectCode: 'SUB2',
+        subjectNname: 'Subject2',
+        examFocus: 'BothExams',
+        baselineMinutes: 10, // not used in single-day computation
+        topics: Array.from({ length: 10 }).map((_, i) => ({
+          code: `U${i + 1}`,
+          baselineMinutes: 1,
+          subtopics: [ { code: `SU${i + 1}`, name: 'st', isEssential: true, priorityLevel: 1 } ],
+        })),
+      };
+
+      const tasks = planSubjectTasks(from, singleDayTo, subjectManyTopics, singleDayConstraints);
+      const studyTasks = tasks.filter(t => t.taskType === S2SlotType.STUDY);
+      const uniqueTopics = new Set(studyTasks.map(t => t.topicCode).filter(Boolean) as string[]);
+      // With 5 minutes available, we can only assign 5 topics at 1 minute each
+      expect(uniqueTopics.size).toBe(5);
+    });
+  });
+
   describe('No gaps - available time completely filled', () => {
     it('should fill all available time slots without gaps', () => {
       const tasks = planSubjectTasks(from, to, subject, constraints);
