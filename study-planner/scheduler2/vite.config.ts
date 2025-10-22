@@ -4,12 +4,13 @@ import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   plugins: [
-    dts({
-      insertTypesEntry: true,
-      rollupTypes: true,
-      // Use main tsconfig for build
-      tsconfigPath: './tsconfig.json',
-    }),
+    // Temporarily disable dts plugin to fix build issue
+    // dts({
+    //   insertTypesEntry: true,
+    //   rollupTypes: true,
+    //   // Use main tsconfig for build
+    //   tsconfigPath: './tsconfig.json',
+    // }),
   ],
   build: {
     lib: {

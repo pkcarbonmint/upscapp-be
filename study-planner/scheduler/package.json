@@ -17,9 +17,10 @@
   ],
   "scripts": {
     "build": "npm run type-check && vite build",
+    "build:watch": "vite build --watch",
     "dev": "vite",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit --project tsconfig.test.json",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest"
   },

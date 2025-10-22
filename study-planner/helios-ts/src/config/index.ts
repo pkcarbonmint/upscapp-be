@@ -20,7 +20,6 @@ export const DEFAULT_CONFIG: Config = {
     study: 0.6,
     revision: 0.2,
     practice: 0.15,
-    test: 0.05,
     gs_optional_ratio: 1
   }
 };

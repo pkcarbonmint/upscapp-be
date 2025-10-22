@@ -32,6 +32,7 @@ export function determineBlockSchedule(
   cycleSchedule: CycleSchedule,
   subjects: Subject[],
   confidenceMap: ConfidenceMap,
+  capacityHours: number|undefined, // calculate based on dates and working hours per day if not provided
   studyApproach: StudyApproach,
   workingHoursPerDay: number = 8,
   gsOptionalRatio?: GSOptionalRatio,
@@ -46,7 +47,7 @@ export function determineBlockSchedule(
   }
   const cycleStart = dayjs(cycleSchedule.startDate);
   const cycleEnd = dayjs(cycleSchedule.endDate);
-  const availableCapacityHours = cycleEnd.diff(cycleStart, 'day') * workingHoursPerDay;
+  const requiredCapacityHours = capacityHours || cycleEnd.diff(cycleStart, 'day') * workingHoursPerDay;
   // Create scheduling input
   const input: SchedulingInput = {
     subjects,
@@ -57,7 +58,7 @@ export function determineBlockSchedule(
       allowOverlap: false
     },
     timeWindow: { start: cycleStart, end: cycleEnd },
-    totalAvailableHours: availableCapacityHours,
+    totalAvailableHours: requiredCapacityHours,
     workingHoursPerDay,
     gsOptionalRatio // Pass the GS:Optional ratio to the scheduler
   };
@@ -68,7 +69,7 @@ export function determineBlockSchedule(
     // Calculate subject allocations respecting GS:Optional ratio
     const subjectAllocations = calculateSubjectAllocations(
       subjects,
-      availableCapacityHours,
+      requiredCapacityHours,
       confidenceMap,
       cycleSchedule.cycleType,
       gsOptionalRatio
@@ -81,11 +82,11 @@ export function determineBlockSchedule(
     });
   } else {
     // Fall back to original logic
-    trimmedSubjects = trimSubjectsToFit(subjects, availableCapacityHours, confidenceMap, cycleSchedule.cycleType);
+    trimmedSubjects = trimSubjectsToFit(subjects, requiredCapacityHours, confidenceMap, cycleSchedule.cycleType);
   }
 
   console.log(`Debug: Cycle ${cycleSchedule.cycleType}, subjects: ${subjects.length} -> trimmed: ${trimmedSubjects.length}`);
-  console.log(`Debug: Available hours: ${availableCapacityHours}, cycle duration: ${cycleEnd.diff(cycleStart, 'day')} days`);
+  console.log(`Debug: Required capacity hours: ${requiredCapacityHours}, cycle duration: ${cycleEnd.diff(cycleStart, 'day')} days`);
 
   // Update input with trimmed subjects
   const trimmedInput = { ...input, subjects: trimmedSubjects };
@@ -97,7 +98,8 @@ export function determineBlockSchedule(
   const blockSchedules: BlockSchedule[] = result.scheduledSubjects.map(scheduled => ({
     subjectCode: scheduled.subject.subjectCode,
     startDate: scheduled.startDate.format('YYYY-MM-DD'),
-    endDate: scheduled.endDate.format('YYYY-MM-DD')
+    endDate: scheduled.endDate.format('YYYY-MM-DD'),
+    allocatedHours: scheduled.allocatedHours
   }));
 
   // Build weekly subject allocations across calendar weeks
@@ -239,7 +241,7 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
 
     // Adjust allocations to fit within cycle duration
     subjects.forEach(subject => {
-      const currentAllocation = subjectAllocations.get(subject.subjectCode) || 4;
+      const currentAllocation = getHoursForSubject(subjectAllocations, subject.subjectCode);
       const adjustedAllocation = Math.min(currentAllocation, maxHoursPerSubject);
       subjectAllocations.set(subject.subjectCode, Math.max(1, adjustedAllocation));
       console.log(`Debug ${subject.subjectCode}: ${currentAllocation} -> ${adjustedAllocation} hours`);
@@ -261,10 +263,12 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
   const cycleDurationDays = end.diff(start, 'day');
   const totalAllocatedHours = Array.from(subjectAllocations.values()).reduce((sum, hours) => sum + hours, 0);
   const totalAvailableHoursInCycle = cycleDurationDays * workingHoursPerDay;
+  // stretch factor applies to all subjects
   const stretchFactor = totalAvailableHoursInCycle / totalAllocatedHours;
-
+  console.log(`Calculating stretch factor: ${totalAvailableHoursInCycle} / ${totalAllocatedHours}`);
+  console.log(`Debug: Stretch factor: ${stretchFactor.toFixed(2)}`);
   if (stretchFactor > MAX_STRETCH_FACTOR) {
-    // console.warn(`Warning: Stretch factor ${stretchFactor.toFixed(2)} exceeds maximum ${MAX_STRETCH_FACTOR}. Consider adding more subjects or reducing cycle duration.`);
+    console.warn(`Warning: Stretch factor ${stretchFactor.toFixed(2)} exceeds maximum ${MAX_STRETCH_FACTOR}. Consider adding more subjects or reducing cycle duration.`);
     // Could add buffer subjects here instead
   }
   if (stretchFactor < MIN_STRETCH_FACTOR) {
@@ -325,9 +329,14 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
   const validInitialSchedules = initialSchedules.filter(schedule => !schedule.endDate.isAfter(end));
   const invalidInitialSubjects = initialSchedules.filter(schedule => schedule.endDate.isAfter(end)).map(s => s.subject);
   const initialConflicts = invalidInitialSubjects.map(subject => createTimeConflict(subject.subjectCode, 'error'));
-
+  const init = { 
+    scheduledSubjects: validInitialSchedules,
+    unscheduledSubjects: invalidInitialSubjects,
+    conflicts: initialConflicts,
+    activeSchedules: validInitialSchedules
+  } as any;
   const allSchedules = subjectsToScheduleSequentially.reduce((acc, subject) => {
-    const allocatedHours = subjectAllocations.get(subject.subjectCode) || 4;
+    const allocatedHours = getHoursForSubject(subjectAllocations, subject.subjectCode);
     const durationDays = Math.max(1, Math.ceil(allocatedHours / workingHoursPerDay));
     const durationWeeks = Math.ceil(durationDays / 7);
 
@@ -368,16 +377,16 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
     const scheduled = createScheduledSubject(subject, startDate, endDate, actualDurationDays, allocatedHours, config.studyApproach);
     const updatedActiveSchedules = acc.activeSchedules.map((active: ScheduledSubject) => active === earliestEnding ? scheduled : active);
     return { ...acc, scheduledSubjects: [...acc.scheduledSubjects, scheduled], activeSchedules: updatedActiveSchedules };
-  }, { scheduledSubjects: validInitialSchedules, unscheduledSubjects: invalidInitialSubjects, conflicts: initialConflicts, activeSchedules: validInitialSchedules } as any);
+  }, init);
 
   // Cap all end dates at cycle end date
   const cappedSchedules = allSchedules.scheduledSubjects.map((schedule: any) => {
     const cappedEndDate = schedule.endDate.isAfter(end) ? end : schedule.endDate;
-
+    console.log(`${end.format('YYYY-MM-DD')} vs ${schedule.endDate.format('YYYY-MM-DD')}`);
     if (schedule.endDate.isAfter(end)) {
       console.log(`Debug: Capped ${schedule.subject.subjectCode} end date from ${schedule.endDate.format('YYYY-MM-DD')} to ${cappedEndDate.format('YYYY-MM-DD')}`);
     } else {
-      console.log(`Debug: ${schedule.subject.subjectCode} end date is already at or before cycle end date ${cappedEndDate.format('YYYY-MM-DD')}`);
+      console.log(`Debug: ${schedule.subject.subjectCode} end date is at/before cycle end ${cappedEndDate.format('YYYY-MM-DD')}`);
     }
 
     return {
@@ -399,6 +408,13 @@ function scheduleParallel(input: SchedulingInput, confidenceMap: ConfidenceMap):
     unscheduledSubjects: allSchedules.unscheduledSubjects,
     conflicts: allSchedules.conflicts
   };
+}
+function getHoursForSubject(subjectAllocations: Map<string, number>, subjectCode: string): number {
+  const hours = subjectAllocations.get(subjectCode);
+  if (!hours) {
+    throw new Error(`Error: No allocated hours for subject ${subject.subjectCode}`);
+  }
+  return hours;
 }
 
 /**

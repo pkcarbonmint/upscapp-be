@@ -2,7 +2,6 @@ export interface TaskEffortSplit {
   study: number;
   revision: number;
   practice: number;
-  test: number;
   gs_optional_ratio: number;
 }
 

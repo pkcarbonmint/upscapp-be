@@ -350,7 +350,6 @@ function timeSplitInOneWeek(studentIntake: StudentIntake, config: Config): Recor
     study: studentWeeklyHours * split.study,
     revision: studentWeeklyHours * split.revision,
     practice: studentWeeklyHours * split.practice,
-    test: studentWeeklyHours * split.test
   };
 }
 

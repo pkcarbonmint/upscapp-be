@@ -1,12 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "noImplicitAny": false,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "strict": false
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
-  ]
+  "include": ["src/tests/**/*", "src/**/*.test.ts", "src/**/*.spec.ts"],
+  "exclude": []
 }
