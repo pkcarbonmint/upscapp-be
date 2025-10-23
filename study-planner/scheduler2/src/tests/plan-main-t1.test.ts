@@ -726,7 +726,7 @@ describe('planMain Current State Analysis with T1 Context', () => {
     //   console.log(`Tasks in May 2027: ${may2027Tasks.length}`);
       
       if (may2027Tasks.length > 0) {
-        const mayDates = [...new Set(may2027Tasks.map(task => task.date.format('YYYY-MM-DD')))].sort();
+        // const mayDates = [...new Set(may2027Tasks.map(task => task.date.format('YYYY-MM-DD')))].sort();
         // console.log(`May 2027 task dates: ${mayDates.join(', ')}`);
       }
       

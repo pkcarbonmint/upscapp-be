@@ -214,7 +214,7 @@ describe('planMain Validation Tests with T1 Context', () => {
     const tolerance = workingMinutesPerDay * 0.3; // 30% tolerance = 126 minutes (more realistic)
     
     // Validate total daily allocation across all subjects
-    Object.entries(tasksByDate).forEach(([date, dayTasks]) => {
+    Object.entries(tasksByDate).forEach(([_, dayTasks]) => {
       const totalMinutes = dayTasks.reduce((sum, task) => sum + task.minutes, 0);
       
       // Should not exceed working hours significantly

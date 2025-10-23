@@ -3,7 +3,7 @@ import type { CycleType, DailyPlan, TaskEffortSplit as S1TaskEffortSplit, Task, 
 import { S2SlotType, S2WeekDay } from 'scheduler2';
 import { StudentIntake } from '../types/models';
 import { Subject, Subtopic, Topic } from '../types/Subjects';
-import dayjs, { Dayjs } from 'dayjs';
+import type { Dayjs } from 'dayjs';
 
 const bandOrder: Record<string, number> = { 'A': 1, 'B': 2, 'C': 3, 'D': 4 };
 

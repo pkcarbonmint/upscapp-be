@@ -120,17 +120,22 @@ export async function transformToStudentIntake(formData: IntakeWizardFormData): 
   const subjectConfidence = await ensureDefaultConfidenceLevels(confidenceLevel);
 
   // Create study strategy
-  const studyStrategy = {
-    study_focus_combo: 'TwoGS' as any, // Default to TwoGS for now
+  const studyStrategy: any = {
+    // Pick a valid combo from helios-ts types
+    study_focus_combo: 'OneGSPlusOptional' as any,
     weekly_study_hours: (commitment.timeCommitment ? commitment.timeCommitment * 7 : 35).toString(),
     time_distribution: 'balanced',
     study_approach: mapStudyPreference(commitment.studyPreference),
     revision_strategy: 'weekly',
     test_frequency: 'monthly',
-    seasonal_windows: ['morning', 'evening'],
-    catch_up_day_preference: 'sunday',
-    upsc_optional_subject: commitment.upscOptionalSubject
-  };
+    seasonal_windows: ['morning', 'evening'] as string[],
+    // Capitalize for downstream day mapping
+    catch_up_day_preference: 'Sunday',
+    // New UPSC fields wired from UI
+    upsc_optional_subject: commitment.upscOptionalSubject,
+    optional_first_preference: Boolean(commitment.optionalFirst),
+    weekly_test_day_preference: commitment.weeklyTestDayPreference || 'Sunday'
+  } as const;
 
   // Create student intake with all required fields
   const studentIntake: StudentIntake = createStudentIntake({

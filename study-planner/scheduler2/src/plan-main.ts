@@ -93,7 +93,7 @@ function cycleType2ExamFocus(cycleType: CycleType): S2ExamFocus {
 function blocks2Tasks(context: PlanningContext, blocks: BlockSlot[]): S2Task[] {
   // console.log(`blocks2Tasks: Processing ${blocks.length} blocks`);
   const tasks = blocks.flatMap((block, index) => {
-    const { cycleType, numParallel } = block;
+    const { cycleType } = block;
     const { subject, from, to } = block;
     const taskPlanConstraints: S2Constraints = {
       cycleType,

@@ -115,7 +115,11 @@ class ApiService {
     const transformedData = {
       weekly_hours: data.timeCommitment ? data.timeCommitment * 7 : 0, // Convert daily to weekly
       available_days: null,
-      constraints: constraintsText
+      constraints: constraintsText,
+      // Include UPSC fields (camelCase) for Python mapper
+      upscOptionalSubject: data.upscOptionalSubject || '',
+      optionalFirst: Boolean(data.optionalFirst),
+      weeklyTestDayPreference: data.weeklyTestDayPreference || 'Sunday'
     };
     
     return makeRequest<UpdateAck>(`/students/${studentId}/commitment`, 'PATCH', transformedData);

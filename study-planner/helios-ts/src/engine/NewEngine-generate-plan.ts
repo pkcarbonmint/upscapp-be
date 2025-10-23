@@ -106,9 +106,9 @@ import crypto from 'crypto';
       constraints: {
         optionalSubjectCode: intake.study_strategy.upsc_optional_subject,
         confidenceMap,
-        optionalFirst: false, // TODO: Determine based on study strategy
+        optionalFirst: Boolean(intake.study_strategy.optional_first_preference),
         catchupDay: mapDayToS2WeekDay(intake.study_strategy.catch_up_day_preference),
-        testDay: S2WeekDay.Sunday, // Default test day
+        testDay: mapDayToS2WeekDay(intake.study_strategy.weekly_test_day_preference || 'Sunday'),
         workingHoursPerDay: intake.getDailyStudyHours(),
         breaks: [],
         testMinutes: 180 // 3 hours for tests

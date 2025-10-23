@@ -1853,21 +1853,7 @@ function getOptionalSubjectName(subjectCode: string): string {
 /**
  * Get task types for a given cycle type
  */
-function getTaskTypesForCycle(cycleType: string): string[] {
-  const taskTypeMap: { [key: string]: string[] } = {
-    'C1': ['study'],
-    'C2': ['study', 'practice', 'revision'],
-    'C3': ['study', 'revision'],
-    'C4': ['practice', 'revision'],
-    'C5': ['practice', 'revision'],
-    'C5.b': ['practice', 'revision'],
-    'C6': ['practice', 'revision'],
-    'C7': ['practice', 'revision'],
-    'C8': ['study', 'practice', 'revision']
-  };
-  
-  return taskTypeMap[cycleType] || ['study'];
-}
+// (removed legacy helper _getTaskTypesForCycle)
 
 /**
  * Calculate the total duration of the study plan in months
@@ -2222,6 +2208,7 @@ async function generateResourcesTable(studyPlan: StudyPlan): Promise<(Paragraph 
     width: { size: 100, type: WidthType.PERCENTAGE },
     columnWidths: [2000, 3000, 3000, 3000, 3000],
     style: TABLE_STYLE_NAMES.resources,
+    // @ts-expect-error docx types: shading is supported at runtime
     shading: { fill: 'FFFFFF' },
     borders: {
       top: { style: BorderStyle.NONE, size: 0 },
