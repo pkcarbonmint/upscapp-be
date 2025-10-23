@@ -16,7 +16,7 @@ describe('planBlocks Time Calculation Fix Tests', () => {
   const testSubjects: S2Subject[] = [
     {
       subjectCode: 'TEST-SUBJ-1',
-      subjectName: 'Test Subject 1',
+      subjectNname: 'Test Subject 1',
       examFocus: 'BothExams',
       baselineMinutes: 2000, // 2000 minutes = ~33 hours (sufficient for long periods)
       topics: [
@@ -28,7 +28,7 @@ describe('planBlocks Time Calculation Fix Tests', () => {
     },
     {
       subjectCode: 'TEST-SUBJ-2', 
-      subjectName: 'Test Subject 2',
+      subjectNname: 'Test Subject 2',
       examFocus: 'BothExams',
       baselineMinutes: 1000, // 1000 minutes = ~16.7 hours
       topics: [
