@@ -1851,25 +1851,6 @@ function getOptionalSubjectName(subjectCode: string): string {
 }
 
 /**
- * Get task types for a given cycle type
- */
-function getTaskTypesForCycle(cycleType: string): string[] {
-  const taskTypeMap: { [key: string]: string[] } = {
-    'C1': ['study'],
-    'C2': ['study', 'practice', 'revision'],
-    'C3': ['study', 'revision'],
-    'C4': ['practice', 'revision'],
-    'C5': ['practice', 'revision'],
-    'C5.b': ['practice', 'revision'],
-    'C6': ['practice', 'revision'],
-    'C7': ['practice', 'revision'],
-    'C8': ['study', 'practice', 'revision']
-  };
-  
-  return taskTypeMap[cycleType] || ['study'];
-}
-
-/**
  * Calculate the total duration of the study plan in months
  */
 function calculatePlanDuration(studyPlan: StudyPlan): number {
