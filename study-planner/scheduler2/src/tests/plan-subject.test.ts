@@ -956,6 +956,244 @@ describe('planSubjectTasks', () => {
     });
   });
 
+  describe('Topic duration maximization', () => {
+    it('should maximize topic duration while respecting daily topic limit', () => {
+      // Create a scenario similar to the user's example
+      const singleDayTo = from.add(1, 'day');
+      const singleDayConstraints: S2Constraints = {
+        cycleType: CycleType.C1,
+        dayMaxMinutes: 60, // 60 minutes total (similar to user's 57 min example)
+        dayMinMinutes: 30,
+        catchupDay: S2WeekDay.Sunday,
+        testDay: S2WeekDay.Saturday,
+        testMinutes: 0,
+        taskEffortSplit: {
+          [S2SlotType.STUDY]: 1.0,
+          [S2SlotType.REVISION]: 0,
+          [S2SlotType.PRACTICE]: 0,
+          [S2SlotType.TEST]: 0,
+          [S2SlotType.CATCHUP]: 0,
+        },
+      };
+
+      const subjectWithThreeTopics: S2Subject = {
+        subjectCode: 'HIST',
+        subjectNname: 'History',
+        examFocus: 'BothExams',
+        baselineMinutes: 60, // Total 60 minutes
+        topics: [
+          {
+            code: 'H01/00',
+            baselineMinutes: 20, // 20 minutes needed
+            subtopics: [{ code: 'H01/00/1', name: 'Topic 1', isEssential: true, priorityLevel: 5 }],
+          },
+          {
+            code: 'H01/01',
+            baselineMinutes: 20, // 20 minutes needed
+            subtopics: [{ code: 'H01/01/1', name: 'Topic 2', isEssential: true, priorityLevel: 4 }],
+          },
+          {
+            code: 'H01/02',
+            baselineMinutes: 20, // 20 minutes needed
+            subtopics: [{ code: 'H01/02/1', name: 'Topic 3', isEssential: true, priorityLevel: 3 }],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, singleDayTo, subjectWithThreeTopics, singleDayConstraints);
+      
+      // Group tasks by topic code
+      const tasksByTopic = tasks.reduce((acc, task) => {
+        if (task.topicCode && !acc[task.topicCode]) acc[task.topicCode] = [];
+        if (task.topicCode) acc[task.topicCode].push(task);
+        return acc;
+      }, {} as Record<string, typeof tasks>);
+
+      // Should have tasks for all 3 topics (max 3 topics per day)
+      expect(Object.keys(tasksByTopic).length).toBe(3);
+      expect(tasksByTopic['H01/00']).toBeDefined();
+      expect(tasksByTopic['H01/01']).toBeDefined();
+      expect(tasksByTopic['H01/02']).toBeDefined();
+
+      // Calculate total minutes per topic
+      const topicMinutes = Object.keys(tasksByTopic).map(topicCode => ({
+        topicCode,
+        totalMinutes: tasksByTopic[topicCode].reduce((sum, task) => sum + task.minutes, 0)
+      }));
+
+      // Sort by total minutes to see the distribution
+      topicMinutes.sort((a, b) => b.totalMinutes - a.totalMinutes);
+
+      // The first topic should get the most time (maximized duration)
+      // The last topic should get the least time
+      expect(topicMinutes[0].totalMinutes).toBeGreaterThanOrEqual(topicMinutes[1].totalMinutes);
+      expect(topicMinutes[1].totalMinutes).toBeGreaterThanOrEqual(topicMinutes[2].totalMinutes);
+
+      // Total should equal available time (60 minutes)
+      const totalMinutes = topicMinutes.reduce((sum, topic) => sum + topic.totalMinutes, 0);
+      expect(totalMinutes).toBe(60);
+
+      // Verify that we're maximizing duration by checking that the first topic gets more than equal distribution
+      const equalDistribution = 60 / 3; // 20 minutes each
+      expect(topicMinutes[0].totalMinutes).toBeGreaterThan(equalDistribution);
+    });
+
+    it('should maximize topic duration across multiple days', () => {
+      // Create a 2-day scenario to test cross-day maximization
+      const twoDayTo = from.add(2, 'day');
+      const twoDayConstraints: S2Constraints = {
+        cycleType: CycleType.C1,
+        dayMaxMinutes: 60, // 60 minutes per day
+        dayMinMinutes: 30,
+        catchupDay: S2WeekDay.Sunday,
+        testDay: S2WeekDay.Saturday,
+        testMinutes: 0,
+        taskEffortSplit: {
+          [S2SlotType.STUDY]: 1.0,
+          [S2SlotType.REVISION]: 0,
+          [S2SlotType.PRACTICE]: 0,
+          [S2SlotType.TEST]: 0,
+          [S2SlotType.CATCHUP]: 0,
+        },
+      };
+
+      const subjectWithThreeTopics: S2Subject = {
+        subjectCode: 'MATH',
+        subjectNname: 'Mathematics',
+        examFocus: 'BothExams',
+        baselineMinutes: 90, // Total 90 minutes across 2 days
+        topics: [
+          {
+            code: 'H01/00',
+            baselineMinutes: 30, // 30 minutes needed (exactly equal)
+            subtopics: [{ code: 'H01/00/1', name: 'Topic 1', isEssential: true, priorityLevel: 5 }],
+          },
+          {
+            code: 'H01/01',
+            baselineMinutes: 30, // 30 minutes needed (exactly equal)
+            subtopics: [{ code: 'H01/01/1', name: 'Topic 2', isEssential: true, priorityLevel: 4 }],
+          },
+          {
+            code: 'H01/02',
+            baselineMinutes: 30, // 30 minutes needed (exactly equal)
+            subtopics: [{ code: 'H01/02/1', name: 'Topic 3', isEssential: true, priorityLevel: 3 }],
+          },
+        ],
+      };
+
+      const tasks = planSubjectTasks(from, twoDayTo, subjectWithThreeTopics, twoDayConstraints);
+      
+      // Group tasks by date and topic
+      const tasksByDateAndTopic = tasks.reduce((acc, task) => {
+        const dateKey = task.date.format('YYYY-MM-DD');
+        if (!acc[dateKey]) acc[dateKey] = {};
+        if (task.topicCode && !acc[dateKey][task.topicCode]) acc[dateKey][task.topicCode] = [];
+        if (task.topicCode) acc[dateKey][task.topicCode].push(task);
+        return acc;
+      }, {} as Record<string, Record<string, typeof tasks>>);
+
+      const dates = Object.keys(tasksByDateAndTopic).sort();
+      expect(dates.length).toBe(2); // Should have tasks for 2 days
+
+      // Check first day
+      const firstDayTopics = Object.keys(tasksByDateAndTopic[dates[0]]);
+      expect(firstDayTopics.length).toBeLessThanOrEqual(3); // Max 3 topics per day
+
+      // Calculate minutes per topic on first day
+      const firstDayTopicMinutes = firstDayTopics.map(topicCode => ({
+        topicCode,
+        totalMinutes: tasksByDateAndTopic[dates[0]][topicCode].reduce((sum, task) => sum + task.minutes, 0)
+      }));
+
+      // On the first day, topics should get maximized duration
+      // The first topic should get more time than equal distribution
+      if (firstDayTopicMinutes.length > 0) {
+        const equalDistribution = 60 / firstDayTopicMinutes.length;
+        const maxTopicMinutes = Math.max(...firstDayTopicMinutes.map(t => t.totalMinutes));
+        expect(maxTopicMinutes).toBeGreaterThan(equalDistribution);
+      }
+
+      // Verify total time allocation across both days equals target
+      const totalMinutesByTopic = tasks.reduce((acc, task) => {
+        if (task.topicCode) {
+          if (!acc[task.topicCode]) acc[task.topicCode] = 0;
+          acc[task.topicCode] += task.minutes;
+        }
+        return acc;
+      }, {} as Record<string, number>);
+
+      // With maximization logic, topics may not get exactly their target minutes
+      // Instead, verify that the total time is distributed appropriately
+      const totalAllocated = Object.values(totalMinutesByTopic).reduce((sum, minutes) => sum + minutes, 0);
+      expect(totalAllocated).toBe(90); // Total should be 90 minutes (45 * 2 days)
+      
+      // Verify that we have maximized duration (first topic gets more than equal share)
+      const topicMinutes = Object.values(totalMinutesByTopic).sort((a, b) => b - a);
+      const equalShare = 90 / Object.keys(totalMinutesByTopic).length;
+      expect(topicMinutes[0]).toBeGreaterThan(equalShare);
+    });
+
+    it('should respect daily topic limit even when maximizing duration', () => {
+      // Test with more topics than daily limit to ensure constraint is respected
+      const singleDayTo = from.add(1, 'day');
+      const singleDayConstraints: S2Constraints = {
+        cycleType: CycleType.C1,
+        dayMaxMinutes: 90, // 90 minutes total
+        dayMinMinutes: 60,
+        catchupDay: S2WeekDay.Sunday,
+        testDay: S2WeekDay.Saturday,
+        testMinutes: 0,
+        taskEffortSplit: {
+          [S2SlotType.STUDY]: 1.0,
+          [S2SlotType.REVISION]: 0,
+          [S2SlotType.PRACTICE]: 0,
+          [S2SlotType.TEST]: 0,
+          [S2SlotType.CATCHUP]: 0,
+        },
+      };
+
+      const subjectWithManyTopics: S2Subject = {
+        subjectCode: 'SCI',
+        subjectNname: 'Science',
+        examFocus: 'BothExams',
+        baselineMinutes: 90,
+        topics: Array.from({ length: 6 }).map((_, i) => ({
+          code: `T${i + 1}`,
+          baselineMinutes: 15, // 15 minutes each
+          subtopics: [{ code: `S${i + 1}`, name: `Subtopic ${i + 1}`, isEssential: true, priorityLevel: 5 - i }],
+        })),
+      };
+
+      const tasks = planSubjectTasks(from, singleDayTo, subjectWithManyTopics, singleDayConstraints);
+      
+      // Group tasks by topic
+      const uniqueTopics = new Set(tasks.map(task => task.topicCode).filter(Boolean));
+      
+      // Should have at most 3 topics per day (constraint)
+      expect(uniqueTopics.size).toBeLessThanOrEqual(3);
+      expect(uniqueTopics.size).toBeGreaterThan(0);
+
+      // Calculate total minutes allocated
+      const totalMinutes = tasks.reduce((sum, task) => sum + task.minutes, 0);
+      expect(totalMinutes).toBe(90); // Should use all available time
+
+      // Verify that the selected topics get maximized duration
+      const tasksByTopic = tasks.reduce((acc, task) => {
+        if (task.topicCode) {
+          if (!acc[task.topicCode]) acc[task.topicCode] = 0;
+          acc[task.topicCode] += task.minutes;
+        }
+        return acc;
+      }, {} as Record<string, number>);
+
+      const topicMinutes = Object.values(tasksByTopic).sort((a, b) => b - a);
+      
+      // The first topic should get more than equal distribution
+      const equalDistribution = 90 / uniqueTopics.size;
+      expect(topicMinutes[0]).toBeGreaterThan(equalDistribution);
+    });
+  });
+
 function isCatchupDay(date: dayjs.Dayjs): boolean {
   return date.day() === S2WeekDay.Sunday;
 }
