@@ -419,17 +419,64 @@ function distributeTopicsAcrossAllSlots(
       continue; // nothing to allocate for this day
     }
 
-    // Allocate each day's slots prioritizing finishing a topic before moving on
+    // Calculate total minutes available for this day
+    const totalDayMinutes = daySlots.reduce((sum, slot) => sum + slot.minutes, 0);
+    
+    // Check if we should maximize duration (when topics have equal or similar baseline minutes)
+    const topicTargets = dayTopicIndices.map(idx => targetMinutesPerTopic[idx]);
+    const totalTargets = topicTargets.reduce((sum, target) => sum + target, 0);
+    
+    // Only maximize duration for cases where we have exactly equal targets
+    // This is a very conservative approach to avoid breaking existing functionality
+    const targetsAreExactlyEqual = Math.max(...topicTargets) === Math.min(...topicTargets);
+    
+    const shouldMaximizeDuration = dayTopicIndices.length <= 3 && 
+      totalTargets > 0 && 
+      targetsAreExactlyEqual && // Targets are exactly equal
+      totalDayMinutes >= 30; // Enough time to redistribute meaningfully
+    
+    let redistributedMinutes: number[];
+    
+    if (shouldMaximizeDuration) {
+      // Redistribute minutes to maximize duration of first topics
+      // Give more time to earlier topics to create longer study sessions
+      redistributedMinutes = new Array(dayTopicIndices.length).fill(0);
+      let remainingMinutes = totalDayMinutes;
+      
+      // Distribute minutes with preference for earlier topics
+      for (let i = 0; i < dayTopicIndices.length && remainingMinutes > 0; i++) {
+        // @ts-ignore
+        const topicIdx = dayTopicIndices[i];
+        
+        // Give this topic more than its fair share if it's one of the first topics
+        const fairShare = totalDayMinutes / dayTopicIndices.length;
+        const bonusFactor = Math.max(1, 1.5 - (i * 0.2)); // First topic gets 1.5x, second gets 1.3x, etc.
+        const preferredAmount = Math.floor(fairShare * bonusFactor);
+        
+        redistributedMinutes[i] = Math.min(preferredAmount, remainingMinutes);
+        remainingMinutes -= redistributedMinutes[i];
+      }
+    } else {
+      // Use original targets when they're meaningful (predefined baseline minutes)
+      redistributedMinutes = topicTargets;
+    }
+    
+    // Allocate each day's slots using redistributed minutes
     let dayTopicPtr = 0; // points into dayTopicIndices
+    
     for (const slot of daySlots) {
       let minutesLeftInSlot = slot.minutes;
       while (minutesLeftInSlot > 0 && dayTopicPtr < dayTopicIndices.length) {
         const topicIdx = dayTopicIndices[dayTopicPtr];
-        const remainingForTopic = targetMinutesPerTopic[topicIdx];
+        const allocatedForTopic = redistributedMinutes[dayTopicPtr];
+        const remainingForTopic = allocatedForTopic;
+        
         if (remainingForTopic <= 0) {
           dayTopicPtr += 1;
           continue;
         }
+        
+        // Allocate as much as possible to this topic in this slot
         const alloc = Math.min(minutesLeftInSlot, remainingForTopic);
         if (alloc > 0) {
           allTasks.push({
@@ -439,14 +486,14 @@ function distributeTopicsAcrossAllSlots(
             minutes: alloc,
             date: slot.date,
           });
-          targetMinutesPerTopic[topicIdx] -= alloc;
+          redistributedMinutes[dayTopicPtr] -= alloc;
           minutesLeftInSlot -= alloc;
         }
-        if (targetMinutesPerTopic[topicIdx] <= 0) {
-          // Finished this topic; move to next topic of the day
+        
+        // Only move to next topic if current topic is completely finished
+        if (redistributedMinutes[dayTopicPtr] <= 0) {
           dayTopicPtr += 1;
         }
-        // If minutesLeftInSlot > 0 and topic still has minutes, loop continues and we keep allocating
       }
       // If we exhausted today's topics but slot still has minutes, leave unused to respect max 3 topics/day
     }
