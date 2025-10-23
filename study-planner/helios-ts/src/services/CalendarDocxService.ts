@@ -2222,7 +2222,7 @@ async function generateResourcesTable(studyPlan: StudyPlan): Promise<(Paragraph 
     width: { size: 100, type: WidthType.PERCENTAGE },
     columnWidths: [2000, 3000, 3000, 3000, 3000],
     style: TABLE_STYLE_NAMES.resources,
-    shading: { fill: 'FFFFFF' },
+    // shading is not supported on Table options in our typings; apply via cell styles instead
     borders: {
       top: { style: BorderStyle.NONE, size: 0 },
       left: { style: BorderStyle.NONE, size: 0 },
@@ -2369,7 +2369,7 @@ function createSubjectCard(subjectCode: string, resources: any): TableCell {
     children: cardContent,
     width: { size: 33.33, type: WidthType.PERCENTAGE },
     margins: { top: 200, bottom: 200, left: 150, right: 150 },
-    shading: { fill: 'FFFFFF' },
+    // shading for TableCell is supported; keep as is or style via theme if needed
     borders: {
       top: { style: BorderStyle.NONE, size: 0 },
       left: { style: BorderStyle.NONE, size: 0 },

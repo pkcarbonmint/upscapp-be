@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode } from "./types";
+import { BlockAllocConstraints, BlockSlot, S2Subject, SubjectCode } from "./types";
 /*
  * PSEUDO CODE FOR TIME DISTRIBUTION AMONG SUBJECTS
  * 
@@ -344,38 +344,4 @@ export function planBlocks(
   return finalSlots;
 }
 
-
-
-
-
-// Unused function - may be needed later for workload balancing
-// Removed to fix syntax errors
-
-
-function countCatchupDays(from: Dayjs, to: Dayjs, catchupDay: S2WeekDay) {
-
-  if (to.isBefore(from)) {
-    throw new Error('to date must be after from date');
-  }
-
-  const days = to.diff(from, 'day');
-  // Check how many catchup days are there between from and to
-  // use map and filter
-  return Array(days).fill(0)
-    .map((_, i) => from.add(i, 'day'))
-    .filter((date) => date.day() === catchupDay)
-    .length;
-}
-
-function countTestDays(from: Dayjs, to: Dayjs, testDay: S2WeekDay) {
-  if (to.isBefore(from)) {
-    throw new Error('to date must be after from date');
-  }
-
-  const days = to.diff(from, 'day');
-  return Array(days).fill(0)
-    .map((_, i) => from.add(i, 'day'))
-    .filter((date) => date.day() === testDay)
-    .length;
-}
-
+// Removed unused helper functions to satisfy noUnusedLocals
