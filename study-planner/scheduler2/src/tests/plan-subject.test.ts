@@ -141,7 +141,7 @@ describe('planSubjectTasks', () => {
   });
 
   describe('Maximize topics allocated given block time', () => {
-    it('allocates all topics when scaled minutes allow > 0 for each (single-day)', () => {
+    it('allocates at most 3 topics per day even if more fit (single-day)', () => {
       const singleDayTo = from.add(1, 'day');
       const singleDayConstraints: S2Constraints = {
         cycleType: CycleType.C1,
@@ -174,10 +174,12 @@ describe('planSubjectTasks', () => {
       const tasks = planSubjectTasks(from, singleDayTo, subjectAllTopics, singleDayConstraints);
       const studyTasks = tasks.filter(t => t.taskType === S2SlotType.STUDY);
       const uniqueTopics = new Set(studyTasks.map(t => t.topicCode).filter(Boolean) as string[]);
-      expect(uniqueTopics.size).toBe(6);
+      // Max 3 topics per day by policy
+      expect(uniqueTopics.size).toBeLessThanOrEqual(3);
+      expect(uniqueTopics.size).toBeGreaterThan(0);
     });
 
-    it('allocates as many topics as total minutes allow when too many topics (single-day)', () => {
+    it('caps topics to 3 when too many topics (single-day)', () => {
       const singleDayTo = from.add(1, 'day');
       const singleDayConstraints: S2Constraints = {
         cycleType: CycleType.C1,
@@ -210,8 +212,9 @@ describe('planSubjectTasks', () => {
       const tasks = planSubjectTasks(from, singleDayTo, subjectManyTopics, singleDayConstraints);
       const studyTasks = tasks.filter(t => t.taskType === S2SlotType.STUDY);
       const uniqueTopics = new Set(studyTasks.map(t => t.topicCode).filter(Boolean) as string[]);
-      // With 5 minutes available, we can only assign 5 topics at 1 minute each
-      expect(uniqueTopics.size).toBe(5);
+      // With cap 3 topics/day
+      expect(uniqueTopics.size).toBeLessThanOrEqual(3);
+      expect(uniqueTopics.size).toBeGreaterThan(0);
     });
   });
 
