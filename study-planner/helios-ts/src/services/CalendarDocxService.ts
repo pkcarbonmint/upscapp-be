@@ -1851,25 +1851,6 @@ function getOptionalSubjectName(subjectCode: string): string {
 }
 
 /**
- * Get task types for a given cycle type
- */
-function getTaskTypesForCycle(cycleType: string): string[] {
-  const taskTypeMap: { [key: string]: string[] } = {
-    'C1': ['study'],
-    'C2': ['study', 'practice', 'revision'],
-    'C3': ['study', 'revision'],
-    'C4': ['practice', 'revision'],
-    'C5': ['practice', 'revision'],
-    'C5.b': ['practice', 'revision'],
-    'C6': ['practice', 'revision'],
-    'C7': ['practice', 'revision'],
-    'C8': ['study', 'practice', 'revision']
-  };
-  
-  return taskTypeMap[cycleType] || ['study'];
-}
-
-/**
  * Calculate the total duration of the study plan in months
  */
 function calculatePlanDuration(studyPlan: StudyPlan): number {
@@ -2222,7 +2203,7 @@ async function generateResourcesTable(studyPlan: StudyPlan): Promise<(Paragraph 
     width: { size: 100, type: WidthType.PERCENTAGE },
     columnWidths: [2000, 3000, 3000, 3000, 3000],
     style: TABLE_STYLE_NAMES.resources,
-    shading: { fill: 'FFFFFF' },
+    // shading is not supported on Table options in our typings; apply via cell styles instead
     borders: {
       top: { style: BorderStyle.NONE, size: 0 },
       left: { style: BorderStyle.NONE, size: 0 },
@@ -2369,7 +2350,7 @@ function createSubjectCard(subjectCode: string, resources: any): TableCell {
     children: cardContent,
     width: { size: 33.33, type: WidthType.PERCENTAGE },
     margins: { top: 200, bottom: 200, left: 150, right: 150 },
-    shading: { fill: 'FFFFFF' },
+    // shading for TableCell is supported; keep as is or style via theme if needed
     borders: {
       top: { style: BorderStyle.NONE, size: 0 },
       left: { style: BorderStyle.NONE, size: 0 },

@@ -16,7 +16,7 @@ describe('planBlocks Time Calculation Tests', () => {
   const testSubjects: S2Subject[] = [
     {
       subjectCode: 'TEST-SUBJ-1',
-      subjectName: 'Test Subject 1',
+      subjectNname: 'Test Subject 1',
       examFocus: 'BothExams',
       baselineMinutes: 120, // 120 minutes = 2 hours (realistic for short test periods)
       topics: [
@@ -28,7 +28,7 @@ describe('planBlocks Time Calculation Tests', () => {
     },
     {
       subjectCode: 'TEST-SUBJ-2', 
-      subjectName: 'Test Subject 2',
+      subjectNname: 'Test Subject 2',
       examFocus: 'BothExams',
       baselineMinutes: 60, // 60 minutes = 1 hour
       topics: [
