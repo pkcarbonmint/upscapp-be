@@ -374,38 +374,81 @@ function distributeTopicsAcrossAllSlots(
     targetMinutesPerTopic = targetMinutesPerTopic.map((m, i) => m + extraAlloc[i]);
   }
 
-  // Round-robin allocation across topics to ensure multiple topics appear within the block
-  let topicCursor = 0;
+  // Group slots by day to enforce max topics per day
+  const slotsByDate = new Map<string, { date: typeof allSlots[number]['date']; slots: S2Slot[] }>();
   for (const slot of allSlots) {
-    let minutesLeftInSlot = slot.minutes;
-    let safety = 0;
-    while (minutesLeftInSlot > 0 && safety < topics.length * 2) {
-      // Find next topic with remaining minutes for this block
+    const key = slot.date.format('YYYY-MM-DD');
+    const entry = slotsByDate.get(key);
+    if (entry) {
+      entry.slots.push(slot);
+    } else {
+      slotsByDate.set(key, { date: slot.date, slots: [slot] });
+    }
+  }
+
+  const sortedDays = Array.from(slotsByDate.values()).sort((a, b) => a.date.valueOf() - b.date.valueOf());
+
+  // Pointer across topics so we progress through the list over days
+  let topicCursor = 0;
+
+  for (const day of sortedDays) {
+    const daySlots = day.slots;
+
+    // Pick up to 3 topics with remaining minutes for this day
+    const dayTopicIndices: number[] = [];
+    const picked = new Set<number>();
+    let attempts = 0;
+    while (dayTopicIndices.length < 3 && attempts < topics.length * 2) {
+      // Advance cursor to a topic with remaining minutes
       let searched = 0;
-      while (searched < topics.length && targetMinutesPerTopic[topicCursor] <= 0) {
+      while (searched < topics.length && (targetMinutesPerTopic[topicCursor] <= 0 || picked.has(topicCursor))) {
         topicCursor = (topicCursor + 1) % topics.length;
         searched += 1;
       }
-      if (searched >= topics.length && targetMinutesPerTopic[topicCursor] <= 0) {
-        // No topic has remaining minutes to allocate in this block
-        break;
+      if (searched >= topics.length && (targetMinutesPerTopic[topicCursor] <= 0 || picked.has(topicCursor))) {
+        break; // no more topics with remaining minutes
       }
-
-      const alloc = Math.min(minutesLeftInSlot, targetMinutesPerTopic[topicCursor]);
-      if (alloc > 0) {
-        allTasks.push({
-          topicCode: topics[topicCursor].code,
-          subjectCode: subject.subjectCode,
-          taskType: slot.type,
-          minutes: alloc,
-          date: slot.date,
-        });
-        targetMinutesPerTopic[topicCursor] -= alloc;
-        minutesLeftInSlot -= alloc;
-      }
-      // Move cursor so next allocation goes to the next topic
+      dayTopicIndices.push(topicCursor);
+      picked.add(topicCursor);
+      // Move cursor forward for next pick next time
       topicCursor = (topicCursor + 1) % topics.length;
-      safety += 1;
+      attempts += 1;
+    }
+
+    if (dayTopicIndices.length === 0) {
+      continue; // nothing to allocate for this day
+    }
+
+    // Allocate each day's slots prioritizing finishing a topic before moving on
+    let dayTopicPtr = 0; // points into dayTopicIndices
+    for (const slot of daySlots) {
+      let minutesLeftInSlot = slot.minutes;
+      while (minutesLeftInSlot > 0 && dayTopicPtr < dayTopicIndices.length) {
+        const topicIdx = dayTopicIndices[dayTopicPtr];
+        const remainingForTopic = targetMinutesPerTopic[topicIdx];
+        if (remainingForTopic <= 0) {
+          dayTopicPtr += 1;
+          continue;
+        }
+        const alloc = Math.min(minutesLeftInSlot, remainingForTopic);
+        if (alloc > 0) {
+          allTasks.push({
+            topicCode: topics[topicIdx].code,
+            subjectCode: subject.subjectCode,
+            taskType: slot.type,
+            minutes: alloc,
+            date: slot.date,
+          });
+          targetMinutesPerTopic[topicIdx] -= alloc;
+          minutesLeftInSlot -= alloc;
+        }
+        if (targetMinutesPerTopic[topicIdx] <= 0) {
+          // Finished this topic; move to next topic of the day
+          dayTopicPtr += 1;
+        }
+        // If minutesLeftInSlot > 0 and topic still has minutes, loop continues and we keep allocating
+      }
+      // If we exhausted today's topics but slot still has minutes, leave unused to respect max 3 topics/day
     }
   }
 
