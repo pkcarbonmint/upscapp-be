@@ -271,7 +271,6 @@ function generateBlocksRecursiveWithScaling(
   if (totalRemainingTime <= 0) {
     // All subjects complete - but continue until we reach the end of time window
     // to ensure all days are covered. Reset remaining time proportionally.
-    const totalBaselineTime = subjects.reduce((sum, subject) => sum + subject.baselineMinutes, 0);
     const remainingDays = timeWindowTo.diff(earliestTrack.date, 'day');
     
     if (remainingDays > 0) {
