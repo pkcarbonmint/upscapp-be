@@ -1,0 +1,87 @@
+{
+  "optionalSubject": {
+    "subjectCode": "OPTIONAL",
+    "subjectNname": "Optional Subject",
+    "examFocus": "BothExams",
+    "baselineMinutes": 1500,
+    "topics": [
+      {
+        "code": "OPT_T1",
+        "subtopics": [
+          {
+            "code": "OPT_ST1",
+            "name": "Optional Subtopic 1",
+            "baselineMinutes": 300,
+            "isEssential": true,
+            "priorityLevel": 1
+          }
+        ]
+      }
+    ]
+  },
+  "startDate": "2025-01-01",
+  "targetYear": 2025,
+  "prelimsExamDate": "2025-06-15",
+  "mainsExamDate": "2025-09-15",
+  "constraints": {
+    "optionalSubjectCode": "OPTIONAL",
+    "confidenceMap": {
+      "OPTIONAL": 0.7,
+      "HISTORY": 0.8,
+      "POLITY": 0.6
+    },
+    "optionalFirst": true,
+    "catchupDay": 0,
+    "testDay": 6,
+    "workingHoursPerDay": 8,
+    "breaks": [],
+    "testMinutes": 180
+  },
+  "subjects": [
+    {
+      "subjectCode": "HISTORY",
+      "subjectNname": "History",
+      "examFocus": "BothExams",
+      "baselineMinutes": 2000,
+      "topics": [
+        {
+          "code": "HIST_T1",
+          "subtopics": [
+            {
+              "code": "HIST_ST1",
+              "name": "Ancient History",
+              "baselineMinutes": 400,
+              "isEssential": true,
+              "priorityLevel": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "subjectCode": "POLITY",
+      "subjectNname": "Polity",
+      "examFocus": "BothExams",
+      "baselineMinutes": 1800,
+      "topics": [
+        {
+          "code": "POL_T1",
+          "subtopics": [
+            {
+              "code": "POL_ST1",
+              "name": "Constitution",
+              "baselineMinutes": 350,
+              "isEssential": true,
+              "priorityLevel": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "relativeAllocationWeights": {
+    "OPTIONAL": 1.2,
+    "HISTORY": 1.0,
+    "POLITY": 0.9
+  }
+}
