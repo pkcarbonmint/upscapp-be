@@ -4,6 +4,15 @@ import { Logger, LogEntry } from '../types/Types';
 import { Config } from './engine-types';
 import { makeLogger } from '../services/Log';
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
+// Load dayjs plugins
+dayjs.extend(isBetween);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+
 import { loadAllSubjects } from '../services/SubjectLoader';
 import { getOptionalSubjectByCode } from '../config';
 import { planMain, CycleType } from 'scheduler2';
@@ -240,6 +249,20 @@ async function mapScheduler2ResultToStudyPlan(
           task.subjectCode === block.subject.subjectCode &&
           task.date.isBetween(block.from, block.to, 'day', '[]')
         );
+        
+        // Debug logging for empty weekly plans
+        const weeklyPlan = mapFromS2Tasks(blockTasks, block.from);
+        if (weeklyPlan.length === 0) {
+          const allTasksForSubject = result.tasks.filter(task => task.subjectCode === block.subject.subjectCode);
+          console.warn(`DEBUG: Empty weekly plan for block ${cycle.cycleType}-${block.subject.subjectCode}-${blockIndex}`);
+          console.warn(`  Block dates: ${block.from.format('YYYY-MM-DD')} to ${block.to.format('YYYY-MM-DD')}`);
+          console.warn(`  Block tasks found: ${blockTasks.length}`);
+          console.warn(`  Total tasks for subject ${block.subject.subjectCode}: ${allTasksForSubject.length}`);
+          if (allTasksForSubject.length > 0) {
+            console.warn(`  First task date: ${allTasksForSubject[0].date.format('YYYY-MM-DD')}`);
+            console.warn(`  Last task date: ${allTasksForSubject[allTasksForSubject.length-1].date.format('YYYY-MM-DD')}`);
+          }
+        }
         
         
         return {
