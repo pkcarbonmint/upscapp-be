@@ -22,6 +22,7 @@
     "type-check": "tsc --noEmit --project tsconfig.test.json",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest",
+    "test:blocks": "vitest plan-blocks.test.ts",
     "debug": "node debug-helper.js"
   },
   "keywords": [
