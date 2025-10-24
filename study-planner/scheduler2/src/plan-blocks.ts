@@ -76,9 +76,12 @@ export function planBlocks(
   }
 
   // Calculate available time
-  const numAvailableDays = timeWindowTo.diff(timeWindowFrom, 'day');
-  const availableMinutes = numAvailableDays * constraints.workingMinutesPerDay;
-  
+// Calculate available time - EXCLUDE catchup and test days
+const numAvailableDays = timeWindowTo.diff(timeWindowFrom, 'day');
+const availableMinutes = Array.from({ length: numAvailableDays }, (_, index) => timeWindowFrom.add(index, 'day'))
+  .filter(date => !isCatchupDay(date, constraints.catchupDay) && !isTestDay(date, constraints.testDay))
+  .length * constraints.workingMinutesPerDay;
+    
   const totalBaselineTime = subjects.reduce((sum, subject) => sum + subject.baselineMinutes, 0);
   if (totalBaselineTime === 0) {
     return [];
@@ -96,7 +99,7 @@ export function planBlocks(
 
   verifyBlocks(  timeWindowFrom,
     timeWindowTo  ,
-    subjects,
+    scaledSubjects,
     constraints,
     blocks);
   return blocks;
@@ -115,7 +118,13 @@ function verifyBlocks(  timeWindowFrom: Dayjs,
   Array.from({ length: duration }, (_, index) => timeWindowFrom.add(index, 'day'))
   .filter(date => !isCatchupDay(date, constraints.catchupDay) && !isTestDay(date, constraints.testDay))
   .forEach(date => {
-    const blocksOnTheDay = blocks.filter(block => block.from.isSame(date, 'day'));
+    const blocksOnTheDay = blocks.filter(block => {
+      const blockStart = block.from.startOf('day');
+      const blockEnd = block.to.startOf('day');
+      const currentDay = date.startOf('day');
+      return !currentDay.isBefore(blockStart) && !currentDay.isAfter(blockEnd);
+    });
+    // const blocksOnTheDay = blocks.filter(block => block.from.isSame(date, 'day'));
     const totalMinutes = blocksOnTheDay.reduce((sum, block) => sum + block.to.diff(block.from, 'minutes'), 0);
     if (totalMinutes === 0) {
       const failureCount = failureDates.length;
