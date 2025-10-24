@@ -364,7 +364,8 @@ async function createBlockFromSchedule(
 
   // Calculate duration in weeks
   const startDate = dayjs(schedule.startDate);
-  const endDate = dayjs(schedule.endDate);
+  // Treat end date from scheduler as exclusive to avoid off-by-one weeks
+  const endDate = dayjs(schedule.endDate).subtract(1, 'day');
   const durationWeeks = Math.ceil(endDate.diff(startDate, 'day') / 7);
 
   // Use allocated hours from scheduler library (already calculated with GS:Optional ratio)
@@ -403,7 +404,8 @@ async function createBlockFromSchedule(
     weekly_plan: mapFromS2Tasks(s2WeeklyPlan),
     block_resources: blockResources,
     block_start_date: schedule.startDate,
-    block_end_date: schedule.endDate,
+  // Use exclusive end date consistently for downstream consumers
+  block_end_date: endDate.format('YYYY-MM-DD'),
     block_description: `${cycleName} block for ${subject.subjectName}`,
     estimated_hours: calculatedHours,
     actual_hours: actualHours
