@@ -283,8 +283,10 @@ async function mapScheduler2ResultToStudyPlan(
             revision_materials: [],
             expert_recommendations: []
           },
+          // Treat scheduler2 block end as exclusive for document generation
+          // so the calendar doesn't include an extra trailing day with no tasks
           block_start_date: block.from.format('YYYY-MM-DD'),
-          block_end_date: block.to.format('YYYY-MM-DD'),
+          block_end_date: block.to.subtract(1, 'day').format('YYYY-MM-DD'),
           block_description: `${cycle.cycleType} block for ${block.subject.subjectNname}`,
           estimated_hours: block.to.diff(block.from, 'hours'),
           actual_hours: block.to.diff(block.from, 'hours')
