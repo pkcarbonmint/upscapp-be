@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import { BlockAllocConstraints, BlockSlot, S2Slot, S2SlotType, S2Subject, S2WeekDay, SubjectCode } from "./types";
+import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode } from "./types";
 import * as fs from 'fs';
 import * as path from 'path';
 /*
