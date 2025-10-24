@@ -103,6 +103,7 @@ function blocks2Tasks(context: PlanningContext, blocks: BlockSlot[]): S2Task[] {
       testDay: context.constraints.testDay,
       testMinutes: context.constraints.testMinutes,
       taskEffortSplit: cycleTypeToTaskEffortSplit(cycleType),
+      optionalSubjectCode: context.constraints.optionalSubjectCode,
     }
     // console.log(`blocks2Tasks: Block ${index + 1} - ${subject.subjectCode} (${cycleType}) from ${from.format('YYYY-MM-DD HH:mm')} to ${to.format('YYYY-MM-DD HH:mm')}`);
     // console.log(`blocks2Tasks: Block duration: ${to.diff(from, 'minutes')} minutes`);

@@ -106,6 +106,8 @@ export type S2Constraints = {
   testDay: S2WeekDay; // day to take a test
   testMinutes: number; // time needed to take a test
   taskEffortSplit: Record<S2SlotType, number>;
+  // Optional: subject to attach single test tasks to on test days
+  optionalSubjectCode?: string;
 };
 
 export type S2Slot = {
