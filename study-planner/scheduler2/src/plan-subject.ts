@@ -297,7 +297,7 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
   const practiceTasks = distributeTopics(sortedTopics, practiceSlots, constraints.taskEffortSplit[S2SlotType.PRACTICE]);
 
   console.log(`#### createTasks_v2: studyTasks: ${studyTasks.length}, revisionTasks: ${revisionTasks.length}, practiceTasks: ${practiceTasks.length}`);
-  // Include explicit TEST and CATCHUP tasks so weekly plans are never empty
+  // Include explicit TEST tasks so weekly plans include test days; do not add per-subject catchup tasks
   const extraDayTasks: S2Task[] = [];
   const totalDays = to.diff(from, 'day');
   for (let i = 0; i < totalDays; i++) {
@@ -312,30 +312,9 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
           date
         });
       }
-      // If test day coincides with catchup day, allocate remaining time to catchup
-      if (isCatchupDay(date, constraints.catchupDay)) {
-        const remaining = Math.max(0, constraints.dayMaxMinutes - constraints.testMinutes);
-        if (remaining > 0) {
-          extraDayTasks.push({
-            topicCode: 'CATCHUP',
-            subjectCode: subject.subjectCode,
-            taskType: S2SlotType.CATCHUP,
-            minutes: remaining,
-            date
-          });
-        }
-      }
     } else if (isCatchupDay(date, constraints.catchupDay)) {
-      // Pure catchup day
-      if (constraints.dayMaxMinutes > 0) {
-        extraDayTasks.push({
-          topicCode: 'CATCHUP',
-          subjectCode: subject.subjectCode,
-          taskType: S2SlotType.CATCHUP,
-          minutes: constraints.dayMaxMinutes,
-          date
-        });
-      }
+      // Do not add per-subject catchup tasks; a single catchup entry will be handled at presentation layer
+      continue;
     }
   }
 
@@ -368,7 +347,8 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
     Array(allDays).fill(0).forEach((_, i) => {
       const date = from.add(i, 'day');
       const key = date.format('YYYY-MM-DD');
-      if (!taskDate2CountMap.has(key)) {
+      // Ignore catchup-only days when checking coverage
+      if (!taskDate2CountMap.has(key) && !isCatchupDay(date, constraints.catchupDay)) {
         missngCOunt++;
         missingDays.push(key);
         console.log(`#### verifyAllDays: Day ${key} (${date.format('dddd')}) is not covered`);
@@ -560,28 +540,13 @@ function allocateSlots(from: Dayjs, to: Dayjs, slotType: S2SlotType, constraints
   
   const slots: S2Slot[] = Array(calendarDays).fill(0)
     .map((_, i) => from.add(i, 'day'))
-    .map((date: Dayjs): { date: Dayjs, availableMinutes: number } => {
-      const availableMinutes = constraints.dayMaxMinutes * shareFraction;
-      return { date, availableMinutes };
-    })
-    .map(({ date, availableMinutes }: { date: Dayjs, availableMinutes: number }): S2Slot[] => {
-      if (isTestDay(date, constraints.testDay) && isCatchupDay(date, constraints.catchupDay)) {
-        const testMinutes = availableMinutes - constraints.testMinutes;
-        const catchupMinutes = availableMinutes - testMinutes;
-        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - TEST+CATCHUP day: ${testMinutes}+${catchupMinutes} minutes`);
-        return [
-          { date, minutes: testMinutes, type: S2SlotType.TEST },
-          { date, minutes: catchupMinutes, type: S2SlotType.CATCHUP },
-        ];
+    .map((date: Dayjs): S2Slot[] => {
+      // Do not allocate study/revision/practice slots on test or catchup days
+      if (isTestDay(date, constraints.testDay) || isCatchupDay(date, constraints.catchupDay)) {
+        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - RESTRICTED day (test/catchup), skipping ${slotType} slots`);
+        return [];
       }
-      if (isTestDay(date, constraints.testDay)) {
-        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - TEST day: ${availableMinutes} minutes`);
-        return [{ date, minutes: availableMinutes, type: S2SlotType.TEST }];
-      }
-      if (isCatchupDay(date, constraints.catchupDay)) {
-        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - CATCHUP day: ${availableMinutes} minutes`);
-        return [{ date, minutes: availableMinutes, type: S2SlotType.CATCHUP }];
-      }
+      const availableMinutes = Math.floor(constraints.dayMaxMinutes * shareFraction);
       const slots = Math.floor(availableMinutes / slotSize);
       console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - ${slotType} day: ${slots} slots (${availableMinutes} minutes)`);
       return Array(slots).fill(0).map((_, _i): S2Slot => {
