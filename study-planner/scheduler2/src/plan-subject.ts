@@ -187,6 +187,7 @@ function sortTopics(topicsWithMinutes: S2TopicWithMinutes[]): S2TopicWithMinutes
   return sorted;
 }
 
+//@ts-ignore
 function createTasks_v1(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], from: Dayjs, to: Dayjs, constraints: S2Constraints): S2Task[] {
   // console.log(`createTasks: Called with ${sortedTopics.length} topics`);
   // sortedTopics.forEach((topic, index) => {
@@ -541,7 +542,7 @@ function allocateSlots(from: Dayjs, to: Dayjs, slotType: S2SlotType, constraints
       }
       const slots = Math.floor(availableMinutes / slotSize);
       console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - ${slotType} day: ${slots} slots (${availableMinutes} minutes)`);
-      return Array(slots).fill(0).map((_, i): S2Slot => {
+      return Array(slots).fill(0).map((_, _i): S2Slot => {
         return { date: date, minutes: slotSize, type: slotType };
       });
     })

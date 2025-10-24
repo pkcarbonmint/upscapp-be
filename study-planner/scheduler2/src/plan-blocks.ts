@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import { BlockAllocConstraints, BlockSlot, S2Slot, S2SlotType, S2Subject, S2WeekDay, SubjectCode } from "./types";
+import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode } from "./types";
 import * as fs from 'fs';
 import * as path from 'path';
 /*
@@ -144,6 +144,15 @@ function verifyBlocks(  timeWindowFrom: Dayjs,
             timeWindowTo: timeWindowTo.format('YYYY-MM-DD HH:mm:ss'),
             subjects,
             constraints,
+            generatedBlocks: blocks,
+            problematicDay: {
+              date: date.format('YYYY-MM-DD'),
+              dayOfWeek: date.format('dddd'),
+              isCatchupDay: isCatchupDay(date, constraints.catchupDay),
+              isTestDay: isTestDay(date, constraints.testDay),
+              blocksOnDay: blocksOnTheDay.length,
+              totalMinutes: totalMinutes
+            }
           }
 
         // Write debug data to file
@@ -260,8 +269,21 @@ function generateBlocksRecursiveWithScaling(
   const totalRemainingTime = Array.from(state.subjectRemainingTime.values()).reduce((sum, time) => sum + time, 0);
   
   if (totalRemainingTime <= 0) {
-    // All subjects complete - stop (no extra rounds in scaling strategy)
-    return state;
+    // All subjects complete - but continue until we reach the end of time window
+    // to ensure all days are covered. Reset remaining time proportionally.
+    const totalBaselineTime = subjects.reduce((sum, subject) => sum + subject.baselineMinutes, 0);
+    const remainingDays = timeWindowTo.diff(earliestTrack.date, 'day');
+    
+    if (remainingDays > 0) {
+      // Distribute remaining time proportionally among subjects
+      const extraTimePerSubject = (remainingDays * constraints.workingMinutesPerDay) / subjects.length;
+      subjects.forEach(subject => {
+        state.subjectRemainingTime.set(subject.subjectCode, extraTimePerSubject);
+      });
+    } else {
+      // We've reached the end of the time window
+      return state;
+    }
   }
   
   // Find next subject with remaining time

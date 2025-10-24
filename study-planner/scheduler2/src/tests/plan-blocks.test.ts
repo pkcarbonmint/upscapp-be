@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { planBlocks } from '../plan-blocks';
-import { S2Subject, BlockAllocConstraints, S2WeekDay } from '../types';
+import { S2Subject, BlockAllocConstraints, S2WeekDay, CycleType } from '../types';
 import dayjs from 'dayjs';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -105,13 +105,13 @@ describe('planBlocks - Debug Test Cases', () => {
       // Test with minimal required fields
       const minimalSubjects: S2Subject[] = debugData.subjects || [];
       const minimalConstraints: BlockAllocConstraints = debugData.constraints || {
-        dayMaxMinutes: 300,
-        dayMinMinutes: 60,
-        catchupDay: S2WeekDay.SUNDAY,
-        testDay: S2WeekDay.SUNDAY,
-        testMinutes: 180,
+        cycleType: CycleType.C1,
+        relativeAllocationWeights: {},
         numParallel: 1,
-        relativeAllocation: {}
+        workingMinutesPerDay: 300,
+        catchupDay: S2WeekDay.Sunday,
+        testDay: S2WeekDay.Sunday,
+        testMinutes: 180
       };
       
       const from = dayjs(debugData.timeWindowFrom || '2025-01-01');
