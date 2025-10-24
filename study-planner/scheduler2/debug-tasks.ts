@@ -1,44 +1,35 @@
 import dayjs from 'dayjs';
 import { planSubjectTasks } from './src/index';
+import * as fs from 'fs';
+import * as path from 'path';
 
-// Simple test data
-const testSubject = {
-  subjectCode: 'TEST',
-  subjectNname: 'Test Subject',
-  examFocus: 'BothExams' as const,
-  baselineMinutes: 1000,
-  topics: [
-    {
-      code: 'T1',
-      subtopics: [
-        { code: 'ST1', name: 'Test Subtopic 1', priorityLevel: 1, isEssential: true, baselineMinutes: 60 }
-      ]
-    }
-  ]
-};
+// Load real debug data from existing debug files
+const debugDir = path.join(__dirname, 'debug');
+const debugFiles = fs.readdirSync(debugDir)
+  .filter(file => file.startsWith('createTasks_v2_debug_') && file.endsWith('.json'))
+  .sort();
 
-const testStart = dayjs('2024-01-01');
-const testEnd = testStart.add(7, 'days');
+if (debugFiles.length === 0) {
+  console.error('No createTasks debug files found. Please run the actual tests to generate debug data.');
+  process.exit(1);
+}
 
-const constraints = {
-  cycleType: 0, // C1
-  dayMaxMinutes: 480,
-  dayMinMinutes: 240,
-  catchupDay: 0, // Sunday
-  testDay: 6,    // Saturday
-  testMinutes: 120,
-  taskEffortSplit: {
-    0: 0.6,  // STUDY
-    1: 0.2,  // PRACTICE
-    2: 0.2,  // REVISION
-    3: 0,    // TEST
-    4: 0     // CATCHUP
-  }
-};
+const latestDebugFile = debugFiles[debugFiles.length - 1];
+const debugFilePath = path.join(debugDir, latestDebugFile);
+console.log(`Using debug data from: ${latestDebugFile}`);
 
-console.log('Testing planSubjectTasks...');
+const debugData = JSON.parse(fs.readFileSync(debugFilePath, 'utf8'));
+
+// Extract real test data from debug file
+const testSubject = debugData.inputs.subject;
+const testStart = dayjs(debugData.inputs.from);
+const testEnd = dayjs(debugData.inputs.to);
+const constraints = debugData.inputs.constraints;
+
+console.log('Testing planSubjectTasks with real debug data...');
 console.log('Subject:', testSubject.subjectCode);
 console.log('Time window:', testStart.format('YYYY-MM-DD'), 'to', testEnd.format('YYYY-MM-DD'));
+console.log('Original error:', debugData.errorMessage);
 console.log('Constraints:', constraints);
 
 try {
