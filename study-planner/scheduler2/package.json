@@ -21,7 +21,8 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit --project tsconfig.test.json",
     "lint": "eslint src --ext .ts,.tsx",
-    "test": "vitest"
+    "test": "vitest",
+    "debug": "node debug-helper.js"
   },
   "keywords": [
     "typescript",
