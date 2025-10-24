@@ -297,7 +297,49 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
   const practiceTasks = distributeTopics(sortedTopics, practiceSlots, constraints.taskEffortSplit[S2SlotType.PRACTICE]);
 
   console.log(`#### createTasks_v2: studyTasks: ${studyTasks.length}, revisionTasks: ${revisionTasks.length}, practiceTasks: ${practiceTasks.length}`);
-  const allTasks = [...studyTasks, ...revisionTasks, ...practiceTasks];
+  // Include explicit TEST and CATCHUP tasks so weekly plans are never empty
+  const extraDayTasks: S2Task[] = [];
+  const totalDays = to.diff(from, 'day');
+  for (let i = 0; i < totalDays; i++) {
+    const date = from.add(i, 'day');
+    if (isTestDay(date, constraints.testDay)) {
+      if (constraints.testMinutes > 0) {
+        extraDayTasks.push({
+          topicCode: 'TEST',
+          subjectCode: subject.subjectCode,
+          taskType: S2SlotType.TEST,
+          minutes: constraints.testMinutes,
+          date
+        });
+      }
+      // If test day coincides with catchup day, allocate remaining time to catchup
+      if (isCatchupDay(date, constraints.catchupDay)) {
+        const remaining = Math.max(0, constraints.dayMaxMinutes - constraints.testMinutes);
+        if (remaining > 0) {
+          extraDayTasks.push({
+            topicCode: 'CATCHUP',
+            subjectCode: subject.subjectCode,
+            taskType: S2SlotType.CATCHUP,
+            minutes: remaining,
+            date
+          });
+        }
+      }
+    } else if (isCatchupDay(date, constraints.catchupDay)) {
+      // Pure catchup day
+      if (constraints.dayMaxMinutes > 0) {
+        extraDayTasks.push({
+          topicCode: 'CATCHUP',
+          subjectCode: subject.subjectCode,
+          taskType: S2SlotType.CATCHUP,
+          minutes: constraints.dayMaxMinutes,
+          date
+        });
+      }
+    }
+  }
+
+  const allTasks = [...studyTasks, ...revisionTasks, ...practiceTasks, ...extraDayTasks];
   console.log(`#### createTasks_v2: allTasks: ${allTasks.length}`);
 
   verifyAllDays(from, to, allTasks);
