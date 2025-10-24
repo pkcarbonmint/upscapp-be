@@ -254,13 +254,13 @@ async function mapScheduler2ResultToStudyPlan(
         const weeklyPlan = mapFromS2Tasks(blockTasks, block.from);
         if (weeklyPlan.length === 0) {
           const allTasksForSubject = result.tasks.filter(task => task.subjectCode === block.subject.subjectCode);
-          console.warn(`DEBUG: Empty weekly plan for block ${cycle.cycleType}-${block.subject.subjectCode}-${blockIndex}`);
-          console.warn(`  Block dates: ${block.from.format('YYYY-MM-DD')} to ${block.to.format('YYYY-MM-DD')}`);
-          console.warn(`  Block tasks found: ${blockTasks.length}`);
-          console.warn(`  Total tasks for subject ${block.subject.subjectCode}: ${allTasksForSubject.length}`);
+          logger.logDebug('Engine', `Empty weekly plan for block ${cycle.cycleType}-${block.subject.subjectCode}-${blockIndex}`);
+          logger.logDebug('Engine', `  Block dates: ${block.from.format('YYYY-MM-DD')} to ${block.to.format('YYYY-MM-DD')}`);
+          logger.logDebug('Engine', `  Block tasks found: ${blockTasks.length}`);
+          logger.logDebug('Engine', `  Total tasks for subject ${block.subject.subjectCode}: ${allTasksForSubject.length}`);
           if (allTasksForSubject.length > 0) {
-            console.warn(`  First task date: ${allTasksForSubject[0].date.format('YYYY-MM-DD')}`);
-            console.warn(`  Last task date: ${allTasksForSubject[allTasksForSubject.length-1].date.format('YYYY-MM-DD')}`);
+            logger.logDebug('Engine', `  First task date: ${allTasksForSubject[0].date.format('YYYY-MM-DD')}`);
+            logger.logDebug('Engine', `  Last task date: ${allTasksForSubject[allTasksForSubject.length-1].date.format('YYYY-MM-DD')}`);
           }
         }
         

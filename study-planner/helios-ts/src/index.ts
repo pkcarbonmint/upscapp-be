@@ -85,6 +85,7 @@ export { heliosClient, api } from './services/helios';
 
 // Import for internal use
 import { generateInitialPlan } from './engine/Engine';
+import { makeLogger } from './services/Log';
 import type { Archetype, StudentIntake } from './types/models';
 
 // Default Configuration
@@ -121,9 +122,10 @@ export async function quickStart(
   intake: StudentIntake,
   config = DEFAULT_CONFIG
 ) {
-  console.log(`🎯 Generating study plan for user: ${userId}`);
-  const result = await generateInitialPlan(userId, config, archetype, intake);
-  console.log(`✅ Study plan generated with ${result.plan.cycles?.length || 0} cycles`);
+  const logger = makeLogger();
+  logger.logInfo('Helios', `Generating study plan for user: ${userId}`);
+  const result = await generateInitialPlan(userId, config, archetype, intake, logger);
+  logger.logInfo('Helios', `Study plan generated with ${result.plan.cycles?.length || 0} cycles`);
   return result;
 }
 

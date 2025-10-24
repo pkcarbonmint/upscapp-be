@@ -110,7 +110,7 @@ export async function createPlanForOneWeek(
   assert(blockDurationWeeks > 0, `Invalid blockDurationWeeks: ${blockDurationWeeks}`);
   assert(logger, `No logger provided for block ${blockIndex}, week ${weekNum}`);
   
-  console.log(`🔍 createPlanForOneWeek validation: Block ${blockIndex}, Week ${weekNum}, Subject: ${blkSubject.subjectCode}, startDate: ${weekStartDate.format('YYYY-MM-DD')}`);
+  logger.logDebug('OneWeekPlan', `createPlanForOneWeek validation: Block ${blockIndex}, Week ${weekNum}, Subject: ${blkSubject.subjectCode}, startDate: ${weekStartDate.format('YYYY-MM-DD')}`);
   logger.logDebug('OneWeekPlan', `Creating week ${weekNum}/${blockDurationWeeks} for block ${blockIndex}`);
   // 1. If scheduler provided per-day guidance, build daily plans directly from it (no local scheduling)
   if (allocationGuidance?.byDay) {
@@ -222,11 +222,11 @@ export async function createPlanForOneWeek(
   
   // DIAGNOSTIC: Log after conversion but before human ID assignment
   if (weekNum === 3 && blkSubject.subjectCode === 'OPT-AGR') {
-    console.log(`\n🔍 DIAGNOSTIC: After conversion to DailyPlan`);
+    logger.logDebug('OneWeekPlan', `DIAGNOSTIC: After conversion to DailyPlan`);
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     dailyPlans.forEach((dayPlan, _) => {
       const dayName = dayNames[dayPlan.day] || `Day${dayPlan.day}`;
-      console.log(`   ${dayName} (day ${dayPlan.day}): ${dayPlan.tasks.length} tasks`);
+      logger.logDebug('OneWeekPlan', `  ${dayName} (day ${dayPlan.day}): ${dayPlan.tasks.length} tasks`);
     });
   }
 
@@ -236,11 +236,11 @@ export async function createPlanForOneWeek(
 
   // DIAGNOSTIC: Log final result
   if (weekNum === 3 && blkSubject.subjectCode === 'OPT-AGR') {
-    console.log(`\n🔍 DIAGNOSTIC: Final result after human ID assignment`);
+    logger.logDebug('OneWeekPlan', `DIAGNOSTIC: Final result after human ID assignment`);
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     finalDailyPlans.forEach((dayPlan, _) => {
       const dayName = dayNames[dayPlan.day] || `Day${dayPlan.day}`;
-      console.log(`   ${dayName} (day ${dayPlan.day}): ${dayPlan.tasks.length} tasks`);
+      logger.logDebug('OneWeekPlan', `  ${dayName} (day ${dayPlan.day}): ${dayPlan.tasks.length} tasks`);
     });
   }
   
@@ -254,7 +254,7 @@ export async function createPlanForOneWeek(
   logger.logDebug('OneWeekPlan', `Week ${weekNum} final plan: ${totalTasks} tasks, ${totalHours} hours across 7 days`);
   
   // Add hole detection for this week
-  console.log(`🔍 Checking for holes in week ${weekNum}...`);
+  logger.logDebug('OneWeekPlan', `Checking for holes in week ${weekNum}...`);
   
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const holes: string[] = [];
@@ -262,7 +262,7 @@ export async function createPlanForOneWeek(
   // Get the actual catchup day preference from the scheduling result
   const catchupDayPreference = (studentIntake.study_strategy?.catch_up_day_preference as DayOfWeek) || DayOfWeek.SATURDAY;
   
-  console.log(`🔍 Catchup day preference: "${catchupDayPreference}" (type: ${typeof catchupDayPreference})`);
+  logger.logDebug('OneWeekPlan', `Catchup day preference: "${catchupDayPreference}" (type: ${typeof catchupDayPreference})`);
   
   // Convert DayOfWeek to 0-based index matching scheduler's mapping (Monday=0, Tuesday=1, ..., Sunday=6)
   const dayMap: { [key in DayOfWeek]: number } = {
@@ -276,7 +276,7 @@ export async function createPlanForOneWeek(
   };
   const catchupDayIndex = dayMap[catchupDayPreference];
   
-  console.log(`🔍 Catchup day index: ${catchupDayIndex} (${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][catchupDayIndex]})`);
+  logger.logDebug('OneWeekPlan', `Catchup day index: ${catchupDayIndex} (${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][catchupDayIndex]})`);
   
   finalDailyPlans.forEach((dayPlan, index) => {
     const dayName = dayNames[index];
@@ -298,20 +298,20 @@ export async function createPlanForOneWeek(
     }
     
     // Log each day's allocation for debugging
-    console.log(`  ${dayName} (${dayDate}): ${taskCount} tasks, ${totalHours.toFixed(2)}h${isCatchupDay ? ' [CATCHUP DAY]' : ''}`);
+    logger.logDebug('OneWeekPlan', `  ${dayName} (${dayDate}): ${taskCount} tasks, ${totalHours.toFixed(2)}h${isCatchupDay ? ' [CATCHUP DAY]' : ''}`);
   });
   
   // Assert no holes in this week - but allow some flexibility
   if (holes.length > 0) {
-    console.warn(`⚠️  Week ${weekNum} has ${holes.length} days with insufficient work: ${holes.join(', ')}`);
+    logger.logWarn('OneWeekPlan', `Week ${weekNum} has ${holes.length} days with insufficient work: ${holes.join(', ')}`);
     // Don't fail the assertion for minor issues - just warn
     // assert(holes.length === 0, `WEEK ${weekNum} HOLES DETECTED: ${holes.length} days have insufficient work: ${holes.join(', ')}`);
   } else {
-    console.log(`✅ No holes detected in week ${weekNum}`);
+    logger.logDebug('OneWeekPlan', `No holes detected in week ${weekNum}`);
   }
   
   // Add final validation: Check for 0-minute tasks before returning
-  console.log(`🔍 Validating all tasks in week ${weekNum} for 0-minute durations...`);
+  logger.logDebug('OneWeekPlan', `Validating all tasks in week ${weekNum} for 0-minute durations...`);
   const zeroMinuteTasks: string[] = [];
   finalDailyPlans.forEach((dayPlan, index) => {
     const dayName = dayNames[index];
@@ -325,11 +325,11 @@ export async function createPlanForOneWeek(
   
   // Assert no 0-minute tasks - but allow some flexibility
   if (zeroMinuteTasks.length > 0) {
-    console.error(`❌ Week ${weekNum} has ${zeroMinuteTasks.length} tasks with 0 minutes duration:`, zeroMinuteTasks);
+    logger.logWarn('OneWeekPlan', `Week ${weekNum} has ${zeroMinuteTasks.length} tasks with 0 minutes duration: ${JSON.stringify(zeroMinuteTasks)}`);
     // Don't fail the assertion for minor issues - just warn
     // assert(zeroMinuteTasks.length === 0, `WEEK ${weekNum} has ${zeroMinuteTasks.length} tasks with 0 minutes duration: ${zeroMinuteTasks.join(', ')}`);
   } else {
-    console.log(`✅ No 0-minute tasks in week ${weekNum}`);
+    logger.logDebug('OneWeekPlan', `No 0-minute tasks in week ${weekNum}`);
   }
   
   // 5. Create the final WeeklyPlan record
@@ -389,11 +389,11 @@ async function tasksForOneWeek(
   const dailyRevisionHours = Math.min(revisionHours / 7, maxDailyHours);
   const dailyRevisionMinutes = Math.round(dailyRevisionHours * 60);
   
-  console.log(`📊 Weekly hours → Daily task durations:`);
-  console.log(`  Study: ${studyHoursPerSubject}h → ${dailyStudyHours}h (${dailyStudyMinutes}min)`);
-  console.log(`  Practice: ${practiceHoursPerSubject}h → ${dailyPracticeHours}h (${dailyPracticeMinutes}min)`);
-  console.log(`  Test: ${testHoursPerSubject}h → ${dailyTestHours}h (${dailyTestMinutes}min)`);
-  console.log(`  Revision: ${revisionHours}h → ${dailyRevisionHours}h (${dailyRevisionMinutes}min)`);
+  logger.logDebug('OneWeekPlan', `Weekly hours → Daily task durations:`);
+  logger.logDebug('OneWeekPlan', `  Study: ${studyHoursPerSubject}h → ${dailyStudyHours}h (${dailyStudyMinutes}min)`);
+  logger.logDebug('OneWeekPlan', `  Practice: ${practiceHoursPerSubject}h → ${dailyPracticeHours}h (${dailyPracticeMinutes}min)`);
+  logger.logDebug('OneWeekPlan', `  Test: ${testHoursPerSubject}h → ${dailyTestHours}h (${dailyTestMinutes}min)`);
+  logger.logDebug('OneWeekPlan', `  Revision: ${revisionHours}h → ${dailyRevisionHours}h (${dailyRevisionMinutes}min)`);
   
   // Add comprehensive assertions for daily durations - ONLY for study tasks which are mandatory
   assert(dailyStudyMinutes > 0, `dailyStudyMinutes is 0: ${dailyStudyMinutes} (studyHoursPerSubject: ${studyHoursPerSubject})`);
@@ -401,13 +401,13 @@ async function tasksForOneWeek(
   
   // For practice, test, and revision - warn but allow 0 (they may be optional)
   if (dailyPracticeMinutes === 0) {
-    console.log(`⚠️  No practice hours allocated for ${theSubject.subjectCode}, skipping practice tasks`);
+    logger.logDebug('OneWeekPlan', `No practice hours allocated for ${theSubject.subjectCode}, skipping practice tasks`);
   }
   if (dailyTestMinutes === 0) {
-    console.log(`⚠️  No test hours allocated for ${theSubject.subjectCode}, skipping test tasks`);
+    logger.logDebug('OneWeekPlan', `No test hours allocated for ${theSubject.subjectCode}, skipping test tasks`);
   }
   if (dailyRevisionMinutes === 0) {
-    console.log(`⚠️  No revision hours allocated, skipping revision task`);
+    logger.logDebug('OneWeekPlan', `No revision hours allocated, skipping revision task`);
   }
   
   assert(dailyPracticeMinutes <= 360, `dailyPracticeMinutes ${dailyPracticeMinutes} exceeds 6h limit`);
@@ -497,7 +497,7 @@ async function generateStudyTasks(
     const taskResources = await getResourcesForStudyTask(studyTaskDef, studentProfile);
     console.assert(dailyStudyMinutes > 0, `Daily task duration is zero: ${dailyStudyMinutes} minutes - this is invalid`);
     console.assert(dailyStudyMinutes <= 360, `Daily task duration ${dailyStudyMinutes} minutes (${dailyStudyMinutes/60}h) exceeds 6h limit`);
-    console.log(`✅ Creating study task with duration: ${dailyStudyMinutes} minutes (${dailyStudyMinutes/60}h)`);
+    logger.logDebug('OneWeekPlan', `Creating study task with duration: ${dailyStudyMinutes} minutes (${dailyStudyMinutes/60}h)`);
     
     const task = await createStudyTask(
       `Study: ${subject.subjectName}`,
@@ -533,7 +533,7 @@ async function generateStudyTasks(
         // Add assertions for topic duration
         console.assert(topicDurationMinutes > 0, `Topic duration is zero: ${topicDurationMinutes} minutes - this is invalid`);
         console.assert(topicDurationMinutes <= 360, `Topic duration ${topicDurationMinutes} minutes (${topicDurationMinutes/60}h) exceeds 6h limit`);
-        console.log(`✅ Creating topic task with duration: ${topicDurationMinutes} minutes (${topicDurationMinutes/60}h) for topic: ${topic.topicName}`);
+        logger.logDebug('OneWeekPlan', `Creating topic task with duration: ${topicDurationMinutes} minutes (${topicDurationMinutes/60}h) for topic: ${topic.topicName}`);
         
         logger.logDebug('OneWeekPlan', `Topic ${topic.topicName} (${topic.priority}): ${topicEstimatedHours}h estimated, ${topicTimeRatio.toFixed(2)} ratio, ${topicDurationMinutes}min allocated`);
         
@@ -568,14 +568,14 @@ async function generateStudyTasks(
 /**
  * Generate practice tasks for a subject
  */
-async function generatePracticeTasks(_configweekStartDate: Dayjs, dailyPracticeMinutes: number, subject: Subject, _logger: Logger): Promise<Task[]> {
+async function generatePracticeTasks(_configweekStartDate: Dayjs, dailyPracticeMinutes: number, subject: Subject, logger: Logger): Promise<Task[]> {
   // Add comprehensive input validation assertions
   assert(dailyPracticeMinutes > 0, `Invalid dailyPracticeMinutes: ${dailyPracticeMinutes} - this will create 0-minute tasks!`);
   assert(dailyPracticeMinutes <= 360, `dailyPracticeMinutes ${dailyPracticeMinutes} exceeds 6h limit`);
   assert(subject && subject.subjectCode, `Invalid subject provided to generatePracticeTasks`);
   assert(_logger, `No logger provided to generatePracticeTasks`);
   
-  console.log(`🔍 generatePracticeTasks validation: Subject ${subject.subjectCode}, dailyPracticeMinutes: ${dailyPracticeMinutes}`);
+  logger.logDebug('OneWeekPlan', `generatePracticeTasks validation: Subject ${subject.subjectCode}, dailyPracticeMinutes: ${dailyPracticeMinutes}`);
   switch (subject.examFocus) {
     case 'PrelimsOnly':
       const prelimsTask = await createTask(
@@ -620,14 +620,14 @@ async function generatePracticeTasks(_configweekStartDate: Dayjs, dailyPracticeM
 /**
  * Generate test tasks for a subject
  */
-async function generateTestTasks(_weekStartDate: Dayjs, dailyTestMinutes: number, subject: Subject, _logger: Logger): Promise<Task[]> {
+async function generateTestTasks(_weekStartDate: Dayjs, dailyTestMinutes: number, subject: Subject, logger: Logger): Promise<Task[]> {
   // Add comprehensive input validation assertions
   assert(dailyTestMinutes > 0, `Invalid dailyTestMinutes: ${dailyTestMinutes} - this will create 0-minute tasks!`);
   assert(dailyTestMinutes <= 360, `dailyTestMinutes ${dailyTestMinutes} exceeds 6h limit`);
   assert(subject && subject.subjectCode, `Invalid subject provided to generateTestTasks`);
   assert(_logger, `No logger provided to generateTestTasks`);
   
-  console.log(`🔍 generateTestTasks validation: Subject ${subject.subjectCode}, dailyTestMinutes: ${dailyTestMinutes}`);
+  logger.logDebug('OneWeekPlan', `generateTestTasks validation: Subject ${subject.subjectCode}, dailyTestMinutes: ${dailyTestMinutes}`);
   switch (subject.examFocus) {
     case 'PrelimsOnly': {
 
@@ -678,13 +678,13 @@ async function generateTestTasks(_weekStartDate: Dayjs, dailyTestMinutes: number
 /**
  * Generate revision task
  */
-async function generateRevisionTask(_weekStartDate: Dayjs, dailyRevisionMinutes: number, _logger: Logger): Promise<Task> {
+async function generateRevisionTask(_weekStartDate: Dayjs, dailyRevisionMinutes: number, logger: Logger): Promise<Task> {
   // Add comprehensive input validation assertions
   assert(dailyRevisionMinutes > 0, `Invalid dailyRevisionMinutes: ${dailyRevisionMinutes} - this will create a 0-minute task!`);
   assert(dailyRevisionMinutes <= 360, `dailyRevisionMinutes ${dailyRevisionMinutes} exceeds 6h limit`);
   assert(_logger, `No logger provided to generateRevisionTask`);
   
-  console.log(`🔍 generateRevisionTask validation: dailyRevisionMinutes: ${dailyRevisionMinutes}`);
+  logger.logDebug('OneWeekPlan', `generateRevisionTask validation: dailyRevisionMinutes: ${dailyRevisionMinutes}`);
   return createTask('Weekly Revision', dailyRevisionMinutes, 'REVISION', undefined, 'revision');
 }
 
