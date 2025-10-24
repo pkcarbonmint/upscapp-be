@@ -57,9 +57,10 @@ export type BlockAllocConstraints = {
   cycleType: CycleType;
   relativeAllocationWeights: Record<SubjectCode, number>; //this should be based on relative baseline time
   numParallel: number;
-  workingHoursPerDay: number;
+  workingMinutesPerDay: number;
   catchupDay: S2WeekDay;
   testDay: S2WeekDay;
+  testMinutes: number; // time needed to take a test
 }
 
 export type BlockSlot = {
@@ -67,6 +68,7 @@ export type BlockSlot = {
   subject: S2Subject;
   from: Dayjs; to: Dayjs;
   numParallel: number;
+  minutesPerDay: number;
 }
 
 export type SubjectWithAllocation = S2Subject & { allocation: number };

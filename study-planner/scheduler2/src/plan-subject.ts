@@ -1,5 +1,7 @@
 import type { Dayjs } from "dayjs";
 import { S2Constraints, S2Slot, S2SlotType, S2Subject, S2Task, S2Topic, S2TopicWithMinutes, S2WeekDay } from "./types";
+import * as fs from 'fs';
+import * as path from 'path';
 
 export function planSubjectTasks(
   from: Dayjs,
@@ -32,16 +34,16 @@ export function planSubjectTasks(
   // determine minutes for each topic, if its not set
   const topicsWithMinutes: S2TopicWithMinutes[] = determineTopicMinutes(subject, constraints);
   // console.log(`planSubjectTasks: Topics with minutes:`, topicsWithMinutes.map(t => ({ code: t.code, minutes: t.baselineMinutes })));
-  
+
   const timeAvailable = calcAvailableTime(from, to, constraints);
   // console.log(`planSubjectTasks: Time available: ${timeAvailable} minutes`);
 
   const sortedTopics = sortTopics(topicsWithMinutes);
-  
+
   // For single-day blocks, don't filter topics by available time - create tasks for available time
   const totalMinutes = to.diff(from, 'minutes');
   let finalTopics: S2TopicWithMinutes[];
-  
+
   if (totalMinutes <= 24 * 60) {
     // console.log(`planSubjectTasks: Single-day block, using all topics without filtering`);
     finalTopics = sortedTopics;
@@ -49,19 +51,19 @@ export function planSubjectTasks(
     // filter topics to fit within available time
     const filteredTopics = filterTopicsByAvailableTime(sortedTopics, timeAvailable);
     // console.log(`planSubjectTasks: Filtered topics: ${filteredTopics.length}`);
-    
+
     // If no topics fit, create a minimal subject with available time
     finalTopics = filteredTopics.length > 0 ? filteredTopics : createMinimalTopics(subject, timeAvailable);
   }
-  
+
   // console.log(`planSubjectTasks: Final topics: ${finalTopics.length}`);
-  
+
   const subjWithSortedTopics = { ...subject, topics: finalTopics };
-  // console.log(`planSubjectTasks: About to call createTasks with ${finalTopics.length} topics`);
+  // console.log(`planSubjectTasks: About to call createTasks_v1 with ${finalTopics.length} topics`);
   // finalTopics.forEach((topic, index) => {
-    // console.log(`planSubjectTasks: Final topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
+  // console.log(`planSubjectTasks: Final topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
   // });
-  const tasks = createTasks(subjWithSortedTopics, finalTopics, from, to, constraints);
+  const tasks = createTasks_v2(subjWithSortedTopics, finalTopics, from, to, constraints);
   // console.log(`planSubjectTasks: Generated ${tasks.length} tasks`);
   return tasks;
 }
@@ -72,7 +74,7 @@ function filterTopicsByAvailableTime(topics: S2TopicWithMinutes[], availableTime
   // topics.forEach((topic, index) => {
   //   console.log(`filterTopicsByAvailableTime: Input topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
   // });
-  
+
   const result = topics.reduce((acc: { filteredTopics: S2TopicWithMinutes[], usedTime: number }, topic) => {
     // console.log(`filterTopicsByAvailableTime: Processing topic ${topic.code}, baselineMinutes=${topic.baselineMinutes}, usedTime=${acc.usedTime}, availableTime=${availableTime}`);
     if (acc.usedTime + topic.baselineMinutes <= availableTime) {
@@ -91,7 +93,7 @@ function filterTopicsByAvailableTime(topics: S2TopicWithMinutes[], availableTime
   // If there's extra time available, extend topics proportionally
   const remainingTime = availableTime - result.usedTime;
   // console.log(`filterTopicsByAvailableTime: remainingTime=${remainingTime}`);
-  
+
   if (remainingTime > 0 && result.filteredTopics.length > 0) {
     // console.log(`filterTopicsByAvailableTime: Extending topics proportionally`);
     // Calculate total priority weight for proportional distribution
@@ -100,7 +102,7 @@ function filterTopicsByAvailableTime(topics: S2TopicWithMinutes[], availableTime
       const essentialBonus = topic.subtopics.some(st => st.isEssential) ? 2 : 1;
       return sum + (maxPriority * essentialBonus);
     }, 0);
-    
+
     // console.log(`filterTopicsByAvailableTime: totalWeight=${totalWeight}`);
 
     // Extend each topic proportionally
@@ -109,9 +111,9 @@ function filterTopicsByAvailableTime(topics: S2TopicWithMinutes[], availableTime
       const essentialBonus = topic.subtopics.some(st => st.isEssential) ? 2 : 1;
       const weight = maxPriority * essentialBonus;
       const additionalMinutes = Math.floor((remainingTime * weight) / totalWeight);
-      
+
       // console.log(`filterTopicsByAvailableTime: Extending topic ${topic.code}: original=${topic.baselineMinutes}, additional=${additionalMinutes}, new=${topic.baselineMinutes + additionalMinutes}`);
-      
+
       return {
         ...topic,
         baselineMinutes: topic.baselineMinutes + additionalMinutes
@@ -133,16 +135,16 @@ function createMinimalTopics(subject: S2Subject, availableTime: number): S2Topic
   if (sortedTopics.length === 0) {
     return [];
   }
-  
+
   // Calculate how many topics we can fit
   const avgTopicMinutes = availableTime / sortedTopics.length;
   const minTopicMinutes = 30; // Minimum 30 minutes per topic
-  
+
   const topicsToInclude = sortedTopics.filter(topic => {
     const topicMinutes = topic.baselineMinutes || avgTopicMinutes;
     return topicMinutes >= minTopicMinutes;
   });
-  
+
   if (topicsToInclude.length === 0) {
     // If no topics meet minimum, take the highest priority one
     return [{
@@ -150,7 +152,7 @@ function createMinimalTopics(subject: S2Subject, availableTime: number): S2Topic
       baselineMinutes: availableTime
     }];
   }
-  
+
   // Distribute available time among selected topics
   const timePerTopic = availableTime / topicsToInclude.length;
   return topicsToInclude.map(topic => ({
@@ -162,9 +164,9 @@ function createMinimalTopics(subject: S2Subject, availableTime: number): S2Topic
 function sortTopics(topicsWithMinutes: S2TopicWithMinutes[]): S2TopicWithMinutes[] {
   // console.log(`sortTopics: Called with ${topicsWithMinutes.length} topics`);
   // topicsWithMinutes.forEach((topic, index) => {
-    // console.log(`sortTopics: Input topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
+  // console.log(`sortTopics: Input topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
   // });
-  
+
   const sorted = topicsWithMinutes.sort((a, b) => {
     const aEssential = a.subtopics.some(st => st.isEssential);
     const bEssential = b.subtopics.some(st => st.isEssential);
@@ -176,45 +178,45 @@ function sortTopics(topicsWithMinutes: S2TopicWithMinutes[]): S2TopicWithMinutes
     const bMaxPriority = b.subtopics.length > 0 ? Math.max(...b.subtopics.map(st => st.priorityLevel)) : 1;
     return bMaxPriority - aMaxPriority; // Higher priority first
   });
-  
+
   // console.log(`sortTopics: Returning ${sorted.length} topics`);
   // sorted.forEach((topic, index) => {
-    // console.log(`sortTopics: Output topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
+  // console.log(`sortTopics: Output topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
   // });
-  
+
   return sorted;
 }
 
-function createTasks(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], from: Dayjs, to: Dayjs, constraints: S2Constraints): S2Task[] {
+function createTasks_v1(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], from: Dayjs, to: Dayjs, constraints: S2Constraints): S2Task[] {
   // console.log(`createTasks: Called with ${sortedTopics.length} topics`);
   // sortedTopics.forEach((topic, index) => {
-    // console.log(`createTasks: Topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
+  // console.log(`createTasks: Topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
   // });
   const totalMinutes = to.diff(from, 'minutes');
 
   // For single-day blocks, create tasks for the same day
   if (totalMinutes <= 24 * 60) {
     // console.log(`createTasks: Single-day block, creating tasks for ${from.format('YYYY-MM-DD')}`);
-    
+
     // Calculate available minutes for this single day
-    const availableMinutes = Math.min(totalMinutes, constraints.dayMaxMinutes);  
+    const availableMinutes = Math.min(totalMinutes, constraints.dayMaxMinutes);
     const studyMinutes = Math.round(availableMinutes * constraints.taskEffortSplit[S2SlotType.STUDY]);
     const revisionMinutes = Math.round(availableMinutes * constraints.taskEffortSplit[S2SlotType.REVISION]);
     const practiceMinutes = Math.round(availableMinutes * constraints.taskEffortSplit[S2SlotType.PRACTICE]);
-    
+
     // console.log(`createTasks: Single-day available minutes: ${availableMinutes}, study: ${studyMinutes}, revision: ${revisionMinutes}, practice: ${practiceMinutes}`);
-    
+
     // Create slots for this single day
     const studySlots = studyMinutes > 0 ? [allocateStudySlots(from, studyMinutes)] : [];
     const revisionSlots = revisionMinutes > 0 ? [allocateRevisionSlots(from, revisionMinutes)] : [];
     const practiceSlots = practiceMinutes > 0 ? [allocatePracticeSlots(from, practiceMinutes)] : [];
-    
+
     // Distribute topics across slots
     const allTasks = distributeTopicsAcrossAllSlots(subject, sortedTopics, studySlots, revisionSlots, practiceSlots);
     // console.log(`createTasks: Single-day generated ${allTasks.length} tasks`);
     return allTasks;
   }
-  
+
   // For multi-day blocks, use the original logic
   const numAvailableDays = to.diff(from, 'day');
   const numCatchupDays = countCatchupDays(from, to, constraints.catchupDay);
@@ -242,13 +244,13 @@ function createTasks(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], fro
   let finalStudyMinutesPerDay = studyMinutesPerDay;
   let finalRevisionMinutesPerDay = revisionMinutesPerDay;
   let finalPracticeMinutesPerDay = practiceMinutesPerDay;
-  
+
   if (totalMinutesPerDay > constraints.dayMaxMinutes) {
     const scaleFactor = constraints.dayMaxMinutes / totalMinutesPerDay;
     finalStudyMinutesPerDay = Math.round(studyMinutesPerDay * scaleFactor);
     finalRevisionMinutesPerDay = Math.round(revisionMinutesPerDay * scaleFactor);
     finalPracticeMinutesPerDay = Math.round(practiceMinutesPerDay * scaleFactor);
-    
+
   }
 
   const studySlots = studyDays.map((date) => allocateStudySlots(date, finalStudyMinutesPerDay));
@@ -280,6 +282,273 @@ function createTasks(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], fro
   });
 
   return [...allTasks, ...catchupTasks, ...testTasks];
+}
+
+const slotSize = 30; // mins
+function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], from: Dayjs, to: Dayjs, constraints: S2Constraints): S2Task[] {
+  const studySlots = allocateSlots(from, to, S2SlotType.STUDY, constraints, constraints.taskEffortSplit[S2SlotType.STUDY]);
+  const revisionSlots = allocateSlots(from, to, S2SlotType.REVISION, constraints, constraints.taskEffortSplit[S2SlotType.REVISION]);
+  const practiceSlots = allocateSlots(from, to, S2SlotType.PRACTICE, constraints, constraints.taskEffortSplit[S2SlotType.PRACTICE]);
+  console.log(`**** createTasks_v2: studySlots: ${studySlots.length}, revisionSlots: ${revisionSlots.length}, practiceSlots: ${practiceSlots.length}`);
+
+  const studyTasks = distributeTopics(sortedTopics, studySlots, constraints.taskEffortSplit[S2SlotType.STUDY]);
+  const revisionTasks = distributeTopics(sortedTopics, revisionSlots, constraints.taskEffortSplit[S2SlotType.REVISION]);
+  const practiceTasks = distributeTopics(sortedTopics, practiceSlots, constraints.taskEffortSplit[S2SlotType.PRACTICE]);
+
+  console.log(`#### createTasks_v2: studyTasks: ${studyTasks.length}, revisionTasks: ${revisionTasks.length}, practiceTasks: ${practiceTasks.length}`);
+  const allTasks = [...studyTasks, ...revisionTasks, ...practiceTasks];
+  console.log(`#### createTasks_v2: allTasks: ${allTasks.length}`);
+
+  verifyAllDays(from, to, allTasks);
+  return allTasks;
+
+  function verifyAllDays(from: Dayjs, to: Dayjs, tasks: S2Task[]) {
+    const allDays = to.diff(from, 'day');
+    console.log(`#### verifyAllDays: Checking ${allDays} days from ${from.format('YYYY-MM-DD')} to ${to.format('YYYY-MM-DD')}`);
+    
+    const taskDate2CountMap = new Map<string, number>();
+    for (const task of tasks) {
+      const key = task.date.format('YYYY-MM-DD');
+      if (taskDate2CountMap.has(key)) {
+        taskDate2CountMap.set(key, taskDate2CountMap.get(key)! + 1);
+      } else {
+        taskDate2CountMap.set(key, 1);
+      }
+    }
+
+    console.log(`#### verifyAllDays: Tasks cover ${taskDate2CountMap.size} unique days`);
+    console.log(`#### verifyAllDays: Covered days:`, Array.from(taskDate2CountMap.keys()).sort());
+
+    const exitIfFailed = true;
+    let missngCOunt = 0;
+    const missingDays: string[] = [];
+    Array(allDays).fill(0).forEach((_, i) => {
+      const date = from.add(i, 'day');
+      const key = date.format('YYYY-MM-DD');
+      if (!taskDate2CountMap.has(key)) {
+        missngCOunt++;
+        missingDays.push(key);
+        console.log(`#### verifyAllDays: Day ${key} (${date.format('dddd')}) is not covered`);
+        if (exitIfFailed && missngCOunt >= 3) {
+          // Capture inputs for createTasks_v2 and write to JSON file for debugging
+          const debugData = {
+            timestamp: new Date().toISOString(),
+            errorMessage: `Too many days are not covered: ${missngCOunt}`,
+            inputs: {
+              subject: {
+                subjectCode: subject.subjectCode,
+                subjectNname: subject.subjectNname,
+                examFocus: subject.examFocus,
+                topics: subject.topics.map(topic => ({
+                  code: topic.code,
+                  baselineMinutes: topic.baselineMinutes,
+                  subtopics: topic.subtopics.map(subtopic => ({
+                    code: subtopic.code,
+                    name: subtopic.name,
+                    baselineMinutes: subtopic.baselineMinutes,
+                    isEssential: subtopic.isEssential,
+                    priorityLevel: subtopic.priorityLevel
+                  }))
+                })),
+                baselineMinutes: subject.baselineMinutes
+              },
+              sortedTopics: sortedTopics.map(topic => ({
+                code: topic.code,
+                baselineMinutes: topic.baselineMinutes,
+                subtopics: topic.subtopics.map(subtopic => ({
+                  code: subtopic.code,
+                  name: subtopic.name,
+                  baselineMinutes: subtopic.baselineMinutes,
+                  isEssential: subtopic.isEssential,
+                  priorityLevel: subtopic.priorityLevel
+                }))
+              })),
+              from: from.format('YYYY-MM-DD HH:mm:ss'),
+              to: to.format('YYYY-MM-DD HH:mm:ss'),
+              constraints: {
+                cycleType: constraints.cycleType,
+                dayMaxMinutes: constraints.dayMaxMinutes,
+                dayMinMinutes: constraints.dayMinMinutes,
+                catchupDay: constraints.catchupDay,
+                testDay: constraints.testDay,
+                testMinutes: constraints.testMinutes,
+                taskEffortSplit: constraints.taskEffortSplit
+              }
+            },
+            generatedTasks: tasks.map(task => ({
+              topicCode: task.topicCode,
+              subjectCode: task.subjectCode,
+              taskType: task.taskType,
+              minutes: task.minutes,
+              date: task.date.format('YYYY-MM-DD HH:mm:ss')
+            })),
+            missingDays: Array(allDays).fill(0).map((_, i) => {
+              const date = from.add(i, 'day');
+              const key = date.format('YYYY-MM-DD');
+              return {
+                date: key,
+                isCovered: taskDate2CountMap.has(key)
+              };
+            })
+          };
+
+          // Write debug data to file
+          const debugDir = path.join(__dirname, '..', 'debug');
+          if (!fs.existsSync(debugDir)) {
+            fs.mkdirSync(debugDir, { recursive: true });
+          }
+          
+          const debugFile = path.join(debugDir, `createTasks_v2_debug_${Date.now()}.json`);
+          fs.writeFileSync(debugFile, JSON.stringify(debugData, null, 2));
+          
+          console.log(`Debug data written to: ${debugFile}`);
+          console.log(`Missing days count: ${missngCOunt}`);
+          console.log(`Total days: ${allDays}`);
+          console.log(`Tasks generated: ${tasks.length}`);
+
+            process.exit(1);
+          throw new Error(`Too many days are not covered: ${missngCOunt}. Debug data saved to: ${debugFile}`);
+        
+
+        }
+      }
+    });
+    
+    console.log(`#### verifyAllDays: Summary - ${missngCOunt} missing days out of ${allDays} total days`);
+    if (missingDays.length > 0) {
+      console.log(`#### verifyAllDays: Missing days:`, missingDays);
+    }
+  }
+
+  function distributeTopics(topics: S2TopicWithMinutes[], slots: S2Slot[], shareFraction: number): S2Task[] {
+    let availableSlots = [...slots];
+    console.log(`#### distributeTopics: Starting with ${topics.length} topics, ${availableSlots.length} slots, shareFraction=${shareFraction}`);
+    
+    const tasks: S2Task[] = [];
+    
+    // First pass: allocate slots based on topic requirements
+    for (let topicIndex = 0; topicIndex < topics.length; topicIndex++) {
+      const topic = topics[topicIndex];
+      if (availableSlots.length === 0) {
+        console.log(`#### distributeTopics: No slots left for topic ${topicIndex} (${topic.code})`);
+        break;
+      }
+      
+      const minutesToAllocate = topic.baselineMinutes * shareFraction;
+      const numSlotsNeeded = Math.floor(minutesToAllocate / slotSize);
+      console.log(`#### distributeTopics: Topic ${topicIndex} (${topic.code}) needs ${numSlotsNeeded} slots (${minutesToAllocate} minutes / ${slotSize})`);
+      
+      const slotsToUse = availableSlots.slice(0, numSlotsNeeded);
+      availableSlots = availableSlots.slice(numSlotsNeeded);
+      
+      console.log(`#### distributeTopics: Topic ${topicIndex} using ${slotsToUse.length} slots, ${availableSlots.length} slots remaining`);
+
+      const topicTasks = slotsToUse.map((slot): S2Task => ({
+        topicCode: topic.code,
+        subjectCode: subject.subjectCode,
+        taskType: slot.type,
+        minutes: slot.minutes,
+        date: slot.date,
+      }));
+      tasks.push(...topicTasks);
+    }
+    
+    // Second pass: distribute remaining slots among topics to ensure all slots are used
+    if (availableSlots.length > 0) {
+      console.log(`#### distributeTopics: Distributing ${availableSlots.length} remaining slots among topics`);
+      let topicIndex = 0;
+      for (const slot of availableSlots) {
+        if (topics.length === 0) break;
+        
+        const topic = topics[topicIndex % topics.length];
+        tasks.push({
+          topicCode: topic.code,
+          subjectCode: subject.subjectCode,
+          taskType: slot.type,
+          minutes: slot.minutes,
+          date: slot.date,
+        });
+        topicIndex++;
+      }
+    }
+    
+    console.log(`#### distributeTopics: Generated ${tasks.length} tasks, 0 slots unused`);
+    
+    const merged = mergeConsecutiveTasks(tasks);
+    console.log(`#### distributeTopics: After merging: ${merged.length} tasks`);
+    return merged;
+  }
+  function mergeConsecutiveTasks(tasks: S2Task[]): S2Task[] {
+    if (tasks.length === 0) return tasks;
+
+    // Group slots by day + topic + taskType
+    const groups = new Map<string, S2Task[]>();
+
+    for (const t of tasks) {
+      const key = `${t.date.format('YYYY-MM-DD')}-${t.topicCode}-${t.taskType}`;
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(t);
+    }
+
+    // Merge slots in each group
+    const merged: S2Task[] = [];
+    for (const groupSlots of groups.values()) {
+      const totalMinutes = groupSlots.reduce((sum, slot) => sum + slot.minutes, 0);
+      merged.push({
+        ...groupSlots[0],
+        minutes: totalMinutes
+      });
+    }
+
+    // Sort by date and time
+    return merged.sort((a, b) => {
+      const dateCompare = a.date.diff(b.date, 'day');
+      if (dateCompare !== 0) return dateCompare;
+      return a.date.diff(b.date, 'minutes');
+    });
+  }
+}
+
+function allocateSlots(from: Dayjs, to: Dayjs, slotType: S2SlotType, constraints: S2Constraints, shareFraction: number): S2Slot[] {
+  const calendarDays = to.diff(from, 'day');
+  console.log(`**** allocateSlots: from=${from.format('YYYY-MM-DD')}, to=${to.format('YYYY-MM-DD')}, calendarDays=${calendarDays}, slotType=${slotType}, shareFraction=${shareFraction}`);
+  
+  const slots: S2Slot[] = Array(calendarDays).fill(0)
+    .map((_, i) => from.add(i, 'day'))
+    .map((date: Dayjs): { date: Dayjs, availableMinutes: number } => {
+      const availableMinutes = constraints.dayMaxMinutes * shareFraction;
+      return { date, availableMinutes };
+    })
+    .map(({ date, availableMinutes }: { date: Dayjs, availableMinutes: number }): S2Slot[] => {
+      if (isTestDay(date, constraints.testDay) && isCatchupDay(date, constraints.catchupDay)) {
+        const testMinutes = availableMinutes - constraints.testMinutes;
+        const catchupMinutes = availableMinutes - testMinutes;
+        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - TEST+CATCHUP day: ${testMinutes}+${catchupMinutes} minutes`);
+        return [
+          { date, minutes: testMinutes, type: S2SlotType.TEST },
+          { date, minutes: catchupMinutes, type: S2SlotType.CATCHUP },
+        ];
+      }
+      if (isTestDay(date, constraints.testDay)) {
+        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - TEST day: ${availableMinutes} minutes`);
+        return [{ date, minutes: availableMinutes, type: S2SlotType.TEST }];
+      }
+      if (isCatchupDay(date, constraints.catchupDay)) {
+        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - CATCHUP day: ${availableMinutes} minutes`);
+        return [{ date, minutes: availableMinutes, type: S2SlotType.CATCHUP }];
+      }
+      const slots = Math.floor(availableMinutes / slotSize);
+      console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - ${slotType} day: ${slots} slots (${availableMinutes} minutes)`);
+      return Array(slots).fill(0).map((_, i): S2Slot => {
+        return { date: date, minutes: slotSize, type: slotType };
+      });
+    })
+    .flat();
+
+  console.log(`**** allocateSlots: Created ${slots.length} slots total`);
+  return slots;
 }
 
 // Helper function to distribute topics across all slot types
@@ -394,11 +663,11 @@ function distributeTopicsAcrossAllSlots(
   for (const day of sortedDays) {
     const daySlots = day.slots;
 
-    // Pick up to 3 topics with remaining minutes for this day
+    // Pick topics with remaining minutes for this day
     const dayTopicIndices: number[] = [];
     const picked = new Set<number>();
     let attempts = 0;
-    while (dayTopicIndices.length < 3 && attempts < topics.length * 2) {
+    while (attempts < topics.length * 2) {
       // Advance cursor to a topic with remaining minutes
       let searched = 0;
       while (searched < topics.length && (targetMinutesPerTopic[topicCursor] <= 0 || picked.has(topicCursor))) {
@@ -419,83 +688,66 @@ function distributeTopicsAcrossAllSlots(
       continue; // nothing to allocate for this day
     }
 
-    // Calculate total minutes available for this day
-    const totalDayMinutes = daySlots.reduce((sum, slot) => sum + slot.minutes, 0);
-    
-    // Check if we should maximize duration (when topics have equal or similar baseline minutes)
+    // Check if we should maximize duration (when topics have equal targets)
     const topicTargets = dayTopicIndices.map(idx => targetMinutesPerTopic[idx]);
-    const totalTargets = topicTargets.reduce((sum, target) => sum + target, 0);
-    
-    // Only maximize duration for cases where we have exactly equal targets
-    // This is a very conservative approach to avoid breaking existing functionality
     const targetsAreExactlyEqual = Math.max(...topicTargets) === Math.min(...topicTargets);
-    
-    const shouldMaximizeDuration = dayTopicIndices.length <= 3 && 
-      totalTargets > 0 && 
-      targetsAreExactlyEqual && // Targets are exactly equal
-      totalDayMinutes >= 30; // Enough time to redistribute meaningfully
-    
-    let redistributedMinutes: number[];
-    
-    if (shouldMaximizeDuration) {
-      // Redistribute minutes to maximize duration of first topics
-      // Give more time to earlier topics to create longer study sessions
-      redistributedMinutes = new Array(dayTopicIndices.length).fill(0);
-      let remainingMinutes = totalDayMinutes;
-      
-      // Distribute minutes with preference for earlier topics
-      for (let i = 0; i < dayTopicIndices.length && remainingMinutes > 0; i++) {
-        // @ts-ignore
-        const topicIdx = dayTopicIndices[i];
-        
-        // Give this topic more than its fair share if it's one of the first topics
-        const fairShare = totalDayMinutes / dayTopicIndices.length;
-        const bonusFactor = Math.max(1, 1.5 - (i * 0.2)); // First topic gets 1.5x, second gets 1.3x, etc.
-        const preferredAmount = Math.floor(fairShare * bonusFactor);
-        
-        redistributedMinutes[i] = Math.min(preferredAmount, remainingMinutes);
-        remainingMinutes -= redistributedMinutes[i];
-      }
-    } else {
-      // Use original targets when they're meaningful (predefined baseline minutes)
-      redistributedMinutes = topicTargets;
-    }
-    
-    // Allocate each day's slots using redistributed minutes
+    const shouldMaximizeDuration = topicTargets.length > 0 &&
+      targetsAreExactlyEqual;
+
+    // Allocate each day's slots maximizing topic duration
     let dayTopicPtr = 0; // points into dayTopicIndices
-    
+
     for (const slot of daySlots) {
       let minutesLeftInSlot = slot.minutes;
       while (minutesLeftInSlot > 0 && dayTopicPtr < dayTopicIndices.length) {
         const topicIdx = dayTopicIndices[dayTopicPtr];
-        const allocatedForTopic = redistributedMinutes[dayTopicPtr];
-        const remainingForTopic = allocatedForTopic;
-        
-        if (remainingForTopic <= 0) {
-          dayTopicPtr += 1;
-          continue;
-        }
-        
-        // Allocate as much as possible to this topic in this slot
-        const alloc = Math.min(minutesLeftInSlot, remainingForTopic);
-        if (alloc > 0) {
-          allTasks.push({
-            topicCode: topics[topicIdx].code,
-            subjectCode: subject.subjectCode,
-            taskType: slot.type,
-            minutes: alloc,
-            date: slot.date,
-          });
-          redistributedMinutes[dayTopicPtr] -= alloc;
-          minutesLeftInSlot -= alloc;
-        }
-        
-        // Only move to next topic if current topic is completely finished
-        if (redistributedMinutes[dayTopicPtr] <= 0) {
+        if (shouldMaximizeDuration) {
+          // Maximize duration: allocate ALL remaining time in this slot to current topic
+          // Ignore target constraints - use all available time
+          const alloc = minutesLeftInSlot;
+          if (alloc > 0) {
+            allTasks.push({
+              topicCode: topics[topicIdx].code,
+              subjectCode: subject.subjectCode,
+              taskType: slot.type,
+              minutes: alloc,
+              date: slot.date,
+            });
+            targetMinutesPerTopic[topicIdx] -= alloc;
+            minutesLeftInSlot -= alloc;
+          }
+
+          // Only move to next topic if current topic is completely finished
+          if (targetMinutesPerTopic[topicIdx] <= 0) {
+            dayTopicPtr += 1;
+          }
+        } else {
+          // Original behavior: allocate fairly and move to next topic
+          const remainingForTopic = targetMinutesPerTopic[topicIdx];
+
+          if (remainingForTopic <= 0) {
+            dayTopicPtr += 1;
+            continue;
+          }
+
+          const alloc = Math.min(minutesLeftInSlot, remainingForTopic);
+          if (alloc > 0) {
+            allTasks.push({
+              topicCode: topics[topicIdx].code,
+              subjectCode: subject.subjectCode,
+              taskType: slot.type,
+              minutes: alloc,
+              date: slot.date,
+            });
+            targetMinutesPerTopic[topicIdx] -= alloc;
+            minutesLeftInSlot -= alloc;
+          }
+
+          // Move to next topic after each allocation
           dayTopicPtr += 1;
         }
       }
-      // If we exhausted today's topics but slot still has minutes, leave unused to respect max 3 topics/day
+      // If we exhausted today's topics but slot still has minutes, leave unused
     }
   }
 
@@ -514,15 +766,15 @@ function determineTopicMinutes(subject: S2Subject, _constraints: S2Constraints):
 
   const unknownAvailableMinutes = subject.baselineMinutes -
     topicsWithMinutes.reduce((acc, topic) => acc + getTopicBaselineMinutes(topic), 0);
-  
+
   // console.log(`determineTopicMinutes: unknownAvailableMinutes: ${unknownAvailableMinutes}`);
-  
+
   if (topicsWithoutMinutes.length === 0) {
     // console.log(`determineTopicMinutes: All topics have baseline minutes, returning as-is`);
     return topicsWithMinutes as S2TopicWithMinutes[];
   }
   const unknownAveAllocation = unknownAvailableMinutes / topicsWithoutMinutes.length;
-  
+
   // console.log(`determineTopicMinutes: unknownAveAllocation: ${unknownAveAllocation}`);
 
   const allTopicsWithMinutes: S2TopicWithMinutes[] = subject.topics
@@ -530,7 +782,7 @@ function determineTopicMinutes(subject: S2Subject, _constraints: S2Constraints):
 
   // console.log(`determineTopicMinutes: Final topics with minutes:`);
   // allTopicsWithMinutes.forEach((topic, index) => {
-    // console.log(`determineTopicMinutes: Topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
+  // console.log(`determineTopicMinutes: Topic ${index}: ${topic.code}, baselineMinutes=${topic.baselineMinutes}`);
   // });
 
   return allTopicsWithMinutes;
@@ -621,7 +873,7 @@ export function calcAvailableTime(from: Dayjs, to: Dayjs, constraints: S2Constra
   if (totalMinutes <= 24 * 60) {
     return totalMinutes;
   }
-  
+
   // For multi-day blocks, use the original day-based calculation
   const availableDays = to.diff(from, 'day');
   const numCatchupDays = countCatchupDays(from, to, constraints.catchupDay);

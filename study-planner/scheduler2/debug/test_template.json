@@ -1,0 +1,43 @@
+{
+  "description": "Template for creating manual test cases",
+  "inputs": {
+    "subject": {
+      "subjectCode": "TEST_SUBJECT",
+      "subjectNname": "Test Subject",
+      "examFocus": "BothExams",
+      "topics": [
+        {
+          "code": "TOPIC_1",
+          "baselineMinutes": 120,
+          "subtopics": [
+            {
+              "code": "SUBT_1",
+              "name": "Test Subtopic 1",
+              "baselineMinutes": 60,
+              "isEssential": true,
+              "priorityLevel": 1
+            }
+          ]
+        }
+      ],
+      "baselineMinutes": 120
+    },
+    "constraints": {
+      "cycleType": "C1",
+      "dayMaxMinutes": 480,
+      "dayMinMinutes": 240,
+      "catchupDay": 0,
+      "testDay": 6,
+      "testMinutes": 180,
+      "taskEffortSplit": {
+        "0": 0.6,
+        "1": 0.3,
+        "2": 0.1,
+        "3": 0,
+        "4": 0
+      }
+    },
+    "from": "2024-01-01 09:00:00",
+    "to": "2024-01-07 18:00:00"
+  }
+}

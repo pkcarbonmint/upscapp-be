@@ -147,7 +147,7 @@ function getS1Schedule(startDate: Dayjs, targetYear: number, prelimsExamDate: Da
   const c5bEnd = prelimsExamDate.subtract(1, 'day'); // C5.b ends day before prelims
   const c6End = dayjs(`${targetYear}-07-31`);
 
-  return [
+  const cycles = [
     {
       cycleType: CycleType.C1,
       startDate: start.format('YYYY-MM-DD'),
@@ -189,6 +189,9 @@ function getS1Schedule(startDate: Dayjs, targetYear: number, prelimsExamDate: Da
       endDate: mainsExamDate.format('YYYY-MM-DD'),
     }
   ];
+
+  // return [cycles[0]];
+  return cycles;
 }
 
 /**

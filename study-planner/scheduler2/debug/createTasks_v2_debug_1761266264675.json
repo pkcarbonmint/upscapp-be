@@ -1,0 +1,435 @@
+{
+  "timestamp": "2025-10-24T00:37:44.668Z",
+  "errorMessage": "Too many days are not covered: 3",
+  "inputs": {
+    "subject": {
+      "subjectCode": "OPT-AGR",
+      "subjectNname": "Agriculture",
+      "examFocus": "MainsOnly",
+      "topics": [
+        {
+          "code": "OPT-AGR/01",
+          "baselineMinutes": 2699.1290322580644,
+          "subtopics": []
+        },
+        {
+          "code": "OPT-AGR/02",
+          "baselineMinutes": 2699.1290322580644,
+          "subtopics": []
+        }
+      ],
+      "baselineMinutes": 3082.258064516129
+    },
+    "sortedTopics": [
+      {
+        "code": "OPT-AGR/01",
+        "baselineMinutes": 2699.1290322580644,
+        "subtopics": []
+      },
+      {
+        "code": "OPT-AGR/02",
+        "baselineMinutes": 2699.1290322580644,
+        "subtopics": []
+      }
+    ],
+    "from": "2025-03-01 00:00:00",
+    "to": "2025-04-05 00:00:00",
+    "constraints": {
+      "cycleType": "C1",
+      "dayMaxMinutes": 210,
+      "dayMinMinutes": 210,
+      "catchupDay": 0,
+      "testDay": 0,
+      "testMinutes": 180,
+      "taskEffortSplit": {
+        "0": 1,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0
+      }
+    }
+  },
+  "generatedTasks": [
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-01 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 3,
+      "minutes": 30,
+      "date": "2025-03-02 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 4,
+      "minutes": 180,
+      "date": "2025-03-02 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-03 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-04 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-05 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-06 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-07 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-08 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 3,
+      "minutes": 30,
+      "date": "2025-03-09 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 4,
+      "minutes": 180,
+      "date": "2025-03-09 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-10 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-11 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-12 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-13 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-14 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 30,
+      "date": "2025-03-15 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 180,
+      "date": "2025-03-15 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 3,
+      "minutes": 30,
+      "date": "2025-03-16 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 4,
+      "minutes": 180,
+      "date": "2025-03-16 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-17 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-18 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-19 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-20 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-21 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-22 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 3,
+      "minutes": 30,
+      "date": "2025-03-23 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 4,
+      "minutes": 180,
+      "date": "2025-03-23 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-24 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-25 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-26 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-27 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 210,
+      "date": "2025-03-28 00:00:00"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 0,
+      "minutes": 60,
+      "date": "2025-03-29 00:00:00"
+    }
+  ],
+  "missingDays": [
+    {
+      "date": "2025-03-01",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-02",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-03",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-04",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-05",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-06",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-07",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-08",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-09",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-10",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-11",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-12",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-13",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-14",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-15",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-16",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-17",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-18",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-19",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-20",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-21",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-22",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-23",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-24",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-25",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-26",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-27",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-28",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-29",
+      "isCovered": true
+    },
+    {
+      "date": "2025-03-30",
+      "isCovered": false
+    },
+    {
+      "date": "2025-03-31",
+      "isCovered": false
+    },
+    {
+      "date": "2025-04-01",
+      "isCovered": false
+    },
+    {
+      "date": "2025-04-02",
+      "isCovered": false
+    },
+    {
+      "date": "2025-04-03",
+      "isCovered": false
+    },
+    {
+      "date": "2025-04-04",
+      "isCovered": false
+    }
+  ]
+}

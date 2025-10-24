@@ -14,8 +14,6 @@ import { planSubjectTasks } from './plan-subject';
 * 5. GS:Optional weight should be reflected in the relative weights
 */
 export function planMain(context: PlanningContext) {
-  // writeFileSync("t1-context.json", JSON.stringify(context, null, 2), "utf8");
-  // setup relative weights and subject order
   const scenario: ScenarioResult = planCycles(context);
   const cycles = scenario.schedules;
   // console.log("planMain", "cycles2Blocks");
@@ -55,12 +53,14 @@ function cycles2Blocks(context: PlanningContext, schedules: CycleSchedule[]): Bl
       cycleType,
       relativeAllocationWeights: context.relativeAllocationWeights,
       numParallel,
-      workingHoursPerDay: context.constraints.workingHoursPerDay / numParallel,
+      workingMinutesPerDay: context.constraints.workingHoursPerDay*60 / numParallel,
       catchupDay: context.constraints.catchupDay,
       testDay: context.constraints.testDay,
+      testMinutes: context.constraints.testMinutes,
     }
     
-    return planBlocks(dayjs(startDate), dayjs(endDate), reorderedSubjects, blkConstraints);
+    const blocks = planBlocks(dayjs(startDate), dayjs(endDate), reorderedSubjects, blkConstraints);
+    return blocks;
   });
   return blocks;
 }
@@ -97,9 +97,9 @@ function blocks2Tasks(context: PlanningContext, blocks: BlockSlot[]): S2Task[] {
     const { subject, from, to } = block;
     const taskPlanConstraints: S2Constraints = {
       cycleType,
-      dayMaxMinutes: (context.constraints.workingHoursPerDay * 60) / 3, // Split among up to 3 subjects per day
-      dayMinMinutes: (context.constraints.workingHoursPerDay * 60 * 0.9) / 3, // Split among up to 3 subjects per day
-      catchupDay: context.constraints.catchupDay,
+      dayMaxMinutes: block.minutesPerDay,
+      dayMinMinutes: block.minutesPerDay,
+      catchupDay: context.constraints.catchupDay, 
       testDay: context.constraints.testDay,
       testMinutes: context.constraints.testMinutes,
       taskEffortSplit: cycleTypeToTaskEffortSplit(cycleType),
