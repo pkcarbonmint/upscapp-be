@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { getStepSequence } from './types'
 import type { Step, IntakeWizardFormData, IWFBackground, IWFOTPVerification, IWFConfidenceLevelAssessment } from './types'
+import { S2WeekDay } from 'scheduler2/types';
 import { apiService } from './services/api'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
@@ -61,7 +62,9 @@ const initialFormData: IntakeWizardFormData = {
     subjectApproach: "DualSubject",
     upscOptionalSubject: 'OPT-SOC',
     optionalFirst: false,
-    weeklyTestDayPreference: "Sunday"
+    weeklyTestDayPreference: S2WeekDay.Sunday,
+    catchupDayPreference: S2WeekDay.Saturday,
+    testMinutes: 180
   },
   confidenceLevel: {} as IWFConfidenceLevelAssessment,
   preview: {

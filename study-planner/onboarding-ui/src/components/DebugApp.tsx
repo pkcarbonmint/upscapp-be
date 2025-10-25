@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { IntakeWizardFormData, IWFBackground, IWFOTPVerification, IWFConfidenceLevelAssessment } from '../types';
+import { S2WeekDay } from 'scheduler2/types';
 import { useTheme } from '../hooks/useTheme';
 import PreviewStep from './PreviewStep';
 
@@ -43,7 +44,9 @@ const initialFormData: IntakeWizardFormData = {
     subjectApproach: "DualSubject",
     upscOptionalSubject: 'OPT-SOC',
     optionalFirst: false,
-    weeklyTestDayPreference: "Sunday"
+    weeklyTestDayPreference: S2WeekDay.Sunday,
+    catchupDayPreference: S2WeekDay.Saturday,
+    testMinutes: 180
   },
   confidenceLevel: {
     "H01": "Moderate",

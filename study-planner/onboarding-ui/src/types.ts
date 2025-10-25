@@ -29,6 +29,8 @@ export interface Performance {
 export type StudyPreference = 'WeakSubjectsFirst' | 'StrongSubjectsFirst' | 'Balanced';
 export type SubjectApproach = 'SingleSubject' | 'DualSubject' | 'TripleSubject';
 
+import type { S2WeekDay } from 'scheduler2/types';
+
 export interface IWFStudyCommitment {
   timeCommitment: number | null;
   performance: Performance;
@@ -37,7 +39,9 @@ export interface IWFStudyCommitment {
   // New UPSC fields
   upscOptionalSubject: string;
   optionalFirst: boolean;
-  weeklyTestDayPreference?: string;
+  weeklyTestDayPreference: S2WeekDay;
+  catchupDayPreference: S2WeekDay;
+  testMinutes: number;
 }
 
 // Import helios-ts types for confidence assessment

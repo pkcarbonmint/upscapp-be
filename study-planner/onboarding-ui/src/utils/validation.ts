@@ -20,6 +20,9 @@ export interface CommitmentValidation {
   timeCommitment: ValidationResult;
   studyPreference: ValidationResult;
   subjectApproach: ValidationResult;
+  weeklyTestDayPreference: ValidationResult;
+  catchupDayPreference: ValidationResult;
+  testMinutes: ValidationResult;
 }
 
 export interface ConfidenceLevelValidation {
@@ -126,7 +129,16 @@ export const validateCommitment = (commitment: any): CommitmentValidation => {
       : { isValid: false, error: 'Please select your study preference' },
     subjectApproach: commitment.subjectApproach
       ? { isValid: true }
-      : { isValid: false, error: 'Please select your subject approach' }
+      : { isValid: false, error: 'Please select your subject approach' },
+    weeklyTestDayPreference: commitment.weeklyTestDayPreference
+      ? { isValid: true }
+      : { isValid: false, error: 'Please select your weekly test day' },
+    catchupDayPreference: commitment.catchupDayPreference
+      ? { isValid: true }
+      : { isValid: false, error: 'Please select your catch-up day' },
+    testMinutes: commitment.testMinutes && commitment.testMinutes > 0
+      ? { isValid: true }
+      : { isValid: false, error: 'Please select the time for tests' }
   };
 };
 
