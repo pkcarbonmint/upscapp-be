@@ -485,7 +485,7 @@ resource "aws_instance" "docker" {
   vpc_security_group_ids      = [aws_security_group.ec2.id]
   subnet_id                   = aws_subnet.public[0].id
   associate_public_ip_address = true
-  user_data = base64encode(templatefile("${path.module}/docker-user-data-simple.sh", {
+      user_data = base64encode(templatefile("${path.module}/docker-user-data-simple-fixed.sh", {
     project_name          = var.project_name
     environment           = var.environment
     strapi_ip             = var.enable_ec2_instances ? aws_instance.strapi[0].private_ip : ""
