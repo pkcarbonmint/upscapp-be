@@ -1,0 +1,52 @@
+{
+    "KeyPairs": [
+        {
+            "KeyPairId": "key-07e0035c363b61f6e",
+            "KeyType": "rsa",
+            "Tags": [],
+            "CreateTime": "2023-10-20T18:39:54.940Z",
+            "KeyName": "Naipunya",
+            "KeyFingerprint": "98:2f:58:0c:9b:6e:d1:e0:ba:39:e5:72:20:96:36:fd:d3:7d:cb:2b"
+        },
+        {
+            "KeyPairId": "key-0a72158e676d677e6",
+            "KeyType": "rsa",
+            "Tags": [],
+            "CreateTime": "2023-07-27T18:58:41.533Z",
+            "KeyName": "aws-eb",
+            "KeyFingerprint": "6f:a6:96:96:f6:92:f0:e9:55:98:5b:de:59:f8:f8:d4"
+        },
+        {
+            "KeyPairId": "key-009b631af865caecf",
+            "KeyType": "rsa",
+            "Tags": [],
+            "CreateTime": "2023-09-25T06:41:21.863Z",
+            "KeyName": "upscpro-be-prod",
+            "KeyFingerprint": "7a:b6:5f:00:10:0c:ea:4c:76:89:ed:3a:3e:7b:6a:f8:12:f4:98:b5"
+        },
+        {
+            "KeyPairId": "key-0ba3773eade7bac10",
+            "KeyType": "rsa",
+            "Tags": [],
+            "CreateTime": "2023-09-22T12:31:05.262Z",
+            "KeyName": "Upscapp-stage-backend",
+            "KeyFingerprint": "1e:74:32:50:13:8c:a6:51:76:56:b5:ca:97:87:b6:d4:07:4e:82:a7"
+        },
+        {
+            "KeyPairId": "key-00ebddec6ba144dec",
+            "KeyType": "rsa",
+            "Tags": [],
+            "CreateTime": "2023-07-28T06:02:53.390Z",
+            "KeyName": "upscAppAwsKey",
+            "KeyFingerprint": "8a:19:4b:41:0f:e1:a0:8d:2b:2d:cb:a0:24:d5:d1:4c:f8:25:81:24"
+        },
+        {
+            "KeyPairId": "key-071fa43cb6884322a",
+            "KeyType": "rsa",
+            "Tags": [],
+            "CreateTime": "2024-02-25T20:23:51.579Z",
+            "KeyName": "upscpro-cms-prod",
+            "KeyFingerprint": "ae:51:a6:3e:ef:22:55:7b:61:9a:81:4c:90:4b:13:9b:63:c7:cf:c8"
+        }
+    ]
+}

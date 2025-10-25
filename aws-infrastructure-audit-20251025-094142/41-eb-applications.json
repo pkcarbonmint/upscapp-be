@@ -1,0 +1,257 @@
+{
+    "Applications": [
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/cms-upscpro-prod",
+            "ApplicationName": "cms-upscpro-prod",
+            "DateCreated": "2024-02-24T13:45:56.253Z",
+            "DateUpdated": "2024-02-24T13:45:56.253Z",
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        },
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/test",
+            "ApplicationName": "test",
+            "DateCreated": "2024-02-08T12:13:30.106Z",
+            "DateUpdated": "2024-02-08T12:13:30.106Z",
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        },
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/cms-test",
+            "ApplicationName": "cms-test",
+            "DateCreated": "2024-02-08T10:06:18.288Z",
+            "DateUpdated": "2024-02-08T10:06:18.288Z",
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        },
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/upscpro-cms-stage",
+            "ApplicationName": "upscpro-cms-stage",
+            "DateCreated": "2023-09-27T11:12:18.423Z",
+            "DateUpdated": "2023-09-27T11:12:18.423Z",
+            "Versions": [
+                "upscpro-cms-stage-v1-12",
+                "upscpro-cms-stage-v1-2",
+                "upscpro-cms-stage-v1-7",
+                "upscpro-cms-stage-v1-3",
+                "upscpro-cms-stage-v1-23",
+                "upscpro-cms-stage-v1-8",
+                "upscpro-cms-stage-v1-24",
+                "upscpro-cms-stage-v1-10",
+                "upscpro-cms-stage-v1-4",
+                "upscpro-cms-stage-v1",
+                "upscpro-cms-stage-v1-21",
+                "upscpro-cms-stage-v1-17",
+                "upscpro-cms-stage-v1-19",
+                "upscpro-cms-stage-v1-15",
+                "upscpro-cms-stage-v1-16",
+                "upscpro-cms-stage-v1-18",
+                "upscpro-cms-stage-v1-9",
+                "upscpro-cms-stage-v1-20",
+                "upscpro-cms-stage-v1-13",
+                "upscpro-cms-stage-v1-11",
+                "upscpro-cms-stage-v1-1",
+                "upscpro-cms-stage-v1-5",
+                "upscpro-cms-stage-v1-6",
+                "upscpro-cms-stage-v1-14",
+                "upscpro-cms-stage-v1-22"
+            ],
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        },
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/upscpro-cms-prod",
+            "ApplicationName": "upscpro-cms-prod",
+            "DateCreated": "2023-09-25T07:38:33.212Z",
+            "DateUpdated": "2023-09-25T07:38:33.212Z",
+            "Versions": [
+                "upscpro-cms-prod-v1-5",
+                "upscpro-cms-prod-v1-1",
+                "upscpro-cms-prod-v1",
+                "upscpro-cms-prod-v1-3",
+                "upscpro-cms-prod-v1-6",
+                "upscpro-cms-prod-v1-7",
+                "upscpro-cms-prod-v1-4",
+                "upscpro-cms-prod-v1-2",
+                "upscpro-cms-prod-v1-8"
+            ],
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        },
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/upscpro-be-dev-4",
+            "ApplicationName": "upscpro-be-dev-4",
+            "DateCreated": "2023-07-28T07:13:08.896Z",
+            "DateUpdated": "2023-07-28T07:13:08.896Z",
+            "Versions": [
+                "upscpro-be-dev-4-v1"
+            ],
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        },
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/upscpro-cms-eb-dev",
+            "ApplicationName": "upscpro-cms-eb-dev",
+            "DateCreated": "2023-07-27T05:45:47.298Z",
+            "DateUpdated": "2023-07-27T05:45:47.298Z",
+            "Versions": [
+                "upscpro-cms-eb-dev-v1-39",
+                "upscpro-cms-eb-dev-v1-14",
+                "upscpro-cms-eb-dev-v1-12",
+                "upscpro-cms-eb-dev-v1-29",
+                "upscpro-cms-eb-dev-v1-35",
+                "upscpro-cms-eb-dev-v1-37",
+                "upscpro-cms-eb-dev-v1-28",
+                "upscpro-cms-eb-dev-v1-32",
+                "upscpro-cms-eb-dev-v1-13",
+                "upscpro-cms-eb-dev-v1-41",
+                "upscpro-cms-eb-dev-v1-8",
+                "upscpro-cms-eb-dev-v1-20",
+                "upscpro-cms-eb-dev-v1-9",
+                "upscpro-cms-eb-dev-v1-1",
+                "upscpro-cms-eb-dev-v1-3",
+                "upscpro-cms-eb-dev-v1-15",
+                "upscpro-cms-eb-dev-v1-38",
+                "upscpro-cms-eb-dev-v1-7",
+                "upscpro-cms-eb-dev-v1-40",
+                "upscpro-cms-eb-dev-v1-31",
+                "upscpro-cms-eb-dev-v1-11",
+                "upscpro-cms-eb-dev-v1-36",
+                "upscpro-cms-eb-dev-v1-2",
+                "upscpro-cms-eb-dev-v1",
+                "upscpro-cms-eb-dev-v1-34",
+                "upscpro-cms-eb-dev-v1-19",
+                "upscpro-cms-eb-dev-v1-6",
+                "upscpro-cms-eb-dev-v1-27",
+                "upscpro-cms-eb-dev-v1-26",
+                "upscpro-cms-eb-dev-v1-16",
+                "upscpro-cms-eb-dev-v1-10",
+                "upscpro-cms-eb-dev-v1-33",
+                "upscpro-cms-eb-dev-v1-21",
+                "upscpro-cms-eb-dev-v1-23",
+                "upscpro-cms-eb-dev-v1-5",
+                "upscpro-cms-eb-dev-v1-30",
+                "upscpro-cms-eb-dev-v1-17",
+                "upscpro-cms-eb-dev-v1-22",
+                "upscpro-cms-eb-dev-v1-4",
+                "upscpro-cms-eb-dev-v1-18",
+                "upscpro-cms-eb-dev-v1-24",
+                "upscpro-cms-eb-dev-v1-25"
+            ],
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        },
+        {
+            "ApplicationArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:application/sample application",
+            "ApplicationName": "sample application",
+            "DateCreated": "2023-07-25T12:37:59.569Z",
+            "DateUpdated": "2023-07-25T12:37:59.569Z",
+            "ConfigurationTemplates": [],
+            "ResourceLifecycleConfig": {
+                "VersionLifecycleConfig": {
+                    "MaxCountRule": {
+                        "Enabled": false,
+                        "MaxCount": 200,
+                        "DeleteSourceFromS3": false
+                    },
+                    "MaxAgeRule": {
+                        "Enabled": false,
+                        "MaxAgeInDays": 180,
+                        "DeleteSourceFromS3": false
+                    }
+                }
+            }
+        }
+    ]
+}

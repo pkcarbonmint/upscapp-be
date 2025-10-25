@@ -1,0 +1,32 @@
+{
+    "logGroups": [
+        {
+            "logGroupName": "/aws/rds/instance/upsc-be-prod-db/postgresql",
+            "creationTime": 1695709867589,
+            "metricFilterCount": 0,
+            "arn": "arn:aws:logs:ap-south-1:949945086246:log-group:/aws/rds/instance/upsc-be-prod-db/postgresql:*",
+            "storedBytes": 11121961,
+            "logGroupClass": "STANDARD",
+            "logGroupArn": "arn:aws:logs:ap-south-1:949945086246:log-group:/aws/rds/instance/upsc-be-prod-db/postgresql"
+        },
+        {
+            "logGroupName": "/aws/rds/instance/upscpro-be-stage-db/postgresql",
+            "creationTime": 1695553435422,
+            "metricFilterCount": 0,
+            "arn": "arn:aws:logs:ap-south-1:949945086246:log-group:/aws/rds/instance/upscpro-be-stage-db/postgresql:*",
+            "storedBytes": 8724074,
+            "logGroupClass": "STANDARD",
+            "logGroupArn": "arn:aws:logs:ap-south-1:949945086246:log-group:/aws/rds/instance/upscpro-be-stage-db/postgresql"
+        },
+        {
+            "logGroupName": "RDSOSMetrics",
+            "creationTime": 1690283308938,
+            "retentionInDays": 30,
+            "metricFilterCount": 0,
+            "arn": "arn:aws:logs:ap-south-1:949945086246:log-group:RDSOSMetrics:*",
+            "storedBytes": 88586793,
+            "logGroupClass": "STANDARD",
+            "logGroupArn": "arn:aws:logs:ap-south-1:949945086246:log-group:RDSOSMetrics"
+        }
+    ]
+}

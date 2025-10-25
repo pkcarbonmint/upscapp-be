@@ -1,0 +1,52 @@
+{
+    "TargetGroups": [
+        {
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-south-1:949945086246:targetgroup/awseb-AWSEB-M5Z5ZFJWWOIB/2e7b40719cd0502e",
+            "TargetGroupName": "awseb-AWSEB-M5Z5ZFJWWOIB",
+            "Protocol": "HTTP",
+            "Port": 80,
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "HealthCheckProtocol": "HTTP",
+            "HealthCheckPort": "traffic-port",
+            "HealthCheckEnabled": true,
+            "HealthCheckIntervalSeconds": 15,
+            "HealthCheckTimeoutSeconds": 5,
+            "HealthyThresholdCount": 3,
+            "UnhealthyThresholdCount": 5,
+            "HealthCheckPath": "/",
+            "Matcher": {
+                "HttpCode": "200"
+            },
+            "LoadBalancerArns": [
+                "arn:aws:elasticloadbalancing:ap-south-1:949945086246:loadbalancer/app/awseb-AWSEB-COTQ1OJFOPON/0932ea008182dbd2"
+            ],
+            "TargetType": "instance",
+            "ProtocolVersion": "HTTP1",
+            "IpAddressType": "ipv4"
+        },
+        {
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-south-1:949945086246:targetgroup/awseb-AWSEB-SC8K4DJMIFPC/da12c3e9569cc5f0",
+            "TargetGroupName": "awseb-AWSEB-SC8K4DJMIFPC",
+            "Protocol": "HTTP",
+            "Port": 80,
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "HealthCheckProtocol": "HTTP",
+            "HealthCheckPort": "traffic-port",
+            "HealthCheckEnabled": true,
+            "HealthCheckIntervalSeconds": 15,
+            "HealthCheckTimeoutSeconds": 5,
+            "HealthyThresholdCount": 3,
+            "UnhealthyThresholdCount": 5,
+            "HealthCheckPath": "/",
+            "Matcher": {
+                "HttpCode": "200"
+            },
+            "LoadBalancerArns": [
+                "arn:aws:elasticloadbalancing:ap-south-1:949945086246:loadbalancer/app/awseb-AWSEB-QGSQI79L9L21/f37d74ec1f9f29e6"
+            ],
+            "TargetType": "instance",
+            "ProtocolVersion": "HTTP1",
+            "IpAddressType": "ipv4"
+        }
+    ]
+}

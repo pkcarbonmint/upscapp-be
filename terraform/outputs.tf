@@ -220,3 +220,50 @@ output "project_name" {
   description = "Project name"
   value       = var.project_name
 }
+
+# S3 Bucket Outputs
+output "s3_bucket_assets_name" {
+  description = "Name of the S3 assets bucket"
+  value       = var.enable_s3_buckets ? aws_s3_bucket.assets[0].bucket : null
+}
+
+output "s3_bucket_images_name" {
+  description = "Name of the S3 images bucket"
+  value       = var.enable_s3_buckets ? aws_s3_bucket.images[0].bucket : null
+}
+
+output "s3_bucket_assets_arn" {
+  description = "ARN of the S3 assets bucket"
+  value       = var.enable_s3_buckets ? aws_s3_bucket.assets[0].arn : null
+}
+
+output "s3_bucket_images_arn" {
+  description = "ARN of the S3 images bucket"
+  value       = var.enable_s3_buckets ? aws_s3_bucket.images[0].arn : null
+}
+
+# CloudFront Outputs
+output "cloudfront_distribution_id" {
+  description = "ID of the CloudFront distribution"
+  value       = var.enable_cloudfront ? aws_cloudfront_distribution.main[0].id : null
+}
+
+output "cloudfront_distribution_arn" {
+  description = "ARN of the CloudFront distribution"
+  value       = var.enable_cloudfront ? aws_cloudfront_distribution.main[0].arn : null
+}
+
+output "cloudfront_domain_name" {
+  description = "Domain name of the CloudFront distribution"
+  value       = var.enable_cloudfront ? aws_cloudfront_distribution.main[0].domain_name : null
+}
+
+output "cloudfront_hosted_zone_id" {
+  description = "CloudFront hosted zone ID"
+  value       = var.enable_cloudfront ? aws_cloudfront_distribution.main[0].hosted_zone_id : null
+}
+
+output "cloudfront_url" {
+  description = "URL to access the application via CloudFront"
+  value       = var.enable_cloudfront ? "https://${aws_cloudfront_distribution.main[0].domain_name}" : null
+}

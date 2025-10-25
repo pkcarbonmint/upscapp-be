@@ -448,3 +448,31 @@ variable "rds_module_vpc_cidr" {
   type        = string
   default     = "10.1.0.0/16"
 }
+
+# S3 Configuration
+variable "enable_s3_buckets" {
+  description = "Enable S3 buckets for static assets and images"
+  type        = bool
+  default     = true
+}
+
+# CloudFront Configuration
+variable "enable_cloudfront" {
+  description = "Enable CloudFront distribution"
+  type        = bool
+  default     = true
+}
+
+variable "cloudfront_price_class" {
+  description = "CloudFront price class"
+  type        = string
+  default     = "PriceClass_100"
+  validation {
+    condition = contains([
+      "PriceClass_All",
+      "PriceClass_200", 
+      "PriceClass_100"
+    ], var.cloudfront_price_class)
+    error_message = "CloudFront price class must be one of: PriceClass_All, PriceClass_200, PriceClass_100."
+  }
+}

@@ -1,0 +1,76 @@
+{
+    "DBSubnetGroups": [
+        {
+            "DBSubnetGroupName": "default",
+            "DBSubnetGroupDescription": "default",
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SubnetGroupStatus": "Complete",
+            "Subnets": [
+                {
+                    "SubnetIdentifier": "subnet-034b50fd7fa4e1a66",
+                    "SubnetAvailabilityZone": {
+                        "Name": "ap-south-1a"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-084a2c730193461ff",
+                    "SubnetAvailabilityZone": {
+                        "Name": "ap-south-1b"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-012e4f7a9ce4e081a",
+                    "SubnetAvailabilityZone": {
+                        "Name": "ap-south-1c"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                }
+            ],
+            "DBSubnetGroupArn": "arn:aws:rds:ap-south-1:949945086246:subgrp:default",
+            "SupportedNetworkTypes": [
+                "IPV4"
+            ]
+        },
+        {
+            "DBSubnetGroupName": "default-vpc-0b5fa2440bbbfac91",
+            "DBSubnetGroupDescription": "Created from the RDS Management Console",
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SubnetGroupStatus": "Complete",
+            "Subnets": [
+                {
+                    "SubnetIdentifier": "subnet-034b50fd7fa4e1a66",
+                    "SubnetAvailabilityZone": {
+                        "Name": "ap-south-1a"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-084a2c730193461ff",
+                    "SubnetAvailabilityZone": {
+                        "Name": "ap-south-1b"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                },
+                {
+                    "SubnetIdentifier": "subnet-012e4f7a9ce4e081a",
+                    "SubnetAvailabilityZone": {
+                        "Name": "ap-south-1c"
+                    },
+                    "SubnetOutpost": {},
+                    "SubnetStatus": "Active"
+                }
+            ],
+            "DBSubnetGroupArn": "arn:aws:rds:ap-south-1:949945086246:subgrp:default-vpc-0b5fa2440bbbfac91",
+            "SupportedNetworkTypes": [
+                "IPV4"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,168 @@
+{
+    "Buckets": [
+        {
+            "Name": "account.upscpro.laex.in",
+            "CreationDate": "2024-11-12T04:27:16.000Z"
+        },
+        {
+            "Name": "account2.upscpro.laex.in",
+            "CreationDate": "2024-12-13T06:38:45.000Z"
+        },
+        {
+            "Name": "admin.upscpro.laex.in",
+            "CreationDate": "2024-11-07T21:21:07.000Z"
+        },
+        {
+            "Name": "admin2.upscpro.laex.in",
+            "CreationDate": "2024-12-13T06:42:06.000Z"
+        },
+        {
+            "Name": "content.upscpro.laex.in",
+            "CreationDate": "2025-02-01T04:52:52.000Z"
+        },
+        {
+            "Name": "dashboard.upscpro.laex.in",
+            "CreationDate": "2025-03-04T04:45:06.000Z"
+        },
+        {
+            "Name": "dev-account.upscpro.laex.in",
+            "CreationDate": "2024-11-09T14:06:42.000Z"
+        },
+        {
+            "Name": "dev-admin-app.upsc.pro",
+            "CreationDate": "2024-11-12T20:26:30.000Z"
+        },
+        {
+            "Name": "dev-admin.upscpro.laex.in",
+            "CreationDate": "2024-11-09T14:06:48.000Z"
+        },
+        {
+            "Name": "dev-app.upsc.pro",
+            "CreationDate": "2024-11-09T14:07:24.000Z"
+        },
+        {
+            "Name": "dev-frontdesk.upscpro.laex.in",
+            "CreationDate": "2024-11-20T20:49:25.000Z"
+        },
+        {
+            "Name": "dev-walkin.upscpro.laex.in",
+            "CreationDate": "2024-11-20T14:29:05.000Z"
+        },
+        {
+            "Name": "elasticbeanstalk-ap-south-1-949945086246",
+            "CreationDate": "2024-11-13T02:33:25.000Z"
+        },
+        {
+            "Name": "elasticbeanstalk-us-west-2-949945086246",
+            "CreationDate": "2024-11-09T19:27:58.000Z"
+        },
+        {
+            "Name": "evaluation.upscpro.laex.in",
+            "CreationDate": "2025-04-04T04:40:10.000Z"
+        },
+        {
+            "Name": "frontdesk.upscpro.laex.in",
+            "CreationDate": "2024-12-13T06:44:21.000Z"
+        },
+        {
+            "Name": "logs-stage-admin.upscpro.laex.in",
+            "CreationDate": "2024-11-10T00:17:21.000Z"
+        },
+        {
+            "Name": "stage-account.upscpro.laex.in",
+            "CreationDate": "2024-11-13T21:16:45.000Z"
+        },
+        {
+            "Name": "stage-admin.upscpro.laex.in",
+            "CreationDate": "2024-11-10T09:56:10.000Z"
+        },
+        {
+            "Name": "stage-content.upscpro.laex.in",
+            "CreationDate": "2025-02-06T13:15:18.000Z"
+        },
+        {
+            "Name": "stage-dashboard.upscpro.laex.in",
+            "CreationDate": "2025-03-04T04:43:52.000Z"
+        },
+        {
+            "Name": "stage-evaluation.upscpro.laex.in",
+            "CreationDate": "2025-04-04T04:38:08.000Z"
+        },
+        {
+            "Name": "stage-quick-walkin.upscpro.laex.in",
+            "CreationDate": "2025-03-25T11:31:59.000Z"
+        },
+        {
+            "Name": "stage-student.upscpro.laex.in",
+            "CreationDate": "2025-03-04T04:41:50.000Z"
+        },
+        {
+            "Name": "stage-teaching.upscpro.laex.in",
+            "CreationDate": "2025-02-18T05:01:01.000Z"
+        },
+        {
+            "Name": "student.upscpro.laex.in",
+            "CreationDate": "2025-03-04T04:42:33.000Z"
+        },
+        {
+            "Name": "teaching.upscpro.laex.in",
+            "CreationDate": "2025-02-18T05:02:49.000Z"
+        },
+        {
+            "Name": "upscpro-be-dev-assets",
+            "CreationDate": "2024-11-10T12:14:00.000Z"
+        },
+        {
+            "Name": "upscpro-be-dev-img",
+            "CreationDate": "2024-11-10T12:14:01.000Z"
+        },
+        {
+            "Name": "upscpro-be-prod-assets",
+            "CreationDate": "2024-11-10T12:14:01.000Z"
+        },
+        {
+            "Name": "upscpro-be-stage-assets",
+            "CreationDate": "2024-11-10T12:14:01.000Z"
+        },
+        {
+            "Name": "upscpro-cms-dev-assets",
+            "CreationDate": "2024-11-14T00:09:24.000Z"
+        },
+        {
+            "Name": "upscpro-cms-dev-img",
+            "CreationDate": "2024-11-14T00:09:23.000Z"
+        },
+        {
+            "Name": "upscpro-cms-prod-assets",
+            "CreationDate": "2024-11-10T12:14:01.000Z"
+        },
+        {
+            "Name": "upscpro-cms-stage-assets",
+            "CreationDate": "2024-11-08T05:09:25.000Z"
+        },
+        {
+            "Name": "upscpro-cms-stage-img",
+            "CreationDate": "2024-11-14T00:09:23.000Z"
+        },
+        {
+            "Name": "upscpro.laex-cms-prod-assets",
+            "CreationDate": "2024-11-10T12:14:01.000Z"
+        },
+        {
+            "Name": "upscpro.laex-cms-prod-img",
+            "CreationDate": "2024-11-10T12:14:01.000Z"
+        },
+        {
+            "Name": "walkin-quick.upscpro.laex.in",
+            "CreationDate": "2025-03-25T11:34:32.000Z"
+        },
+        {
+            "Name": "walkin.upscpro.laex.in",
+            "CreationDate": "2024-12-13T06:45:22.000Z"
+        }
+    ],
+    "Owner": {
+        "ID": "02dd33342d245cc83d60795199d76ea0f057987a7891271f9d787f973997f812"
+    },
+    "Prefix": null
+}

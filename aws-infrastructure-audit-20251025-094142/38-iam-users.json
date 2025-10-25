@@ -1,0 +1,27 @@
+{
+    "Users": [
+        {
+            "Path": "/",
+            "UserName": "prasanna@carbonmint.com",
+            "UserId": "AIDA52LJDWETBCM2ZCRCZ",
+            "Arn": "arn:aws:iam::949945086246:user/prasanna@carbonmint.com",
+            "CreateDate": "2025-10-13T04:57:36Z",
+            "PasswordLastUsed": "2025-10-13T05:07:37Z"
+        },
+        {
+            "Path": "/",
+            "UserName": "ses-smtp-user-upscpro-be",
+            "UserId": "AIDA52LJDWETEKO2IAFLH",
+            "Arn": "arn:aws:iam::949945086246:user/ses-smtp-user-upscpro-be",
+            "CreateDate": "2023-09-25T18:53:29Z"
+        },
+        {
+            "Path": "/",
+            "UserName": "swathi@nearbuzz.com",
+            "UserId": "AIDA52LJDWETNLQ3BH2J2",
+            "Arn": "arn:aws:iam::949945086246:user/swathi@nearbuzz.com",
+            "CreateDate": "2023-07-27T12:39:58Z",
+            "PasswordLastUsed": "2025-10-23T09:41:04Z"
+        }
+    ]
+}

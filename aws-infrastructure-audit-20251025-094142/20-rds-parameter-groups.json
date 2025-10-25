@@ -1,0 +1,22 @@
+{
+    "DBParameterGroups": [
+        {
+            "DBParameterGroupName": "custom-postgres15",
+            "DBParameterGroupFamily": "postgres15",
+            "Description": "group to create custom connection",
+            "DBParameterGroupArn": "arn:aws:rds:ap-south-1:949945086246:pg:custom-postgres15"
+        },
+        {
+            "DBParameterGroupName": "default.postgres13",
+            "DBParameterGroupFamily": "postgres13",
+            "Description": "Default parameter group for postgres13",
+            "DBParameterGroupArn": "arn:aws:rds:ap-south-1:949945086246:pg:default.postgres13"
+        },
+        {
+            "DBParameterGroupName": "default.postgres15",
+            "DBParameterGroupFamily": "postgres15",
+            "Description": "Default parameter group for postgres15",
+            "DBParameterGroupArn": "arn:aws:rds:ap-south-1:949945086246:pg:default.postgres15"
+        }
+    ]
+}
