@@ -121,97 +121,7 @@ variable "rds_deletion_protection" {
   default     = false
 }
 
-# Redis Configuration
-variable "enable_redis" {
-  description = "Enable ElastiCache Redis cluster"
-  type        = bool
-  default     = true
-}
 
-variable "redis_node_type" {
-  description = "The compute and memory capacity of the nodes"
-  type        = string
-  default     = "cache.t3.micro"
-}
-
-variable "redis_num_cache_nodes" {
-  description = "The initial number of cache nodes that the cache cluster will have"
-  type        = number
-  default     = 1
-}
-
-# ECS Configuration
-variable "ecs_app_cpu" {
-  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
-  type        = number
-  default     = 512
-}
-
-variable "ecs_app_memory" {
-  description = "Fargate instance memory to provision (in MiB)"
-  type        = number
-  default     = 1024
-}
-
-variable "ecs_app_count" {
-  description = "Number of docker containers to run"
-  type        = number
-  default     = 1
-}
-
-variable "ecs_helios_cpu" {
-  description = "Fargate instance CPU units to provision for Helios service (1 vCPU = 1024 CPU units)"
-  type        = number
-  default     = 256
-}
-
-variable "ecs_helios_memory" {
-  description = "Fargate instance memory to provision for Helios service (in MiB)"
-  type        = number
-  default     = 512
-}
-
-variable "ecs_helios_count" {
-  description = "Number of Helios docker containers to run"
-  type        = number
-  default     = 1
-}
-
-variable "ecs_frontend_cpu" {
-  description = "Fargate instance CPU units to provision for Frontend service (1 vCPU = 1024 CPU units)"
-  type        = number
-  default     = 256
-}
-
-variable "ecs_frontend_memory" {
-  description = "Fargate instance memory to provision for Frontend service (in MiB)"
-  type        = number
-  default     = 512
-}
-
-variable "ecs_frontend_count" {
-  description = "Number of Frontend docker containers to run"
-  type        = number
-  default     = 1
-}
-
-variable "ecs_celery_cpu" {
-  description = "Fargate instance CPU units to provision for Celery worker (1 vCPU = 1024 CPU units)"
-  type        = number
-  default     = 256
-}
-
-variable "ecs_celery_memory" {
-  description = "Fargate instance memory to provision for Celery worker (in MiB)"
-  type        = number
-  default     = 512
-}
-
-variable "ecs_celery_count" {
-  description = "Number of Celery worker containers to run"
-  type        = number
-  default     = 1
-}
 
 # Application Configuration
 variable "app_image_tag" {
@@ -242,12 +152,6 @@ variable "app_environment_variables" {
   }
 }
 
-variable "redis_password" {
-  description = "Password for Redis authentication"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
 
 variable "flower_user" {
   description = "Username for Flower monitoring interface"
@@ -331,6 +235,61 @@ variable "auto_scaling_target_memory" {
   description = "Target memory utilization for auto scaling"
   type        = number
   default     = 80
+}
+
+# ECS Configuration
+variable "ecs_app_cpu" {
+  description = "CPU units for the app ECS task"
+  type        = number
+  default     = 256
+}
+
+variable "ecs_app_memory" {
+  description = "Memory for the app ECS task"
+  type        = number
+  default     = 512
+}
+
+variable "ecs_app_count" {
+  description = "Number of app ECS tasks to run"
+  type        = number
+  default     = 1
+}
+
+variable "ecs_frontend_cpu" {
+  description = "CPU units for the frontend ECS task"
+  type        = number
+  default     = 256
+}
+
+variable "ecs_frontend_memory" {
+  description = "Memory for the frontend ECS task"
+  type        = number
+  default     = 512
+}
+
+variable "ecs_frontend_count" {
+  description = "Number of frontend ECS tasks to run"
+  type        = number
+  default     = 1
+}
+
+variable "ecs_celery_cpu" {
+  description = "CPU units for the celery ECS task"
+  type        = number
+  default     = 256
+}
+
+variable "ecs_celery_memory" {
+  description = "Memory for the celery ECS task"
+  type        = number
+  default     = 512
+}
+
+variable "ecs_celery_count" {
+  description = "Number of celery ECS tasks to run"
+  type        = number
+  default     = 1
 }
 
 # Docker Image Configuration

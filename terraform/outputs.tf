@@ -21,14 +21,14 @@ output "private_subnet_ids" {
 }
 
 # Security Group Outputs
-output "alb_security_group_id" {
-  description = "ID of the ALB security group"
-  value       = aws_security_group.alb.id
+output "ec2_security_group_id" {
+  description = "ID of the EC2 security group"
+  value       = aws_security_group.ec2.id
 }
 
-output "ecs_security_group_id" {
-  description = "ID of the ECS security group"
-  value       = aws_security_group.ecs.id
+output "rds_security_group_id" {
+  description = "ID of the RDS security group"
+  value       = aws_security_group.rds.id
 }
 
 # RDS Outputs
@@ -80,27 +80,9 @@ output "ecr_repository_frontend_url" {
   value       = aws_ecr_repository.frontend.repository_url
 }
 
-# ECS Outputs
-output "ecs_cluster_id" {
-  description = "ID of the ECS cluster"
-  value       = aws_ecs_cluster.main.id
-}
 
-output "ecs_cluster_arn" {
-  description = "ARN of the ECS cluster"
-  value       = aws_ecs_cluster.main.arn
-}
 
-output "ecs_cluster_name" {
-  description = "Name of the ECS cluster"
-  value       = aws_ecs_cluster.main.name
-}
 
-# Load Balancer Outputs
-output "alb_dns_name" {
-  description = "The DNS name of the load balancer"
-  value       = aws_lb.main.dns_name
-}
 
 output "alb_zone_id" {
   description = "The canonical hosted zone ID of the load balancer"

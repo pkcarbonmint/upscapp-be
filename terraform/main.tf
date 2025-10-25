@@ -181,6 +181,7 @@ resource "aws_security_group" "alb" {
   name_prefix = "${var.project_name}-alb-"
   vpc_id      = aws_vpc.main.id
 
+  # Allow HTTPS when SSL certificate is provided
   ingress {
     from_port   = 443
     to_port     = 443
@@ -241,13 +242,6 @@ resource "aws_security_group" "ecs" {
 resource "aws_security_group" "rds" {
   name_prefix = "${var.project_name}-rds-"
   vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ecs.id]
-  }
 
   # Allow access from EC2 instances
   ingress {
@@ -520,19 +514,11 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# ECS Cluster
-resource "aws_ecs_cluster" "main" {
-  name = "${var.project_name}-cluster"
 
-  setting {
-    name  = "containerInsights"
-    value = "enabled"
-  }
 
-  tags = {
-    Name = "${var.project_name}-cluster"
-  }
-}
+
+
+
 
 # Application Load Balancer
 resource "aws_lb" "main" {
@@ -546,6 +532,15 @@ resource "aws_lb" "main" {
 
   tags = {
     Name = "${var.project_name}-alb"
+  }
+}
+
+# ECS Cluster
+resource "aws_ecs_cluster" "main" {
+  name = "${var.project_name}-cluster"
+
+  tags = {
+    Name = "${var.project_name}-cluster"
   }
 }
 
