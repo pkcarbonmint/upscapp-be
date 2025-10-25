@@ -4,6 +4,8 @@ FROM study-planner:base
 # Copy source code
 COPY study-planner/helios-ts ./helios-ts
 COPY study-planner/servers/helios-server ./servers/helios-server
+COPY study-planner/libs/scheduler ./libs/scheduler
+COPY study-planner/libs/scheduler2 ./libs/scheduler2
 
 # Copy resource files
 COPY resources/ ./resources/

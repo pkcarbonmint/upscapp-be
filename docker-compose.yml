@@ -1,5 +1,14 @@
 
 services:
+  # Base image builder for study-planner workspace
+  study_planner_base:
+    image: study-planner:base
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    profiles: ["build"]
+    networks:
+      - upscpro-be
   # PostgreSQL Database
   app_db:
     container_name: app_db
@@ -32,6 +41,8 @@ services:
       - "8080:8080"
     networks:
       - upscpro-be
+    depends_on:
+      - study_planner_base
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
       interval: 30s
@@ -43,7 +54,7 @@ services:
   app:
     container_name: app
     env_file:
-      - docker.env
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -79,6 +90,7 @@ services:
       - "3000:80"
     depends_on:
       - app
+      - study_planner_base
     networks:
       - upscpro-be
 
@@ -99,7 +111,7 @@ services:
   celery_worker:
     container_name: celery_worker
     env_file:
-      - docker.env
+      - .env
     build:
       context: .
     restart: always
@@ -119,7 +131,7 @@ services:
   celery_flower:
     container_name: celery_flower
     env_file:
-      - docker.env
+      - .env
     build:
       context: .
     command: celery -A src.tasks.celery_tasks flower

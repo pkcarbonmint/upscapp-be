@@ -7,6 +7,8 @@ COPY study-planner/onboarding-ui/ ./onboarding-ui/
 COPY study-planner/shared-ui-library/ ./shared-ui-library/
 COPY study-planner/faculty-ui/ ./faculty-ui/
 COPY study-planner/plan-editor-library/ ./plan-editor-library/
+COPY study-planner/libs/scheduler/ ./libs/scheduler/
+COPY study-planner/libs/scheduler2/ ./libs/scheduler2/
 
 # Build frontend packages (they can resolve TypeScript sources directly from workspace)
 RUN pnpm build:frontend
