@@ -5,7 +5,7 @@
   "private": true,
   "workspaces": [
     "helios-ts",
-    "helios-server",
+    "servers/helios-server",
     "onboarding-ui",
     "shared-ui-library",
     "faculty-ui",
