@@ -21,7 +21,7 @@ services:
   app:
     container_name: app
     env_file:
-      - docker.env
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -78,7 +78,7 @@ services:
   celery_worker:
     container_name: celery_worker
     env_file:
-      - docker.env
+      - .env
     build:
       context: .
     restart: always
@@ -100,7 +100,7 @@ services:
   celery_flower:
     container_name: celery_flower
     env_file:
-      - docker.env
+      - .env
     build:
       context: .
     command: celery -A src.tasks.celery_tasks flower

@@ -50,6 +50,8 @@ COPY study-planner/onboarding-ui/package.json ./onboarding-ui/
 COPY study-planner/shared-ui-library/package.json ./shared-ui-library/
 COPY study-planner/faculty-ui/package.json ./faculty-ui/
 COPY study-planner/plan-editor-library/package.json ./plan-editor-library/
+COPY study-planner/libs/scheduler/package.json ./libs/scheduler/
+COPY study-planner/libs/scheduler2/package.json ./libs/scheduler2/
 
 # Install all dependencies
 RUN pnpm install --frozen-lockfile

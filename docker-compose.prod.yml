@@ -1,5 +1,14 @@
 
 services:
+  # Base image builder for study-planner workspace
+  study_planner_base:
+    image: study-planner:base
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    profiles: ["build"]
+    networks:
+      - upscpro-be
   # Python FastAPI Application
   app:
     container_name: upscapp-backend
@@ -27,17 +36,19 @@ services:
       retries: 3
       start_period: 40s
 
-  # Haskell Helios Engine
+  # Helios Engine (TypeScript)
   helios-engine:
     container_name: helios-engine
     build:
       context: .
-      dockerfile: Dockerfile.helios
+      dockerfile: study-planner/Dockerfile
     restart: always
     ports:
       - "8080:8080"
     networks:
       - upscpro-be
+    depends_on:
+      - study_planner_base
     environment:
       - PORT=8080
       - ENVIRONMENT=production
