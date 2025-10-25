@@ -3,6 +3,7 @@ FROM study-planner:base
 
 # Copy source code
 COPY study-planner/helios-ts ./helios-ts
+COPY study-planner/libs ./libs
 COPY study-planner/servers/helios-server ./servers/helios-server
 
 # Copy resource files
