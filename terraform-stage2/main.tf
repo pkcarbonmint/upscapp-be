@@ -485,7 +485,7 @@ resource "aws_instance" "docker" {
   vpc_security_group_ids      = [aws_security_group.ec2.id]
   subnet_id                   = aws_subnet.public[0].id
   associate_public_ip_address = true
-      user_data = base64encode(templatefile("${path.module}/docker-user-data.sh", {
+  user_data = base64encode(templatefile("${path.module}/docker-user-data-improved.sh", {
     project_name          = var.project_name
     environment           = var.environment
     strapi_ip             = var.enable_ec2_instances ? aws_instance.strapi[0].private_ip : ""
@@ -494,14 +494,14 @@ resource "aws_instance" "docker" {
     rds_username          = local.rds_username
     rds_password          = local.rds_password
     rds_database          = local.rds_database
-        github_token          = var.github_token
-        github_repository_url = var.github_token != "" ? "https://${var.github_token}@github.com/pkcarbonmint/upscapp-be.git" : var.github_repository_url
-        github_branch         = var.github_branch
+    github_token          = var.github_token
+    github_repository_url = var.github_token != "" ? "https://${var.github_token}@github.com/pkcarbonmint/upscapp-be.git" : var.github_repository_url
+    github_branch         = var.github_branch
     enable_auto_deploy    = var.enable_auto_deploy
     webhook_secret        = var.webhook_secret
-        GITHUB_TOKEN          = var.github_token
-        GITHUB_REPOSITORY_URL = var.github_token != "" ? "https://${var.github_token}@github.com/pkcarbonmint/upscapp-be.git" : var.github_repository_url
-        GITHUB_BRANCH         = var.github_branch
+    GITHUB_TOKEN          = var.github_token
+    GITHUB_REPOSITORY_URL = var.github_token != "" ? "https://${var.github_token}@github.com/pkcarbonmint/upscapp-be.git" : var.github_repository_url
+    GITHUB_BRANCH         = var.github_branch
     alb_dns_name          = aws_lb.main.dns_name
     domain_name           = var.domain_name
   }))
