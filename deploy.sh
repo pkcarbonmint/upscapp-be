@@ -2,11 +2,11 @@
 # Docker Compose Deployment script for UPSC Pro Stage2
 
 # Log to both file and CloudWatch
-exec > >(tee -a /opt/upscpro/deploy.log) 2>&1
+exec > >(tee -a /opt/upscpro/upscapp-be/deploy.log) 2>&1
 echo "Starting Docker Compose deployment at $(date)..."
 
 # Change to application directory
-cd /opt/upscpro || { echo "ERROR: Failed to change to /opt/upscpro directory"; exit 1; }
+cd /opt/upscpro/upscapp-be || { echo "ERROR: Failed to change to /opt/upscpro/upscapp-be directory"; exit 1; }
 
 # Pull latest changes from git
 if [ ! -z "${GITHUB_TOKEN}" ] && [ ! -z "${GITHUB_REPOSITORY_URL}" ]; then
@@ -47,6 +47,6 @@ echo "Docker Compose deployment completed at $(date)!"
 echo "Services status:"
 docker-compose -f docker-compose.prod.yml ps
 
-echo "Deployment log saved to: /opt/upscpro/deploy.log"
+echo "Deployment log saved to: /opt/upscpro/upscapp-be/deploy.log"
 echo "To view logs: docker-compose -f docker-compose.prod.yml logs -f"
 echo "To check status: docker-compose -f docker-compose.prod.yml ps"

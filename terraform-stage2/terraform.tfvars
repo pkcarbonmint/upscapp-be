@@ -101,11 +101,11 @@ external_rds_password = ""
 external_rds_database = ""
 
 # GitHub Integration
-github_token          = ""
-github_repository_url = ""
+# github_token          = ""  # Will be read from TF_VAR_github_token environment variable
+# github_repository_url = ""  # Will be read from TF_VAR_github_repository_url environment variable
 github_branch         = "algo_refactor"
 enable_auto_deploy    = false
-webhook_secret        = ""
+# webhook_secret        = ""  # Will be read from TF_VAR_webhook_secret environment variable
 
 # RDS Module Configuration (removed - using direct RDS deployment)
 

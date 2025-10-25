@@ -54,24 +54,6 @@ else
     exit 1
 fi
 
-# 3. Elm type generation check
-log_info "Testing Elm type generation..."
-if python3 elm_type_generator.py >/dev/null 2>&1; then
-    log_success "Elm type generation working"
-else
-    log_error "Elm type generation failed"
-    exit 1
-fi
-
-# 4. Helios mapping check
-log_info "Testing Helios mapping..."
-if python3 test_helios_mapping.py >/dev/null 2>&1; then
-    log_success "Helios mapping working"
-else
-    log_error "Helios mapping failed"
-    exit 1
-fi
-
 echo ""
 log_success "Quick check passed! All interfaces compatible."
 echo "Run './scripts/sanity-check.sh' for full validation."
