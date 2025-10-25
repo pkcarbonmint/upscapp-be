@@ -7,3 +7,4 @@ packages:
   - plan-editor-library
   - scheduler
   - scheduler2
+  - libs/*
