@@ -3,7 +3,7 @@ FROM study-planner:base
 
 # Copy source code
 COPY study-planner/helios-ts ./helios-ts
-COPY study-planner/helios-server ./helios-server
+COPY study-planner/servers/helios-server ./servers/helios-server
 
 # Copy resource files
 COPY resources/ ./resources/
@@ -36,5 +36,5 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # Set the command to run the application
-WORKDIR /app/helios-server
+WORKDIR /app/servers/helios-server
 CMD ["node", "dist/index.js"]
