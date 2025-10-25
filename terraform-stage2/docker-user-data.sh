@@ -5,13 +5,13 @@ exec > >(tee -a /var/log/user-data.log) 2>&1
 echo "=== Starting minimal user data script at $(date) ==="
 
 # Update system
-yum update -y
+apt update -y
 
 # Install Docker
-yum install -y docker
+apt install -y docker.io
 systemctl start docker
 systemctl enable docker
-usermod -a -G docker ec2-user
+usermod -a -G docker ubuntu
 
 # Install Docker Compose
 curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
@@ -19,18 +19,18 @@ chmod +x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 # Install Git and Python
-yum install -y git python3 python3-pip
+apt install -y git python3 python3-pip
 
-# Install Node.js 22
-curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
-yum install -y nodejs
+# Install Node.js 22 using NodeSource repository
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+apt install -y nodejs
 
 # Install pnpm globally
 npm install -g pnpm
 
 # Create app directory
 mkdir -p /opt/upscpro
-chown ec2-user:ec2-user /opt/upscpro
+chown ubuntu:ubuntu /opt/upscpro
 cd /opt/upscpro
 
 # Clone repository using template variables
@@ -38,8 +38,8 @@ git clone "${github_repository_url}" upscapp-be
 cd upscapp-be
 git checkout ${github_branch}
 
-# Fix ownership of all files to ec2-user
-chown -R ec2-user:ec2-user /opt/upscpro/upscapp-be
+# Fix ownership of all files to ubuntu
+chown -R ubuntu:ubuntu /opt/upscpro/upscapp-be
 chmod +x deploy.sh 2>/dev/null || true
 
 # Install required Python packages for validation scripts
@@ -55,4 +55,21 @@ GITHUB_REPOSITORY_URL=${github_repository_url}
 GITHUB_BRANCH=${github_branch}
 ENVEOF
 cp .env docker.env
+
+# Start Docker build in background with proper detachment
+echo "Starting Docker build in background..."
+# Create a wrapper script to filter verbose Docker output
+cat > /tmp/quiet-docker-build.sh << 'EOF'
+#!/bin/bash
+exec > >(grep -E "(Building|Successfully|Error|Failed|✅|❌|⚠️|ℹ️)" | tee -a /var/log/docker-build.log)
+exec 2>&1
+cd /opt/upscpro/upscapp-be
+./docker-build.sh
+EOF
+chmod +x /tmp/quiet-docker-build.sh
+
+nohup /tmp/quiet-docker-build.sh &
+disown
+
 echo "Setup completed at $(date)"
+echo "Docker build started in background - check /var/log/docker-build.log for progress"

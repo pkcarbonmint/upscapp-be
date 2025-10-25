@@ -29,14 +29,14 @@ provider "aws" {
   }
 }
 
-# Data source for Amazon Linux 2 AMI
-data "aws_ami" "amazon_linux" {
+# Data source for Ubuntu 22.04 LTS AMI
+data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["amazon"]
+  owners      = ["099720109477"] # Canonical
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 
   filter {
@@ -451,7 +451,7 @@ resource "aws_ecr_repository" "faculty_ui" {
 resource "aws_instance" "strapi" {
   count = var.enable_ec2_instances ? 1 : 0
 
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.strapi_instance_type
   key_name               = var.strapi_key_name != "" ? var.strapi_key_name : null
   vpc_security_group_ids = [aws_security_group.ec2.id]
@@ -479,7 +479,7 @@ resource "aws_instance" "strapi" {
 resource "aws_instance" "docker" {
   count = var.enable_ec2_instances ? 1 : 0
 
-  ami                         = data.aws_ami.amazon_linux.id
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.docker_instance_type
   key_name                    = var.docker_key_name != "" ? var.docker_key_name : null
   vpc_security_group_ids      = [aws_security_group.ec2.id]

@@ -42,6 +42,7 @@ RUN npm ci
 
 # Copy source code
 COPY helios-ts/ ./
+COPY libs/ ./
 
 # Build the library
 RUN npm run build
