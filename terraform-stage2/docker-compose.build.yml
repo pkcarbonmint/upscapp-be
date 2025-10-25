@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    image: upscpro-stage2-app:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=stage2
+    command: ["python", "src/main.py"]
+
+  helios:
+    build:
+      context: ../helios
+      dockerfile: Dockerfile
+    image: upscpro-stage2-helios:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - ENVIRONMENT=stage2
+    command: ["python", "main.py"]
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: upscpro-stage2-frontend:latest
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_HELIOS_URL=http://localhost:8080
+
+  onboarding-ui:
+    build:
+      context: ../onboarding-ui
+      dockerfile: Dockerfile
+    image: upscpro-stage2-onboarding-ui:latest
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_HELIOS_URL=http://localhost:8080
+
+  faculty-ui:
+    build:
+      context: ../faculty-ui
+      dockerfile: Dockerfile
+    image: upscpro-stage2-faculty-ui:latest
+    ports:
+      - "3002:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_HELIOS_URL=http://localhost:8080
+
+  celery:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    image: upscpro-stage2-app:latest
+    environment:
+      - ENVIRONMENT=stage2
+    command: ["celery", "-A", "src.tasks.celery_tasks", "worker", "-l", "INFO", "-E", "--concurrency=2"]
