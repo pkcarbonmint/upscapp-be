@@ -378,7 +378,7 @@ async function createBlockFromSchedule(
 
   const trimmedSubtopics = schedulerTrimSubtopicsToFit(adjustedSubtopics, calculatedHours);
   const actualHours = trimmedSubtopics.length > 0
-    ? trimmedSubtopics.reduce((sum, st) => sum + st.adjustedHours, 0)
+    ? trimmedSubtopics.reduce((sum: number, st: any) => sum + st.adjustedHours, 0)
     : calculatedHours;
 
   // Get resources for this subject
