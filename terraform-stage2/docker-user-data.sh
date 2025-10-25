@@ -18,8 +18,8 @@ curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-comp
 chmod +x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
-# Install Git
-yum install -y git
+# Install Git and Python
+yum install -y git python3 python3-pip
 
 # Create app directory
 mkdir -p /opt/upscpro
@@ -30,7 +30,13 @@ cd /opt/upscpro
 git clone "${github_repository_url}" upscapp-be
 cd upscapp-be
 git checkout ${github_branch}
+
+# Fix ownership of all files to ec2-user
+chown -R ec2-user:ec2-user /opt/upscpro/upscapp-be
 chmod +x deploy.sh 2>/dev/null || true
+
+# Install required Python packages for validation scripts
+pip3 install jsonschema
 
 # Create .env file
 cat > .env << 'ENVEOF'
