@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import type { IWFStudyCommitment, StudyPreference, SubjectApproach } from '../types';
+import { S2WeekDay } from 'scheduler2/types';
 import { validateCommitment, type CommitmentValidation, isCommitmentValid } from '../utils/validation';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useTheme } from '../hooks/useTheme';
 import { loadOptionalSubjects } from '../services/heliosService';
 import type { Subject } from 'helios-ts';
+
+// Helper functions for S2WeekDay enum
+const dayStringToEnum = (day: string): S2WeekDay => {
+  return S2WeekDay[day as keyof typeof S2WeekDay];
+};
+
+const dayEnumToString = (day: S2WeekDay): string => {
+  return S2WeekDay[day];
+};
+
 
 interface CommitmentStepProps {
   data: IWFStudyCommitment;
@@ -50,6 +61,28 @@ const weeklyTestDayOptions = [
   'Thursday',
   'Friday',
   'Saturday'
+];
+
+const weeklyCatchupDayOptions = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'
+];
+
+interface TestMinuteOption {
+  label: string;
+  value: number;
+}
+
+const testMinuteOptions: TestMinuteOption[] = [
+    { label: "60 min", value: 60 },
+    { label: "90 min", value: 90 },
+    { label: "120 min", value: 120 },
+    { label: "180 min", value: 180 },
 ];
 
 const getStudyPreferenceLabel = (pref: StudyPreference): string => {
@@ -284,14 +317,14 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
           <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
           <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
             <i className={`fas fa-calendar-check mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Weekly Test Day Preference
+            Weekly Test Day Preference <span className={getClasses('requiredIndicator')}>*</span>
           </h3>
         </div>
         <ToggleGroup
           type="single"
-          value={data.weeklyTestDayPreference || 'Sunday'}
+          value={dayEnumToString(data.weeklyTestDayPreference)}
           onValueChange={(value) => {
-            if (value) onUpdate(prev => ({ ...prev, weeklyTestDayPreference: value }));
+            if (value) onUpdate(prev => ({ ...prev, weeklyTestDayPreference: dayStringToEnum(value) }));
           }}
           className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2"
         >
@@ -303,6 +336,62 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
         </ToggleGroup>
         <p className="text-xs text-gray-500">
           Choose your preferred day for weekly tests and assessments
+        </p>
+      </div>
+
+      {/* Weekly Catch-up Day Preference Section */}
+      <div className="space-y-4">
+        <div className="relative">
+          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
+          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
+            <i className={`fas fa-redo-alt mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
+            Weekly Catch-up Day <span className={getClasses('requiredIndicator')}>*</span>
+          </h3>
+        </div>
+        <ToggleGroup
+          type="single"
+          value={dayEnumToString(data.catchupDayPreference)}
+          onValueChange={(value) => {
+            if (value) onUpdate(prev => ({ ...prev, catchupDayPreference: dayStringToEnum(value) }));
+          }}
+          className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2"
+        >
+          {weeklyCatchupDayOptions.map((day) => (
+            <ToggleGroupItem key={day} value={day} aria-label={day} className="h-auto flex-col min-h-[50px] p-2">
+              <span className="text-sm font-medium">{day}</span>
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+        <p className="text-xs text-gray-500">
+          Choose a day to catch up on any pending work for the week.
+        </p>
+      </div>
+
+      {/* Test Minutes Section */}
+      <div className="space-y-4">
+        <div className="relative">
+          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
+          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
+            <i className={`fas fa-stopwatch mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
+            Time for Tests <span className={getClasses('requiredIndicator')}>*</span>
+          </h3>
+        </div>
+        <ToggleGroup
+          type="single"
+          value={data.testMinutes?.toString() || '180'}
+          onValueChange={(value) => {
+            if (value) onUpdate(prev => ({ ...prev, testMinutes: parseInt(value, 10) }));
+          }}
+          className="grid grid-cols-2 sm:grid-cols-4 gap-2"
+        >
+          {testMinuteOptions.map((option) => (
+            <ToggleGroupItem key={option.value} value={option.value.toString()} aria-label={option.label} className="h-auto flex-col min-h-[50px] p-2">
+              <span className="text-sm font-medium">{option.label}</span>
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+        <p className="text-xs text-gray-500">
+          Select the duration for your weekly tests. 180 minutes is standard for a full-length UPSC paper.
         </p>
       </div>
     </div>

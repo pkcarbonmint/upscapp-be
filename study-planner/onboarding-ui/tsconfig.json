@@ -7,6 +7,8 @@
       ],
       "helios-ts": ["../helios-ts/src"],
       "helios-ts/*": ["../helios-ts/src/*"],
+      "scheduler2": ["../libs/scheduler2/src"],
+      "scheduler2/*": ["../libs/scheduler2/src/*"],
       "shared-ui-library": ["../shared-ui-library/src"],
       "shared-ui-library/*": ["../shared-ui-library/src/*"]
     },
