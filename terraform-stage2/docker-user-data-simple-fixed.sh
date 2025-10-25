@@ -40,6 +40,19 @@ log "Installing Git..."
 yum install -y git || handle_error "Git installation failed"
 log "Git installed."
 
+log "Installing Python 3..."
+yum install -y python3 python3-pip || handle_error "Python 3 installation failed"
+log "Python 3 installed."
+
+log "Installing Node.js 22..."
+curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - || handle_error "Node.js repository setup failed"
+yum install -y nodejs || handle_error "Node.js installation failed"
+log "Node.js 22 installed."
+
+log "Installing pnpm globally..."
+npm install -g pnpm || handle_error "pnpm installation failed"
+log "pnpm installed."
+
 log "Creating application directory /opt/upscpro..."
 mkdir -p /opt/upscpro || handle_error "Failed to create /opt/upscpro"
 cd /opt/upscpro || handle_error "Failed to change directory to /opt/upscpro"

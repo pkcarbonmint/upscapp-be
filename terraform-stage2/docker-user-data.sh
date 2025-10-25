@@ -21,6 +21,13 @@ ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 # Install Git and Python
 yum install -y git python3 python3-pip
 
+# Install Node.js 22
+curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
+yum install -y nodejs
+
+# Install pnpm globally
+npm install -g pnpm
+
 # Create app directory
 mkdir -p /opt/upscpro
 chown ec2-user:ec2-user /opt/upscpro

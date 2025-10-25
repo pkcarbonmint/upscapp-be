@@ -17,11 +17,14 @@ ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 # Install Git
 yum install -y git
 
-# Install Node.js 18
-curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+# Install Node.js 22
+curl -fsSL https://rpm.nodesource.com/setup_22.x | bash -
 yum install -y nodejs
 
-# Install Python 3.9
+# Install pnpm globally
+npm install -g pnpm
+
+# Install Python 3
 yum install -y python3 python3-pip
 
 # Install PostgreSQL client
