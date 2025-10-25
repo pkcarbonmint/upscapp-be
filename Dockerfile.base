@@ -45,7 +45,7 @@ COPY study-planner/package.json study-planner/pnpm-workspace.yaml study-planner/
 
 # Copy all package.json files for dependency resolution
 COPY study-planner/helios-ts/package.json ./helios-ts/
-COPY study-planner/helios-server/package.json ./helios-server/
+COPY study-planner/servers/helios-server/package.json ./servers/helios-server/
 COPY study-planner/onboarding-ui/package.json ./onboarding-ui/
 COPY study-planner/shared-ui-library/package.json ./shared-ui-library/
 COPY study-planner/faculty-ui/package.json ./faculty-ui/
