@@ -1,0 +1,765 @@
+{
+    "SecurityGroups": [
+        {
+            "GroupId": "sg-049ad2c9ae75c4028",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "Upscpro-cms-prod-env"
+                },
+                {
+                    "Key": "aws:cloudformation:logical-id",
+                    "Value": "AWSEBSecurityGroup"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-id",
+                    "Value": "e-n3jmc2yyku"
+                },
+                {
+                    "Key": "aws:cloudformation:stack-id",
+                    "Value": "arn:aws:cloudformation:ap-south-1:949945086246:stack/awseb-e-n3jmc2yyku-stack/c7aea1f0-5bab-11ee-9b47-0a604b1bd3c8"
+                },
+                {
+                    "Key": "aws:cloudformation:stack-name",
+                    "Value": "awseb-e-n3jmc2yyku-stack"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-name",
+                    "Value": "Upscpro-cms-prod-env"
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-049ad2c9ae75c4028",
+            "OwnerId": "949945086246",
+            "GroupName": "awseb-e-n3jmc2yyku-stack-AWSEBSecurityGroup-KDAG9KECU7K",
+            "Description": "SecurityGroup for ElasticBeanstalk environment.",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [
+                        {
+                            "UserId": "949945086246",
+                            "GroupId": "sg-0bad30b8b50d0c096"
+                        }
+                    ],
+                    "IpRanges": [],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-0fa1f6c2cbee4ea2a",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "Upscpro-cms-stage-env"
+                },
+                {
+                    "Key": "aws:cloudformation:logical-id",
+                    "Value": "AWSEBLoadBalancerSecurityGroup"
+                },
+                {
+                    "Key": "aws:cloudformation:stack-name",
+                    "Value": "awseb-e-2eee3pupui-stack"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-id",
+                    "Value": "e-2eee3pupui"
+                },
+                {
+                    "Key": "aws:cloudformation:stack-id",
+                    "Value": "arn:aws:cloudformation:ap-south-1:949945086246:stack/awseb-e-2eee3pupui-stack/85ed38f0-5d2a-11ee-b88f-0648ec2adc08"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-name",
+                    "Value": "Upscpro-cms-stage-env"
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-0fa1f6c2cbee4ea2a",
+            "OwnerId": "949945086246",
+            "GroupName": "awseb-e-2eee3pupui-stack-AWSEBLoadBalancerSecurityGroup-S8HY7QGK0HF0",
+            "Description": "Elastic Beanstalk created security group used when no ELB security groups are specified during ELB creation",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-03448f7b544b498b8",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-03448f7b544b498b8",
+            "OwnerId": "949945086246",
+            "GroupName": "launch-wizard-3",
+            "Description": "launch-wizard-3 created 2023-09-22T12:28:25.145Z",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-08119368366d87163",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-08119368366d87163",
+            "OwnerId": "949945086246",
+            "GroupName": "default",
+            "Description": "default VPC security group",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 0,
+                    "ToPort": 65535,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 5432,
+                    "ToPort": 5432,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-020e37853348f87b7",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-020e37853348f87b7",
+            "OwnerId": "949945086246",
+            "GroupName": "launch-wizard-6",
+            "Description": "launch-wizard-6 created 2024-02-25T20:19:30.967Z",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-056ed0fa03a82352d",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-056ed0fa03a82352d",
+            "OwnerId": "949945086246",
+            "GroupName": "launch-wizard-2",
+            "Description": "launch-wizard-2 created 2023-07-28T05:56:39.283Z",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-076c882015256d133",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-076c882015256d133",
+            "OwnerId": "949945086246",
+            "GroupName": "launch-wizard-4",
+            "Description": "launch-wizard-4 created 2023-09-25T06:37:14.419Z",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-0067319ea72157ee3",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-0067319ea72157ee3",
+            "OwnerId": "949945086246",
+            "GroupName": "launch-wizard-7",
+            "Description": "launch-wizard-7 created 2024-02-25T20:37:27.067Z",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-07135b83dab51291b",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "Upscpro-cms-stage-env"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-id",
+                    "Value": "e-2eee3pupui"
+                },
+                {
+                    "Key": "aws:cloudformation:stack-name",
+                    "Value": "awseb-e-2eee3pupui-stack"
+                },
+                {
+                    "Key": "aws:cloudformation:stack-id",
+                    "Value": "arn:aws:cloudformation:ap-south-1:949945086246:stack/awseb-e-2eee3pupui-stack/85ed38f0-5d2a-11ee-b88f-0648ec2adc08"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-name",
+                    "Value": "Upscpro-cms-stage-env"
+                },
+                {
+                    "Key": "aws:cloudformation:logical-id",
+                    "Value": "AWSEBSecurityGroup"
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-07135b83dab51291b",
+            "OwnerId": "949945086246",
+            "GroupName": "awseb-e-2eee3pupui-stack-AWSEBSecurityGroup-XYAFF46N8DYO",
+            "Description": "SecurityGroup for ElasticBeanstalk environment.",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [
+                        {
+                            "UserId": "949945086246",
+                            "GroupId": "sg-0fa1f6c2cbee4ea2a"
+                        }
+                    ],
+                    "IpRanges": [],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-0b5d085e36a63a4a1",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-0b5d085e36a63a4a1",
+            "OwnerId": "949945086246",
+            "GroupName": "launch-wizard-1",
+            "Description": "launch-wizard-1 created 2023-07-19T11:33:35.901Z",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-0bad30b8b50d0c096",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "aws:cloudformation:stack-id",
+                    "Value": "arn:aws:cloudformation:ap-south-1:949945086246:stack/awseb-e-n3jmc2yyku-stack/c7aea1f0-5bab-11ee-9b47-0a604b1bd3c8"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-name",
+                    "Value": "Upscpro-cms-prod-env"
+                },
+                {
+                    "Key": "Name",
+                    "Value": "Upscpro-cms-prod-env"
+                },
+                {
+                    "Key": "aws:cloudformation:stack-name",
+                    "Value": "awseb-e-n3jmc2yyku-stack"
+                },
+                {
+                    "Key": "elasticbeanstalk:environment-id",
+                    "Value": "e-n3jmc2yyku"
+                },
+                {
+                    "Key": "aws:cloudformation:logical-id",
+                    "Value": "AWSEBLoadBalancerSecurityGroup"
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-0bad30b8b50d0c096",
+            "OwnerId": "949945086246",
+            "GroupName": "awseb-e-n3jmc2yyku-stack-AWSEBLoadBalancerSecurityGroup-1TMQ550TQ47RW",
+            "Description": "Elastic Beanstalk created security group used when no ELB security groups are specified during ELB creation",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        },
+        {
+            "GroupId": "sg-00920608e7765e9c9",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "SecurityGroupArn": "arn:aws:ec2:ap-south-1:949945086246:security-group/sg-00920608e7765e9c9",
+            "OwnerId": "949945086246",
+            "GroupName": "launch-wizard-5",
+            "Description": "launch-wizard-5 created 2023-10-20T18:36:45.363Z",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 80,
+                    "ToPort": 80,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 22,
+                    "ToPort": 22,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                },
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 443,
+                    "ToPort": 443,
+                    "UserIdGroupPairs": [],
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": []
+                }
+            ]
+        }
+    ]
+}

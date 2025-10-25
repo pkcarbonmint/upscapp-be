@@ -1,0 +1,51 @@
+{
+    "Environments": [
+        {
+            "EnvironmentName": "Upscpro-cms-stage-env",
+            "EnvironmentId": "e-2eee3pupui",
+            "ApplicationName": "upscpro-cms-stage",
+            "VersionLabel": "upscpro-cms-stage-v1-24",
+            "SolutionStackName": "64bit Amazon Linux 2023 v4.7.2 running Docker",
+            "PlatformArn": "arn:aws:elasticbeanstalk:ap-south-1::platform/Docker running on 64bit Amazon Linux 2023/4.7.2",
+            "Description": "environment for upscpro stage cms",
+            "EndpointURL": "awseb-AWSEB-QGSQI79L9L21-628761628.ap-south-1.elb.amazonaws.com",
+            "CNAME": "Upscpro-cms-stage-env.eba-sb9cmsdt.ap-south-1.elasticbeanstalk.com",
+            "DateCreated": "2023-09-27T11:39:27.265Z",
+            "DateUpdated": "2025-10-08T22:10:12.420Z",
+            "Status": "Ready",
+            "AbortableOperationInProgress": false,
+            "Health": "Green",
+            "HealthStatus": "Ok",
+            "Tier": {
+                "Name": "WebServer",
+                "Type": "Standard",
+                "Version": "1.0"
+            },
+            "EnvironmentLinks": [],
+            "EnvironmentArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:environment/upscpro-cms-stage/Upscpro-cms-stage-env"
+        },
+        {
+            "EnvironmentName": "Upscpro-cms-prod-env",
+            "EnvironmentId": "e-n3jmc2yyku",
+            "ApplicationName": "upscpro-cms-prod",
+            "VersionLabel": "upscpro-cms-prod-v1-5",
+            "SolutionStackName": "64bit Amazon Linux 2023 v4.7.2 running Docker",
+            "PlatformArn": "arn:aws:elasticbeanstalk:ap-south-1::platform/Docker running on 64bit Amazon Linux 2023/4.7.2",
+            "EndpointURL": "awseb-AWSEB-COTQ1OJFOPON-1623987383.ap-south-1.elb.amazonaws.com",
+            "CNAME": "Upscpro-cms-prod-env.eba-uxfms36j.ap-south-1.elasticbeanstalk.com",
+            "DateCreated": "2023-09-25T13:59:39.896Z",
+            "DateUpdated": "2025-10-13T09:18:23.249Z",
+            "Status": "Ready",
+            "AbortableOperationInProgress": false,
+            "Health": "Green",
+            "HealthStatus": "Ok",
+            "Tier": {
+                "Name": "WebServer",
+                "Type": "Standard",
+                "Version": "1.0"
+            },
+            "EnvironmentLinks": [],
+            "EnvironmentArn": "arn:aws:elasticbeanstalk:ap-south-1:949945086246:environment/upscpro-cms-prod/Upscpro-cms-prod-env"
+        }
+    ]
+}

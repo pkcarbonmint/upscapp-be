@@ -1,0 +1,40 @@
+{
+    "Addresses": [
+        {
+            "AllocationId": "eipalloc-0d68bb03ad1d93b0b",
+            "AssociationId": "eipassoc-0866012c1a7bc2274",
+            "Domain": "vpc",
+            "NetworkInterfaceId": "eni-01944beff11d75a59",
+            "NetworkInterfaceOwnerId": "949945086246",
+            "PrivateIpAddress": "172.31.9.8",
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "Upscpro-be-stage"
+                }
+            ],
+            "PublicIpv4Pool": "amazon",
+            "NetworkBorderGroup": "ap-south-1",
+            "InstanceId": "i-0038090d9869bd6f4",
+            "PublicIp": "13.235.168.48"
+        },
+        {
+            "AllocationId": "eipalloc-06b81ea1247aca76d",
+            "AssociationId": "eipassoc-0cac92a225d8c7e9e",
+            "Domain": "vpc",
+            "NetworkInterfaceId": "eni-0e9a17f6e440d2533",
+            "NetworkInterfaceOwnerId": "949945086246",
+            "PrivateIpAddress": "172.31.34.189",
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "Upscpro-be-prod"
+                }
+            ],
+            "PublicIpv4Pool": "amazon",
+            "NetworkBorderGroup": "ap-south-1",
+            "InstanceId": "i-0637c58cdea794428",
+            "PublicIp": "65.0.142.230"
+        }
+    ]
+}

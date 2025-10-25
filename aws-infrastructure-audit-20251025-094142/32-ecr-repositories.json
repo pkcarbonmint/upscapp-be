@@ -1,0 +1,74 @@
+{
+    "repositories": [
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:949945086246:repository/upscpro-cms-dev",
+            "registryId": "949945086246",
+            "repositoryName": "upscpro-cms-dev",
+            "repositoryUri": "949945086246.dkr.ecr.ap-south-1.amazonaws.com/upscpro-cms-dev",
+            "createdAt": 1690432318.951,
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:949945086246:repository/upscpro-be-dev",
+            "registryId": "949945086246",
+            "repositoryName": "upscpro-be-dev",
+            "repositoryUri": "949945086246.dkr.ecr.ap-south-1.amazonaws.com/upscpro-be-dev",
+            "createdAt": 1690474787.019,
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:949945086246:repository/cms.upscpro.laex.in",
+            "registryId": "949945086246",
+            "repositoryName": "cms.upscpro.laex.in",
+            "repositoryUri": "949945086246.dkr.ecr.ap-south-1.amazonaws.com/cms.upscpro.laex.in",
+            "createdAt": 1695367457.451,
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:949945086246:repository/stage-cms.upscpro.laex.in",
+            "registryId": "949945086246",
+            "repositoryName": "stage-cms.upscpro.laex.in",
+            "repositoryUri": "949945086246.dkr.ecr.ap-south-1.amazonaws.com/stage-cms.upscpro.laex.in",
+            "createdAt": 1695811843.328,
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:949945086246:repository/meilisearch",
+            "registryId": "949945086246",
+            "repositoryName": "meilisearch",
+            "repositoryUri": "949945086246.dkr.ecr.ap-south-1.amazonaws.com/meilisearch",
+            "createdAt": 1708864448.243,
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        }
+    ]
+}

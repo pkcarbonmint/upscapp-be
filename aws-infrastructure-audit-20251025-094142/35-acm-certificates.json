@@ -1,0 +1,30 @@
+{
+    "CertificateSummaryList": [
+        {
+            "CertificateArn": "arn:aws:acm:ap-south-1:949945086246:certificate/8503253d-1a9e-4638-bfb4-4b9188e94b46",
+            "DomainName": "*.upscpro.laex.in",
+            "SubjectAlternativeNameSummaries": [
+                "*.upscpro.laex.in"
+            ],
+            "HasAdditionalSubjectAlternativeNames": false,
+            "Status": "ISSUED",
+            "Type": "AMAZON_ISSUED",
+            "KeyAlgorithm": "RSA-2048",
+            "KeyUsages": [
+                "DIGITAL_SIGNATURE",
+                "KEY_ENCIPHERMENT"
+            ],
+            "ExtendedKeyUsages": [
+                "TLS_WEB_SERVER_AUTHENTICATION"
+            ],
+            "ExportOption": "DISABLED",
+            "InUse": true,
+            "Exported": false,
+            "RenewalEligibility": "ELIGIBLE",
+            "NotBefore": 1759104000.0,
+            "NotAfter": 1793231999.0,
+            "CreatedAt": 1696240859.32,
+            "IssuedAt": 1759105794.389
+        }
+    ]
+}

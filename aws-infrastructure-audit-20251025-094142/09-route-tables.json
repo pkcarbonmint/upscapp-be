@@ -1,0 +1,62 @@
+{
+    "RouteTables": [
+        {
+            "Associations": [
+                {
+                    "Main": false,
+                    "RouteTableAssociationId": "rtbassoc-0c61f32187b467673",
+                    "RouteTableId": "rtb-06511c027fa2fddaf",
+                    "SubnetId": "subnet-084a2c730193461ff",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                },
+                {
+                    "Main": false,
+                    "RouteTableAssociationId": "rtbassoc-0cb61ed3b4a1e26ad",
+                    "RouteTableId": "rtb-06511c027fa2fddaf",
+                    "SubnetId": "subnet-012e4f7a9ce4e081a",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                },
+                {
+                    "Main": true,
+                    "RouteTableAssociationId": "rtbassoc-0a5c40b02d30f7ee9",
+                    "RouteTableId": "rtb-06511c027fa2fddaf",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                },
+                {
+                    "Main": false,
+                    "RouteTableAssociationId": "rtbassoc-09abf428355dc8769",
+                    "RouteTableId": "rtb-06511c027fa2fddaf",
+                    "SubnetId": "subnet-034b50fd7fa4e1a66",
+                    "AssociationState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "PropagatingVgws": [],
+            "RouteTableId": "rtb-06511c027fa2fddaf",
+            "Routes": [
+                {
+                    "DestinationCidrBlock": "172.31.0.0/16",
+                    "GatewayId": "local",
+                    "Origin": "CreateRouteTable",
+                    "State": "active"
+                },
+                {
+                    "DestinationCidrBlock": "0.0.0.0/0",
+                    "GatewayId": "igw-05bdf31260ee892a1",
+                    "Origin": "CreateRoute",
+                    "State": "active"
+                }
+            ],
+            "Tags": [],
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "OwnerId": "949945086246"
+        }
+    ]
+}

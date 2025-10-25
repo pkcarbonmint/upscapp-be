@@ -1,0 +1,74 @@
+{
+    "LoadBalancers": [
+        {
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:ap-south-1:949945086246:loadbalancer/app/awseb-AWSEB-COTQ1OJFOPON/0932ea008182dbd2",
+            "DNSName": "awseb-AWSEB-COTQ1OJFOPON-1623987383.ap-south-1.elb.amazonaws.com",
+            "CanonicalHostedZoneId": "ZP97RAFLXTNZK",
+            "CreatedTime": "2023-09-25T13:59:54.320Z",
+            "LoadBalancerName": "awseb-AWSEB-COTQ1OJFOPON",
+            "Scheme": "internet-facing",
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "State": {
+                "Code": "active"
+            },
+            "Type": "application",
+            "AvailabilityZones": [
+                {
+                    "ZoneName": "ap-south-1c",
+                    "SubnetId": "subnet-012e4f7a9ce4e081a",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "ap-south-1a",
+                    "SubnetId": "subnet-034b50fd7fa4e1a66",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "ap-south-1b",
+                    "SubnetId": "subnet-084a2c730193461ff",
+                    "LoadBalancerAddresses": []
+                }
+            ],
+            "SecurityGroups": [
+                "sg-0bad30b8b50d0c096"
+            ],
+            "IpAddressType": "ipv4",
+            "EnablePrefixForIpv6SourceNat": "off"
+        },
+        {
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:ap-south-1:949945086246:loadbalancer/app/awseb-AWSEB-QGSQI79L9L21/f37d74ec1f9f29e6",
+            "DNSName": "awseb-AWSEB-QGSQI79L9L21-628761628.ap-south-1.elb.amazonaws.com",
+            "CanonicalHostedZoneId": "ZP97RAFLXTNZK",
+            "CreatedTime": "2023-10-04T09:55:19.530Z",
+            "LoadBalancerName": "awseb-AWSEB-QGSQI79L9L21",
+            "Scheme": "internet-facing",
+            "VpcId": "vpc-0b5fa2440bbbfac91",
+            "State": {
+                "Code": "active"
+            },
+            "Type": "application",
+            "AvailabilityZones": [
+                {
+                    "ZoneName": "ap-south-1c",
+                    "SubnetId": "subnet-012e4f7a9ce4e081a",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "ap-south-1a",
+                    "SubnetId": "subnet-034b50fd7fa4e1a66",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "ap-south-1b",
+                    "SubnetId": "subnet-084a2c730193461ff",
+                    "LoadBalancerAddresses": []
+                }
+            ],
+            "SecurityGroups": [
+                "sg-0fa1f6c2cbee4ea2a"
+            ],
+            "IpAddressType": "ipv4",
+            "EnablePrefixForIpv6SourceNat": "off"
+        }
+    ]
+}
