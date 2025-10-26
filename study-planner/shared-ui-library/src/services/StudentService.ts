@@ -11,7 +11,7 @@ export class StudentService {
   private async makeRequest<T>(
     endpoint: string, 
     options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
     const token = localStorage.getItem('shared_auth_token');
     
@@ -46,8 +46,9 @@ export class StudentService {
       body: JSON.stringify(studentData),
     });
     
-    if (response.success && response.data) {
-      return response.data;
+    // The backend returns the data directly, not wrapped in ApiResponse
+    if (response && typeof response === 'object' && 'student_id' in response) {
+      return response as StudentCreationResponse;
     }
     
     throw new Error('Failed to create student');
@@ -60,7 +61,8 @@ export class StudentService {
       body: JSON.stringify(targetData),
     });
     
-    if (!response.success) {
+    // The backend returns the data directly
+    if (!response || typeof response !== 'object' || !('updated' in response)) {
       throw new Error('Failed to update student target');
     }
   }
@@ -72,7 +74,8 @@ export class StudentService {
       body: JSON.stringify(commitmentData),
     });
     
-    if (!response.success) {
+    // The backend returns the data directly
+    if (!response || typeof response !== 'object' || !('updated' in response)) {
       throw new Error('Failed to update student commitment');
     }
   }
@@ -84,7 +87,8 @@ export class StudentService {
       body: JSON.stringify(confidenceData),
     });
     
-    if (!response.success) {
+    // The backend returns the data directly
+    if (!response || typeof response !== 'object' || !('updated' in response)) {
       throw new Error('Failed to update student confidence');
     }
   }
@@ -95,8 +99,9 @@ export class StudentService {
       method: 'GET',
     });
     
-    if (response.success && response.data) {
-      return response.data;
+    // The backend returns the data directly
+    if (response && typeof response === 'object' && 'preview' in response) {
+      return response;
     }
     
     throw new Error('Failed to get student preview');
@@ -108,8 +113,9 @@ export class StudentService {
       method: 'POST',
     });
     
-    if (response.success && response.data) {
-      return response.data;
+    // The backend returns the data directly
+    if (response && typeof response === 'object' && 'submitted' in response) {
+      return response;
     }
     
     throw new Error('Failed to submit student application');
@@ -124,11 +130,8 @@ export class StudentService {
       method: 'GET',
     });
     
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error('Failed to get students');
+    // The backend returns the data directly
+    return response;
   }
 
   async getStudentDetails(studentId: string): Promise<any> {
@@ -136,11 +139,8 @@ export class StudentService {
       method: 'GET',
     });
     
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error('Failed to get student details');
+    // The backend returns the data directly
+    return response;
   }
 
   async getStudentPlans(studentId: string): Promise<any> {
@@ -148,11 +148,8 @@ export class StudentService {
       method: 'GET',
     });
     
-    if (response.success && response.data) {
-      return response.data;
-    }
-    
-    throw new Error('Failed to get student plans');
+    // The backend returns the data directly
+    return response;
   }
 }
 
