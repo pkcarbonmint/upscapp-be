@@ -1,14 +1,6 @@
 # Use the base image with pnpm setup
 FROM study-planner:base AS workspace-builder
 
-# Copy source code for all packages
-COPY study-planner/helios-ts/ ./helios-ts/
-COPY study-planner/onboarding-ui/ ./onboarding-ui/
-COPY study-planner/shared-ui-library/ ./shared-ui-library/
-COPY study-planner/faculty-ui/ ./faculty-ui/
-COPY study-planner/plan-editor-library/ ./plan-editor-library/
-
-# Build frontend packages (they can resolve TypeScript sources directly from workspace)
 RUN pnpm build:frontend
 
 # Production stage with nginx
