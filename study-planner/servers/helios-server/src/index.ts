@@ -15,7 +15,8 @@ import {
   type PlanReviewResult,
   type BotRequest,
   type BotResponse,
-  type Logger
+  type Logger,
+  type StudentIntake
 } from 'helios-ts';
 import path from 'path';
 import fs from 'fs';
@@ -23,18 +24,6 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import { DocumentService } from 'helios-ts';
-import { 
-  Packer, 
-  Document, 
-  Paragraph, 
-  HeadingLevel, 
-  Table, 
-  WidthType, 
-  TableRow, 
-  TableCell, 
-  TextRun 
-} from 'docx';
 
 const app: Express = express();
 const PORT = process.env.PORT || 8080;
@@ -172,21 +161,22 @@ app.post('/plan/download/docx', async (req, res) => {
       });
     }
     
-    // Generate document using DocumentService
-    const document = await DocumentService.generateDocument(null, plan, studentIntake);
+    // Dynamically import DocumentService to avoid bundling issues
+    const { DocumentService } = await import('helios-ts/server');
     
-    // Convert document to buffer
-    const buffer = await Packer.toBuffer(document);
+    // Generate DOCX buffer using DocumentService
+    const docxBuffer = await DocumentService.generateStudyPlanDocxBuffer(
+      plan,
+      studentIntake
+    );
     
-    // Set response headers for file download
-    const downloadFilename = filename || `study-plan-${plan.study_plan_id || 'unknown'}.docx`;
+    // Set response headers
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
-    res.setHeader('Content-Length', buffer.length);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', docxBuffer.length);
     
-    // Stream the buffer to response
-    res.send(buffer);
-    
+    // Send the buffer
+    res.send(docxBuffer);
   } catch (error) {
     console.error('Document download error:', error);
     res.status(500).json({ 
@@ -196,123 +186,43 @@ app.post('/plan/download/docx', async (req, res) => {
   }
 });
 
-// DOCX export endpoint
+// DOCX export endpoint using DocumentService
 app.post('/plan/export/docx', async (req, res) => {
   try {
-    const { studyPlan } = req.body;
+    const { studyPlan, wizardData } = req.body;
     
     if (!studyPlan) {
-      return res.status(400).json({ error: 'Study plan data is required' });
+      return res.status(400).json({ 
+        error: 'Missing required field: studyPlan is required' 
+      });
     }
-
-    // Build all document content
-    const documentChildren = [
-      // Title
-      new Paragraph({
-        text: studyPlan.plan_title || 'Study Plan',
-        heading: HeadingLevel.TITLE,
-        alignment: 'center',
-      }),
-      
-      // Basic Information
-      new Paragraph({
-        text: 'Plan Overview',
-        heading: HeadingLevel.HEADING_1,
-      }),
-      
-      // Information table
-      new Table({
-        width: {
-          size: 100,
-          type: WidthType.PERCENTAGE,
-        },
-        rows: [
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph('User ID:')] }),
-              new TableCell({ children: [new Paragraph(studyPlan.user_id || 'N/A')] }),
-            ],
-          }),
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph('Target Year:')] }),
-              new TableCell({ children: [new Paragraph(studyPlan.created_for_target_year || 'N/A')] }),
-            ],
-          }),
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph('Generation Date:')] }),
-              new TableCell({ children: [new Paragraph(new Date().toLocaleDateString())] }),
-            ],
-          }),
-        ],
-      }),
-      
-      // Cycles section
-      new Paragraph({
-        text: 'Study Plan by Cycles',
-        heading: HeadingLevel.HEADING_1,
-      }),
-    ];
-
-    // Add cycles and blocks
-    if (studyPlan.cycles && Array.isArray(studyPlan.cycles)) {
-      for (const cycle of studyPlan.cycles) {
-        // Cycle heading
-        documentChildren.push(
-          new Paragraph({
-            text: `${cycle.cycleName || 'Unnamed Cycle'} (${cycle.cycleType || 'StudyCycle'})`,
-            heading: HeadingLevel.HEADING_2,
-          })
-        );
-
-        // Add blocks for this cycle
-        if (cycle.cycleBlocks && Array.isArray(cycle.cycleBlocks)) {
-          for (const block of cycle.cycleBlocks) {
-            documentChildren.push(
-              new Paragraph({
-                children: [
-                  new TextRun({ text: 'Block: ', bold: true }),
-                  new TextRun({ text: block.block_title || 'Untitled Block' }),
-                ],
-              }),
-              new Paragraph({
-                children: [
-                  new TextRun({ text: 'Duration: ', bold: true }),
-                  new TextRun({ text: `${block.duration_weeks || 0} weeks` }),
-                ],
-              }),
-              new Paragraph({
-                children: [
-                  new TextRun({ text: 'Subjects: ', bold: true }),
-                  new TextRun({ text: Array.isArray(block.subjects) ? block.subjects.join(', ') : 'No subjects' }),
-                ],
-              }),
-              new Paragraph({ text: '' }) // Empty line for spacing
-            );
-          }
-        }
-      }
+    
+    if (!wizardData) {
+      return res.status(400).json({ 
+        error: 'Missing required field: wizardData is required' 
+      });
     }
-
-    // Create DOCX document with all content
-    const doc = new Document({
-      sections: [{
-        properties: {},
-        children: documentChildren,
-      }],
-    });
-
-    // Generate DOCX buffer
-    const buffer = await Packer.toBuffer(doc);
+    
+    // Transform wizard data to StudentIntake
+    const transformedIntake: StudentIntake = transformUIToStudentIntake(wizardData);
+    
+    // Dynamically import DocumentService to avoid bundling issues
+    const { DocumentService } = await import('helios-ts/server');
+    
+    // Generate DOCX buffer using CalendarDocxService
+    const docxBuffer = await DocumentService.generateStudyPlanDocxBuffer(
+      studyPlan,
+      transformedIntake
+    );
     
     // Set response headers
+    const filename = `study-plan-${studyPlan.study_plan_id || 'export'}.docx`;
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.setHeader('Content-Disposition', `attachment; filename="study-plan-${studyPlan.study_plan_id || 'export'}.docx"`);
-    res.setHeader('Content-Length', buffer.length);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', docxBuffer.length);
     
-    // Send the file
-    res.send(buffer);
+    // Send the buffer
+    res.send(docxBuffer);
     
   } catch (error) {
     console.error('DOCX export error:', error);
@@ -326,21 +236,30 @@ app.post('/plan/export/docx', async (req, res) => {
 // PDF export endpoint using HighFidelityPDFService
 app.post('/plan/export/pdf', async (req, res) => {
   try {
-    const { studyPlan, studentIntake, filename } = req.body;
+    const { studyPlan, wizardData, filename } = req.body;
     
-    if (!studyPlan || !studentIntake) {
+    if (!studyPlan) {
       return res.status(400).json({ 
-        error: 'Missing required fields: studyPlan and studentIntake are required' 
+        error: 'Missing required field: studyPlan is required' 
       });
     }
+    
+    if (!wizardData) {
+      return res.status(400).json({ 
+        error: 'Missing required field: wizardData is required' 
+      });
+    }
+    
+    // Transform wizard data to StudentIntake
+    const transformedIntake: StudentIntake = transformUIToStudentIntake(wizardData);
     
     // Dynamically import HighFidelityPDFService to avoid bundling issues
     const { HighFidelityPDFService } = await import('helios-ts/server');
     
-    // Generate PDF using HighFidelityPDFService
+    // Generate PDF with transformed intake data
     await HighFidelityPDFService.generateStructuredPDF(
       studyPlan,
-      studentIntake,
+      transformedIntake,
       filename || `study-plan-${studyPlan.study_plan_id || 'export'}.pdf`
     );
     

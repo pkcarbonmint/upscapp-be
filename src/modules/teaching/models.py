@@ -30,6 +30,9 @@ class StudyPlan(Base,BaseMixin):
     
     # Relationship to approver
     approver = relationship("User", foreign_keys=[approved_by])
+    
+    # Store intake/wizard data for export
+    intake_data = mapped_column(JSON, nullable=True)
 
 class PlanTask(Base,BaseMixin):
     __tablename__ = "plantasks"

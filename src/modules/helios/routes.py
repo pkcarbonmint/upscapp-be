@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
-import os
-import tempfile
+from fastapi.responses import Response
+import logging
 
 from src.base.schemas import ResponseSchema
 from src.users.deps import CheckV2UserAccess
@@ -10,7 +9,7 @@ from src.constants import APP
 
 from .schemas import GeneratePlanRequest, GeneratePlanResponse, RebalanceRequest, ChangeSummary, GeneratePlanFromWizardRequest, HealthCheckResponse, StudyPlanSchema
 from .service import HeliosIntegrationService
-from .document_service import DocumentGenerationService
+from .adaptive_client import get_helios_adaptive_client
 
 
 router = APIRouter(prefix="/helios", tags=["Helios"])
@@ -71,54 +70,40 @@ async def export_plan_docx(
 	studyplan_id: int,
 	user = Depends(CheckV2UserAccess(user_types=[USER_TYPE.workforce], roles=[USER_ROLE.org_admin, USER_ROLE.branch_admin, USER_ROLE.teacher], apps=[APP.admin_app])),
 ):
-	"""Export study plan as DOCX document."""
-	import logging
-	import os
+	"""Export study plan as DOCX document using helios-server."""
 	logger = logging.getLogger(__name__)
 	
 	try:
 		logger.info(f"Starting DOCX export for study plan {studyplan_id}")
 		
-		# Get study plan data from service
-		study_plan_data = await service.get_study_plan_for_export(studyplan_id)
+		# Get study plan data and intake data from service
+		study_plan_data, intake_data = await service.get_study_plan_for_export(studyplan_id)
 		
 		if not study_plan_data:
 			logger.error(f"Study plan {studyplan_id} not found")
 			raise HTTPException(status_code=404, detail="Study plan not found")
 		
+		if not intake_data:
+			logger.error(f"Intake data not found for study plan {studyplan_id}")
+			raise HTTPException(status_code=404, detail="Intake data not found. Cannot generate document without student information.")
+		
 		logger.info(f"Retrieved study plan data: {study_plan_data.title}")
 		
-		# Generate DOCX document
-		doc_service = DocumentGenerationService()
+		# Convert schema to dict
+		study_plan_dict = study_plan_data.model_dump()
 		
-		# Check if template exists
-		template_path = doc_service.template_path
-		logger.info(f"Using template path: {template_path}")
+		# Call helios-server to generate DOCX with intake data
+		client = await get_helios_adaptive_client()
+		docx_content = await client.export_docx(study_plan_dict, intake_data)
 		
-		if not os.path.exists(template_path):
-			logger.warning(f"Template not found at {template_path}, creating default template")
-			os.makedirs(os.path.dirname(template_path), exist_ok=True)
-			doc_service.create_default_template(template_path)
-		
-		docx_path = doc_service.generate_docx(study_plan_data)
-		logger.info(f"Generated DOCX at: {docx_path}")
-		
-		# Verify the file exists and has content
-		if not os.path.exists(docx_path):
-			raise HTTPException(status_code=500, detail="Generated DOCX file not found")
-		
-		file_size = os.path.getsize(docx_path)
-		logger.info(f"DOCX file size: {file_size} bytes")
-		
-		if file_size == 0:
-			raise HTTPException(status_code=500, detail="Generated DOCX file is empty")
+		logger.info(f"Successfully generated DOCX from helios-server")
 		
 		# Return file response
 		filename = f"study_plan_{studyplan_id}.docx"
-		return FileResponse(
-			path=docx_path,
-			filename=filename,
-			media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+		return Response(
+			content=docx_content,
+			media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			headers={"Content-Disposition": f'attachment; filename="{filename}"'}
 		)
 		
 	except Exception as e:
@@ -131,27 +116,44 @@ async def export_plan_pdf(
 	studyplan_id: int,
 	user = Depends(CheckV2UserAccess(user_types=[USER_TYPE.workforce], roles=[USER_ROLE.org_admin, USER_ROLE.branch_admin, USER_ROLE.teacher], apps=[APP.admin_app])),
 ):
-	"""Export study plan as PDF document."""
+	"""Export study plan as PDF document using helios-server."""
+	logger = logging.getLogger(__name__)
+	
 	try:
-		# Get study plan data from service
-		study_plan_data = await service.get_study_plan_for_export(studyplan_id)
+		logger.info(f"Starting PDF export for study plan {studyplan_id}")
+		
+		# Get study plan data and intake data from service
+		study_plan_data, intake_data = await service.get_study_plan_for_export(studyplan_id)
 		
 		if not study_plan_data:
+			logger.error(f"Study plan {studyplan_id} not found")
 			raise HTTPException(status_code=404, detail="Study plan not found")
 		
-		# Generate PDF document
-		doc_service = DocumentGenerationService()
-		pdf_path = doc_service.generate_pdf(study_plan_data)
+		if not intake_data:
+			logger.error(f"Intake data not found for study plan {studyplan_id}")
+			raise HTTPException(status_code=404, detail="Intake data not found. Cannot generate document without student information.")
+		
+		logger.info(f"Retrieved study plan data: {study_plan_data.title}")
+		
+		# Convert schema to dict
+		study_plan_dict = study_plan_data.model_dump()
+		
+		# Call helios-server to generate PDF with intake data
+		client = await get_helios_adaptive_client()
+		pdf_content = await client.export_pdf(study_plan_dict, intake_data)
+		
+		logger.info(f"Successfully generated PDF from helios-server")
 		
 		# Return file response
 		filename = f"study_plan_{studyplan_id}.pdf"
-		return FileResponse(
-			path=pdf_path,
-			filename=filename,
-			media_type="application/pdf"
+		return Response(
+			content=pdf_content,
+			media_type="application/pdf",
+			headers={"Content-Disposition": f'attachment; filename="{filename}"'}
 		)
 		
 	except Exception as e:
+		logger.error(f"Error generating PDF for plan {studyplan_id}: {str(e)}", exc_info=True)
 		raise HTTPException(status_code=500, detail=f"Error generating PDF: {str(e)}")
 
 

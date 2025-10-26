@@ -78,7 +78,8 @@ class StudyPlanCreate(BaseSchema):
     created_by_id: int
     created_by: UserInfo
     remarks: str | None = None
-    status: STUDYPLAN_STATUS 
+    status: STUDYPLAN_STATUS
+    intake_data: dict | None = None  # Store wizard/intake data for export 
 
 class StudyPlanUpdate(BaseSchema):
     name: str  | None = None

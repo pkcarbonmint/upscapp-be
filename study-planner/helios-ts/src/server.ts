@@ -10,7 +10,7 @@ export * from './index';
 
 // Export server-only services
 export { PDFService } from './services/PDFService';
-export { DocumentService } from './services/DocumentService';
+export { CalendarDocxService as DocumentService } from './services/CalendarDocxService';
 export { HighFidelityPDFService } from './services/HighFidelityPDFService';
 
 

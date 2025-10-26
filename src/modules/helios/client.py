@@ -124,6 +124,98 @@ class HeliosHTTPClient:
             error_msg = f"Invalid JSON response from Haskell engine: {e}"
             logger.error(error_msg)
             raise HeliosClientError(error_msg)
+    
+    async def export_docx(self, study_plan: Dict[str, Any], wizard_data: Dict[str, Any]) -> bytes:
+        """
+        Export study plan as DOCX document using the helios-server.
+        
+        Args:
+            study_plan: Study plan data to export
+            wizard_data: Wizard/intake data from the database. Will be transformed to StudentIntake.
+            
+        Returns:
+            Binary content of the DOCX file
+            
+        Raises:
+            HeliosClientError: If the request fails or returns an error
+        """
+        try:
+            logger.info("Sending DOCX export request to helios-server")
+            
+            # Prepare request body with wizard data
+            request_body = {
+                "studyPlan": study_plan,
+                "wizardData": wizard_data
+            }
+            
+            response = await self.client.post(
+                "/plan/export/docx",
+                json=request_body,
+                timeout=60.0  # Longer timeout for document generation
+            )
+            
+            if response.status_code != 200:
+                error_msg = f"Helios-server returned status {response.status_code}: {response.text}"
+                logger.error(error_msg)
+                raise HeliosClientError(error_msg)
+            
+            logger.info("Successfully received DOCX from helios-server")
+            return response.content
+            
+        except httpx.RequestError as e:
+            error_msg = f"Failed to connect to helios-server: {e}"
+            logger.error(error_msg)
+            raise HeliosClientError(error_msg)
+        except Exception as e:
+            error_msg = f"Error exporting DOCX: {e}"
+            logger.error(error_msg)
+            raise HeliosClientError(error_msg)
+    
+    async def export_pdf(self, study_plan: Dict[str, Any], wizard_data: Dict[str, Any]) -> bytes:
+        """
+        Export study plan as PDF document using the helios-server.
+        
+        Args:
+            study_plan: Study plan data to export
+            wizard_data: Wizard/intake data from the database. Will be transformed to StudentIntake.
+            
+        Returns:
+            Binary content of the PDF file
+            
+        Raises:
+            HeliosClientError: If the request fails or returns an error
+        """
+        try:
+            logger.info("Sending PDF export request to helios-server")
+            
+            # Prepare request body with wizard data
+            request_body = {
+                "studyPlan": study_plan,
+                "wizardData": wizard_data
+            }
+            
+            response = await self.client.post(
+                "/plan/export/pdf",
+                json=request_body,
+                timeout=90.0  # Longer timeout for PDF generation
+            )
+            
+            if response.status_code != 200:
+                error_msg = f"Helios-server returned status {response.status_code}: {response.text}"
+                logger.error(error_msg)
+                raise HeliosClientError(error_msg)
+            
+            logger.info("Successfully received PDF from helios-server")
+            return response.content
+            
+        except httpx.RequestError as e:
+            error_msg = f"Failed to connect to helios-server: {e}"
+            logger.error(error_msg)
+            raise HeliosClientError(error_msg)
+        except Exception as e:
+            error_msg = f"Error exporting PDF: {e}"
+            logger.error(error_msg)
+            raise HeliosClientError(error_msg)
 
 
 class HeliosClientError(Exception):
