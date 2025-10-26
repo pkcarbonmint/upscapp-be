@@ -65,6 +65,7 @@ exec > >(grep -E "(Building|Successfully|Error|Failed|✅|❌|⚠️|ℹ️)" | 
 exec 2>&1
 cd /opt/upscpro/upscapp-be
 ./docker-build.sh
+docker-compose up -d
 EOF
 chmod +x /tmp/quiet-docker-build.sh
 
