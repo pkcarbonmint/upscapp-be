@@ -57,24 +57,26 @@ def _normalize_payment(d: dict[str, Any]) -> dict[str, Any]:
 
 
 async def create_student_row(background_dict: dict[str, Any]) -> str:
-    student = OnboardingStudent(
-        id=uuid.uuid4(),
-        background=_normalize_background(background_dict),
-        final={"submitted": False, "message": None},
-    )
-    db.session.add(student)  # type: ignore[attr-defined]
-    await db.session.flush()  # type: ignore[attr-defined]
-    await db.session.commit()  # type: ignore[attr-defined]
-    logger.info("onboarding.create_student", extra={"student_id": str(student.id)})
-    return str(student.id)
+    async with db():
+        student = OnboardingStudent(
+            id=uuid.uuid4(),
+            background=_normalize_background(background_dict),
+            final={"submitted": False, "message": None},
+        )
+        db.session.add(student)  # type: ignore[attr-defined]
+        await db.session.flush()  # type: ignore[attr-defined]
+        await db.session.commit()  # type: ignore[attr-defined]
+        logger.info("onboarding.create_student", extra={"student_id": str(student.id)})
+        return str(student.id)
 
 
 async def student_exists(student_id: str) -> None:
-    result = await db.session.execute(  # type: ignore[attr-defined]
-        select(OnboardingStudent.id).where(OnboardingStudent.id == uuid.UUID(student_id))
-    )
-    if result.scalar_one_or_none() is None:
-        raise HTTPException(status_code=404, detail={"code": "not_found", "message": "student not found"})
+    async with db():
+        result = await db.session.execute(  # type: ignore[attr-defined]
+            select(OnboardingStudent.id).where(OnboardingStudent.id == uuid.UUID(student_id))
+        )
+        if result.scalar_one_or_none() is None:
+            raise HTTPException(status_code=404, detail={"code": "not_found", "message": "student not found"})
 
 
 async def update_section(student_id: str, section: str, value: dict[str, Any]) -> None:
@@ -85,26 +87,28 @@ async def update_section(student_id: str, section: str, value: dict[str, Any]) -
         value = _normalize_background(value)
     elif section == "payment":
         value = _normalize_payment(value)
-    stmt = (
-        update(OnboardingStudent)
-        .where(OnboardingStudent.id == uuid.UUID(student_id))
-        .values({section: value})
-    )
-    await db.session.execute(stmt)  # type: ignore[attr-defined]
-    await db.session.commit()  # type: ignore[attr-defined]
-    logger.info("onboarding.update_section", extra={"student_id": student_id, "section": section})
+    async with db():
+        stmt = (
+            update(OnboardingStudent)
+            .where(OnboardingStudent.id == uuid.UUID(student_id))
+            .values({section: value})
+        )
+        await db.session.execute(stmt)  # type: ignore[attr-defined]
+        await db.session.commit()  # type: ignore[attr-defined]
+        logger.info("onboarding.update_section", extra={"student_id": student_id, "section": section})
 
 
 async def set_final_submitted(student_id: str, message: str) -> None:
     await student_exists(student_id)
-    stmt = (
-        update(OnboardingStudent)
-        .where(OnboardingStudent.id == uuid.UUID(student_id))
-        .values({"final": {"submitted": True, "message": message}})
-    )
-    await db.session.execute(stmt)  # type: ignore[attr-defined]
-    await db.session.commit()  # type: ignore[attr-defined]
-    logger.info("onboarding.submit", extra={"student_id": student_id})
+    async with db():
+        stmt = (
+            update(OnboardingStudent)
+            .where(OnboardingStudent.id == uuid.UUID(student_id))
+            .values({"final": {"submitted": True, "message": message}})
+        )
+        await db.session.execute(stmt)  # type: ignore[attr-defined]
+        await db.session.commit()  # type: ignore[attr-defined]
+        logger.info("onboarding.submit", extra={"student_id": student_id})
 
 
 async def create_student(background_dict: dict[str, Any]) -> str:
@@ -130,18 +134,19 @@ async def update_student_confidence(student_id: str, confidence_dict: dict[str, 
 async def get_student_data(student_id: str) -> dict[str, Any]:
     """Get all student data for Helios integration"""
     await student_exists(student_id)
-    result = await db.session.execute(  # type: ignore[attr-defined]
-        select(OnboardingStudent).where(OnboardingStudent.id == uuid.UUID(student_id))
-    )
-    student = result.scalar_one_or_none()
-    if student is None:
-        raise HTTPException(status_code=404, detail={"code": "not_found", "message": "student not found"})
-    
-    return {
-        "background": student.background or {},
-        "target": student.target or {},
-        "commitment": student.commitment or {},
-        "confidence": student.confidence or {},
-        "payment": student.payment or {},
-        "final": student.final or {}
-    }
+    async with db():
+        result = await db.session.execute(  # type: ignore[attr-defined]
+            select(OnboardingStudent).where(OnboardingStudent.id == uuid.UUID(student_id))
+        )
+        student = result.scalar_one_or_none()
+        if student is None:
+            raise HTTPException(status_code=404, detail={"code": "not_found", "message": "student not found"})
+        
+        return {
+            "background": student.background or {},
+            "target": student.target or {},
+            "commitment": student.commitment or {},
+            "confidence": student.confidence or {},
+            "payment": student.payment or {},
+            "final": student.final or {}
+        }
