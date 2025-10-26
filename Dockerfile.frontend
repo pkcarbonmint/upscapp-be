@@ -1,7 +1,9 @@
 # Use the base image with pnpm setup
 FROM study-planner:base AS workspace-builder
 
-RUN pnpm build:frontend
+RUN rm -rf servers
+RUN pnpm -r  build
+RUN pnpm build:onboarding
 
 # Production stage with nginx
 FROM nginx:alpine

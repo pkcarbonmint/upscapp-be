@@ -1,6 +1,6 @@
-import type { S2Constraints, S2Subject, S2Subtopic, S2Task, S2Topic, S2ExamFocus } from 'scheduler2';
-import type { CycleType, DailyPlan, TaskEffortSplit as S1TaskEffortSplit, Task, WeeklyPlan } from 'scheduler';
-import { S2SlotType, S2WeekDay } from 'scheduler2';
+import type { S2Constraints, S2Subject, S2Subtopic, S2Task, S2Topic, S2ExamFocus } from 'helios-scheduler';
+import type { CycleType, DailyPlan, TaskEffortSplit as S1TaskEffortSplit, Task, WeeklyPlan } from 'old-scheduler';
+import { S2SlotType, S2WeekDay } from 'helios-scheduler';
 import { StudentIntake } from '../types/models';
 import { Subject, Subtopic, Topic } from '../types/Subjects';
 import type { Dayjs } from 'dayjs';

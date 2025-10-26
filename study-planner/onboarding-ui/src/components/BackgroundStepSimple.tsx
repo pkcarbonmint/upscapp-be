@@ -25,7 +25,7 @@ export const BackgroundStepSimple: React.FC<BackgroundStepSimpleProps> = ({
   const { getClasses } = useTheme();
   const { trackFieldFocus, trackFieldChange } = useFormTracking('Background');
 
-  // Update validation when data changes
+  // // Update validation when data changes
   useEffect(() => {
     const newValidation = validateBackground(data);
     setValidation(newValidation);

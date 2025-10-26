@@ -15,9 +15,9 @@ dayjs.extend(isSameOrBefore);
 
 import { loadAllSubjects } from '../services/SubjectLoader';
 import { getOptionalSubjectByCode } from '../config';
-import { planMain, CycleType } from 'scheduler2';
-import type { PlanningContext, S2Subject,  S2ExamFocus } from 'scheduler2';
-import { S2WeekDay } from 'scheduler2';
+import { planMain, CycleType } from 'helios-scheduler';
+import type { PlanningContext, S2Subject,  S2ExamFocus } from 'helios-scheduler';
+import { S2WeekDay } from 'helios-scheduler';
 import { mapFromS2Tasks } from './s2-mapper';
 import crypto from 'crypto';
 

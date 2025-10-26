@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { IWFStudyCommitment, StudyPreference, SubjectApproach } from '../types';
-import { S2WeekDay } from 'scheduler2/types';
+import { S2WeekDay } from 'helios-scheduler';
 import { validateCommitment, type CommitmentValidation, isCommitmentValid } from '../utils/validation';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useTheme } from '../hooks/useTheme';

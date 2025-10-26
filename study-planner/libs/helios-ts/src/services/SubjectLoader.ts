@@ -2,7 +2,8 @@ import type { ExamFocus, LoadSubtopicsResult, Subject, Subtopic, SubtopicBand, T
 import subjectsData from '../config/upsc_subjects.json';
 import subtopicsData from '../config/subtopics.json';
 import optionalSubjectsData from '../config/optional_subjects.json';
-import { isOptional } from '../engine/cycle-utils';
+
+const isOptional = (_: any) => false; // TODO
 
 function mapTopicPriority(priority: string): TopicPriority {
   switch (priority) {

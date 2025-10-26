@@ -37,19 +37,18 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "helios-ts": path.resolve(__dirname, "../helios-ts/src"),
-      "shared-ui-library": path.resolve(__dirname, "../shared-ui-library/src"),
-      // Local workspace libraries
-      "scheduler": path.resolve(__dirname, "../libs/scheduler/src"),
-      "scheduler2": path.resolve(__dirname, "../libs/scheduler2/src"),
+      "helios-ts": path.resolve(__dirname, "node_modules/helios-ts"),
+      "shared-ui-library": path.resolve(__dirname, "node_modules/shared-ui-library"),
+      "helios-scheduler": path.resolve(__dirname, "node_modules/helios-scheduler"),
     },
-    dedupe: ["helios-ts", "shared-ui-library", "scheduler", "scheduler2"]
+    dedupe: ["helios-ts", "shared-ui-library", "helios-scheduler"]
   },
   optimizeDeps: {
-    exclude: ["helios-ts", "shared-ui-library", "scheduler", "scheduler2"],
+    exclude: ["helios-ts", "shared-ui-library", "helios-scheduler"],
     include: ['react', 'react-dom', 'antd', 'jspdf', 'html2canvas', 'chart.js'] // Pre-bundle common dependencies
   },
   build: {
+    minify: false,
     commonjsOptions: {
       include: [/helios-ts/, /shared-ui-library/, /scheduler/, /scheduler2/, /node_modules/]
     },

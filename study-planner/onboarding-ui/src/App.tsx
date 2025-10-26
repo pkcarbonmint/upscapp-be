@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import { getStepSequence } from './types'
 import type { Step, IntakeWizardFormData, IWFBackground, IWFOTPVerification, IWFConfidenceLevelAssessment } from './types'
-import { S2WeekDay } from 'scheduler2/types';
+import { S2WeekDay } from 'helios-scheduler';
 import { apiService } from './services/api'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
@@ -20,7 +20,6 @@ import TargetYearStep from './components/TargetYearStep';
 import PreviewStep from './components/PreviewStep';
 import PaymentStep from './components/PaymentStep';
 import FinalStep from './components/FinalStep';
-import ThemeDebugger from './components/ThemeDebugger';
 
 // Initial data matching Elm app
 const initialBackground: IWFBackground = {
@@ -83,6 +82,8 @@ const initialFormData: IntakeWizardFormData = {
   }
 }
 
+const enableOTP = isFeatureEnabled('enableOTPVerification');
+
 function App() {
   const [showIntro, setShowIntro] = useState(true)
   const [currentStep, setCurrentStep] = useState<Step>('Background')
@@ -108,7 +109,6 @@ function App() {
   }, [])
   
   // Get step sequence based on feature flags
-  const enableOTP = isFeatureEnabled('enableOTPVerification')
   const stepSequence = getStepSequence(enableOTP)
   
   // Extract user name for display
@@ -136,6 +136,28 @@ function App() {
     errors: []
   })
   const [showValidationErrors, setShowValidationErrors] = useState(false)
+
+  // Memoize the validation change handler to prevent infinite loops
+  const handleBackgroundValidationChange = useCallback((isValid: boolean, errors: string[]) => {
+    setBackgroundValidation({ isValid, errors })
+    
+    // Track validation errors
+    if (!isValid && errors.length > 0) {
+      errors.forEach(error => {
+        analytics.trackFormError('Background', error)
+      })
+    }
+    
+    // Clear validation errors when form becomes valid
+    if (isValid && showValidationErrors) {
+      setShowValidationErrors(false)
+    }
+  }, [showValidationErrors]);
+
+  // Similarly for OTP validation
+  const handleOtpValidationChange = useCallback((isValid: boolean, errors: string[]) => {
+    setOtpValidation({ isValid, errors })
+  }, []);
 
   const handleGetStarted = () => {
     setShowIntro(false)
@@ -388,21 +410,7 @@ function App() {
             data={formData.background}
             onUpdate={(updater: (prev: typeof formData.background) => typeof formData.background) => 
               setFormData(prev => ({ ...prev, background: updater(prev.background) }))}
-            onValidationChange={(isValid, errors) => {
-              setBackgroundValidation({ isValid, errors })
-              
-              // Track validation errors
-              if (!isValid && errors.length > 0) {
-                errors.forEach(error => {
-                  analytics.trackFormError('Background', error)
-                })
-              }
-              
-              // Clear validation errors when form becomes valid
-              if (isValid && showValidationErrors) {
-                setShowValidationErrors(false)
-              }
-            }}
+            onValidationChange={handleBackgroundValidationChange}  // Use the memoized callback
             forceShowErrors={showValidationErrors}
           />
         )
@@ -413,9 +421,7 @@ function App() {
             phoneNumber={formData.background.phoneNumber}
             onUpdate={(updater: (prev: IWFOTPVerification) => IWFOTPVerification) => 
               setFormData(prev => ({ ...prev, otpVerification: updater(prev.otpVerification || initialOTPVerification) }))}
-            onValidationChange={(isValid, errors) => {
-              setOtpValidation({ isValid, errors })
-            }}
+            onValidationChange={handleOtpValidationChange}
           />
         )
       case 'Commitment':
@@ -633,8 +639,6 @@ function App() {
         </div>
       </div>
       
-      {/* Theme debugger for development */}
-      <ThemeDebugger />
     </div>
   )
 }

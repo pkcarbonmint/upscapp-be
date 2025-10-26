@@ -41,20 +41,23 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 WORKDIR /app
 
 # Copy workspace configuration
-COPY study-planner/package.json study-planner/pnpm-workspace.yaml study-planner/pnpm-lock.yaml ./
 
 # Copy all package.json files for dependency resolution
-COPY study-planner/helios-ts/package.json ./helios-ts/
 
-#RUN (cd study-planner && find . -name package.json | tar czf - -T - |tar tzf -)
+COPY study-planner/pnpm-workspace.yaml study-planner/pnpm-lock.yaml ./
+# RUN (cd study-planner && find . -name package.json | tar czf - -T - |tar tzf -)
 
+
+COPY study-planner/package.json study-planner/pnpm-workspace.yaml study-planner/pnpm-lock.yaml ./
 COPY study-planner/servers/helios-server/package.json ./servers/helios-server/
-COPY study-planner/libs/scheduler/package.json ./libs/scheduler/
-COPY study-planner/libs/scheduler2/package.json ./libs/scheduler2/
+COPY study-planner/libs/helios-scheduler/package.json ./libs/helios-scheduler/
+COPY study-planner/libs/old-scheduler/package.json ./libs/old-scheduler/
+COPY study-planner/libs/helios-ts/package.json ./libs/helios-ts/
 COPY study-planner/shared-ui-library/package.json ./shared-ui-library/
 COPY study-planner/plan-editor-library/package.json ./plan-editor-library/
 COPY study-planner/onboarding-ui/package.json ./onboarding-ui/
 COPY study-planner/faculty-ui/package.json ./faculty-ui/
+
 
 # Install all dependencies
 RUN pnpm install --frozen-lockfile

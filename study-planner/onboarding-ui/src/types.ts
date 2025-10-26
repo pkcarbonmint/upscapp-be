@@ -29,7 +29,7 @@ export interface Performance {
 export type StudyPreference = 'WeakSubjectsFirst' | 'StrongSubjectsFirst' | 'Balanced';
 export type SubjectApproach = 'SingleSubject' | 'DualSubject' | 'TripleSubject';
 
-import type { S2WeekDay } from 'scheduler2/types';
+import type { S2WeekDay } from 'helios-scheduler';
 
 export interface IWFStudyCommitment {
   timeCommitment: number | null;

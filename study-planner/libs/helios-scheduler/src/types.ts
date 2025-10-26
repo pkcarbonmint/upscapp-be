@@ -34,6 +34,8 @@ export interface ScenarioResult {
   schedules: CycleSchedule[];
 }
 
+export type DifficultyLevel = "Beginner" | "Intermediate" | "Advanced";
+
 export enum CycleType {
   C1 = "C1", // NCERT Foundation Cycle
   C2 = "C2", // Comprehensive Foundation Cycle

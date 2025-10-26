@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { IntakeWizardFormData, IWFBackground, IWFOTPVerification, IWFConfidenceLevelAssessment } from '../types';
-import { S2WeekDay } from 'scheduler2/types';
+import { S2WeekDay } from 'helios-scheduler';
 import { useTheme } from '../hooks/useTheme';
 import PreviewStep from './PreviewStep';
 

@@ -1,4 +1,4 @@
-import type { Resource } from 'scheduler';
+import type { Resource } from 'old-scheduler';
 
 /**
  * NCERT Material structure from NCERT-Materials.json

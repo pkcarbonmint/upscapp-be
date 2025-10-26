@@ -15,8 +15,8 @@ import {
   CycleType,
 } from "./Types";
 import dayjs from 'dayjs';
-export type { WeeklyPlan, DailyPlan, Resource } from 'scheduler';
-import type { Resource, WeeklyPlan, } from 'scheduler';
+export type { WeeklyPlan, DailyPlan, Resource } from 'old-scheduler';
+import type { Resource, WeeklyPlan, } from 'old-scheduler';
 
 // From src/Types/Student.hs
 

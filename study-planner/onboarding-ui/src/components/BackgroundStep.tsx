@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { type IWFBackground } from '../types';
 import { validateBackground, type BackgroundValidation, isBackgroundValid } from '../utils/validation';
-import { isFeatureEnabled } from '../config/featureFlags';
 import BackgroundStepSimple from './BackgroundStepSimple';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
+import { isFeatureEnabled } from '../config/featureFlags';
 
 interface BackgroundStepProps {
   data: IWFBackground;
@@ -105,10 +105,11 @@ const InlineYear: React.FC<InlineYearProps> = ({
   </span>
 );
 
+const isSimpleOne = isFeatureEnabled('useSimpleFormLayout');
 export const BackgroundStep: React.FC<BackgroundStepProps> = ({ data, onUpdate, onValidationChange, forceShowErrors = false }) => {
   // Check feature flag to determine which layout to use
-  if (isFeatureEnabled('useSimpleFormLayout')) {
-    return (
+  if (isSimpleOne) {
+  return (
       <BackgroundStepSimple
         data={data}
         onUpdate={onUpdate}
@@ -117,7 +118,6 @@ export const BackgroundStep: React.FC<BackgroundStepProps> = ({ data, onUpdate, 
       />
     );
   }
-
   // Original inline layout implementation
   const [validation, setValidation] = useState<BackgroundValidation>(() => validateBackground(data));
   const [showErrors, setShowErrors] = useState(forceShowErrors);

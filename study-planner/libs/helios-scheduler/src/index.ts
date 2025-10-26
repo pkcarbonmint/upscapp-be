@@ -10,6 +10,7 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
 export * from './types';
+export * from './types-resource';
 export { planSubjectTasks } from './plan-subject';
 export { planBlocks } from './plan-blocks';
 export { planCycles  } from './plan-cycles';

@@ -3,7 +3,7 @@ import type { StudyPlan, StudentIntake } from '../types/models';
 import { CycleType } from '../types/Types';
 import { ResourceService } from './ResourceService';
 import { SubjectLoader } from './SubjectLoader';
-import { DayOfWeek } from 'scheduler';
+import { DayOfWeek } from 'old-scheduler';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';

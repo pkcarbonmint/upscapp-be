@@ -17,12 +17,6 @@ export {
   generateInitialPlan,
 } from './engine/NewEngine-generate-plan';
 
-export {
-  determineCycleSchedule,
-} from './engine/cycle-scheduler';
-
-
-
 // Configuration and Types
 export type { Config } from './engine/engine-types';
 export type { 

@@ -8,7 +8,7 @@ import {
   CycleType as SchedulerCycleType,
   trimSubtopicsToFit as schedulerTrimSubtopicsToFit,
   DayOfWeek
-} from 'scheduler';
+} from 'old-scheduler';
 import type {
   Subject as SchedulerSubject,
   StudyApproach,
@@ -17,8 +17,8 @@ import type {
   DetermineBlockScheduleResult,
   DailyHourLimitsInput,
   DayPreferences,
-} from 'scheduler';
-import { S2Task } from 'scheduler2';
+} from 'old-scheduler';
+import { S2Task } from 'helios-scheduler';
 import { mapFromS2Tasks } from './s2-mapper';
 
 // Task ratios are now handled by intake.getTaskTypeRatios(cycleType)

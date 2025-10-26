@@ -56,8 +56,8 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "scheduler": "workspace:*",
-    "scheduler2": "workspace:*",
+    "old-scheduler": "workspace:*",
+    "helios-scheduler": "workspace:*",
     "@types/uuid": "^10.0.0",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",

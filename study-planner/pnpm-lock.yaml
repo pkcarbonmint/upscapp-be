@@ -106,7 +106,44 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.9.1)(jiti@1.21.7)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)
 
-  helios-ts:
+  libs/helios-scheduler:
+    dependencies:
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
+      date-fns:
+        specifier: ^3.0.0
+        version: 3.6.0
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.18
+      typescript:
+        specifier: ~5.8.3
+        version: 5.8.3
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.23
+      terser:
+        specifier: ^5.44.0
+        version: 5.44.0
+      tsx:
+        specifier: ^4.0.0
+        version: 4.20.6
+      vite:
+        specifier: ^4.5.14
+        version: 4.5.14(@types/node@20.19.23)(lightningcss@1.30.2)(terser@5.44.0)
+      vite-plugin-dts:
+        specifier: ^4.5.4
+        version: 4.5.4(@types/node@20.19.23)(rollup@4.52.5)(typescript@5.8.3)(vite@4.5.14(@types/node@20.19.23)(lightningcss@1.30.2)(terser@5.44.0))
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)
+
+  libs/helios-ts:
     dependencies:
       '@types/uuid':
         specifier: ^10.0.0
@@ -132,6 +169,9 @@ importers:
       firebase:
         specifier: ^12.3.0
         version: 12.4.0
+      helios-scheduler:
+        specifier: workspace:*
+        version: link:../helios-scheduler
       html-to-pdfmake:
         specifier: ^2.5.31
         version: 2.5.31
@@ -144,6 +184,9 @@ importers:
       jspdf-autotable:
         specifier: ^5.0.2
         version: 5.0.2(jspdf@2.5.2)
+      old-scheduler:
+        specifier: workspace:*
+        version: link:../old-scheduler
       pdfmake:
         specifier: ^0.2.20
         version: 0.2.20
@@ -153,12 +196,6 @@ importers:
       puppeteer-core:
         specifier: ^23.0.0
         version: 23.11.1
-      scheduler:
-        specifier: workspace:*
-        version: link:../libs/scheduler
-      scheduler2:
-        specifier: workspace:*
-        version: link:../libs/scheduler2
       sharp:
         specifier: ^0.34.4
         version: 0.34.4
@@ -192,9 +229,9 @@ importers:
         version: 4.5.4(@types/node@20.19.23)(rollup@4.52.5)(typescript@5.8.3)(vite@4.5.14(@types/node@20.19.23)(lightningcss@1.30.2)(terser@5.44.0))
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)
+        version: 3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)
 
-  libs/scheduler:
+  libs/old-scheduler:
     dependencies:
       '@types/uuid':
         specifier: ^10.0.0
@@ -229,44 +266,7 @@ importers:
         version: 4.5.4(@types/node@20.19.23)(rollup@4.52.5)(typescript@5.8.3)(vite@4.5.14(@types/node@20.19.23)(lightningcss@1.30.2)(terser@5.44.0))
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)
-
-  libs/scheduler2:
-    dependencies:
-      '@types/uuid':
-        specifier: ^10.0.0
-        version: 10.0.0
-      date-fns:
-        specifier: ^3.0.0
-        version: 3.6.0
-      dayjs:
-        specifier: ^1.11.18
-        version: 1.11.18
-      typescript:
-        specifier: ~5.8.3
-        version: 5.8.3
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.23
-      terser:
-        specifier: ^5.44.0
-        version: 5.44.0
-      tsx:
-        specifier: ^4.0.0
-        version: 4.20.6
-      vite:
-        specifier: ^4.5.14
-        version: 4.5.14(@types/node@20.19.23)(lightningcss@1.30.2)(terser@5.44.0)
-      vite-plugin-dts:
-        specifier: ^4.5.4
-        version: 4.5.4(@types/node@20.19.23)(rollup@4.52.5)(typescript@5.8.3)(vite@4.5.14(@types/node@20.19.23)(lightningcss@1.30.2)(terser@5.44.0))
-      vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)
+        version: 3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6)
 
   onboarding-ui:
     dependencies:
@@ -297,9 +297,12 @@ importers:
       firebase:
         specifier: ^12.3.0
         version: 12.4.0
+      helios-scheduler:
+        specifier: workspace:*
+        version: link:../libs/helios-scheduler
       helios-ts:
         specifier: workspace:*
-        version: link:../helios-ts
+        version: link:../libs/helios-ts
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@18.3.1)
@@ -309,6 +312,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      shared-ui-library:
+        specifier: workspace:*
+        version: link:../shared-ui-library
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
@@ -439,7 +445,7 @@ importers:
         version: 4.21.2
       helios-ts:
         specifier: workspace:*
-        version: link:../../helios-ts
+        version: link:../../libs/helios-ts
       puppeteer:
         specifier: ^24.24.0
         version: 24.26.0(typescript@5.8.3)
@@ -11942,7 +11948,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1)(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6):
+  vitest@3.2.4(@types/node@20.19.23)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(terser@5.44.0)(tsx@4.20.6):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.4

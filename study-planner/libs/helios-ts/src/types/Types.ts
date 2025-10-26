@@ -4,7 +4,7 @@
 
 export type Multiplier = number;
 export type SubjectCode = string;
-export type { CurrentAffairsTaskType } from 'scheduler';
+export type { CurrentAffairsTaskType } from 'old-scheduler';
 
 export type RebalancingNeed =
   | { type: "NoRebalancingNeeded" }
@@ -41,7 +41,7 @@ export type ConfidenceLevel =
 export type SubjectConfidenceMap = Record<SubjectCode, ConfidenceLevel>;
 
 // Difficulty level of resources
-export type { DifficultyLevel } from 'scheduler';
+export type { DifficultyLevel } from 'old-scheduler';
 // Budget preference for resource selection
 export type BudgetPreference = "BudgetFree" | "BudgetLow" | "BudgetMedium" | "BudgetHigh";
 

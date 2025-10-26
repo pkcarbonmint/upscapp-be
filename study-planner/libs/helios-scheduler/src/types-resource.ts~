@@ -1,0 +1,40 @@
+export interface Resource {
+  resource_id: string; // UUID
+  resource_title: string;
+  resource_type: ResourceType;
+  resource_url?: string;
+  resource_description: string;
+  resource_subjects: string[];
+  difficulty_level: DifficultyLevel;
+  estimated_hours: number;
+  resource_priority: ResourcePriority;
+  resource_cost: ResourceCost;
+}
+
+export type ResourceType =
+  | "Book"
+  | "VideoLecture"
+  | "OnlineCourse"
+  | "PracticePaper"
+  | "CurrentAffairsSource"
+  | "RevisionNotes"
+  | "MockTest";
+
+export type ResourcePriority = "Essential" | "Recommended" | "Optional";
+
+export type ResourceCost =
+  | { type: "Free" }
+  | { type: "Paid", amount: number }
+  | { type: "Subscription", plan: string };
+
+// Current Affairs task types
+export type CurrentAffairsTaskType =
+  | { type: "CAReading" }
+  | { type: "CAQuiz" }
+  | { type: "CACompilation" }
+  | { type: "CARevision" }
+  | { type: "CASubjectSpecific"; subject: string }
+  | { type: "CAWeeklyTest" }
+  | { type: "CAMonthlyReview" }
+  | { type: "CAAnalysis" }
+  | { type: "CAEssayPractice" };
