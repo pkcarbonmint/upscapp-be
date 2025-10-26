@@ -41,77 +41,91 @@ export class StudentService {
 
   // Create student from onboarding data
   async createStudent(studentData: StudentCreationData): Promise<StudentCreationResponse> {
-    const response = await this.makeRequest<StudentCreationResponse>('/onboarding/students', {
+    const response = await this.makeRequest<any>('/onboarding/students', {
       method: 'POST',
       body: JSON.stringify(studentData),
     });
-    
-    if (response.success && response.data) {
-      return response.data;
+    // Support both wrapped { success, data } and direct payloads
+    if (response && typeof response === 'object') {
+      if ('success' in response) {
+        if (response.success && response.data) return response.data as StudentCreationResponse;
+        throw new Error('Failed to create student');
+      }
+      if ('student_id' in response) {
+        return response as StudentCreationResponse;
+      }
     }
-    
-    throw new Error('Failed to create student');
+    throw new Error('Failed to create student: unexpected response shape');
   }
 
   // Update student target year
   async updateStudentTarget(studentId: string, targetData: { target_year: number; start_date?: string }): Promise<void> {
-    const response = await this.makeRequest(`/onboarding/students/${studentId}/target`, {
+    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/target`, {
       method: 'PATCH',
       body: JSON.stringify(targetData),
     });
-    
-    if (!response.success) {
-      throw new Error('Failed to update student target');
+    // Accept either { success: true } or { updated: true }
+    if (response && typeof response === 'object') {
+      if ('success' in response) {
+        if (response.success) return;
+        throw new Error('Failed to update student target');
+      }
+      if ('updated' in response) {
+        if (response.updated) return;
+        throw new Error('Failed to update student target');
+      }
     }
+    throw new Error('Failed to update student target: unexpected response');
   }
 
   // Update student commitment
   async updateStudentCommitment(studentId: string, commitmentData: any): Promise<void> {
-    const response = await this.makeRequest(`/onboarding/students/${studentId}/commitment`, {
+    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/commitment`, {
       method: 'PATCH',
       body: JSON.stringify(commitmentData),
     });
-    
-    if (!response.success) {
-      throw new Error('Failed to update student commitment');
+    if (response && typeof response === 'object') {
+      if ('success' in response && response.success) return;
+      if ('updated' in response && response.updated) return;
     }
+    throw new Error('Failed to update student commitment');
   }
 
   // Update student confidence levels
   async updateStudentConfidence(studentId: string, confidenceData: any): Promise<void> {
-    const response = await this.makeRequest(`/onboarding/students/${studentId}/confidence`, {
+    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/confidence`, {
       method: 'PATCH',
       body: JSON.stringify(confidenceData),
     });
-    
-    if (!response.success) {
-      throw new Error('Failed to update student confidence');
+    if (response && typeof response === 'object') {
+      if ('success' in response && response.success) return;
+      if ('updated' in response && response.updated) return;
     }
+    throw new Error('Failed to update student confidence');
   }
 
   // Get student preview/plan
   async getStudentPreview(studentId: string): Promise<any> {
-    const response = await this.makeRequest(`/onboarding/students/${studentId}/preview`, {
+    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/preview`, {
       method: 'GET',
     });
-    
-    if (response.success && response.data) {
-      return response.data;
+    // Preview endpoint may return direct payload
+    if (response && typeof response === 'object') {
+      if ('success' in response && response.success && response.data) return response.data;
+      if ('preview' in response) return response;
     }
-    
     throw new Error('Failed to get student preview');
   }
 
   // Submit final application
   async submitStudentApplication(studentId: string): Promise<any> {
-    const response = await this.makeRequest(`/onboarding/students/${studentId}/submit`, {
+    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/submit`, {
       method: 'POST',
     });
-    
-    if (response.success && response.data) {
-      return response.data;
+    if (response && typeof response === 'object') {
+      if ('success' in response && response.success && response.data) return response.data;
+      if ('submitted' in response) return response;
     }
-    
     throw new Error('Failed to submit student application');
   }
 
