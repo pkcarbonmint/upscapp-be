@@ -293,7 +293,9 @@ function App() {
           break
       }
 
-      if (response && !response.success) {
+      // For student creation, response is the direct response object
+      // For other steps, response is { success: true }
+      if (response && typeof response === 'object' && 'success' in response && !response.success) {
         setSubmitError(response.error || 'Failed to submit step data')
         setIsSubmitting(false)
         return
