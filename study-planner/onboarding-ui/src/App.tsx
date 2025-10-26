@@ -236,9 +236,14 @@ function App() {
             commitment_data: formData.commitment
           };
           
-          response = await studentService.createStudent(studentData)
-          if (response.student_id) {
-            setStudentId(response.student_id)
+          // Create student and normalize response shape for unified handling below
+          const creation = await studentService.createStudent(studentData)
+          if (creation.student_id) {
+            setStudentId(creation.student_id)
+            // Ensure the common success check passes
+            response = { success: true }
+          } else {
+            throw new Error('Failed to create student')
           }
           break
         case 'OTPVerification':
