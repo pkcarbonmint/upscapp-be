@@ -298,7 +298,15 @@ function App() {
           break
       }
 
-      if (response && !response.success) {
+      // For Background step, check for student_id instead of success flag
+      // Other steps return { success: true }
+      if (currentStep === 'Background') {
+        if (response && !response.student_id) {
+          setSubmitError('Failed to create student - no student ID returned')
+          setIsSubmitting(false)
+          return
+        }
+      } else if (response && !response.success) {
         setSubmitError(response.error || 'Failed to submit step data')
         setIsSubmitting(false)
         return
