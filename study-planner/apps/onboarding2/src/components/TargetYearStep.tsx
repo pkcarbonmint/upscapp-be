@@ -235,13 +235,153 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               ))}
           </div>
           {plannedCycles.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Phases</div>
-              <ul style={{ margin: 0, paddingLeft: 18 }}>
-                {plannedCycles.map(c => (
-                  <li key={`${c.cycleType}-${c.startDate}`}>{getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}</li>
-                ))}
-              </ul>
+            <div style={{ marginTop: 24 }}>
+              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 16, fontSize: '16px' }}>
+                📚 Your Preparation Timeline
+              </div>
+              <div style={{ 
+                position: 'relative',
+                padding: '20px 0',
+                overflow: 'auto'
+              }}>
+                {/* Timeline Container */}
+                <div style={{
+                  display: 'flex',
+                  gap: '0',
+                  position: 'relative',
+                  minWidth: 'fit-content'
+                }}>
+                  {plannedCycles.map((cycle, index) => {
+                    const startDate = dayjs(cycle.startDate);
+                    const endDate = dayjs(cycle.endDate);
+                    const durationDays = endDate.diff(startDate, 'day');
+                    const durationWeeks = Math.ceil(durationDays / 7);
+                    
+                    return (
+                      <div
+                        key={`${cycle.cycleType}-${cycle.startDate}`}
+                        style={{
+                          flex: `0 0 ${Math.max(120, durationWeeks * 8)}px`,
+                          position: 'relative',
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }}
+                      >
+                        {/* Timeline Bar */}
+                        <div style={{
+                          background: `linear-gradient(135deg, 
+                            ${index % 4 === 0 ? '#0078D4' : 
+                              index % 4 === 1 ? '#00BCF2' : 
+                              index % 4 === 2 ? '#8661C5' : '#00B7C3'}, 
+                            ${index % 4 === 0 ? '#106EBE' : 
+                              index % 4 === 1 ? '#00A2D4' : 
+                              index % 4 === 2 ? '#744DA9' : '#009CA4'})`,
+                          borderRadius: '8px',
+                          padding: '12px',
+                          minHeight: '80px',
+                          color: 'white',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+                          transition: 'all 0.3s ease',
+                          cursor: 'pointer',
+                          position: 'relative',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-4px)';
+                          e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.25)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
+                        }}
+                        >
+                          {/* Cycle Badge */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            background: 'rgba(255, 255, 255, 0.3)',
+                            borderRadius: '12px',
+                            padding: '2px 8px',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                          }}>
+                            {cycle.cycleType}
+                          </div>
+                          
+                          {/* Cycle Name */}
+                          <div style={{
+                            fontSize: '13px',
+                            fontWeight: '700',
+                            marginBottom: '8px',
+                            lineHeight: '1.3',
+                            paddingRight: '50px',
+                          }}>
+                            {getCycleDescription(cycle.cycleType)}
+                          </div>
+                          
+                          {/* Duration */}
+                          <div style={{
+                            fontSize: '11px',
+                            opacity: 0.9,
+                            marginTop: 'auto',
+                          }}>
+                            ⏱️ {durationWeeks} week{durationWeeks !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+                        
+                        {/* Date Labels */}
+                        <div style={{
+                          marginTop: '8px',
+                          fontSize: '11px',
+                          color: 'var(--ms-blue)',
+                          fontWeight: '500',
+                        }}>
+                          <div>{startDate.format('MMM D, YYYY')}</div>
+                          {index === plannedCycles.length - 1 && (
+                            <div style={{ marginTop: '4px', color: '#666' }}>
+                              → {endDate.format('MMM D, YYYY')}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Arrow Connector */}
+                        {index < plannedCycles.length - 1 && (
+                          <div style={{
+                            position: 'absolute',
+                            right: '-12px',
+                            top: '40px',
+                            width: '24px',
+                            height: '24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 10,
+                            color: 'var(--ms-blue)',
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                          }}>
+                            →
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Summary */}
+                <div style={{
+                  marginTop: '20px',
+                  padding: '12px',
+                  background: 'rgba(0, 120, 212, 0.08)',
+                  borderRadius: '6px',
+                  fontSize: '13px',
+                  color: 'var(--ms-blue)',
+                  fontWeight: '500',
+                }}>
+                  <strong>Total Journey:</strong> {plannedCycles.length} phase{plannedCycles.length !== 1 ? 's' : ''} • 
+                  From {dayjs(plannedCycles[0]?.startDate).format('MMM YYYY')} to {dayjs(plannedCycles[plannedCycles.length - 1]?.endDate).format('MMM YYYY')}
+                </div>
+              </div>
             </div>
           )}
         </div>
