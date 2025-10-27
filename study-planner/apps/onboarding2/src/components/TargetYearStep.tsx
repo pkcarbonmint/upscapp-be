@@ -87,41 +87,6 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     }
   }, [formData.targetYear, formData.commitment]);
 
-  const getCyclesForYear = (year: string) => {
-    const target = parseInt(year);
-    const start = dayjs(formData.targetYear.startDate || new Date());
-    try {
-      const prelims = dayjs(`${target}-05-20`);
-      const mains = dayjs(`${target}-09-20`);
-      return planCycles({
-        optionalSubject: {
-          subjectCode: formData.commitment.upscOptionalSubject,
-          subjectNname: 'Optional',
-          examFocus: 'MainsOnly',
-          topics: [],
-          baselineMinutes: 0
-        },
-        startDate: start,
-        targetYear: target,
-        prelimsExamDate: prelims,
-        mainsExamDate: mains,
-        constraints: {
-          optionalSubjectCode: formData.commitment.upscOptionalSubject,
-          confidenceMap: {},
-          optionalFirst: formData.commitment.optionalFirst,
-          catchupDay: 6,
-          testDay: 0,
-          workingHoursPerDay: formData.commitment.timeCommitment,
-          breaks: [],
-          testMinutes: formData.commitment.testMinutes,
-        },
-        subjects: [],
-        relativeAllocationWeights: {}
-      }).schedules;
-    } catch {
-      return [];
-    }
-  };
 
   return (
     <StepLayout
@@ -130,57 +95,74 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       description="Select when you want to appear for the UPSC exam"
     >
       <div className="choice-grid choice-grid-3">
-        {yearOptions.map((option) => (
-          <div
-            key={option.year}
-            style={{
-              background: 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-teal) 100%)',
-              color: 'var(--ms-white)',
-              borderRadius: '12px',
-              padding: '24px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              border: formData.targetYear.targetYear === option.year 
-                ? '2px solid var(--ms-white)' 
-                : '2px solid transparent',
-              transform: formData.targetYear.targetYear === option.year 
-                ? 'translateY(-2px)' 
-                : 'translateY(0)',
-              boxShadow: formData.targetYear.targetYear === option.year 
-                ? '0 8px 16px rgba(0, 120, 212, 0.25)' 
-                : '0 4px 8px rgba(0, 120, 212, 0.15)'
-            }}
-            onClick={() => handleYearSelect(option.year)}
-          >
-            <div 
+        {yearOptions.map((option) => {
+          const isSelected = formData.targetYear.targetYear === option.year;
+          return (
+            <div
+              key={option.year}
+              role="button"
+              aria-selected={isSelected}
               style={{
-                fontSize: '32px',
-                fontWeight: '600',
-                marginBottom: '16px',
-                textAlign: 'center'
+                position: 'relative',
+                background: isSelected
+                  ? 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-teal) 100%)'
+                  : 'var(--ms-blue-light)',
+                color: isSelected ? 'var(--ms-white)' : 'var(--ms-blue)',
+                borderRadius: '12px',
+                padding: '24px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                border: isSelected ? '3px solid var(--ms-white)' : '2px solid transparent',
+                transform: isSelected ? 'translateY(-3px) scale(1.02)' : 'translateY(0) scale(1)',
+                boxShadow: isSelected
+                  ? '0 10px 20px rgba(0, 120, 212, 0.35)'
+                  : '0 3px 8px rgba(0, 120, 212, 0.15)'
               }}
+              onClick={() => handleYearSelect(option.year)}
             >
-              {option.year}
+              {isSelected && (
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '999px',
+                    background: 'var(--ms-white)',
+                    color: 'var(--ms-blue)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                  }}
+                >
+                  ✓
+                </div>
+              )}
+              <div 
+                style={{
+                  fontSize: '32px',
+                  fontWeight: '700',
+                  marginBottom: '16px',
+                  textAlign: 'center'
+                }}
+              >
+                {option.year}
+              </div>
+              <div 
+                style={{
+                  fontSize: '14px',
+                  opacity: isSelected ? 0.95 : 0.9,
+                  textAlign: 'center'
+                }}
+              >
+                ⏱️ {option.months} months remaining
+              </div>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '16px' }}>
-              {getCyclesForYear(option.year).map(c => (
-                <span key={`${option.year}-${c.cycleType}-${c.startDate}`}
-                  style={{ background: 'rgba(255,255,255,0.2)', padding: '6px 10px', borderRadius: '999px', fontSize: '12px' }}>
-                  {getCycleDescription(c.cycleType)}
-                </span>
-              ))}
-            </div>
-            <div 
-              style={{
-                fontSize: '12px',
-                opacity: 0.9,
-                textAlign: 'center'
-              }}
-            >
-              ⏱️ {option.months} months remaining
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       
       {formData.targetYear.targetYear && (
