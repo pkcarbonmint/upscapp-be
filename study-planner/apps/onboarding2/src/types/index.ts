@@ -36,6 +36,12 @@ export interface Commitment {
   testMinutes: number;
 }
 
+export interface Preferences {
+  catchupDay: string;
+  testDay: string;
+  prioritizeOptionalSubject: boolean;
+}
+
 export interface ConfidenceLevel {
   [key: string]: number;
 }
@@ -60,6 +66,7 @@ export interface OnboardingFormData {
   personalInfo: PersonalInfo;
   targetYear: TargetYear;
   commitment: Commitment;
+  preferences: Preferences;
   confidenceLevel: ConfidenceLevel;
   preview: StudyPlanPreview;
   payment: Payment;
@@ -69,6 +76,7 @@ export type OnboardingStep =
   | 'personal-info'
   | 'target-year'
   | 'commitment'
+  | 'preferences'
   | 'confidence'
   | 'preview'
   | 'payment'
@@ -107,6 +115,12 @@ export interface StudyApproachOption {
 
 // Focus combo options
 export interface FocusComboOption {
+  value: string;
+  label: string;
+}
+
+// Weekday options for preferences
+export interface WeekdayOption {
   value: string;
   label: string;
 }

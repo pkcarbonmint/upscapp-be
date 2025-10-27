@@ -24,6 +24,13 @@ export class OnboardingService {
     await new Promise(resolve => setTimeout(resolve, 500));
   }
 
+  // Placeholder for preferences submission
+  static async submitPreferences(data: OnboardingFormData['preferences']): Promise<void> {
+    console.log('📤 [PLACEHOLDER] Submitting preferences:', data);
+    // TODO: Replace with actual API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+
   // Placeholder for step 4 submission
   static async submitConfidenceLevel(data: OnboardingFormData['confidenceLevel']): Promise<void> {
     console.log('📤 [PLACEHOLDER] Submitting confidence level:', data);

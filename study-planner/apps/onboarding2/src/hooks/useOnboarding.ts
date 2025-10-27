@@ -37,6 +37,11 @@ const initialFormData: OnboardingFormData = {
     catchupDayPreference: 'Saturday',
     testMinutes: 180
   },
+  preferences: {
+    catchupDay: 'Saturday',
+    testDay: 'Sunday',
+    prioritizeOptionalSubject: false
+  },
   confidenceLevel: {},
   preview: {
     raw_helios_data: {},
@@ -57,6 +62,7 @@ const initialFormData: OnboardingFormData = {
 const steps: OnboardingStep[] = [
   'personal-info',
   'commitment',
+  'preferences',
   'confidence',
   'target-year',
   'preview',
@@ -87,6 +93,8 @@ export function useOnboarding() {
                formData.personalInfo.graduationStream;
       case 'commitment':
         return formData.commitment.timeCommitment > 0;
+      case 'preferences':
+        return formData.preferences.catchupDay && formData.preferences.testDay;
       case 'confidence':
         return Object.keys(formData.confidenceLevel).length >= 12; // At least 12 subjects rated
       case 'target-year':
@@ -114,6 +122,9 @@ export function useOnboarding() {
           break;
         case 'commitment':
           await OnboardingService.submitCommitment(formData.commitment);
+          break;
+        case 'preferences':
+          await OnboardingService.submitPreferences(formData.preferences);
           break;
         case 'confidence':
           await OnboardingService.submitConfidenceLevel(formData.confidenceLevel);
