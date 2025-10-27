@@ -134,21 +134,25 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           <div
             key={option.year}
             style={{
-              background: 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-teal) 100%)',
-              color: 'var(--ms-white)',
+              background: formData.targetYear.targetYear === option.year 
+                ? 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-teal) 100%)'
+                : 'var(--ms-white)',
+              color: formData.targetYear.targetYear === option.year 
+                ? 'var(--ms-white)' 
+                : 'var(--ms-gray-130)',
               borderRadius: '12px',
               padding: '24px',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               border: formData.targetYear.targetYear === option.year 
-                ? '2px solid var(--ms-white)' 
-                : '2px solid transparent',
+                ? '2px solid var(--ms-blue)' 
+                : '2px solid var(--ms-gray-40)',
               transform: formData.targetYear.targetYear === option.year 
                 ? 'translateY(-2px)' 
                 : 'translateY(0)',
               boxShadow: formData.targetYear.targetYear === option.year 
                 ? '0 8px 16px rgba(0, 120, 212, 0.25)' 
-                : '0 4px 8px rgba(0, 120, 212, 0.15)'
+                : '0 2px 4px rgba(0, 0, 0, 0.08)'
             }}
             onClick={() => handleYearSelect(option.year)}
           >
@@ -156,28 +160,21 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               style={{
                 fontSize: '32px',
                 fontWeight: '600',
-                marginBottom: '16px',
+                marginBottom: '12px',
                 textAlign: 'center'
               }}
             >
               {option.year}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '16px' }}>
-              {getCyclesForYear(option.year).map(c => (
-                <span key={`${option.year}-${c.cycleType}-${c.startDate}`}
-                  style={{ background: 'rgba(255,255,255,0.2)', padding: '6px 10px', borderRadius: '999px', fontSize: '12px' }}>
-                  {getCycleDescription(c.cycleType)}
-                </span>
-              ))}
-            </div>
             <div 
               style={{
-                fontSize: '12px',
+                fontSize: '14px',
                 opacity: 0.9,
-                textAlign: 'center'
+                textAlign: 'center',
+                fontWeight: '500'
               }}
             >
-              ⏱️ {option.months} months remaining
+              ⏱️ {option.months} months available
             </div>
           </div>
         ))}
