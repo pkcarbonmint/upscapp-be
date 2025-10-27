@@ -55,7 +55,7 @@ from .exceptions import (
     response_validation_exception_handler,
     unhandled_exception_handler,
 )
-from .utils import log_request_middleware
+from .utils import LoggingMiddleware
 
 
 @asynccontextmanager
@@ -110,7 +110,8 @@ app.add_middleware(
     allow_headers=settings.CORS_HEADERS,
 )
 
-app.middleware("http")(log_request_middleware)
+# Use robust ASGI logging middleware to avoid "No response returned" issues
+app.add_middleware(LoggingMiddleware)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 app.add_exception_handler(
     ResponseValidationError, response_validation_exception_handler
