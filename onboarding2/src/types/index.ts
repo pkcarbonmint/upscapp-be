@@ -49,12 +49,20 @@ export interface StudyPlanPreview {
   studyPlanId: string | null;
 }
 
+export interface Payment {
+  paymentLink: string | null;
+  paymentStatus: 'pending' | 'processing' | 'completed' | 'failed';
+  selectedPlan: string;
+  amount: number;
+}
+
 export interface OnboardingFormData {
   personalInfo: PersonalInfo;
   targetYear: TargetYear;
   commitment: Commitment;
   confidenceLevel: ConfidenceLevel;
   preview: StudyPlanPreview;
+  payment: Payment;
 }
 
 export type OnboardingStep = 
@@ -63,6 +71,7 @@ export type OnboardingStep =
   | 'commitment'
   | 'confidence'
   | 'preview'
+  | 'payment'
   | 'complete';
 
 export interface StepProps {

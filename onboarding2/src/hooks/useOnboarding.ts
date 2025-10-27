@@ -43,6 +43,12 @@ const initialFormData: OnboardingFormData = {
       prelimsToMainsDate: null
     },
     studyPlanId: null
+  },
+  payment: {
+    paymentLink: null,
+    paymentStatus: 'pending',
+    selectedPlan: '',
+    amount: 0
   }
 };
 
@@ -52,6 +58,7 @@ const steps: OnboardingStep[] = [
   'confidence',
   'target-year',
   'preview',
+  'payment',
   'complete'
 ];
 
@@ -84,6 +91,8 @@ export function useOnboarding() {
         return formData.targetYear.targetYear;
       case 'preview':
         return true;
+      case 'payment':
+        return formData.payment.selectedPlan;
       default:
         return true;
     }
@@ -111,6 +120,8 @@ export function useOnboarding() {
           await OnboardingService.submitTargetYear(formData.targetYear);
           break;
         case 'preview':
+          break;
+        case 'payment':
           await OnboardingService.submitComplete(formData);
           break;
       }
@@ -124,6 +135,12 @@ export function useOnboarding() {
         if (steps[currentIndex + 1] === 'preview') {
           const preview = await OnboardingService.generatePreview(formData);
           updateFormData({ preview });
+        }
+        
+        // Generate payment link when moving to payment step
+        if (steps[currentIndex + 1] === 'payment') {
+          const paymentData = await OnboardingService.generatePaymentLink(formData);
+          updateFormData({ payment: paymentData });
         }
       }
     } catch (err) {

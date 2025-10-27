@@ -47,6 +47,7 @@ src/
 │   ├── CommitmentStep.tsx
 │   ├── ConfidenceStep.tsx
 │   ├── PreviewStep.tsx
+│   ├── PaymentStep.tsx
 │   ├── CompleteStep.tsx
 │   └── Navigation.tsx
 ├── hooks/              # Custom React hooks
@@ -69,7 +70,8 @@ src/
 3. **Confidence Assessment**: Subject-wise confidence rating
 4. **Target Year**: UPSC exam target year selection (2026, 2027, 2028)
 5. **Preview**: Generated study plan overview
-6. **Complete**: Success confirmation and next steps
+6. **Payment**: Plan selection and secure payment processing
+7. **Complete**: Success confirmation and next steps
 
 ## API Integration
 
@@ -79,6 +81,7 @@ The app includes placeholder callbacks for server integration:
 - `OnboardingService.submitCommitment()`
 - `OnboardingService.submitConfidenceLevel()`
 - `OnboardingService.submitTargetYear()`
+- `OnboardingService.generatePaymentLink()`
 - `OnboardingService.submitComplete()`
 
 Each step automatically calls the appropriate service method when the user proceeds.

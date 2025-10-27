@@ -6,6 +6,7 @@ import TargetYearStep from '@/components/TargetYearStep';
 import CommitmentStep from '@/components/CommitmentStep';
 import ConfidenceStep from '@/components/ConfidenceStep';
 import PreviewStep from '@/components/PreviewStep';
+import PaymentStep from '@/components/PaymentStep';
 import CompleteStep from '@/components/CompleteStep';
 import Navigation from '@/components/Navigation';
 
@@ -42,6 +43,8 @@ function App() {
         return <TargetYearStep {...stepProps} />;
       case 'preview':
         return <PreviewStep {...stepProps} />;
+      case 'payment':
+        return <PaymentStep {...stepProps} />;
       case 'complete':
         return <CompleteStep {...stepProps} />;
       default:
@@ -56,14 +59,15 @@ function App() {
       'confidence': 3,
       'target-year': 4,
       'preview': 5,
-      'complete': 6
+      'payment': 6,
+      'complete': 7
     };
     return stepMap[currentStep] || 1;
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--ms-gray-10)' }}>
-      <Header currentStep={getStepNumber()} totalSteps={6} />
+      <Header currentStep={getStepNumber()} totalSteps={7} />
       <ProgressBar progress={progress} />
       
       <main style={{ padding: '24px 0', minHeight: 'calc(100vh - 200px)' }}>
@@ -88,7 +92,7 @@ function App() {
           {currentStep !== 'complete' && (
             <Navigation
               currentStep={getStepNumber()}
-              totalSteps={6}
+              totalSteps={7}
               canGoNext={canGoNext as boolean}
               canGoPrevious={getStepNumber() > 1}
               isSubmitting={isSubmitting}
