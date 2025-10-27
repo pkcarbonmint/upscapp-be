@@ -6,28 +6,28 @@ import { OnboardingService } from '@/services/onboardingService';
 
 const initialFormData: OnboardingFormData = {
   personalInfo: {
-    fullName: 'Test Student',
-    email: 'test@example.com',
-    phoneNumber: '+91 99999 99999',
-    presentLocation: 'New Delhi',
+    fullName: 'Priya Sharma',
+    email: 'priya.sharma@example.com',
+    phoneNumber: '+91 98765 43210',
+    presentLocation: 'Bangalore',
     graduationStream: 'engineering',
-    collegeUniversity: 'IIT Delhi',
+    collegeUniversity: 'National Institute of Technology',
     yearOfPassing: 2023,
-    about: 'Quick walkthrough profile'
+    about: 'Passionate about public service and making a difference in governance. Strong analytical skills and keen interest in current affairs.'
   },
   targetYear: {
-    targetYear: String(new Date().getFullYear() + 2),
+    targetYear: String(new Date().getFullYear() + 1),
     startDate: new Date()
   },
   commitment: {
     timeCommitment: 6,
     performance: {
-      history: '',
-      polity: '',
-      economy: '',
-      geography: '',
-      environment: '',
-      scienceTech: ''
+      history: 'average',
+      polity: 'good',
+      economy: 'average',
+      geography: 'good',
+      environment: 'average',
+      scienceTech: 'good'
     },
     studyPreference: 'WeakSubjectsFirst',
     subjectApproach: 'DualSubject',
@@ -159,14 +159,17 @@ export function useOnboarding() {
     }
   }, [getCurrentStepIndex]);
 
-  // Prefill confidence to 'average' (3 stars) for all subjects from helios-ts
+  // Prefill confidence with varied ratings for all subjects from helios-ts
   useEffect(() => {
     if (Object.keys(formData.confidenceLevel).length === 0) {
       (async () => {
         try {
           const subjects = await loadAllSubjects(formData.commitment.upscOptionalSubject);
-          const defaults = subjects.reduce<Record<string, number>>((acc, subject) => {
-            acc[subject.subjectCode] = 3; // Average by default
+          const defaults = subjects.reduce<Record<string, number>>((acc, subject, index) => {
+            // Add some variety: alternate between 2, 3, and 4 stars for realistic walkthrough
+            // Make some subjects stronger and some weaker
+            const ratings = [3, 4, 2, 3, 4, 3, 2, 4, 3, 3, 4, 2];
+            acc[subject.subjectCode] = ratings[index % ratings.length];
             return acc;
           }, {});
           setFormData(prev => ({ ...prev, confidenceLevel: defaults }));
