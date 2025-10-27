@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StepProps, TimeCommitmentOption } from '@/types';
 import StepLayout from './StepLayout';
-import { getAllOptionalSubjects, type Subject } from 'helios-ts';
+import { type Subject } from 'helios-ts';
+
 
 const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const timeCommitmentOptions: TimeCommitmentOption[] = [
@@ -21,16 +22,10 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     });
   };
 
-  const getArchetype = (hours: number) => {
-    if (hours >= 8) return 'Full-time Dedicated';
-    if (hours >= 6) return 'Serious Aspirant';
-    return 'Part-time Learner';
-  };
-
   return (
     <StepLayout
       icon="⏰"
-      title="Study Commitment"
+      title="Study Commitment" 
       description="How many hours can you dedicate to studying daily?"
     >
       <div style={{ marginBottom: 16 }}>
@@ -139,7 +134,7 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               background: 'var(--ms-white)',
               border: '1px solid var(--ms-gray-40)',
               borderRadius: '12px',
-              padding: '24px',
+              padding: '12px',
               marginTop: '24px'
             }}
           >
@@ -321,6 +316,7 @@ function Options() {
   useEffect(() => {
     (async () => {
       try {
+        const { getAllOptionalSubjects } = await import('helios-ts');
         const list = await getAllOptionalSubjects();
         setOptions(list);
       } catch {

@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import ProgressBar from '@/components/ProgressBar';
 import PersonalInfoStep from '@/components/PersonalInfoStep';
 import TargetYearStep from '@/components/TargetYearStep';
-import CommitmentStep from '@/components/CommitmentStep';
+import CommitmentStep from '@/components/StudyPreferencesStep';
 import ConfidenceStep from '@/components/ConfidenceStep';
 import PreviewStep from '@/components/PreviewStep';
 import PaymentStep from '@/components/PaymentStep';

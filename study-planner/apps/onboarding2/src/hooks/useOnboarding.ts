@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { OnboardingFormData, OnboardingStep } from '@/types';
 // Load subjects from helios-ts so we can prefill confidence to 'average'
-import { loadAllSubjects } from 'helios-ts';
 import { OnboardingService } from '@/services/onboardingService';
 
 const initialFormData: OnboardingFormData = {
@@ -164,6 +163,7 @@ export function useOnboarding() {
     if (Object.keys(formData.confidenceLevel).length === 0) {
       (async () => {
         try {
+          const { loadAllSubjects } = await import('helios-ts');
           const subjects = await loadAllSubjects(formData.commitment.upscOptionalSubject);
           const defaults = subjects.reduce<Record<string, number>>((acc, subject) => {
             acc[subject.subjectCode] = 3; // Average by default

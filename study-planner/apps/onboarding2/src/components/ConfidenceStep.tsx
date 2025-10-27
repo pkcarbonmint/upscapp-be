@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
-import { loadAllSubjects, type Subject } from 'helios-ts';
+import { type Subject } from 'helios-ts';
 
 const starStyle: React.CSSProperties = {
   cursor: 'pointer',
@@ -21,6 +21,7 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     let mounted = true;
     (async () => {
       try {
+        const { loadAllSubjects } = await import('helios-ts');
         const subs = await loadAllSubjects(formData.commitment.upscOptionalSubject);
         if (mounted) setSubjects(subs);
       } finally {
