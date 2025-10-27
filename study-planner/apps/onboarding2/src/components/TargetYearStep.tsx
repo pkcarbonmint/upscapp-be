@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
+import dayjs from 'dayjs';
+import { planCycles } from 'helios-scheduler/plan-cycles';
+import type { PlanningContext, PlannerConstraints, CycleSchedule } from 'helios-scheduler/types';
+import { S2WeekDay } from 'helios-scheduler/types';
 
 const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
+  const [cycles, setCycles] = useState<CycleSchedule[] | null>(null);
+  const [scenario, setScenario] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const handleYearSelect = (year: string) => {
     updateFormData({
       targetYear: {
@@ -32,6 +40,54 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       probability: '85%'
     }
   ];
+
+  const constraints: PlannerConstraints = useMemo(() => ({
+    optionalSubjectCode: formData.commitment.upscOptionalSubject,
+    confidenceMap: {},
+    optionalFirst: formData.commitment.optionalFirst,
+    catchupDay: S2WeekDay.Saturday,
+    testDay: S2WeekDay.Sunday,
+    workingHoursPerDay: Math.max(4, Math.min(10, formData.commitment.timeCommitment)),
+    breaks: [],
+    testMinutes: formData.commitment.testMinutes,
+  }), [formData.commitment]);
+
+  useEffect(() => {
+    async function computeCycles() {
+      setError(null);
+      setCycles(null);
+      setScenario(null);
+      const targetYearNum = parseInt(formData.targetYear.targetYear || '0', 10);
+      if (!targetYearNum) return;
+
+      const startDateStr = formData.targetYear.startDate
+        ? new Date(formData.targetYear.startDate).toISOString().slice(0, 10)
+        : dayjs().format('YYYY-MM-DD');
+
+      const prelimsExamDate = dayjs(`${targetYearNum}-05-28`);
+      const mainsExamDate = dayjs(`${targetYearNum}-09-15`);
+
+      const context: PlanningContext = {
+        optionalSubject: { subjectCode: formData.commitment.upscOptionalSubject, subjectNname: 'Optional', examFocus: 'BothExams', topics: [], baselineMinutes: 0 },
+        startDate: dayjs(startDateStr),
+        targetYear: targetYearNum,
+        prelimsExamDate,
+        mainsExamDate,
+        constraints,
+        subjects: [],
+        relativeAllocationWeights: {},
+      } as any;
+
+      try {
+        const result = planCycles(context);
+        setCycles(result.schedules);
+        setScenario(result.scenario);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to compute cycles');
+      }
+    }
+    computeCycles();
+  }, [formData.targetYear.targetYear, formData.targetYear.startDate, constraints, formData.commitment.upscOptionalSubject]);
 
   return (
     <StepLayout
@@ -185,6 +241,28 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                   </div>
                 </React.Fragment>
               ))}
+          </div>
+
+          {/* Computed cycles using helios-scheduler */}
+          <div style={{ marginTop: '16px' }}>
+            <div style={{ fontWeight: 600, marginBottom: '8px', color: 'var(--ms-blue)' }}>
+              {scenario ? `Computed Scenario: ${scenario}` : 'Computing cycles...'}
+            </div>
+            {error && (
+              <div style={{ color: 'red', marginBottom: '8px' }}>{error}</div>
+            )}
+            {cycles && cycles.length > 0 && (
+              <div className="form-grid form-grid-3" style={{ marginTop: '8px' }}>
+                {cycles.map((c, idx) => (
+                  <div key={`${c.cycleType}-${idx}`} style={{ background: 'var(--ms-white)', padding: '12px', borderRadius: '4px' }}>
+                    <strong>{c.cycleType}</strong>
+                    <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                      {c.startDate} → {c.endDate}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
