@@ -29,26 +29,17 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     });
   };
 
-  const yearOptions = [
-    {
-      year: '2026',
-      months: 16,
-      intensity: 'High (8-10 hrs/day)',
-      probability: '65%'
-    },
-    {
-      year: '2027', 
-      months: 28,
-      intensity: 'Moderate (6-8 hrs/day)',
-      probability: '78%'
-    },
-    {
-      year: '2028',
-      months: 40,
-      intensity: 'Comfortable (4-6 hrs/day)', 
-      probability: '85%'
-    }
-  ];
+  const yearOptions = useMemo(() => {
+    const today = dayjs();
+    return ['2026', '2027', '2028'].map(year => {
+      const prelimsDate = dayjs(`${year}-05-20`);
+      const months = Math.max(0, prelimsDate.diff(today, 'month'));
+      return {
+        year,
+        months
+      };
+    });
+  }, []);
 
   const plannedCycles = useMemo(() => {
     const target = parseInt(formData.targetYear.targetYear || String(new Date().getFullYear() + 2));
@@ -207,42 +198,21 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             <span>📊</span>
             <span>Your Preparation Analysis</span>
           </div>
-          <div className="form-grid form-grid-3" style={{ marginTop: '12px' }}>
+          <div style={{ marginTop: '12px' }}>
             {yearOptions
               .filter(option => option.year === formData.targetYear.targetYear)
               .map(option => (
-                <React.Fragment key={option.year}>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Time Available:</strong><br />
-                    {option.months} months
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Recommended Intensity:</strong><br />
-                    {option.intensity}
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Success Probability:</strong><br />
-                    {option.probability}
-                  </div>
-                </React.Fragment>
+                <div 
+                  key={option.year}
+                  style={{
+                    background: 'var(--ms-white)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    fontSize: '16px'
+                  }}
+                >
+                  <strong>Time Available:</strong> {option.months} months until Prelims (May 20, {option.year})
+                </div>
               ))}
           </div>
           {plannedCycles.length > 0 && (
