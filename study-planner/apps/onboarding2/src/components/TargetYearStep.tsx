@@ -20,6 +20,21 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     }
   };
 
+  const getCycleColor = (cycleType: string) => {
+    switch (cycleType) {
+      case 'C1': return '#2F6FED';
+      case 'C2': return '#1B9AAA';
+      case 'C3': return '#8E6CFF';
+      case 'C4': return '#F77062';
+      case 'C5': return '#FF9F1C';
+      case 'C5.b': return '#F94144';
+      case 'C6': return '#2A9D8F';
+      case 'C7': return '#E76F51';
+      case 'C8': return '#264653';
+      default: return '#6C757D';
+    }
+  };
+
   const handleYearSelect = (year: string) => {
     updateFormData({
       targetYear: {
@@ -234,16 +249,89 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 </React.Fragment>
               ))}
           </div>
-          {plannedCycles.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Phases</div>
-              <ul style={{ margin: 0, paddingLeft: 18 }}>
-                {plannedCycles.map(c => (
-                  <li key={`${c.cycleType}-${c.startDate}`}>{getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {plannedCycles.length > 0 && (() => {
+            const parsed = plannedCycles
+              .map((c: any) => ({
+                ...c,
+                start: dayjs(c.startDate),
+                end: dayjs(c.endDate)
+              }))
+              .sort((a: any, b: any) => a.start.valueOf() - b.start.valueOf());
+            const earliest = parsed[0].start;
+            const latest = parsed.reduce((acc: any, c: any) => (c.end.isAfter(acc) ? c.end : acc), parsed[0].end);
+            const totalDays = Math.max(latest.diff(earliest, 'day', true), 1);
+            const segments = parsed.map((c: any) => {
+              const offsetDays = Math.max(c.start.diff(earliest, 'day', true), 0);
+              const durationDays = Math.max(c.end.diff(c.start, 'day', true), 1);
+              const leftPercent = (offsetDays / totalDays) * 100;
+              const widthPercent = Math.max((durationDays / totalDays) * 100, 2);
+              return {
+                key: `${c.cycleType}-${c.startDate}`,
+                label: getCycleDescription(c.cycleType),
+                leftPercent,
+                widthPercent,
+                color: getCycleColor(c.cycleType),
+                startLabel: c.start.format('MMM D'),
+                endLabel: c.end.format('MMM D')
+              };
+            });
+            return (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Timeline</div>
+                <div
+                  style={{
+                    position: 'relative',
+                    height: 56,
+                    background: 'var(--ms-white)',
+                    border: '1px dashed var(--ms-blue)',
+                    borderRadius: 8,
+                    overflow: 'hidden'
+                  }}
+                >
+                  {segments.map((seg: any) => (
+                    <div
+                      key={seg.key}
+                      title={`${seg.label}: ${seg.startLabel} → ${seg.endLabel}`}
+                      style={{
+                        position: 'absolute',
+                        top: 8,
+                        left: `${seg.leftPercent}%`,
+                        width: `calc(${seg.widthPercent}% - 2px)`,
+                        height: 40,
+                        background: seg.color,
+                        color: '#fff',
+                        borderRadius: 6,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        padding: '0 8px'
+                      }}
+                    >
+                      {seg.label}
+                    </div>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginTop: 6,
+                    fontSize: 12,
+                    color: 'var(--ms-blue)'
+                  }}
+                >
+                  <span>{earliest.format('MMM D, YYYY')}</span>
+                  <span>{latest.format('MMM D, YYYY')}</span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </StepLayout>
