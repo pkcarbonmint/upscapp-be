@@ -281,50 +281,24 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 <div
                   style={{
                     background: 'var(--ms-white)',
-                    border: '1px dashed var(--ms-blue)',
+                    border: '1px solid #e5e7eb',
                     borderRadius: 8,
-                    padding: 12
+                    padding: 16
                   }}
                 >
                   <div
                     style={{
                       maxHeight: 360,
                       overflowY: 'auto',
-                      position: 'relative',
-                      paddingLeft: 24
+                      position: 'relative'
                     }}
                   >
-                    {/* vertical guide line */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        left: 8,
-                        top: 0,
-                        bottom: 0,
-                        width: 2,
-                        background: 'repeating-linear-gradient(\n                          to bottom,\n                          var(--ms-blue),\n                          var(--ms-blue) 6px,\n                          transparent 6px,\n                          transparent 12px\n                        )',
-                        opacity: 0.35
-                      }}
-                    />
                     {segments.map((seg: any) => (
-                      <div key={seg.key} style={{ position: 'relative', marginBottom: 16 }}>
-                        {/* dot */}
-                        <div
-                          style={{
-                            position: 'absolute',
-                            left: -10,
-                            top: 4,
-                            width: 10,
-                            height: 10,
-                            borderRadius: '50%',
-                            background: seg.color,
-                            boxShadow: '0 0 0 2px #fff'
-                          }}
-                        />
+                      <div key={seg.key} style={{ marginBottom: 20 }}>
                         {/* label and dates */}
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                          <div style={{ fontWeight: 700, color: '#1f2937' }}>{seg.label}</div>
-                          <div style={{ fontSize: 12, color: 'var(--ms-blue)' }}>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 8 }}>
+                          <div style={{ fontWeight: 700, color: seg.color, fontSize: '16px' }}>{seg.label}</div>
+                          <div style={{ fontSize: 12, color: '#6b7280' }}>
                             {seg.startLabel} — {seg.endLabel}
                           </div>
                         </div>
@@ -333,10 +307,9 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                           title={`${seg.label}: ${seg.startLabel} → ${seg.endLabel}`}
                           style={{
                             position: 'relative',
-                            height: 10,
-                            marginTop: 6,
-                            background: '#f5f7fa',
-                            border: '1px dashed var(--ms-blue)',
+                            height: 12,
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
                             borderRadius: 6,
                             overflow: 'hidden'
                           }}
