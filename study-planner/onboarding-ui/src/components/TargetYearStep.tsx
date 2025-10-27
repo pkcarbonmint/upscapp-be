@@ -3,7 +3,6 @@ import type { IWFTargetYear } from '../types';
 import { isFeatureEnabled } from '../config/featureFlags';
 import { useTheme } from '../hooks/useTheme';
 import { CycleType } from 'helios-scheduler';
-import dayjs from 'dayjs';
 
 interface TargetYearStepProps {
   data: IWFTargetYear;
