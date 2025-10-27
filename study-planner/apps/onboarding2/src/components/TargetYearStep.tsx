@@ -93,11 +93,20 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   }));
 
   return (
-    <StepLayout
-      icon="📅"
-      title="Choose Your Target Year"
-      description="Select when you want to appear for the UPSC exam"
-    >
+    <>
+      <style>
+        {`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+          }
+        `}
+      </style>
+      <StepLayout
+        icon="📅"
+        title="Choose Your Target Year"
+        description="Select when you want to appear for the UPSC exam"
+      >
       <div className="choice-grid choice-grid-3">
         {yearOptions2.map((option) => {
           const isSelected = formData.targetYear.targetYear === option.year;
@@ -235,18 +244,199 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               ))}
           </div>
           {plannedCycles.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Phases</div>
-              <ul style={{ margin: 0, paddingLeft: 18 }}>
-                {plannedCycles.map(c => (
-                  <li key={`${c.cycleType}-${c.startDate}`}>{getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}</li>
-                ))}
-              </ul>
+            <div style={{ marginTop: 24 }}>
+              <div style={{ 
+                fontWeight: 600, 
+                color: 'var(--ms-blue)', 
+                marginBottom: 20,
+                fontSize: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <span>📈</span>
+                <span>Your Study Timeline</span>
+              </div>
+              
+              <div style={{
+                position: 'relative',
+                padding: '20px 0'
+              }}>
+                {/* Timeline line */}
+                <div style={{
+                  position: 'absolute',
+                  left: '20px',
+                  top: '0',
+                  bottom: '0',
+                  width: '3px',
+                  background: 'linear-gradient(180deg, #0078D4 0%, #106EBE 100%)',
+                  borderRadius: '2px'
+                }} />
+                
+                {plannedCycles.map((cycle, index) => {
+                  const startDate = dayjs(cycle.startDate);
+                  const endDate = dayjs(cycle.endDate);
+                  const duration = endDate.diff(startDate, 'day');
+                  const isLast = index === plannedCycles.length - 1;
+                  
+                  return (
+                    <div key={`${cycle.cycleType}-${cycle.startDate}`} style={{
+                      position: 'relative',
+                      marginBottom: isLast ? '0' : '24px',
+                      paddingLeft: '60px'
+                    }}>
+                      {/* Timeline node */}
+                      <div style={{
+                        position: 'absolute',
+                        left: '8px',
+                        top: '8px',
+                        width: '24px',
+                        height: '24px',
+                        background: 'var(--ms-white)',
+                        border: '3px solid #0078D4',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: '#0078D4',
+                        zIndex: 2
+                      }}>
+                        {index + 1}
+                      </div>
+                      
+                      {/* Cycle card */}
+                      <div style={{
+                        background: 'var(--ms-white)',
+                        border: '1px solid #E1E1E1',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                        transition: 'all 0.2s ease',
+                        position: 'relative'
+                      }}>
+                        {/* Cycle header */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginBottom: '12px'
+                        }}>
+                          <div>
+                            <h4 style={{
+                              margin: '0 0 4px 0',
+                              fontSize: '16px',
+                              fontWeight: '600',
+                              color: 'var(--ms-blue)'
+                            }}>
+                              {getCycleDescription(cycle.cycleType)}
+                            </h4>
+                            <div style={{
+                              fontSize: '12px',
+                              color: '#666',
+                              fontWeight: '500'
+                            }}>
+                              Phase {index + 1} of {plannedCycles.length}
+                            </div>
+                          </div>
+                          <div style={{
+                            background: '#F0F8FF',
+                            color: '#0078D4',
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            fontSize: '11px',
+                            fontWeight: '600'
+                          }}>
+                            {duration} days
+                          </div>
+                        </div>
+                        
+                        {/* Timeline dates */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          fontSize: '14px',
+                          color: '#666',
+                          marginBottom: '12px'
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>📅</span>
+                            <span>{startDate.format('MMM DD, YYYY')}</span>
+                          </div>
+                          <div style={{
+                            width: '20px',
+                            height: '1px',
+                            background: '#E1E1E1',
+                            margin: '0 8px'
+                          }} />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>🏁</span>
+                            <span>{endDate.format('MMM DD, YYYY')}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Progress bar */}
+                        <div style={{
+                          width: '100%',
+                          height: '6px',
+                          background: '#F0F0F0',
+                          borderRadius: '3px',
+                          overflow: 'hidden'
+                        }}>
+                          <div style={{
+                            width: '100%',
+                            height: '100%',
+                            background: 'linear-gradient(90deg, #0078D4 0%, #106EBE 100%)',
+                            borderRadius: '3px',
+                            animation: 'pulse 2s ease-in-out infinite'
+                          }} />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Timeline summary */}
+              <div style={{
+                background: 'linear-gradient(135deg, #F0F8FF 0%, #E6F3FF 100%)',
+                border: '1px solid #B3D9FF',
+                borderRadius: '8px',
+                padding: '16px',
+                marginTop: '20px',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  fontSize: '14px',
+                  color: 'var(--ms-blue)',
+                  fontWeight: '600',
+                  marginBottom: '4px'
+                }}>
+                  Total Preparation Duration
+                </div>
+                <div style={{
+                  fontSize: '20px',
+                  color: 'var(--ms-blue)',
+                  fontWeight: '700'
+                }}>
+                  {plannedCycles.length > 0 && (() => {
+                    const firstCycle = dayjs(plannedCycles[0].startDate);
+                    const lastCycle = dayjs(plannedCycles[plannedCycles.length - 1].endDate);
+                    const totalDays = lastCycle.diff(firstCycle, 'day');
+                    const months = Math.floor(totalDays / 30);
+                    const days = totalDays % 30;
+                    return `${months} month${months !== 1 ? 's' : ''} ${days} day${days !== 1 ? 's' : ''}`;
+                  })()}
+                </div>
+              </div>
             </div>
           )}
         </div>
       )}
     </StepLayout>
+    </>
   );
 };
 
