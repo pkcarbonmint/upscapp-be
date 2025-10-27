@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { StepProps, TimeCommitmentOption } from '@/types';
 import StepLayout from './StepLayout';
-import optionalSubjectsData from 'helios-ts/config/optional_subjects.json';
 
 const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const [optionalSubjects, setOptionalSubjects] = useState<any[]>([]);
 
   useEffect(() => {
-    setOptionalSubjects(optionalSubjectsData.subjects);
+    // Load optional subjects data
+    const loadOptionalSubjects = async () => {
+      try {
+        const response = await fetch('/node_modules/helios-ts/src/config/optional_subjects.json');
+        const data = await response.json();
+        setOptionalSubjects(data.subjects);
+      } catch (error) {
+        console.error('Failed to load optional subjects:', error);
+        // Fallback data
+        setOptionalSubjects([
+          { code: 'OPT-PSIR', name: 'Political Science and International Relations', category: 'Social Science' },
+          { code: 'OPT-SOC', name: 'Sociology', category: 'Social Science' },
+          { code: 'OPT-HIS', name: 'History', category: 'Social Science' },
+          { code: 'OPT-GEO', name: 'Geography', category: 'Social Science' },
+          { code: 'OPT-ECO', name: 'Economics', category: 'Social Science' },
+          { code: 'OPT-PA', name: 'Public Administration', category: 'Social Science' }
+        ]);
+      }
+    };
+    loadOptionalSubjects();
   }, []);
 
   const timeCommitmentOptions: TimeCommitmentOption[] = [
@@ -57,8 +75,12 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             commitment: { ...formData.commitment, upscOptionalSubject: e.target.value }
           })}
         >
-          {/* Load options dynamically */}
-          <Options />
+          <option value="">Select an optional subject</option>
+          {optionalSubjects.map((subject) => (
+            <option key={subject.code} value={subject.code}>
+              {subject.name} ({subject.category})
+            </option>
+          ))}
         </select>
       </div>
       <h2 
@@ -348,25 +370,3 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
 };
 
 export default CommitmentStep;
-
-// Separate component to fetch and render optional subject options
-function Options() {
-  const [options, setOptions] = useState<Subject[]>([]);
-  useEffect(() => {
-    (async () => {
-      try {
-        const list = await getAllOptionalSubjects();
-        setOptions(list);
-      } catch {
-        setOptions([]);
-      }
-    })();
-  }, []);
-  return (
-    <>
-      {options.map((s) => (
-        <option key={s.subjectCode} value={s.subjectCode}>{s.subjectName}</option>
-      ))}
-    </>
-  );
-}

@@ -77,14 +77,14 @@ export class OnboardingService {
       if (data.personalInfo && data.targetYear && data.commitment && data.confidenceLevel) {
         const fullData = data as OnboardingFormData;
         const planData = await HeliosService.generateStudyPlan(fullData);
-        const milestones = HeliosService.calculateMilestones(fullData.targetYear.targetYear, planData.studyPlan);
+        const milestones = await HeliosService.calculateMilestones(fullData);
         
         return {
           raw_helios_data: {
             totalHours: planData.totalHours,
             subjects: planData.subjects,
             cycles: planData.cycles, // may be a number or an array of schedules
-            blocks: planData.blocks,
+            blocks: planData.studyPlan.blocks,
             studyPlan: planData.studyPlan
           },
           milestones: {

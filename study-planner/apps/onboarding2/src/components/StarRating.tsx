@@ -27,11 +27,6 @@ const StarRating: React.FC<StarRatingProps> = ({
     }
   };
 
-  const handleMouseEnter = (rating: number) => {
-    if (!disabled) {
-      // Could add hover effects here
-    }
-  };
 
   return (
     <div 
@@ -50,7 +45,6 @@ const StarRating: React.FC<StarRatingProps> = ({
             key={index}
             type="button"
             onClick={() => handleClick(rating)}
-            onMouseEnter={() => handleMouseEnter(rating)}
             disabled={disabled}
             style={{
               background: 'none',

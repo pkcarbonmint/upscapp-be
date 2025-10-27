@@ -1,54 +1,50 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { StepProps } from '@/types';
+import React from 'react';
+import { StepProps, SubjectCategory } from '@/types';
 import StepLayout from './StepLayout';
-import { loadAllSubjects, type Subject } from 'helios-ts';
-
-const starStyle: React.CSSProperties = {
-  cursor: 'pointer',
-  color: 'var(--ms-gray-90)',
-  fontSize: '18px',
-};
-
-const activeStarStyle: React.CSSProperties = {
-  color: 'var(--ms-yellow, #f5a623)'
-};
+import StarRating from './StarRating';
 
 const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [loading, setLoading] = useState(true);
+  const confidenceLevels = [
+    { value: 1, label: 'Beginner' },
+    { value: 2, label: 'Basic' },
+    { value: 3, label: 'Average' },
+    { value: 4, label: 'Good' },
+    { value: 5, label: 'Expert' }
+  ];
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const subs = await loadAllSubjects(formData.commitment.upscOptionalSubject);
-        if (mounted) setSubjects(subs);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [formData.commitment.upscOptionalSubject]);
+  const subjectCategories: SubjectCategory[] = [
+    {
+      name: 'Core GS Subjects',
+      subjects: [
+        { key: 'history', name: 'History' },
+        { key: 'geography', name: 'Geography' },
+        { key: 'polity', name: 'Indian Polity' },
+        { key: 'economy', name: 'Indian Economy' },
+        { key: 'environment', name: 'Environment & Ecology' },
+        { key: 'science', name: 'Science & Technology' }
+      ]
+    },
+    {
+      name: 'Additional Areas',
+      subjects: [
+        { key: 'international', name: 'International Relations' },
+        { key: 'security', name: 'Internal Security' },
+        { key: 'society', name: 'Society & Social Justice' },
+        { key: 'governance', name: 'Governance' },
+        { key: 'ethics', name: 'Ethics & Integrity' },
+        { key: 'current', name: 'Current Affairs' }
+      ]
+    }
+  ];
 
-  const handleConfidenceChange = (subjectCode: string, level: number) => {
+  const handleConfidenceChange = (subjectKey: string, level: number) => {
     updateFormData({
       confidenceLevel: {
         ...formData.confidenceLevel,
-        [subjectCode]: level
+        [subjectKey]: level
       }
     });
   };
-
-  const grouped = useMemo(() => {
-    const macro = subjects.filter(s => s.category === 'Macro');
-    const micro = subjects.filter(s => s.category === 'Micro' || s.category === 'Optional');
-    return [
-      { name: 'GS Subjects', list: macro },
-      { name: 'Additional Areas', list: micro }
-    ];
-  }, [subjects]);
 
   const getAverageConfidence = () => {
     const values = Object.values(formData.confidenceLevel);
@@ -58,59 +54,71 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   };
 
   const getWeakestSubject = () => {
-    let minCode: string | null = null;
-    let minVal = 6;
-    for (const [code, val] of Object.entries(formData.confidenceLevel)) {
-      if (val < minVal) { minVal = val; minCode = code; }
+    let weakest = null;
+    let minConfidence = 6;
+    
+    for (const [subject, confidence] of Object.entries(formData.confidenceLevel)) {
+      if (confidence < minConfidence) {
+        minConfidence = confidence;
+        weakest = subject;
+      }
     }
-    const subj = subjects.find(s => s.subjectCode === minCode);
-    return subj ? subj.subjectName : 'Not determined';
+    
+    // Find the subject name
+    for (const category of subjectCategories) {
+      for (const subject of category.subjects) {
+        if (subject.key === weakest) {
+          return subject.name;
+        }
+      }
+    }
+    
+    return 'Not determined';
   };
-
-  const renderStars = (current: number, onChange: (v: number) => void) => (
-    <div style={{ display: 'flex', gap: 6 }}>
-      {[1,2,3,4,5].map(n => (
-        <span
-          key={n}
-          role="button"
-          aria-label={`${n} star`}
-          style={{ ...starStyle, ...(current >= n ? activeStarStyle : {}) }}
-          onClick={() => onChange(n)}
-        >
-          ★
-        </span>
-      ))}
-    </div>
-  );
 
   return (
     <StepLayout
       icon="📊"
       title="Subject Confidence Assessment"
-      description="Rate your confidence level in UPSC subjects"
+      description="Rate your confidence level in key UPSC subjects (default: Average)"
     >
-      {loading ? (
-        <div>Loading subjects…</div>
-      ) : (
-        grouped.map(group => (
-          <div key={group.name} style={{ marginBottom: '24px' }}>
-            <h3 className="ms-font-subtitle" style={{ marginBottom: '12px', color: 'var(--ms-blue)' }}>
-              {group.name}
-            </h3>
-            <div className="form-grid form-grid-2">
-              {group.list.map(subject => (
-                <div key={subject.subjectCode}>
-                  <label className="ms-label">{subject.subjectName}</label>
-                  <div style={{ marginTop: 8 }}>
-                    {renderStars(formData.confidenceLevel[subject.subjectCode] || 3, (v) => handleConfidenceChange(subject.subjectCode, v))}
+      {subjectCategories.map((category) => (
+        <div key={category.name} style={{ marginBottom: '32px' }}>
+          <h3 
+            className="ms-font-subtitle" 
+            style={{ 
+              marginBottom: '16px', 
+              color: 'var(--ms-blue)' 
+            }}
+          >
+            {category.name}
+          </h3>
+          <div className="form-grid form-grid-2">
+            {category.subjects.map((subject) => (
+              <div key={subject.key}>
+                <label className="ms-label">{subject.name}</label>
+                <div style={{ marginTop: '8px' }}>
+                  <StarRating
+                    value={formData.confidenceLevel[subject.key] || 3} // Default to 3 (Average)
+                    onChange={(value) => handleConfidenceChange(subject.key, value)}
+                    size="medium"
+                  />
+                  <div 
+                    style={{
+                      fontSize: '12px',
+                      color: 'var(--ms-gray-90)',
+                      marginTop: '4px'
+                    }}
+                  >
+                    {confidenceLevels.find(level => level.value === (formData.confidenceLevel[subject.key] || 3))?.label || 'Average'}
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        ))
-      )}
-
+        </div>
+      ))}
+      
       {Object.keys(formData.confidenceLevel).length >= 12 && (
         <div 
           style={{
@@ -118,21 +126,79 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             border: '1px solid var(--ms-blue)',
             borderRadius: '12px',
             padding: '24px',
-            marginTop: '24px'
+            marginTop: '32px'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, color: 'var(--ms-blue)', fontWeight: 600, fontSize: 18 }}>
+          <div 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '16px',
+              color: 'var(--ms-blue)',
+              fontWeight: '600',
+              fontSize: '18px'
+            }}
+          >
             <span>📈</span>
             <span>Your Confidence Profile</span>
           </div>
-          <div className="form-grid form-grid-2" style={{ marginTop: 12 }}>
-            <div style={{ background: 'var(--ms-white)', padding: 12, borderRadius: 4, textAlign: 'center' }}>
-              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 4 }}>{getAverageConfidence()}/5</div>
-              <div style={{ fontSize: 12, color: 'var(--ms-gray-90)', fontWeight: 500 }}>Average Confidence</div>
+          <div className="form-grid form-grid-2" style={{ marginTop: '12px' }}>
+            <div 
+              style={{
+                background: 'var(--ms-white)',
+                padding: '12px',
+                borderRadius: '4px',
+                textAlign: 'center'
+              }}
+            >
+              <div 
+                style={{
+                  fontSize: '24px',
+                  fontWeight: '600',
+                  color: 'var(--ms-blue)',
+                  marginBottom: '4px'
+                }}
+              >
+                {getAverageConfidence()}/5
+              </div>
+              <div 
+                style={{
+                  fontSize: '12px',
+                  color: 'var(--ms-gray-90)',
+                  fontWeight: '500'
+                }}
+              >
+                Average Confidence
+              </div>
             </div>
-            <div style={{ background: 'var(--ms-white)', padding: 12, borderRadius: 4, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 4 }}>{getWeakestSubject()}</div>
-              <div style={{ fontSize: 12, color: 'var(--ms-gray-90)', fontWeight: 500 }}>Focus Area</div>
+            <div 
+              style={{
+                background: 'var(--ms-white)',
+                padding: '12px',
+                borderRadius: '4px',
+                textAlign: 'center'
+              }}
+            >
+              <div 
+                style={{
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: 'var(--ms-blue)',
+                  marginBottom: '4px'
+                }}
+              >
+                {getWeakestSubject()}
+              </div>
+              <div 
+                style={{
+                  fontSize: '12px',
+                  color: 'var(--ms-gray-90)',
+                  fontWeight: '500'
+                }}
+              >
+                Focus Area
+              </div>
             </div>
           </div>
         </div>
