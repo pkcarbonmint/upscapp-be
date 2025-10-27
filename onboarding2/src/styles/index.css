@@ -1,0 +1,243 @@
+/* Microsoft Fluent Design System Variables */
+:root {
+  --ms-blue: #0078d4;
+  --ms-blue-hover: #106ebe;
+  --ms-blue-pressed: #005a9e;
+  --ms-blue-light: #deecf9;
+  --ms-gray-10: #faf9f8;
+  --ms-gray-20: #f3f2f1;
+  --ms-gray-30: #edebe9;
+  --ms-gray-40: #e1dfdd;
+  --ms-gray-50: #d2d0ce;
+  --ms-gray-60: #c8c6c4;
+  --ms-gray-70: #a19f9d;
+  --ms-gray-80: #797775;
+  --ms-gray-90: #605e5c;
+  --ms-gray-100: #484644;
+  --ms-gray-110: #3b3a39;
+  --ms-gray-120: #323130;
+  --ms-gray-130: #201f1e;
+  --ms-white: #ffffff;
+  --ms-black: #000000;
+  --ms-green: #107c10;
+  --ms-red: #d13438;
+  --ms-orange: #ff8c00;
+  --ms-purple: #5c2d91;
+  --ms-teal: #008272;
+}
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+  background-color: var(--ms-gray-10);
+  color: var(--ms-gray-130);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Microsoft Typography Scale */
+.ms-font-hero {
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 52px;
+}
+
+.ms-font-title {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 36px;
+}
+
+.ms-font-subtitle {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.ms-font-body {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.ms-font-caption {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+/* Microsoft Fluent Cards */
+.ms-card {
+  background: var(--ms-white);
+  border: 1px solid var(--ms-gray-40);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.ms-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  border-color: var(--ms-gray-50);
+}
+
+/* Microsoft Buttons */
+.ms-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  min-height: 32px;
+  background: none;
+}
+
+.ms-button-primary {
+  background-color: var(--ms-blue);
+  color: var(--ms-white);
+  border-color: var(--ms-blue);
+}
+
+.ms-button-primary:hover {
+  background-color: var(--ms-blue-hover);
+  border-color: var(--ms-blue-hover);
+}
+
+.ms-button-primary:active {
+  background-color: var(--ms-blue-pressed);
+  border-color: var(--ms-blue-pressed);
+}
+
+.ms-button-secondary {
+  background-color: var(--ms-white);
+  color: var(--ms-gray-130);
+  border-color: var(--ms-gray-60);
+}
+
+.ms-button-secondary:hover {
+  background-color: var(--ms-gray-20);
+  border-color: var(--ms-gray-70);
+}
+
+.ms-button:disabled {
+  background-color: var(--ms-gray-20);
+  color: var(--ms-gray-70);
+  border-color: var(--ms-gray-40);
+  cursor: not-allowed;
+}
+
+/* Microsoft Form Controls */
+.ms-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--ms-gray-60);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  background-color: var(--ms-white);
+  transition: border-color 0.1s ease;
+}
+
+.ms-input:focus {
+  outline: none;
+  border-color: var(--ms-blue);
+  box-shadow: 0 0 0 1px var(--ms-blue);
+}
+
+.ms-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ms-gray-130);
+}
+
+.ms-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--ms-gray-60);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  background-color: var(--ms-white);
+  transition: border-color 0.1s ease;
+  cursor: pointer;
+}
+
+.ms-select:focus {
+  outline: none;
+  border-color: var(--ms-blue);
+  box-shadow: 0 0 0 1px var(--ms-blue);
+}
+
+/* Layout utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.form-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.choice-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.choice-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.choice-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-grid-2,
+  .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .choice-grid-2,
+  .choice-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+}
