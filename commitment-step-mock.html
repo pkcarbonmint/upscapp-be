@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helios - Study Commitment Step</title>
+    <style>
+        /* Microsoft Fluent Design System */
+        :root {
+            --ms-blue: #0078d4;
+            --ms-blue-hover: #106ebe;
+            --ms-blue-light: #deecf9;
+            --ms-gray-10: #faf9f8;
+            --ms-gray-20: #f3f2f1;
+            --ms-gray-30: #edebe9;
+            --ms-gray-40: #e1dfdd;
+            --ms-gray-60: #c8c6c4;
+            --ms-gray-90: #605e5c;
+            --ms-gray-130: #201f1e;
+            --ms-white: #ffffff;
+            --ms-green: #107c10;
+            --ms-purple: #5c2d91;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--ms-gray-10);
+            color: var(--ms-gray-130);
+            line-height: 1.4;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-purple) 100%);
+            color: var(--ms-white);
+            padding: 24px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--ms-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ms-blue);
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .step-indicator {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            background: var(--ms-white);
+            border-bottom: 1px solid var(--ms-gray-30);
+            padding: 16px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--ms-gray-30);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ms-blue) 0%, var(--ms-purple) 100%);
+            width: 50%; /* Step 3 of 6 */
+            border-radius: 2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .step-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--ms-blue-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+        }
+
+        .step-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 0 12px;
+            color: var(--ms-gray-130);
+        }
+
+        .step-description {
+            font-size: 16px;
+            margin: 0;
+            color: var(--ms-gray-90);
+        }
+
+        /* Form Section */
+        .form-section {
+            background: var(--ms-white);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--ms-gray-130);
+        }
+
+        /* Choice Grid */
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .choice-card {
+            background: var(--ms-white);
+            border: 2px solid var(--ms-gray-40);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .choice-card:hover {
+            border-color: var(--ms-blue);
+            box-shadow: 0 4px 16px rgba(0, 120, 212, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .choice-card.selected {
+            border-color: var(--ms-blue);
+            background: var(--ms-blue-light);
+            box-shadow: 0 4px 16px rgba(0, 120, 212, 0.2);
+        }
+
+        .choice-card.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--ms-blue);
+            color: var(--ms-white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .choice-hours {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ms-blue);
+            margin-bottom: 8px;
+        }
+
+        .choice-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--ms-gray-130);
+        }
+
+        .choice-description {
+            font-size: 14px;
+            color: var(--ms-gray-90);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .choice-recommendation {
+            background: var(--ms-gray-20);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--ms-gray-90);
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        /* Insight Card */
+        .insight-card {
+            background: var(--ms-blue-light);
+            border: 1px solid var(--ms-blue);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 32px;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: var(--ms-blue);
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .insight-content {
+            color: var(--ms-gray-130);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .insight-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .insight-stat {
+            background: var(--ms-white);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--ms-blue);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--ms-gray-90);
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--ms-gray-30);
+        }
+
+        .ms-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            min-height: 40px;
+        }
+
+        .ms-button-primary {
+            background-color: var(--ms-blue);
+            color: var(--ms-white);
+            border-color: var(--ms-blue);
+        }
+
+        .ms-button-primary:hover {
+            background-color: var(--ms-blue-hover);
+            border-color: var(--ms-blue-hover);
+        }
+
+        .ms-button-secondary {
+            background-color: var(--ms-white);
+            color: var(--ms-gray-130);
+            border-color: var(--ms-gray-60);
+        }
+
+        .ms-button-secondary:hover {
+            background-color: var(--ms-gray-20);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .choice-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 0 16px;
+            }
+            
+            .form-section {
+                padding: 24px 20px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">H</div>
+                    <div>
+                        <div class="logo-text">Helios Study Assistant</div>
+                        <div style="font-size: 12px; opacity: 0.9;">Personalized UPSC Preparation</div>
+                    </div>
+                </div>
+                <div class="step-indicator">
+                    Step 3 of 6
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+        <div class="container">
+            <div class="progress-header">
+                <span style="font-weight: 600; font-size: 14px;">Setup Progress</span>
+                <span style="font-size: 12px;">50%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="step-container">
+                <div class="step-header">
+                    <div class="step-icon">⏰</div>
+                    <h1 class="step-title">Study Commitment</h1>
+                    <p class="step-description">How many hours can you dedicate to studying daily?</p>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">Choose Your Daily Study Hours</h2>
+                    
+                    <div class="choice-grid">
+                        <!-- 2-4 Hours -->
+                        <div class="choice-card">
+                            <div class="choice-hours">2-4</div>
+                            <div class="choice-title">Light Preparation</div>
+                            <p class="choice-description">
+                                Perfect for working professionals or students with other commitments. 
+                                Focus on core concepts and current affairs.
+                            </p>
+                            <div class="choice-recommendation">
+                                Recommended for: Working professionals, part-time preparation
+                            </div>
+                        </div>
+
+                        <!-- 4-6 Hours -->
+                        <div class="choice-card selected">
+                            <div class="choice-hours">4-6</div>
+                            <div class="choice-title">Moderate Preparation</div>
+                            <p class="choice-description">
+                                Balanced approach with dedicated study time. Covers all subjects 
+                                systematically with regular revision cycles.
+                            </p>
+                            <div class="choice-recommendation">
+                                Recommended for: Serious aspirants, balanced lifestyle
+                            </div>
+                        </div>
+
+                        <!-- 6-8 Hours -->
+                        <div class="choice-card">
+                            <div class="choice-hours">6-8</div>
+                            <div class="choice-title">Serious Preparation</div>
+                            <p class="choice-description">
+                                Intensive study schedule with comprehensive coverage. 
+                                Includes multiple revisions and practice sessions.
+                            </p>
+                            <div class="choice-recommendation">
+                                Recommended for: Dedicated students, competitive preparation
+                            </div>
+                        </div>
+
+                        <!-- 8-10 Hours -->
+                        <div class="choice-card">
+                            <div class="choice-hours">8-10</div>
+                            <div class="choice-title">Intensive Preparation</div>
+                            <p class="choice-description">
+                                Full-time commitment with detailed study of all subjects. 
+                                Multiple practice tests and comprehensive revision.
+                            </p>
+                            <div class="choice-recommendation">
+                                Recommended for: Full-time aspirants, final attempt preparation
+                            </div>
+                        </div>
+
+                        <!-- 10+ Hours -->
+                        <div class="choice-card">
+                            <div class="choice-hours">10+</div>
+                            <div class="choice-title">Maximum Dedication</div>
+                            <p class="choice-description">
+                                Complete dedication to UPSC preparation. Extensive study, 
+                                practice, and revision with coaching support.
+                            </p>
+                            <div class="choice-recommendation">
+                                Recommended for: Droppers, final year students
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Insight Card -->
+                    <div class="insight-card">
+                        <div class="insight-header">
+                            <span>📊</span>
+                            <span>Your Study Profile Analysis</span>
+                        </div>
+                        <div class="insight-content">
+                            <p>Based on your selection of <strong>4-6 hours daily</strong>, here's your personalized study profile:</p>
+                            
+                            <div class="insight-stats">
+                                <div class="insight-stat">
+                                    <div class="stat-value">35</div>
+                                    <div class="stat-label">Hours per week</div>
+                                </div>
+                                <div class="insight-stat">
+                                    <div class="stat-value">Moderate</div>
+                                    <div class="stat-label">Study intensity</div>
+                                </div>
+                                <div class="insight-stat">
+                                    <div class="stat-value">78%</div>
+                                    <div class="stat-label">Success probability</div>
+                                </div>
+                                <div class="insight-stat">
+                                    <div class="stat-value">18 months</div>
+                                    <div class="stat-label">Recommended timeline</div>
+                                </div>
+                            </div>
+                            
+                            <p style="margin-top: 16px; font-size: 13px; color: var(--ms-gray-90);">
+                                <strong>Tip:</strong> This schedule allows for a healthy work-life balance while maintaining 
+                                consistent progress. We recommend 5 days of intensive study with 2 days for revision and current affairs.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="navigation">
+                    <button class="ms-button ms-button-secondary">
+                        ← Previous Step
+                    </button>
+                    
+                    <button class="ms-button ms-button-primary">
+                        Continue to Subject Assessment →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
