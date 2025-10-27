@@ -1,7 +1,5 @@
 import type { Dayjs } from "dayjs";
 import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode } from "./types";
-import * as fs from 'fs';
-import * as path from 'path';
 /*
  * PSEUDO CODE FOR TIME DISTRIBUTION AMONG SUBJECTS
  * 
@@ -155,24 +153,13 @@ function verifyBlocks(  timeWindowFrom: Dayjs,
             }
           }
 
-        // Write debug data to file
-        const debugDir = path.join(__dirname, '..', 'debug');
-        if (!fs.existsSync(debugDir)) {
-          fs.mkdirSync(debugDir, { recursive: true });
-        }
-        
-        const debugFile = path.join(debugDir, `planBlocks_debug_${Date.now()}.json`);
-        fs.writeFileSync(debugFile, JSON.stringify(debugData, null, 2));
-        
-        console.log(`Debug data written to: ${debugFile}`);
+        // Log debug data to console (browser-compatible)
+        console.log(`Debug data:`, debugData);
         console.log(`No blocks allocated for dates: ${failureDates.map(date => date.format('YYYY-MM-DD')).join(', ')}`);
         console.log(`Total blocks generated: ${blocks.length}`);
         console.log(`Blocks on this day: ${blocksOnTheDay.length}`);
 
-        if (exitOnFail) {
-          process.exit(1);
-        }
-        throw new Error(`No blocks allocated for day ${date.format('YYYY-MM-DD')}. Debug data saved to: ${debugFile}`);
+        throw new Error(`No blocks allocated for day ${date.format('YYYY-MM-DD')}. Check console for debug data.`);
     }
   });
 }

@@ -1,7 +1,5 @@
 import type { Dayjs } from "dayjs";
 import { S2Constraints, S2Slot, S2SlotType, S2Subject, S2Task, S2Topic, S2TopicWithMinutes, S2WeekDay } from "./types";
-import * as fs from 'fs';
-import * as path from 'path';
 
 export function planSubjectTasks(
   from: Dayjs,
@@ -415,22 +413,13 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
             })
           };
 
-          // Write debug data to file
-          const debugDir = path.join(__dirname, '..', 'debug');
-          if (!fs.existsSync(debugDir)) {
-            fs.mkdirSync(debugDir, { recursive: true });
-          }
-          
-          const debugFile = path.join(debugDir, `createTasks_v2_debug_${Date.now()}.json`);
-          fs.writeFileSync(debugFile, JSON.stringify(debugData, null, 2));
-          
-          console.log(`Debug data written to: ${debugFile}`);
+          // Log debug data to console (browser-compatible)
+          console.log(`Debug data:`, debugData);
           console.log(`Missing days count: ${missngCOunt}`);
           console.log(`Total days: ${allDays}`);
           console.log(`Tasks generated: ${tasks.length}`);
 
-            process.exit(1);
-          throw new Error(`Too many days are not covered: ${missngCOunt}. Debug data saved to: ${debugFile}`);
+          throw new Error(`Too many days are not covered: ${missngCOunt}. Check console for debug data.`);
         
 
         }

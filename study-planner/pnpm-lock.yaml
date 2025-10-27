@@ -14,6 +14,12 @@ importers:
 
   apps/onboarding2:
     dependencies:
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.18
+      helios-scheduler:
+        specifier: workspace:*
+        version: link:../../libs/helios-scheduler
       helios-ts:
         specifier: workspace:*
         version: link:../../libs/helios-ts

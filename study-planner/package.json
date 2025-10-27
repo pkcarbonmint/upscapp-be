@@ -9,7 +9,9 @@
     "onboarding-ui",
     "shared-ui-library",
     "faculty-ui",
-    "plan-editor-library"
+    "plan-editor-library",
+    "libs/helios-scheduler",
+    "apps/onboarding2"
   ],
   "scripts": {
     "install:all": "pnpm install",
