@@ -1,23 +1,10 @@
 import React from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
+import CycleTimeline from './CycleTimeline';
 
 const PreviewStep: React.FC<StepProps> = ({ formData }) => {
   const { personalInfo, targetYear, commitment, confidenceLevel, preview } = formData;
-  const getCycleDescription = (cycleType: string) => {
-    switch (cycleType) {
-      case 'C1': return 'NCERT Foundation';
-      case 'C2': return 'Comprehensive Foundation';
-      case 'C3': return 'Mains Revision Pre-Prelims';
-      case 'C4': return 'Prelims Reading';
-      case 'C5': return 'Prelims Revision';
-      case 'C5.b': return 'Prelims Rapid Revision';
-      case 'C6': return 'Mains Revision';
-      case 'C7': return 'Rapid Mains';
-      case 'C8': return 'Mains Foundation';
-      default: return 'Study Cycle';
-    }
-  };
 
   return (
     <StepLayout
@@ -242,21 +229,13 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
         </div>
       </div>
 
-      {/* Cycles and Descriptions */}
+      {/* Cycles Timeline - reuse the same display as TargetYearStep */}
       {Array.isArray(preview.raw_helios_data?.cycles) && preview.raw_helios_data.cycles.length > 0 && (
         <div style={{ marginBottom: '32px' }}>
           <h3 className="ms-font-subtitle" style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}>
             Cycle Timeline
           </h3>
-          <div style={{ background: 'var(--ms-blue-light)', border: '1px solid var(--ms-blue)', padding: 16, borderRadius: 8 }}>
-            <ul style={{ margin: 0, paddingLeft: 18 }}>
-              {preview.raw_helios_data.cycles.map((c: any) => (
-                <li key={`${c.cycleType}-${c.startDate}`}>
-                  <strong>{c.cycleType}</strong> — {getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <CycleTimeline cycles={preview.raw_helios_data.cycles as any} />
         </div>
       )}
 
