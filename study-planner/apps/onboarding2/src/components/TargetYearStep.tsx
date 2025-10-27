@@ -29,26 +29,26 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     });
   };
 
-  const yearOptions = [
-    {
-      year: '2026',
-      months: 16,
-      intensity: 'High (8-10 hrs/day)',
-      probability: '65%'
-    },
-    {
-      year: '2027', 
-      months: 28,
-      intensity: 'Moderate (6-8 hrs/day)',
-      probability: '78%'
-    },
-    {
-      year: '2028',
-      months: 40,
-      intensity: 'Comfortable (4-6 hrs/day)', 
-      probability: '85%'
-    }
-  ];
+  const yearOptions = useMemo(() => {
+    const today = dayjs();
+    return [
+      {
+        year: '2026',
+        months: dayjs('2026-05-20').diff(today, 'month', true)
+      },
+      {
+        year: '2027', 
+        months: dayjs('2027-05-20').diff(today, 'month', true)
+      },
+      {
+        year: '2028',
+        months: dayjs('2028-05-20').diff(today, 'month', true)
+      }
+    ].map(option => ({
+      ...option,
+      months: Math.max(0, Math.round(option.months * 10) / 10) // Round to 1 decimal place, ensure non-negative
+    }));
+  }, []);
 
   const plannedCycles = useMemo(() => {
     const target = parseInt(formData.targetYear.targetYear || String(new Date().getFullYear() + 2));
@@ -207,42 +207,21 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             <span>📊</span>
             <span>Your Preparation Analysis</span>
           </div>
-          <div className="form-grid form-grid-3" style={{ marginTop: '12px' }}>
+          <div className="form-grid form-grid-1" style={{ marginTop: '12px' }}>
             {yearOptions
               .filter(option => option.year === formData.targetYear.targetYear)
               .map(option => (
-                <React.Fragment key={option.year}>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Time Available:</strong><br />
-                    {option.months} months
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Recommended Intensity:</strong><br />
-                    {option.intensity}
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Success Probability:</strong><br />
-                    {option.probability}
-                  </div>
-                </React.Fragment>
+                <div 
+                  key={option.year}
+                  style={{
+                    background: 'var(--ms-white)',
+                    padding: '12px',
+                    borderRadius: '4px'
+                  }}
+                >
+                  <strong>Time Available:</strong><br />
+                  {option.months} months
+                </div>
               ))}
           </div>
           {plannedCycles.length > 0 && (
