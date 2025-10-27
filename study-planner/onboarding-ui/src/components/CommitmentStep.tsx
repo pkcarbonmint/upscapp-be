@@ -126,21 +126,17 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
     .filter(Boolean);
   
   return (
-    <div className="space-y-6 sm:space-y-10 max-w-4xl mx-auto p-2 sm:p-4">
-      {/* Error Summary */}
+    <div className="space-y-4 max-w-4xl mx-auto p-2 sm:p-4">
+      {/* Error Summary - Compact */}
       {hasErrors && (
-        <div className={`mb-6 p-4 ${getClasses('errorBackground')} ${getClasses('errorBorder')} border rounded-lg shadow-sm`}>
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <div className={`w-6 h-6 flex items-center justify-center ${getClasses('errorIcon')}`}>
-                <i className="fas fa-exclamation text-xs"></i>
-              </div>
-            </div>
-            <div className="ml-3">
-              <h3 className={`text-sm font-semibold ${getClasses('errorText')}`}>
-                Please complete all required fields:
-              </h3>
-              <ul className={`text-sm ${getClasses('errorText')} mt-2 list-disc list-inside space-y-1`}>
+        <div className={`mb-4 p-3 ${getClasses('errorBackground')} ${getClasses('errorBorder')} border rounded-md`}>
+          <div className="flex items-start">
+            <i className={`fas fa-exclamation-triangle mr-2 mt-0.5 text-sm ${getClasses('errorIcon')}`}></i>
+            <div>
+              <p className={`text-sm font-medium ${getClasses('errorText')} mb-1`}>
+                Please complete required fields:
+              </p>
+              <ul className={`text-xs ${getClasses('errorText')} list-disc list-inside space-y-0.5`}>
                 {validationErrors.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
@@ -150,159 +146,139 @@ export const CommitmentStep: React.FC<CommitmentStepProps> = ({
         </div>
       )}
 
-      {/* Time Commitment Section */}
-      <div className="space-y-4">
-        <div className="relative">
-          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
-          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
-            <i className={`fas fa-clock mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Daily Study Hours <span className={getClasses('requiredIndicator')}>*</span>
-          </h3>
-        </div>
+      {/* Time Commitment Section - Compact */}
+      <div className="space-y-2">
+        <h3 className={`text-sm font-semibold ${getClasses('sectionHeader')} flex items-center`}>
+          <i className={`fas fa-clock mr-2 text-xs ${getClasses('sectionHeaderIcon')}`}></i>
+          Daily Study Hours <span className={getClasses('requiredIndicator')}>*</span>
+        </h3>
         <ToggleGroup
           type="single"
           value={data.timeCommitment?.toString() || ''}
           onValueChange={(value) => {
             if (value) onUpdate(prev => ({ ...prev, timeCommitment: parseInt(value, 10) }));
           }}
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2"
+          className="grid grid-cols-3 sm:grid-cols-5 gap-1.5"
         >
           {timeCommitmentOptions.map((option) => (
-            <ToggleGroupItem key={option.value} value={option.value.toString()} aria-label={option.label} className="h-auto flex-col min-h-[60px] p-3">
-              <span className="text-sm sm:text-base font-semibold">{option.label}</span>
-              <span className="text-xs sm:text-sm text-muted-foreground">{option.desc}</span>
+            <ToggleGroupItem key={option.value} value={option.value.toString()} aria-label={option.label} className="h-auto flex-col min-h-[45px] p-2 text-center">
+              <span className="text-xs font-semibold">{option.label}</span>
+              <span className="text-xs text-muted-foreground">{option.desc}</span>
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
       </div>
 
-      {/* Study Preference Section */}
-      <div className="space-y-4">
-        <div className="relative">
-          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
-          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
-            <i className={`fas fa-chart-line mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Study Preference <span className={getClasses('requiredIndicator')}>*</span>
-          </h3>
-        </div>
+      {/* Study Preference Section - Compact */}
+      <div className="space-y-2">
+        <h3 className={`text-sm font-semibold ${getClasses('sectionHeader')} flex items-center`}>
+          <i className={`fas fa-chart-line mr-2 text-xs ${getClasses('sectionHeaderIcon')}`}></i>
+          Study Preference <span className={getClasses('requiredIndicator')}>*</span>
+        </h3>
         <ToggleGroup
           type="single"
           value={data.studyPreference}
           onValueChange={(value: StudyPreference | '') => {
             if (value) onUpdate(prev => ({ ...prev, studyPreference: value }));
           }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-1.5"
         >
           {studyPreferenceOptions.map((preference) => (
-            <ToggleGroupItem key={preference} value={preference} aria-label={getStudyPreferenceLabel(preference)}>
+            <ToggleGroupItem key={preference} value={preference} aria-label={getStudyPreferenceLabel(preference)} className="py-2 px-3 text-sm">
               {getStudyPreferenceLabel(preference)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
       </div>
 
-      {/* Subject Approach Section */}
-      <div className="space-y-4">
-        <div className="relative">
-          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
-          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
-            <i className={`fas fa-layer-group mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Subject Approach <span className={getClasses('requiredIndicator')}>*</span>
-          </h3>
-        </div>
+      {/* Subject Approach Section - Compact */}
+      <div className="space-y-2">
+        <h3 className={`text-sm font-semibold ${getClasses('sectionHeader')} flex items-center`}>
+          <i className={`fas fa-layer-group mr-2 text-xs ${getClasses('sectionHeaderIcon')}`}></i>
+          Subject Approach <span className={getClasses('requiredIndicator')}>*</span>
+        </h3>
         <ToggleGroup
           type="single"
           value={data.subjectApproach}
           onValueChange={(value: SubjectApproach | '') => {
             if (value) onUpdate(prev => ({ ...prev, subjectApproach: value }));
           }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-1.5"
         >
           {subjectApproachOptions.map((approach) => (
-            <ToggleGroupItem key={approach} value={approach} aria-label={getSubjectApproachLabel(approach)}>
+            <ToggleGroupItem key={approach} value={approach} aria-label={getSubjectApproachLabel(approach)} className="py-2 px-3 text-sm">
               {getSubjectApproachLabel(approach)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
       </div>
 
-      {/* UPSC Optional Subject Section */}
-      <div className="space-y-4">
-        <div className="relative">
-          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
-          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
-            <i className={`fas fa-book-open mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            UPSC Optional Subject
-          </h3>
-        </div>
-        <div className="space-y-3">
-          <select
-            value={data.upscOptionalSubject || ''}
-            onChange={(e) => onUpdate(prev => ({ ...prev, upscOptionalSubject: e.target.value || '' }))}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-          >
-            <option value="">Select Optional Subject (if applicable)</option>
-            {upscOptionalSubjects.map((subject) => (
-              <option key={subject.subjectCode} value={subject.subjectCode}>
-                {subject.subjectName}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* UPSC Optional Subject Section - Compact */}
+      <div className="space-y-2">
+        <h3 className={`text-sm font-semibold ${getClasses('sectionHeader')} flex items-center`}>
+          <i className={`fas fa-book-open mr-2 text-xs ${getClasses('sectionHeaderIcon')}`}></i>
+          UPSC Optional Subject
+        </h3>
+        <select
+          value={data.upscOptionalSubject || ''}
+          onChange={(e) => onUpdate(prev => ({ ...prev, upscOptionalSubject: e.target.value || '' }))}
+          className="w-full p-2.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+        >
+          <option value="">Select Optional Subject (if applicable)</option>
+          {upscOptionalSubjects.map((subject) => (
+            <option key={subject.subjectCode} value={subject.subjectCode}>
+              {subject.subjectName}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Optional First Preference Section */}
-      <div className="space-y-4">
-        <div className="relative">
-          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
-          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
-            <i className={`fas fa-star mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Optional Subject Priority
-          </h3>
-        </div>
-        <div className="space-y-3">
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={data.optionalFirst || false}
-              onChange={(e) => onUpdate(prev => ({ ...prev, optionalFirst: e.target.checked }))}
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-            />
+      {/* Optional First Preference Section - Compact */}
+      <div className="space-y-2">
+        <h3 className={`text-sm font-semibold ${getClasses('sectionHeader')} flex items-center`}>
+          <i className={`fas fa-star mr-2 text-xs ${getClasses('sectionHeaderIcon')}`}></i>
+          Optional Subject Priority
+        </h3>
+        <label className="flex items-start space-x-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={data.optionalFirst || false}
+            onChange={(e) => onUpdate(prev => ({ ...prev, optionalFirst: e.target.checked }))}
+            className="w-4 h-4 mt-0.5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+          />
+          <div>
             <span className="text-sm text-gray-700">
               Prioritize optional subject in cycles C1, C2, C6, C7, and C8
             </span>
-          </label>
-          <p className="text-xs text-gray-500 ml-7">
-            When checked, your optional subject will be given priority during these preparation cycles
-          </p>
-        </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Priority during these preparation cycles
+            </p>
+          </div>
+        </label>
       </div>
 
-      {/* Weekly Test Day Preference Section */}
-      <div className="space-y-4">
-        <div className="relative">
-          <div className={`absolute inset-0 ${getClasses('sectionHeaderBackground')} -z-10`}></div>
-          <h3 className={`text-base sm:text-lg font-semibold ${getClasses('sectionHeader')} pb-3 mb-4`}>
-            <i className={`fas fa-calendar-check mr-2 ${getClasses('sectionHeaderIcon')}`}></i>
-            Weekly Test Day Preference
-          </h3>
-        </div>
+      {/* Weekly Test Day Preference Section - Compact */}
+      <div className="space-y-2">
+        <h3 className={`text-sm font-semibold ${getClasses('sectionHeader')} flex items-center`}>
+          <i className={`fas fa-calendar-check mr-2 text-xs ${getClasses('sectionHeaderIcon')}`}></i>
+          Weekly Test Day
+        </h3>
         <ToggleGroup
           type="single"
           value={data.weeklyTestDayPreference || 'Sunday'}
           onValueChange={(value) => {
             if (value) onUpdate(prev => ({ ...prev, weeklyTestDayPreference: value }));
           }}
-          className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2"
+          className="grid grid-cols-4 sm:grid-cols-7 gap-1"
         >
           {weeklyTestDayOptions.map((day) => (
-            <ToggleGroupItem key={day} value={day} aria-label={day} className="h-auto flex-col min-h-[50px] p-2">
-              <span className="text-sm font-medium">{day}</span>
+            <ToggleGroupItem key={day} value={day} aria-label={day} className="h-auto min-h-[36px] p-1.5 text-center">
+              <span className="text-xs font-medium">{day.slice(0, 3)}</span>
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
         <p className="text-xs text-gray-500">
-          Choose your preferred day for weekly tests and assessments
+          Preferred day for weekly tests
         </p>
       </div>
     </div>
