@@ -94,7 +94,8 @@ export function useOnboarding() {
       case 'preview':
         return true;
       case 'payment':
-        return formData.payment.selectedPlan;
+        // Allow proceeding when a payment link is ready
+        return !!formData.payment.paymentLink;
       default:
         return true;
     }

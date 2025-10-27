@@ -33,27 +33,16 @@ export class OnboardingService {
 
   // Placeholder for generating payment link
   static async generatePaymentLink(data: OnboardingFormData): Promise<OnboardingFormData['payment']> {
-    console.log('📤 [PLACEHOLDER] Generating payment link for:', data);
+    console.log('📤 [PLACEHOLDER] Generating single fixed payment link for:', data);
     // TODO: Replace with actual API call to generate payment link
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock payment plans based on target year and commitment
-    const plans = [
-      { id: 'basic', name: 'Basic Plan', amount: 9999, duration: '6 months' },
-      { id: 'premium', name: 'Premium Plan', amount: 19999, duration: '12 months' },
-      { id: 'pro', name: 'Pro Plan', amount: 29999, duration: '18 months' }
-    ];
-    
-    // Select plan based on commitment level
-    const selectedPlan = data.commitment.timeCommitment >= 8 ? 'pro' : 
-                        data.commitment.timeCommitment >= 6 ? 'premium' : 'basic';
-    const plan = plans.find(p => p.id === selectedPlan) || plans[0];
-    
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Return a single fixed-price plan of ₹499
     return {
-      paymentLink: `https://payments.helios.com/checkout/${Date.now()}`,
+      paymentLink: `https://payments.helios.com/checkout/helios-sp-499-${Date.now()}`,
       paymentStatus: 'pending',
-      selectedPlan: plan.name,
-      amount: plan.amount
+      selectedPlan: 'Helios Study Planner',
+      amount: 499
     };
   }
 
