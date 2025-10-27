@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
+import dayjs from 'dayjs';
+import { planCycles } from 'helios-scheduler';
 
 const PreviewStep: React.FC<StepProps> = ({ formData }) => {
   const { personalInfo, targetYear, commitment, confidenceLevel, preview } = formData;
@@ -18,6 +20,58 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
       default: return 'Study Cycle';
     }
   };
+
+  const getCycleColor = (cycleType: string) => {
+    switch (cycleType) {
+      case 'C1': return '#2F6FED';
+      case 'C2': return '#1B9AAA';
+      case 'C3': return '#8E6CFF';
+      case 'C4': return '#F77062';
+      case 'C5': return '#FF9F1C';
+      case 'C5.b': return '#F94144';
+      case 'C6': return '#2A9D8F';
+      case 'C7': return '#E76F51';
+      case 'C8': return '#264653';
+      default: return '#6C757D';
+    }
+  };
+
+  const plannedCycles = useMemo(() => {
+    const target = parseInt(formData.targetYear.targetYear || String(new Date().getFullYear() + 2));
+    const start = dayjs(formData.targetYear.startDate || new Date());
+    try {
+      const prelims = dayjs(`${target}-05-20`);
+      const mains = dayjs(`${target}-09-20`);
+      const result = planCycles({
+        optionalSubject: {
+          subjectCode: formData.commitment.upscOptionalSubject,
+          subjectNname: 'Optional',
+          examFocus: 'MainsOnly',
+          topics: [],
+          baselineMinutes: 0
+        },
+        startDate: start,
+        targetYear: target,
+        prelimsExamDate: prelims,
+        mainsExamDate: mains,
+        constraints: {
+          optionalSubjectCode: formData.commitment.upscOptionalSubject,
+          confidenceMap: {},
+          optionalFirst: formData.commitment.optionalFirst,
+          catchupDay: 6,
+          testDay: 0,
+          workingHoursPerDay: formData.commitment.timeCommitment,
+          breaks: [],
+          testMinutes: formData.commitment.testMinutes,
+        },
+        subjects: [],
+        relativeAllocationWeights: {}
+      });
+      return result.schedules;
+    } catch {
+      return [];
+    }
+  }, [formData.targetYear, formData.commitment]);
 
   return (
     <StepLayout
@@ -242,23 +296,118 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
         </div>
       </div>
 
-      {/* Cycles and Descriptions */}
-      {Array.isArray(preview.raw_helios_data?.cycles) && preview.raw_helios_data.cycles.length > 0 && (
-        <div style={{ marginBottom: '32px' }}>
-          <h3 className="ms-font-subtitle" style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}>
-            Cycle Timeline
-          </h3>
-          <div style={{ background: 'var(--ms-blue-light)', border: '1px solid var(--ms-blue)', padding: 16, borderRadius: 8 }}>
-            <ul style={{ margin: 0, paddingLeft: 18 }}>
-              {preview.raw_helios_data.cycles.map((c: any) => (
-                <li key={`${c.cycleType}-${c.startDate}`}>
-                  <strong>{c.cycleType}</strong> — {getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}
-                </li>
-              ))}
-            </ul>
+      {/* Cycle Timeline */}
+      {plannedCycles.length > 0 && (() => {
+        const parsed = plannedCycles
+          .map((c: any) => ({
+            ...c,
+            start: dayjs(c.startDate),
+            end: dayjs(c.endDate)
+          }))
+          .sort((a: any, b: any) => a.start.valueOf() - b.start.valueOf());
+        const earliest = parsed[0].start;
+        const latest = parsed.reduce((acc: any, c: any) => (c.end.isAfter(acc) ? c.end : acc), parsed[0].end);
+        const totalDays = Math.max(latest.diff(earliest, 'day', true), 1);
+        const segments = parsed.map((c: any) => {
+          const offsetDays = Math.max(c.start.diff(earliest, 'day', true), 0);
+          const durationDays = Math.max(c.end.diff(c.start, 'day', true), 1);
+          const leftPercent = (offsetDays / totalDays) * 100;
+          const widthPercent = Math.max((durationDays / totalDays) * 100, 2);
+          return {
+            key: `${c.cycleType}-${c.startDate}`,
+            label: getCycleDescription(c.cycleType),
+            leftPercent,
+            widthPercent,
+            color: getCycleColor(c.cycleType),
+            startLabel: c.start.format('MMM D'),
+            endLabel: c.end.format('MMM D')
+          };
+        });
+        return (
+          <div style={{ marginBottom: '32px' }}>
+            <h3 className="ms-font-subtitle" style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}>
+              Preparation Timeline
+            </h3>
+            <div
+              style={{
+                background: 'var(--ms-blue-light)',
+                border: '1px solid var(--ms-blue)',
+                borderRadius: 8,
+                padding: 12
+              }}
+            >
+              <div
+                style={{
+                  maxHeight: 360,
+                  overflowY: 'auto',
+                  position: 'relative',
+                  paddingLeft: 24
+                }}
+              >
+                {/* vertical guide line */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: 8,
+                    top: 0,
+                    bottom: 0,
+                    width: 2,
+                    background: '#e5e7eb'
+                  }}
+                />
+                {segments.map((seg: any) => (
+                  <div key={seg.key} style={{ position: 'relative', marginBottom: 16 }}>
+                    {/* label and dates */}
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                      <div style={{ fontWeight: 700, color: seg.color }}>{seg.label}</div>
+                      <div style={{ fontSize: 12, color: 'var(--ms-blue)' }}>
+                        {seg.startLabel} — {seg.endLabel}
+                      </div>
+                    </div>
+                    {/* per-item timeline bar showing relative position and duration */}
+                    <div
+                      title={`${seg.label}: ${seg.startLabel} → ${seg.endLabel}`}
+                      style={{
+                        position: 'relative',
+                        height: 10,
+                        marginTop: 6,
+                        background: '#f5f7fa',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: 6,
+                        overflow: 'hidden'
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: `${seg.leftPercent}%`,
+                          width: `${seg.widthPercent}%`,
+                          top: 0,
+                          bottom: 0,
+                          background: seg.color,
+                          opacity: 0.9
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginTop: 6,
+                  fontSize: 12,
+                  color: 'var(--ms-blue)'
+                }}
+              >
+                <span>{earliest.format('MMM D, YYYY')}</span>
+                <span>{latest.format('MMM D, YYYY')}</span>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Next Steps */}
       <div 
