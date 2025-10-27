@@ -170,59 +170,6 @@ def convert_helios_to_preview(helios_plan, student_id):
     )
 
 
-# All conversion logic removed - UI now handles raw Haskell data directly
-    if not readable_subjects:
-        readable_subjects = ["General Studies", "Current Affairs"]
-    
-    # Calculate duration from weekly plans
-    duration_weeks = len(weekly_plans) if weekly_plans else 4
-    
-    # Calculate study hours from tasks (rough estimate)
-    total_minutes = 0
-    for week_plan in weekly_plans:
-        daily_plans = week_plan.get("daily_plans", [])
-        for daily_plan in daily_plans:
-            tasks = daily_plan.get("tasks", [])
-            for task in tasks:
-                duration = task.get("duration_minutes", 0)
-                total_minutes += duration
-    
-    # Convert to hours per week average
-    study_hours = (total_minutes / 60) / max(duration_weeks, 1) if total_minutes > 0 else 40
-    
-    # Build the converted block
-    converted_block = {
-        "title": helios_block.get("block_title", "Study Block"),
-        "subjects": readable_subjects[:5],  # Limit to 5 subjects
-        "duration_weeks": duration_weeks,
-        "study_hours": study_hours,
-        "revision_hours": study_hours * 0.2,  # 20% for revision
-        "practice_hours": study_hours * 0.15,  # 15% for practice
-        "test_hours": study_hours * 0.1,      # 10% for tests
-        # No category field - let frontend use cycleType for visualization
-        "cycle_id": None,
-        "cycle_name": None,
-        "cycle_type": None,
-        "cycle_order": None,
-        "cycle_description": None
-    }
-    
-    # Extract cycle information directly from the block (populated by Haskell)
-    cycle_id = helios_block.get("cycle_id")
-    if cycle_id:
-        converted_block.update({
-            "cycle_id": str(cycle_id),
-            "cycle_name": helios_block.get("cycle_name"),
-            "cycle_type": helios_block.get("cycle_type"),
-            "cycle_order": helios_block.get("cycle_order"),
-            "cycle_description": None  # Not available at block level
-        })
-    
-    return converted_block
-
-
-
-
 @router.post("/students/{student_id}/payment", response_model=S.PaymentResponse)
 async def create_payment(student_id: str, payload: S.PaymentInput) -> S.PaymentResponse:
     await update_section(student_id, "payment", payload.dict())
