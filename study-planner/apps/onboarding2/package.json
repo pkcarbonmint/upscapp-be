@@ -12,7 +12,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "helios-ts": "workspace:*",
-    "helios-scheduler": "workspace:*"
+    "helios-scheduler": "workspace:*",
+    "dayjs": "^1.11.13"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

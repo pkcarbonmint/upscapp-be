@@ -76,6 +76,79 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     }
   ];
 
+  const plannedCycles = useMemo(() => {
+    const target = parseInt(formData.targetYear.targetYear || String(new Date().getFullYear() + 2));
+    const start = dayjs(formData.targetYear.startDate || new Date());
+    try {
+      const prelims = dayjs(`${target}-05-20`);
+      const mains = dayjs(`${target}-09-20`);
+      const result = planCycles({
+        optionalSubject: {
+          subjectCode: formData.commitment.upscOptionalSubject,
+          subjectNname: 'Optional',
+          examFocus: 'MainsOnly',
+          topics: [],
+          baselineMinutes: 0
+        },
+        startDate: start,
+        targetYear: target,
+        prelimsExamDate: prelims,
+        mainsExamDate: mains,
+        constraints: {
+          optionalSubjectCode: formData.commitment.upscOptionalSubject,
+          confidenceMap: {},
+          optionalFirst: formData.commitment.optionalFirst,
+          catchupDay: 6,
+          testDay: 0,
+          workingHoursPerDay: formData.commitment.timeCommitment,
+          breaks: [],
+          testMinutes: formData.commitment.testMinutes,
+        },
+        subjects: [],
+        relativeAllocationWeights: {}
+      });
+      return result.schedules;
+    } catch {
+      return [];
+    }
+  }, [formData.targetYear, formData.commitment]);
+
+  const getCyclesForYear = (year: string) => {
+    const target = parseInt(year);
+    const start = dayjs(formData.targetYear.startDate || new Date());
+    try {
+      const prelims = dayjs(`${target}-05-20`);
+      const mains = dayjs(`${target}-09-20`);
+      return planCycles({
+        optionalSubject: {
+          subjectCode: formData.commitment.upscOptionalSubject,
+          subjectNname: 'Optional',
+          examFocus: 'MainsOnly',
+          topics: [],
+          baselineMinutes: 0
+        },
+        startDate: start,
+        targetYear: target,
+        prelimsExamDate: prelims,
+        mainsExamDate: mains,
+        constraints: {
+          optionalSubjectCode: formData.commitment.upscOptionalSubject,
+          confidenceMap: {},
+          optionalFirst: formData.commitment.optionalFirst,
+          catchupDay: 6,
+          testDay: 0,
+          workingHoursPerDay: formData.commitment.timeCommitment,
+          breaks: [],
+          testMinutes: formData.commitment.testMinutes,
+        },
+        subjects: [],
+        relativeAllocationWeights: {}
+      }).schedules;
+    } catch {
+      return [];
+    }
+  };
+
   return (
     <StepLayout
       icon="📅"
@@ -115,44 +188,13 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             >
               {option.year}
             </div>
-            <div 
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                marginBottom: '16px'
-              }}
-            >
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Foundation:</strong> Now - Jan {option.year}
-              </div>
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Prelims:</strong> Feb - May {option.year}
-              </div>
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Mains:</strong> May - Aug {option.year}
-              </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '16px' }}>
+              {getCyclesForYear(option.year).map(c => (
+                <span key={`${option.year}-${c.cycleType}-${c.startDate}`}
+                  style={{ background: 'rgba(255,255,255,0.2)', padding: '6px 10px', borderRadius: '999px', fontSize: '12px' }}>
+                  {c.cycleType}
+                </span>
+              ))}
             </div>
             <div 
               style={{

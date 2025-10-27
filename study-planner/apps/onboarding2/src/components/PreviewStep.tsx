@@ -388,6 +388,24 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
         </div>
       </div>
 
+      {/* Cycles and Descriptions */}
+      {Array.isArray(preview.raw_helios_data?.cycles) && preview.raw_helios_data.cycles.length > 0 && (
+        <div style={{ marginBottom: '32px' }}>
+          <h3 className="ms-font-subtitle" style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}>
+            Cycle Timeline
+          </h3>
+          <div style={{ background: 'var(--ms-blue-light)', border: '1px solid var(--ms-blue)', padding: 16, borderRadius: 8 }}>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              {preview.raw_helios_data.cycles.map((c: any) => (
+                <li key={`${c.cycleType}-${c.startDate}`}>
+                  <strong>{c.cycleType}</strong> — {getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {/* Next Steps */}
       <div 
         style={{

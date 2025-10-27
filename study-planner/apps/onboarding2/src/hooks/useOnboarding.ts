@@ -1,21 +1,23 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { OnboardingFormData, OnboardingStep } from '@/types';
+// Load subjects from helios-ts so we can prefill confidence to 'average'
+import { loadAllSubjects } from 'helios-ts';
 import { OnboardingService } from '@/services/onboardingService';
 
 const initialFormData: OnboardingFormData = {
   personalInfo: {
-    fullName: 'John Doe',
-    email: 'john.doe@example.com',
-    phoneNumber: '+91 98765 43210',
-    presentLocation: 'Delhi',
-    graduationStream: 'Engineering',
+    fullName: 'Test Student',
+    email: 'test@example.com',
+    phoneNumber: '+91 99999 99999',
+    presentLocation: 'New Delhi',
+    graduationStream: 'engineering',
     collegeUniversity: 'IIT Delhi',
-    yearOfPassing: 2022,
-    about: 'Passionate about civil services and public administration'
+    yearOfPassing: 2023,
+    about: 'Quick walkthrough profile'
   },
   targetYear: {
-    targetYear: '2026',
-    startDate: new Date('2024-12-01')
+    targetYear: String(new Date().getFullYear() + 2),
+    startDate: new Date()
   },
   commitment: {
     timeCommitment: 8,
@@ -169,6 +171,24 @@ export function useOnboarding() {
       setCurrentStep(steps[currentIndex - 1]);
     }
   }, [getCurrentStepIndex]);
+
+  // Prefill confidence to 'average' (3 stars) for all subjects from helios-ts
+  useEffect(() => {
+    if (Object.keys(formData.confidenceLevel).length === 0) {
+      (async () => {
+        try {
+          const subjects = await loadAllSubjects(formData.commitment.upscOptionalSubject);
+          const defaults = subjects.reduce<Record<string, number>>((acc, subject) => {
+            acc[subject.subjectCode] = 3; // Average by default
+            return acc;
+          }, {});
+          setFormData(prev => ({ ...prev, confidenceLevel: defaults }));
+        } catch (e) {
+          // ignore errors and keep empty map
+        }
+      })();
+    }
+  }, [formData.confidenceLevel, formData.commitment.upscOptionalSubject]);
 
   return {
     currentStep,
