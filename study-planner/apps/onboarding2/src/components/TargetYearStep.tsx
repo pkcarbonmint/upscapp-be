@@ -254,80 +254,141 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               .map((c: any) => ({
                 ...c,
                 start: dayjs(c.startDate),
-                end: dayjs(c.endDate)
+                end: dayjs(c.endDate),
+                cycleType: c.cycleType
               }))
               .sort((a: any, b: any) => a.start.valueOf() - b.start.valueOf());
-            const earliest = parsed[0].start;
-            const latest = parsed.reduce((acc: any, c: any) => (c.end.isAfter(acc) ? c.end : acc), parsed[0].end);
-            const totalDays = Math.max(latest.diff(earliest, 'day', true), 1);
-            const segments = parsed.map((c: any) => {
-              const offsetDays = Math.max(c.start.diff(earliest, 'day', true), 0);
-              const durationDays = Math.max(c.end.diff(c.start, 'day', true), 1);
-              const leftPercent = (offsetDays / totalDays) * 100;
-              const widthPercent = Math.max((durationDays / totalDays) * 100, 2);
-              return {
-                key: `${c.cycleType}-${c.startDate}`,
-                label: getCycleDescription(c.cycleType),
-                leftPercent,
-                widthPercent,
-                color: getCycleColor(c.cycleType),
-                startLabel: c.start.format('MMM D'),
-                endLabel: c.end.format('MMM D')
-              };
-            });
+            
             return (
-              <div style={{ marginTop: 16 }}>
-                <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Timeline</div>
-                <div
-                  style={{
-                    position: 'relative',
-                    height: 56,
-                    background: 'var(--ms-white)',
-                    border: '1px dashed var(--ms-blue)',
-                    borderRadius: 8,
-                    overflow: 'hidden'
-                  }}
-                >
-                  {segments.map((seg: any) => (
-                    <div
-                      key={seg.key}
-                      title={`${seg.label}: ${seg.startLabel} → ${seg.endLabel}`}
-                      style={{
-                        position: 'absolute',
-                        top: 8,
-                        left: `${seg.leftPercent}%`,
-                        width: `calc(${seg.widthPercent}% - 2px)`,
-                        height: 40,
-                        background: seg.color,
-                        color: '#fff',
-                        borderRadius: 6,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        overflow: 'hidden',
-                        padding: '0 8px'
-                      }}
-                    >
-                      {seg.label}
-                    </div>
-                  ))}
+              <div style={{ marginTop: 24 }}>
+                <div style={{ 
+                  fontWeight: 600, 
+                  color: 'var(--ms-blue)', 
+                  marginBottom: 16,
+                  fontSize: '18px'
+                }}>
+                  📚 Preparation Timeline
                 </div>
                 <div
                   style={{
+                    background: 'var(--ms-white)',
+                    borderRadius: 8,
+                    padding: '16px',
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    marginTop: 6,
-                    fontSize: 12,
-                    color: 'var(--ms-blue)'
+                    flexDirection: 'column',
+                    gap: '12px'
                   }}
                 >
-                  <span>{earliest.format('MMM D, YYYY')}</span>
-                  <span>{latest.format('MMM D, YYYY')}</span>
+                  {parsed.map((cycle: any, index: number) => {
+                    const duration = cycle.end.diff(cycle.start, 'day');
+                    const weeks = Math.round(duration / 7);
+                    const label = getCycleDescription(cycle.cycleType);
+                    const color = getCycleColor(cycle.cycleType);
+                    
+                    return (
+                      <div
+                        key={`${cycle.cycleType}-${cycle.startDate}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '16px',
+                          padding: '12px',
+                          background: 'rgba(0, 120, 212, 0.03)',
+                          borderRadius: 8,
+                          border: '1px solid rgba(0, 120, 212, 0.1)',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(0, 120, 212, 0.08)';
+                          e.currentTarget.style.transform = 'translateX(4px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(0, 120, 212, 0.03)';
+                          e.currentTarget.style.transform = 'translateX(0)';
+                        }}
+                      >
+                        {/* Cycle number badge */}
+                        <div
+                          style={{
+                            minWidth: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            background: color,
+                            color: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            fontSize: '14px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                          }}
+                        >
+                          {index + 1}
+                        </div>
+                        
+                        {/* Cycle info */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div
+                            style={{
+                              fontWeight: 600,
+                              fontSize: '15px',
+                              color: color,
+                              marginBottom: '4px'
+                            }}
+                          >
+                            {label}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: '13px',
+                              color: '#666',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '12px',
+                              flexWrap: 'wrap'
+                            }}
+                          >
+                            <span>
+                              📅 {cycle.start.format('MMM D, YYYY')} → {cycle.end.format('MMM D, YYYY')}
+                            </span>
+                            <span style={{ 
+                              color: color,
+                              fontWeight: 600,
+                              background: `${color}15`,
+                              padding: '2px 8px',
+                              borderRadius: 4
+                            }}>
+                              {weeks} weeks
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Visual duration bar */}
+                        <div
+                          style={{
+                            width: '120px',
+                            height: '8px',
+                            background: '#E1E1E1',
+                            borderRadius: 4,
+                            overflow: 'hidden',
+                            position: 'relative'
+                          }}
+                        >
+                          <div
+                            style={{
+                              position: 'absolute',
+                              left: 0,
+                              top: 0,
+                              height: '100%',
+                              width: '100%',
+                              background: `linear-gradient(90deg, ${color}AA, ${color})`,
+                              borderRadius: 4
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
