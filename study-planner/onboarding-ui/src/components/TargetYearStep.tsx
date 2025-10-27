@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { IWFTargetYear } from '../types';
 import { isFeatureEnabled } from '../config/featureFlags';
 import { useTheme } from '../hooks/useTheme';
+import { CycleType } from 'helios-scheduler';
 
 interface TargetYearStepProps {
   data: IWFTargetYear;
@@ -19,6 +20,76 @@ interface IWFTargetYearOption {
   recommendedIntensity: 'LowIntensity' | 'MediumIntensity' | 'HighIntensity';
   successProbability: number;
   prelimsDate: Date; // Actual prelims date for validation
+}
+
+interface CycleInfo {
+  name: string;
+  startDate: string;
+  endDate: string;
+  duration: string;
+  type: CycleType;
+}
+
+// Helper function to get cycle display name
+function getCycleName(cycleType: CycleType): string {
+  switch (cycleType) {
+    case CycleType.C1: return "NCERT Foundation";
+    case CycleType.C2: return "Comprehensive Foundation";
+    case CycleType.C3: return "Mains Revision Pre-Prelims";
+    case CycleType.C4: return "Prelims Reading";
+    case CycleType.C5: return "Prelims Revision";
+    case CycleType.C5B: return "Prelims Rapid Revision";
+    case CycleType.C6: return "Mains Revision";
+    case CycleType.C7: return "Mains Rapid Revision";
+    case CycleType.C8: return "Mains Foundation";
+    default: return cycleType;
+  }
+}
+
+
+// Helper function to get cycles for a target year
+function getCyclesForTargetYear(targetYear: string): CycleInfo[] {
+  try {
+    // Mock cycle data based on target year and available time
+    const mockCycles: CycleInfo[] = [];
+    
+    if (targetYear === "2026") {
+      // Short timeline - accelerated cycles
+      mockCycles.push(
+        { name: getCycleName(CycleType.C5), startDate: "Oct 27", endDate: "Apr 15", duration: "5.5 months", type: CycleType.C5 },
+        { name: getCycleName(CycleType.C5B), startDate: "Apr 16", endDate: "May 14", duration: "4 weeks", type: CycleType.C5B },
+        { name: getCycleName(CycleType.C6), startDate: "May 15", endDate: "Jul 31", duration: "2.5 months", type: CycleType.C6 },
+        { name: getCycleName(CycleType.C7), startDate: "Aug 01", endDate: "Sep 15", duration: "6 weeks", type: CycleType.C7 }
+      );
+    } else if (targetYear === "2027") {
+      // Medium timeline - balanced approach
+      mockCycles.push(
+        { name: getCycleName(CycleType.C2), startDate: "Oct 27", endDate: "Dec 31", duration: "9 weeks", type: CycleType.C2 },
+        { name: getCycleName(CycleType.C4), startDate: "Jan 01", endDate: "Mar 31", duration: "3 months", type: CycleType.C4 },
+        { name: getCycleName(CycleType.C5), startDate: "Apr 01", endDate: "May 05", duration: "5 weeks", type: CycleType.C5 },
+        { name: getCycleName(CycleType.C5B), startDate: "May 06", endDate: "May 14", duration: "9 days", type: CycleType.C5B },
+        { name: getCycleName(CycleType.C6), startDate: "May 15", endDate: "Jul 31", duration: "2.5 months", type: CycleType.C6 },
+        { name: getCycleName(CycleType.C7), startDate: "Aug 01", endDate: "Sep 15", duration: "6 weeks", type: CycleType.C7 }
+      );
+    } else if (targetYear === "2028") {
+      // Long timeline - comprehensive approach
+      mockCycles.push(
+        { name: getCycleName(CycleType.C1), startDate: "Oct 27", endDate: "Jan 26", duration: "3 months", type: CycleType.C1 },
+        { name: getCycleName(CycleType.C2), startDate: "Jan 27", endDate: "Oct 31", duration: "9 months", type: CycleType.C2 },
+        { name: getCycleName(CycleType.C3), startDate: "Nov 01", endDate: "Dec 31", duration: "2 months", type: CycleType.C3 },
+        { name: getCycleName(CycleType.C4), startDate: "Jan 01", endDate: "Mar 31", duration: "3 months", type: CycleType.C4 },
+        { name: getCycleName(CycleType.C5), startDate: "Apr 01", endDate: "May 05", duration: "5 weeks", type: CycleType.C5 },
+        { name: getCycleName(CycleType.C5B), startDate: "May 06", endDate: "May 14", duration: "9 days", type: CycleType.C5B },
+        { name: getCycleName(CycleType.C6), startDate: "May 15", endDate: "Jul 31", duration: "2.5 months", type: CycleType.C6 },
+        { name: getCycleName(CycleType.C7), startDate: "Aug 01", endDate: "Sep 15", duration: "6 weeks", type: CycleType.C7 }
+      );
+    }
+    
+    return mockCycles;
+  } catch (error) {
+    console.warn(`Failed to generate cycles for ${targetYear}:`, error);
+    return [];
+  }
 }
 
 // Mock data matching Elm app structure
@@ -69,6 +140,8 @@ interface TargetYearOptionProps {
 
 const TargetYearOption: React.FC<TargetYearOptionProps> = ({ option, isSelected, onSelect }) => {
   const { getClasses } = useTheme();
+  const cycles = getCyclesForTargetYear(option.targetYear);
+  
   const getGradientClass = (year: string): string => {
     switch (year) {
       case "2026": return "bg-gradient-to-br from-red-400 to-red-600";
@@ -126,29 +199,32 @@ const TargetYearOption: React.FC<TargetYearOptionProps> = ({ option, isSelected,
           {option.targetYear}
         </h2>
         
-        {/* Timeline sections */}
-        <div className="space-y-2 text-sm">
-          <div className="bg-white bg-opacity-25 rounded-md p-2">
-            <strong className="font-semibold text-gray-800">Foundation</strong>
-            <br />
-            <span className="text-gray-700 opacity-90">
-              {option.foundationStartDate} - {option.prelimsStartDate}
-            </span>
-          </div>
-          <div className="bg-white bg-opacity-25 rounded-md p-2">
-            <strong className="font-semibold text-gray-800">Prelims</strong>
-            <br />
-            <span className="text-gray-700 opacity-90">
-              {option.prelimsStartDate} - {option.prelimsEndDate}
-            </span>
-          </div>
-          <div className="bg-white bg-opacity-25 rounded-md p-2">
-            <strong className="font-semibold text-gray-800">Mains</strong>
-            <br />
-            <span className="text-gray-700 opacity-90">
-              {option.mainsStartDate} - {option.mainsEndDate}
-            </span>
-          </div>
+        {/* Cycles Display */}
+        <div className="space-y-1 text-xs">
+          <div className="text-white font-semibold mb-2">Study Cycles</div>
+          {cycles.length > 0 ? (
+            <div className="max-h-32 overflow-y-auto space-y-1">
+              {cycles.map((cycle, index) => (
+                <div key={index} className="bg-white bg-opacity-20 rounded-md p-2 text-left">
+                  <div className="font-semibold text-gray-800 text-xs truncate">
+                    {cycle.name}
+                  </div>
+                  <div className="text-gray-700 opacity-90 text-xs">
+                    {cycle.startDate} - {cycle.endDate}
+                  </div>
+                  <div className="text-gray-600 opacity-80 text-xs">
+                    {cycle.duration}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white bg-opacity-20 rounded-md p-2">
+              <div className="text-gray-700 text-xs">
+                Cycles will be generated based on your start date
+              </div>
+            </div>
+          )}
         </div>
       </div>
       

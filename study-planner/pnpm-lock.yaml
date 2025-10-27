@@ -334,6 +334,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.18
       docx:
         specifier: ^9.5.1
         version: 9.5.1
