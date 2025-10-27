@@ -37,10 +37,10 @@ const Header: React.FC<HeaderProps> = ({ currentStep, totalSteps }) => {
                 fontSize: '18px'
               }}
             >
-              H
+              LM
             </div>
             <div>
-              <div className="ms-font-subtitle">Helios Study Assistant</div>
+              <div className="ms-font-subtitle">La Mentory UPSC Study Planner</div>
               <div 
                 className="ms-font-caption" 
                 style={{ opacity: 0.9 }}

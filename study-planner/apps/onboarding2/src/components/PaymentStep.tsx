@@ -80,8 +80,8 @@ const PaymentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               {[
                 'Personalized study schedule',
                 'Subject-wise preparation plan',
-                'Progress tracking and analytics',
                 'Comprehensive study materials',
+                'Progress tracking and analytics',
                 'Expert mentor support'
               ].map((feature, index) => (
                 <li 
@@ -100,50 +100,6 @@ const PaymentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-      
-        {/* Payment Link Section */}
-        {payment.paymentLink && (
-          <div 
-            style={{
-              background: 'var(--ms-blue-light)',
-              border: '1px solid var(--ms-blue)',
-              borderRadius: '12px',
-              padding: '24px'
-            }}
-          >
-            <div 
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '16px',
-                color: 'var(--ms-blue)',
-                fontWeight: '600',
-                fontSize: '18px'
-              }}
-            >
-              <span>🎯</span>
-              <span>Ready to Begin!</span>
-            </div>
-            <div 
-              style={{
-                color: 'var(--ms-gray-130)',
-                fontSize: '14px',
-                lineHeight: '1.6',
-                marginBottom: '20px'
-              }}
-            >
-              <p style={{ margin: '0 0 12px' }}>
-                Your personalized UPSC preparation plan is ready. Complete your payment to get started.
-              </p>
-              <p style={{ margin: '0' }}>
-                You'll receive comprehensive support throughout your journey with personalized guidance 
-                and proven study methodologies.
-              </p>
-            </div>
-            
             <div 
               style={{
                 background: 'var(--ms-white)',
@@ -186,7 +142,7 @@ const PaymentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 Click the link below to complete your payment securely:
               </div>
               <a
-                href={payment.paymentLink}
+                href={payment.paymentLink||undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -217,7 +173,8 @@ const PaymentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               </a>
             </div>
           </div>
-        )}
+        </div>
+      
       </div>
       
       <div 

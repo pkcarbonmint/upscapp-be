@@ -25,8 +25,8 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   return (
     <StepLayout
       icon="⏰"
-      title="Study Commitment" 
-      description="How many hours can you dedicate to studying daily?"
+      title="Study Preferences"
+      description="Tell us about your study preferences and strategies so we can tailor your plan"
     >
       <div style={{ marginBottom: 16 }}>
         <label className="ms-label">Select Optional Subject</label>
@@ -41,8 +41,8 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           <Options />
         </select>
       </div>
-      <h2 
-        className="ms-font-subtitle" 
+      <h2
+        className="ms-font-subtitle"
         style={{ marginBottom: '16px', color: 'var(--ms-gray-130)' }}
       >
         Choose Your Daily Study Hours
