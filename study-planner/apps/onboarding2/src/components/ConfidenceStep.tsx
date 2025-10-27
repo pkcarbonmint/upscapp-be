@@ -1,8 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StepProps, SubjectCategory } from '@/types';
 import StepLayout from './StepLayout';
+import StarRating from './StarRating';
+import { SubjectLoader } from 'helios-ts';
 
 const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSubjects = async () => {
+      try {
+        const allSubjects = SubjectLoader.loadAllSubjects();
+        setSubjects(allSubjects);
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to load subjects:', error);
+        setLoading(false);
+      }
+    };
+    loadSubjects();
+  }, []);
+
   const confidenceLevels = [
     { value: 1, label: 'Beginner' },
     { value: 2, label: 'Basic' },
@@ -11,28 +30,34 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     { value: 5, label: 'Expert' }
   ];
 
+  // Group subjects by category
   const subjectCategories: SubjectCategory[] = [
     {
       name: 'Core GS Subjects',
-      subjects: [
-        { key: 'history', name: 'History' },
-        { key: 'geography', name: 'Geography' },
-        { key: 'polity', name: 'Indian Polity' },
-        { key: 'economy', name: 'Indian Economy' },
-        { key: 'environment', name: 'Environment & Ecology' },
-        { key: 'science', name: 'Science & Technology' }
-      ]
+      subjects: subjects
+        .filter(subject => subject.category === 'Macro' && subject.examFocus === 'BothExams')
+        .map(subject => ({
+          key: subject.subjectCode,
+          name: subject.subjectName
+        }))
     },
     {
-      name: 'Additional Areas',
-      subjects: [
-        { key: 'international', name: 'International Relations' },
-        { key: 'security', name: 'Internal Security' },
-        { key: 'society', name: 'Society & Social Justice' },
-        { key: 'governance', name: 'Governance' },
-        { key: 'ethics', name: 'Ethics & Integrity' },
-        { key: 'current', name: 'Current Affairs' }
-      ]
+      name: 'Prelims Only Subjects',
+      subjects: subjects
+        .filter(subject => subject.category === 'Macro' && subject.examFocus === 'PrelimsOnly')
+        .map(subject => ({
+          key: subject.subjectCode,
+          name: subject.subjectName
+        }))
+    },
+    {
+      name: 'Mains Only Subjects',
+      subjects: subjects
+        .filter(subject => subject.category === 'Macro' && subject.examFocus === 'MainsOnly')
+        .map(subject => ({
+          key: subject.subjectCode,
+          name: subject.subjectName
+        }))
     }
   ];
 
@@ -75,11 +100,27 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     return 'Not determined';
   };
 
+  if (loading) {
+    return (
+      <StepLayout
+        icon="📊"
+        title="Subject Confidence Assessment"
+        description="Loading subjects..."
+      >
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          <div style={{ fontSize: '18px', color: 'var(--ms-gray-90)' }}>
+            Loading subjects from helios-ts library...
+          </div>
+        </div>
+      </StepLayout>
+    );
+  }
+
   return (
     <StepLayout
       icon="📊"
       title="Subject Confidence Assessment"
-      description="Rate your confidence level in key UPSC subjects"
+      description="Rate your confidence level in key UPSC subjects (default: Average)"
     >
       {subjectCategories.map((category) => (
         <div key={category.name} style={{ marginBottom: '32px' }}>
@@ -96,49 +137,21 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             {category.subjects.map((subject) => (
               <div key={subject.key}>
                 <label className="ms-label">{subject.name}</label>
-                <div 
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(5, 1fr)',
-                    gap: '8px',
-                    marginTop: '8px'
-                  }}
-                >
-                  {confidenceLevels.map((level) => (
-                    <button
-                      key={level.value}
-                      type="button"
-                      style={{
-                        padding: '8px 4px',
-                        border: '1px solid var(--ms-gray-60)',
-                        borderRadius: '4px',
-                        background: formData.confidenceLevel[subject.key] === level.value 
-                          ? 'var(--ms-blue)' 
-                          : 'var(--ms-white)',
-                        color: formData.confidenceLevel[subject.key] === level.value 
-                          ? 'var(--ms-white)' 
-                          : 'var(--ms-gray-130)',
-                        cursor: 'pointer',
-                        transition: 'all 0.1s ease',
-                        fontSize: '11px',
-                        textAlign: 'center',
-                        fontWeight: '500'
-                      }}
-                      onClick={() => handleConfidenceChange(subject.key, level.value)}
-                      onMouseEnter={(e) => {
-                        if (formData.confidenceLevel[subject.key] !== level.value) {
-                          e.currentTarget.style.borderColor = 'var(--ms-blue)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (formData.confidenceLevel[subject.key] !== level.value) {
-                          e.currentTarget.style.borderColor = 'var(--ms-gray-60)';
-                        }
-                      }}
-                    >
-                      {level.label}
-                    </button>
-                  ))}
+                <div style={{ marginTop: '8px' }}>
+                  <StarRating
+                    value={formData.confidenceLevel[subject.key] || 3} // Default to 3 (Average)
+                    onChange={(value) => handleConfidenceChange(subject.key, value)}
+                    size="medium"
+                  />
+                  <div 
+                    style={{
+                      fontSize: '12px',
+                      color: 'var(--ms-gray-90)',
+                      marginTop: '4px'
+                    }}
+                  >
+                    {confidenceLevels.find(level => level.value === (formData.confidenceLevel[subject.key] || 3))?.label || 'Average'}
+                  </div>
                 </div>
               </div>
             ))}

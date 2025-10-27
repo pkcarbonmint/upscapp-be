@@ -4,8 +4,10 @@
   "description": "UPSC Study Planner Backend and Frontend Applications",
   "private": true,
   "workspaces": [
-    "helios-ts",
+    "libs/helios-ts",
+    "libs/helios-scheduler",
     "servers/helios-server",
+    "apps/onboarding2",
     "onboarding-ui",
     "shared-ui-library",
     "faculty-ui",

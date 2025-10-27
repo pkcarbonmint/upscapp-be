@@ -4,38 +4,51 @@ import { OnboardingService } from '@/services/onboardingService';
 
 const initialFormData: OnboardingFormData = {
   personalInfo: {
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    presentLocation: '',
-    graduationStream: '',
-    collegeUniversity: '',
-    yearOfPassing: 2024,
-    about: ''
+    fullName: 'John Doe',
+    email: 'john.doe@example.com',
+    phoneNumber: '+91 98765 43210',
+    presentLocation: 'Delhi',
+    graduationStream: 'Engineering',
+    collegeUniversity: 'IIT Delhi',
+    yearOfPassing: 2022,
+    about: 'Passionate about civil services and public administration'
   },
   targetYear: {
-    targetYear: '',
-    startDate: undefined
+    targetYear: '2026',
+    startDate: new Date('2024-12-01')
   },
   commitment: {
-    timeCommitment: 6,
+    timeCommitment: 8,
     performance: {
-      history: '',
-      polity: '',
-      economy: '',
-      geography: '',
-      environment: '',
-      scienceTech: ''
+      history: 'Good',
+      polity: 'Average',
+      economy: 'Good',
+      geography: 'Average',
+      environment: 'Basic',
+      scienceTech: 'Good'
     },
     studyPreference: 'WeakSubjectsFirst',
     subjectApproach: 'DualSubject',
-    upscOptionalSubject: 'OPT-SOC',
+    upscOptionalSubject: 'OPT-PSIR',
     optionalFirst: false,
     weeklyTestDayPreference: 'Sunday',
     catchupDayPreference: 'Saturday',
     testMinutes: 180
   },
-  confidenceLevel: {},
+  confidenceLevel: {
+    history: 3,
+    geography: 3,
+    polity: 3,
+    economy: 3,
+    environment: 3,
+    science: 3,
+    international: 3,
+    security: 3,
+    society: 3,
+    governance: 3,
+    ethics: 3,
+    current: 3
+  },
   preview: {
     raw_helios_data: {},
     milestones: {
