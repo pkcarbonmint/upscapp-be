@@ -1,7 +1,4 @@
-type StudentIntake = any;
 type StudyPlan = any;
-type TimeCommitment = number;
-type ConfidenceLevel = number;
 
 import dayjs from 'dayjs';
 import { planCycles } from 'helios-scheduler';

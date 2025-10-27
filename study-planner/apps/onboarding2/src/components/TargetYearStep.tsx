@@ -87,41 +87,10 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     }
   }, [formData.targetYear, formData.commitment]);
 
-  const getCyclesForYear = (year: string) => {
-    const target = parseInt(year);
-    const start = dayjs(formData.targetYear.startDate || new Date());
-    try {
-      const prelims = dayjs(`${target}-05-20`);
-      const mains = dayjs(`${target}-09-20`);
-      return planCycles({
-        optionalSubject: {
-          subjectCode: formData.commitment.upscOptionalSubject,
-          subjectNname: 'Optional',
-          examFocus: 'MainsOnly',
-          topics: [],
-          baselineMinutes: 0
-        },
-        startDate: start,
-        targetYear: target,
-        prelimsExamDate: prelims,
-        mainsExamDate: mains,
-        constraints: {
-          optionalSubjectCode: formData.commitment.upscOptionalSubject,
-          confidenceMap: {},
-          optionalFirst: formData.commitment.optionalFirst,
-          catchupDay: 6,
-          testDay: 0,
-          workingHoursPerDay: formData.commitment.timeCommitment,
-          breaks: [],
-          testMinutes: formData.commitment.testMinutes,
-        },
-        subjects: [],
-        relativeAllocationWeights: {}
-      }).schedules;
-    } catch {
-      return [];
-    }
-  };
+  const yearOptions2 = yearOptions.map((opt) => ({
+    ...opt,
+    months: Math.ceil(dayjs(`${opt.year}-05-20`).diff(dayjs(), 'month', true))
+  }));
 
   return (
     <StepLayout
@@ -130,7 +99,7 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       description="Select when you want to appear for the UPSC exam"
     >
       <div className="choice-grid choice-grid-3">
-        {yearOptions.map((option) => {
+        {yearOptions2.map((option) => {
           const isSelected = formData.targetYear.targetYear === option.year;
           return (
             <div
@@ -267,7 +236,7 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           </div>
           {plannedCycles.length > 0 && (
             <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Calculated Cycles</div>
+              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Phases</div>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
                 {plannedCycles.map(c => (
                   <li key={`${c.cycleType}-${c.startDate}`}>{getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}</li>
