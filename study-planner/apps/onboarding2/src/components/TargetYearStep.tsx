@@ -4,6 +4,22 @@ import StepLayout from './StepLayout';
 import dayjs from 'dayjs';
 import { planCycles } from 'helios-scheduler';
 
+// Map cycle types to their descriptions
+const getCycleDescription = (cycleType: string): string => {
+  const descriptions: Record<string, string> = {
+    'C1': 'NCERT Foundation',
+    'C2': 'Comprehensive Foundation',
+    'C3': 'Mains Revision Pre-Prelims',
+    'C4': 'Prelims Reading',
+    'C5': 'Prelims Revision',
+    'C5.b': 'Prelims Rapid Revision',
+    'C6': 'Mains Revision',
+    'C7': 'Mains Rapid Revision',
+    'C8': 'Mains Foundation'
+  };
+  return descriptions[cycleType] || cycleType;
+};
+
 const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const handleYearSelect = (year: string) => {
     updateFormData({
@@ -151,7 +167,7 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               {getCyclesForYear(option.year).map(c => (
                 <span key={`${option.year}-${c.cycleType}-${c.startDate}`}
                   style={{ background: 'rgba(255,255,255,0.2)', padding: '6px 10px', borderRadius: '999px', fontSize: '12px' }}>
-                  {c.cycleType}
+                  {getCycleDescription(c.cycleType)}
                 </span>
               ))}
             </div>
