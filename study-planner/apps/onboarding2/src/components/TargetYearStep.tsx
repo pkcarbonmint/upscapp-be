@@ -5,6 +5,21 @@ import dayjs from 'dayjs';
 import { planCycles } from 'helios-scheduler';
 
 const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
+  const getCycleDescription = (cycleType: string) => {
+    switch (cycleType) {
+      case 'C1': return 'NCERT Foundation';
+      case 'C2': return 'Comprehensive Foundation';
+      case 'C3': return 'Mains Revision Pre-Prelims';
+      case 'C4': return 'Prelims Reading';
+      case 'C5': return 'Prelims Revision';
+      case 'C5.b': return 'Prelims Rapid Revision';
+      case 'C6': return 'Mains Revision';
+      case 'C7': return 'Rapid Mains';
+      case 'C8': return 'Mains Foundation';
+      default: return 'Study Cycle';
+    }
+  };
+
   const handleYearSelect = (year: string) => {
     updateFormData({
       targetYear: {
@@ -151,7 +166,7 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               {getCyclesForYear(option.year).map(c => (
                 <span key={`${option.year}-${c.cycleType}-${c.startDate}`}
                   style={{ background: 'rgba(255,255,255,0.2)', padding: '6px 10px', borderRadius: '999px', fontSize: '12px' }}>
-                  {c.cycleType}
+                  {getCycleDescription(String(c.cycleType))}
                 </span>
               ))}
             </div>
