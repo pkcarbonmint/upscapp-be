@@ -83,7 +83,7 @@ export class OnboardingService {
           raw_helios_data: {
             totalHours: planData.totalHours,
             subjects: planData.subjects,
-            cycles: planData.cycles,
+            cycles: planData.cycles, // may be a number or an array of schedules
             blocks: planData.blocks,
             studyPlan: planData.studyPlan
           },

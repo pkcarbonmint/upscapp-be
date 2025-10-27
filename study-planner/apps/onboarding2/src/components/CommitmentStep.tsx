@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StepProps, TimeCommitmentOption } from '@/types';
 import StepLayout from './StepLayout';
+import { getAllOptionalSubjects, type Subject } from 'helios-ts';
 
 const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const timeCommitmentOptions: TimeCommitmentOption[] = [
@@ -32,6 +33,19 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       title="Study Commitment"
       description="How many hours can you dedicate to studying daily?"
     >
+      <div style={{ marginBottom: 16 }}>
+        <label className="ms-label">Select Optional Subject</label>
+        <select
+          className="ms-select"
+          value={formData.commitment.upscOptionalSubject}
+          onChange={(e) => updateFormData({
+            commitment: { ...formData.commitment, upscOptionalSubject: e.target.value }
+          })}
+        >
+          {/* Load options dynamically */}
+          <Options />
+        </select>
+      </div>
       <h2 
         className="ms-font-subtitle" 
         style={{ marginBottom: '20px', color: 'var(--ms-gray-130)' }}
@@ -249,3 +263,25 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
 };
 
 export default CommitmentStep;
+
+// Separate component to fetch and render optional subject options
+function Options() {
+  const [options, setOptions] = useState<Subject[]>([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const list = await getAllOptionalSubjects();
+        setOptions(list);
+      } catch {
+        setOptions([]);
+      }
+    })();
+  }, []);
+  return (
+    <>
+      {options.map((s) => (
+        <option key={s.subjectCode} value={s.subjectCode}>{s.subjectName}</option>
+      ))}
+    </>
+  );
+}

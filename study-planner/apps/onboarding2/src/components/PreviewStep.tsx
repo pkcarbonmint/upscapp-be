@@ -4,6 +4,20 @@ import StepLayout from './StepLayout';
 
 const PreviewStep: React.FC<StepProps> = ({ formData }) => {
   const { personalInfo, targetYear, commitment, confidenceLevel, preview } = formData;
+  const getCycleDescription = (cycleType: string) => {
+    switch (cycleType) {
+      case 'C1': return 'NCERT Foundation';
+      case 'C2': return 'Comprehensive Foundation';
+      case 'C3': return 'Mains Revision Pre-Prelims';
+      case 'C4': return 'Prelims Reading';
+      case 'C5': return 'Prelims Revision';
+      case 'C5.b': return 'Prelims Rapid Revision';
+      case 'C6': return 'Mains Revision';
+      case 'C7': return 'Rapid Mains';
+      case 'C8': return 'Mains Foundation';
+      default: return 'Study Cycle';
+    }
+  };
 
   return (
     <StepLayout
@@ -114,7 +128,7 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
                   marginBottom: '4px'
                 }}
               >
-                {preview.raw_helios_data?.cycles || 3}
+                {Array.isArray(preview.raw_helios_data?.cycles) ? preview.raw_helios_data.cycles.length : (preview.raw_helios_data?.cycles || 3)}
               </div>
               <div style={{ fontSize: '12px', opacity: 0.9 }}>
                 Study Cycles
@@ -227,6 +241,24 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
           </div>
         </div>
       </div>
+
+      {/* Cycles and Descriptions */}
+      {Array.isArray(preview.raw_helios_data?.cycles) && preview.raw_helios_data.cycles.length > 0 && (
+        <div style={{ marginBottom: '32px' }}>
+          <h3 className="ms-font-subtitle" style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}>
+            Cycle Timeline
+          </h3>
+          <div style={{ background: 'var(--ms-blue-light)', border: '1px solid var(--ms-blue)', padding: 16, borderRadius: 8 }}>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              {preview.raw_helios_data.cycles.map((c: any) => (
+                <li key={`${c.cycleType}-${c.startDate}`}>
+                  <strong>{c.cycleType}</strong> — {getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Next Steps */}
       <div 
