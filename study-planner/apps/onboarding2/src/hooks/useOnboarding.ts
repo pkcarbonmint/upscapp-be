@@ -20,24 +20,37 @@ const initialFormData: OnboardingFormData = {
     startDate: new Date()
   },
   commitment: {
-    timeCommitment: 6,
+    timeCommitment: 8,
     performance: {
-      history: '',
-      polity: '',
-      economy: '',
-      geography: '',
-      environment: '',
-      scienceTech: ''
+      history: 'Good',
+      polity: 'Average',
+      economy: 'Good',
+      geography: 'Average',
+      environment: 'Basic',
+      scienceTech: 'Good'
     },
     studyPreference: 'WeakSubjectsFirst',
     subjectApproach: 'DualSubject',
-    upscOptionalSubject: 'OPT-SOC',
+    upscOptionalSubject: 'OPT-PSIR',
     optionalFirst: false,
     weeklyTestDayPreference: 'Sunday',
     catchupDayPreference: 'Saturday',
     testMinutes: 180
   },
-  confidenceLevel: {},
+  confidenceLevel: {
+    history: 3,
+    geography: 3,
+    polity: 3,
+    economy: 3,
+    environment: 3,
+    science: 3,
+    international: 3,
+    security: 3,
+    society: 3,
+    governance: 3,
+    ethics: 3,
+    current: 3
+  },
   preview: {
     raw_helios_data: {},
     milestones: {

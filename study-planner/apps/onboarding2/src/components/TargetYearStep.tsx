@@ -1,18 +1,59 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
-import dayjs from 'dayjs';
 import { planCycles } from 'helios-scheduler';
+import dayjs from 'dayjs';
 
 const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
+  const [cycles, setCycles] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
   const handleYearSelect = (year: string) => {
     updateFormData({
       targetYear: {
         ...formData.targetYear,
-        targetYear: year
+        targetYear: year,
+        startDate: new Date()
       }
     });
   };
+
+  const calculateCycles = async (targetYear: string) => {
+    if (!targetYear) return;
+    
+    setLoading(true);
+    try {
+      const startDate = dayjs();
+      const targetYearNum = parseInt(targetYear);
+      const prelimsExamDate = dayjs(`${targetYearNum}-05-26`); // Approximate prelims date
+      const mainsExamDate = dayjs(`${targetYearNum}-09-15`); // Approximate mains date
+
+      const context = {
+        startDate,
+        targetYear: targetYearNum,
+        prelimsExamDate,
+        mainsExamDate,
+        constraints: {
+          maxHoursPerDay: 10,
+          minHoursPerDay: 2,
+          preferredStudyDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        }
+      };
+
+      const result = planCycles(context);
+      setCycles(result);
+    } catch (error) {
+      console.error('Failed to calculate cycles:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (formData.targetYear.targetYear) {
+      calculateCycles(formData.targetYear.targetYear);
+    }
+  }, [formData.targetYear.targetYear]);
 
   const yearOptions = [
     {
@@ -192,52 +233,113 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             <span>📊</span>
             <span>Your Preparation Analysis</span>
           </div>
-          <div className="form-grid form-grid-3" style={{ marginTop: '12px' }}>
-            {yearOptions
-              .filter(option => option.year === formData.targetYear.targetYear)
-              .map(option => (
-                <React.Fragment key={option.year}>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Time Available:</strong><br />
-                    {option.months} months
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Recommended Intensity:</strong><br />
-                    {option.intensity}
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Success Probability:</strong><br />
-                    {option.probability}
-                  </div>
-                </React.Fragment>
-              ))}
-          </div>
-          {plannedCycles.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Calculated Cycles</div>
-              <ul style={{ margin: 0, paddingLeft: 18 }}>
-                {plannedCycles.map(c => (
-                  <li key={`${c.cycleType}-${c.startDate}`}>{c.cycleType}: {c.startDate} → {c.endDate}</li>
-                ))}
-              </ul>
+          
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '16px', color: 'var(--ms-gray-90)' }}>
+                Calculating study cycles...
+              </div>
+            </div>
+          ) : cycles ? (
+            <div>
+              <div className="form-grid form-grid-3" style={{ marginTop: '12px' }}>
+                {yearOptions
+                  .filter(option => option.year === formData.targetYear.targetYear)
+                  .map(option => (
+                    <React.Fragment key={option.year}>
+                      <div 
+                        style={{
+                          background: 'var(--ms-white)',
+                          padding: '12px',
+                          borderRadius: '4px'
+                        }}
+                      >
+                        <strong>Time Available:</strong><br />
+                        {option.months} months
+                      </div>
+                      <div 
+                        style={{
+                          background: 'var(--ms-white)',
+                          padding: '12px',
+                          borderRadius: '4px'
+                        }}
+                      >
+                        <strong>Recommended Intensity:</strong><br />
+                        {option.intensity}
+                      </div>
+                      <div 
+                        style={{
+                          background: 'var(--ms-white)',
+                          padding: '12px',
+                          borderRadius: '4px'
+                        }}
+                      >
+                        <strong>Success Probability:</strong><br />
+                        {option.probability}
+                      </div>
+                    </React.Fragment>
+                  ))}
+              </div>
+
+              {/* Study Cycles */}
+              <div style={{ marginTop: '24px' }}>
+                <h4 
+                  style={{
+                    color: 'var(--ms-blue)',
+                    marginBottom: '16px',
+                    fontSize: '16px',
+                    fontWeight: '600'
+                  }}
+                >
+                  Study Phases (Cycles)
+                </h4>
+                <div className="form-grid form-grid-2">
+                  {cycles.schedules?.map((cycle: any, index: number) => (
+                    <div 
+                      key={index}
+                      style={{
+                        background: 'var(--ms-white)',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--ms-gray-40)'
+                      }}
+                    >
+                      <div 
+                        style={{
+                          fontWeight: '600',
+                          color: 'var(--ms-blue)',
+                          marginBottom: '8px'
+                        }}
+                      >
+                        {cycle.cycleType}
+                      </div>
+                      <div 
+                        style={{
+                          fontSize: '12px',
+                          color: 'var(--ms-gray-90)',
+                          marginBottom: '4px'
+                        }}
+                      >
+                        {dayjs(cycle.startDate).format('MMM DD, YYYY')} - {dayjs(cycle.endDate).format('MMM DD, YYYY')}
+                      </div>
+                      <div 
+                        style={{
+                          fontSize: '11px',
+                          color: 'var(--ms-gray-70)'
+                        }}
+                      >
+                        {dayjs(cycle.endDate).diff(dayjs(cycle.startDate), 'day')} days
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+              <div style={{ fontSize: '16px', color: 'var(--ms-gray-90)' }}>
+                Select a target year to see your study plan
+              </div>
             </div>
           )}
         </div>

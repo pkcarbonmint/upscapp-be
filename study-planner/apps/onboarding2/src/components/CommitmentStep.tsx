@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StepProps, TimeCommitmentOption } from '@/types';
 import StepLayout from './StepLayout';
-import { getAllOptionalSubjects, type Subject } from 'helios-ts';
+import optionalSubjectsData from 'helios-ts/config/optional_subjects.json';
 
 const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
+  const [optionalSubjects, setOptionalSubjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    setOptionalSubjects(optionalSubjectsData.subjects);
+  }, []);
+
   const timeCommitmentOptions: TimeCommitmentOption[] = [
     { value: 2, label: '2-4 hours', description: 'Light preparation, part-time study' },
     { value: 4, label: '4-6 hours', description: 'Moderate preparation, balanced approach' },
@@ -17,6 +23,15 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       commitment: {
         ...formData.commitment,
         timeCommitment: value
+      }
+    });
+  };
+
+  const handleOptionalSubjectChange = (subjectCode: string) => {
+    updateFormData({
+      commitment: {
+        ...formData.commitment,
+        upscOptionalSubject: subjectCode
       }
     });
   };
@@ -148,6 +163,76 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Optional Subject Selection */}
+      <div style={{ marginTop: '32px' }}>
+        <h2 
+          className="ms-font-subtitle" 
+          style={{ marginBottom: '20px', color: 'var(--ms-gray-130)' }}
+        >
+          Select Your Optional Subject
+        </h2>
+        
+        <div style={{ marginBottom: '16px' }}>
+          <label className="ms-label">Optional Subject</label>
+          <select
+            value={formData.commitment.upscOptionalSubject}
+            onChange={(e) => handleOptionalSubjectChange(e.target.value)}
+            className="ms-input"
+            style={{ marginTop: '8px' }}
+          >
+            <option value="">Select an optional subject</option>
+            {optionalSubjects.map((subject) => (
+              <option key={subject.code} value={subject.code}>
+                {subject.name} ({subject.category})
+              </option>
+            ))}
+          </select>
+          <div 
+            style={{
+              fontSize: '12px',
+              color: 'var(--ms-gray-90)',
+              marginTop: '4px'
+            }}
+          >
+            Choose your optional subject for UPSC Mains examination
+          </div>
+        </div>
+
+        {formData.commitment.upscOptionalSubject && (
+          <div 
+            style={{
+              background: 'var(--ms-green-light)',
+              border: '1px solid var(--ms-green)',
+              borderRadius: '8px',
+              padding: '16px',
+              marginTop: '16px'
+            }}
+          >
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '8px',
+                color: 'var(--ms-green)',
+                fontWeight: '600'
+              }}
+            >
+              <span>✓</span>
+              <span>Selected: {optionalSubjects.find(s => s.code === formData.commitment.upscOptionalSubject)?.name}</span>
+            </div>
+            <div 
+              style={{
+                fontSize: '12px',
+                color: 'var(--ms-gray-90)'
+              }}
+            >
+              This subject will be included in your personalized study plan
+            </div>
+          </div>
+        )}
       </div>
       
       {formData.commitment.timeCommitment > 0 && (
