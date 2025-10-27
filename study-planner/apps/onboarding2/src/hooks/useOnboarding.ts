@@ -4,7 +4,8 @@ import { OnboardingFormData, OnboardingStep } from '@/types';
 import { loadAllSubjects } from 'helios-ts';
 import { OnboardingService } from '@/services/onboardingService';
 
-const initialFormData: OnboardingFormData = {
+// Sample data to enable a fast walkthrough out of the box
+const sampleFormData: OnboardingFormData = {
   personalInfo: {
     fullName: 'Test Student',
     email: 'test@example.com',
@@ -54,6 +55,57 @@ const initialFormData: OnboardingFormData = {
   }
 };
 
+// Empty structure used when demo mode is disabled
+const emptyFormData: OnboardingFormData = {
+  personalInfo: {
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    presentLocation: '',
+    graduationStream: '',
+    collegeUniversity: '',
+    yearOfPassing: new Date().getFullYear(),
+    about: ''
+  },
+  targetYear: {
+    targetYear: '',
+    startDate: undefined
+  },
+  commitment: {
+    timeCommitment: 0,
+    performance: {
+      history: '',
+      polity: '',
+      economy: '',
+      geography: '',
+      environment: '',
+      scienceTech: ''
+    },
+    studyPreference: '',
+    subjectApproach: '',
+    upscOptionalSubject: 'OPT-SOC',
+    optionalFirst: false,
+    weeklyTestDayPreference: 'Sunday',
+    catchupDayPreference: 'Saturday',
+    testMinutes: 180
+  },
+  confidenceLevel: {},
+  preview: {
+    raw_helios_data: {},
+    milestones: {
+      foundationToPrelimsDate: null,
+      prelimsToMainsDate: null
+    },
+    studyPlanId: null
+  },
+  payment: {
+    paymentLink: null,
+    paymentStatus: 'pending',
+    selectedPlan: '',
+    amount: 0
+  }
+};
+
 const steps: OnboardingStep[] = [
   'personal-info',
   'commitment',
@@ -65,8 +117,26 @@ const steps: OnboardingStep[] = [
 ];
 
 export function useOnboarding() {
+  // Enable demo defaults by default; allow disabling via env or query (?demo=0)
+  const isDemoEnabled = (() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('demo') === '0') return false;
+      if (params.get('demo') === '1') return true;
+      const envVal = (import.meta as any).env?.VITE_ONBOARDING2_DEMO;
+      if (typeof envVal === 'string') {
+        return envVal === '1' || envVal.toLowerCase() === 'true';
+      }
+    } catch {
+      // ignore
+    }
+    return true; // default ON for quick walkthroughs
+  })();
+
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('personal-info');
-  const [formData, setFormData] = useState<OnboardingFormData>(initialFormData);
+  const [formData, setFormData] = useState<OnboardingFormData>(
+    isDemoEnabled ? sampleFormData : emptyFormData
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -171,7 +241,14 @@ export function useOnboarding() {
           }, {});
           setFormData(prev => ({ ...prev, confidenceLevel: defaults }));
         } catch (e) {
-          // ignore errors and keep empty map
+          // Fallback: ensure at least 12 subjects to allow quick walkthrough
+          const fallbackCodes = [
+            'HIST', 'POL', 'ECON', 'GEO', 'ENV', 'SCI',
+            'CA', 'ETH', 'ESSAY', 'INTV', 'OPT-P1', 'OPT-P2'
+          ];
+          const defaults: Record<string, number> = {};
+          for (const code of fallbackCodes) defaults[code] = 3;
+          setFormData(prev => ({ ...prev, confidenceLevel: defaults }));
         }
       })();
     }
