@@ -65,9 +65,9 @@ src/
 ## Onboarding Steps
 
 1. **Personal Information**: Name, email, location, academic background
-2. **Target Year**: UPSC exam target year selection (2026, 2027, 2028)
-3. **Study Commitment**: Daily study hours commitment
-4. **Confidence Assessment**: Subject-wise confidence rating
+2. **Study Commitment**: Daily study hours commitment
+3. **Confidence Assessment**: Subject-wise confidence rating
+4. **Target Year**: UPSC exam target year selection (2026, 2027, 2028)
 5. **Preview**: Generated study plan overview
 6. **Complete**: Success confirmation and next steps
 
@@ -76,9 +76,9 @@ src/
 The app includes placeholder callbacks for server integration:
 
 - `OnboardingService.submitPersonalInfo()`
-- `OnboardingService.submitTargetYear()`
 - `OnboardingService.submitCommitment()`
 - `OnboardingService.submitConfidenceLevel()`
+- `OnboardingService.submitTargetYear()`
 - `OnboardingService.submitComplete()`
 
 Each step automatically calls the appropriate service method when the user proceeds.

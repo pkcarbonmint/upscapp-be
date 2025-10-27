@@ -34,12 +34,12 @@ function App() {
     switch (currentStep) {
       case 'personal-info':
         return <PersonalInfoStep {...stepProps} />;
-      case 'target-year':
-        return <TargetYearStep {...stepProps} />;
       case 'commitment':
         return <CommitmentStep {...stepProps} />;
       case 'confidence':
         return <ConfidenceStep {...stepProps} />;
+      case 'target-year':
+        return <TargetYearStep {...stepProps} />;
       case 'preview':
         return <PreviewStep {...stepProps} />;
       case 'complete':
@@ -52,9 +52,9 @@ function App() {
   const getStepNumber = () => {
     const stepMap = {
       'personal-info': 1,
-      'target-year': 2,
-      'commitment': 3,
-      'confidence': 4,
+      'commitment': 2,
+      'confidence': 3,
+      'target-year': 4,
       'preview': 5,
       'complete': 6
     };

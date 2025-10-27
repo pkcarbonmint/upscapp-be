@@ -48,9 +48,9 @@ const initialFormData: OnboardingFormData = {
 
 const steps: OnboardingStep[] = [
   'personal-info',
-  'target-year', 
   'commitment',
   'confidence',
+  'target-year',
   'preview',
   'complete'
 ];
@@ -76,12 +76,12 @@ export function useOnboarding() {
                formData.personalInfo.email && 
                formData.personalInfo.presentLocation &&
                formData.personalInfo.graduationStream;
-      case 'target-year':
-        return formData.targetYear.targetYear;
       case 'commitment':
         return formData.commitment.timeCommitment > 0;
       case 'confidence':
         return Object.keys(formData.confidenceLevel).length >= 12; // At least 12 subjects rated
+      case 'target-year':
+        return formData.targetYear.targetYear;
       case 'preview':
         return true;
       default:
@@ -101,14 +101,14 @@ export function useOnboarding() {
         case 'personal-info':
           await OnboardingService.submitPersonalInfo(formData.personalInfo);
           break;
-        case 'target-year':
-          await OnboardingService.submitTargetYear(formData.targetYear);
-          break;
         case 'commitment':
           await OnboardingService.submitCommitment(formData.commitment);
           break;
         case 'confidence':
           await OnboardingService.submitConfidenceLevel(formData.confidenceLevel);
+          break;
+        case 'target-year':
+          await OnboardingService.submitTargetYear(formData.targetYear);
           break;
         case 'preview':
           await OnboardingService.submitComplete(formData);
