@@ -1,7 +1,7 @@
 import type { Dayjs } from "dayjs";
 import { S2Constraints, S2Slot, S2SlotType, S2Subject, S2Task, S2Topic, S2TopicWithMinutes, S2WeekDay } from "./types";
-import * as fs from 'fs';
-import * as path from 'path';
+// import * as fs from 'fs';
+// import * as path from 'path';
 
 export function planSubjectTasks(
   from: Dayjs,
@@ -354,83 +354,83 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
         console.log(`#### verifyAllDays: Day ${key} (${date.format('dddd')}) is not covered`);
         if (exitIfFailed && missngCOunt >= 3) {
           // Capture inputs for createTasks_v2 and write to JSON file for debugging
-          const debugData = {
-            timestamp: new Date().toISOString(),
-            errorMessage: `Too many days are not covered: ${missngCOunt}`,
-            inputs: {
-              subject: {
-                subjectCode: subject.subjectCode,
-                subjectNname: subject.subjectNname,
-                examFocus: subject.examFocus,
-                topics: subject.topics.map(topic => ({
-                  code: topic.code,
-                  baselineMinutes: topic.baselineMinutes,
-                  subtopics: topic.subtopics.map(subtopic => ({
-                    code: subtopic.code,
-                    name: subtopic.name,
-                    baselineMinutes: subtopic.baselineMinutes,
-                    isEssential: subtopic.isEssential,
-                    priorityLevel: subtopic.priorityLevel
-                  }))
-                })),
-                baselineMinutes: subject.baselineMinutes
-              },
-              sortedTopics: sortedTopics.map(topic => ({
-                code: topic.code,
-                baselineMinutes: topic.baselineMinutes,
-                subtopics: topic.subtopics.map(subtopic => ({
-                  code: subtopic.code,
-                  name: subtopic.name,
-                  baselineMinutes: subtopic.baselineMinutes,
-                  isEssential: subtopic.isEssential,
-                  priorityLevel: subtopic.priorityLevel
-                }))
-              })),
-              from: from.format('YYYY-MM-DD HH:mm:ss'),
-              to: to.format('YYYY-MM-DD HH:mm:ss'),
-              constraints: {
-                cycleType: constraints.cycleType,
-                dayMaxMinutes: constraints.dayMaxMinutes,
-                dayMinMinutes: constraints.dayMinMinutes,
-                catchupDay: constraints.catchupDay,
-                testDay: constraints.testDay,
-                testMinutes: constraints.testMinutes,
-                taskEffortSplit: constraints.taskEffortSplit
-              }
-            },
-            generatedTasks: tasks.map(task => ({
-              topicCode: task.topicCode,
-              subjectCode: task.subjectCode,
-              taskType: task.taskType,
-              minutes: task.minutes,
-              date: task.date.format('YYYY-MM-DD HH:mm:ss')
-            })),
-            missingDays: Array(allDays).fill(0).map((_, i) => {
-              const date = from.add(i, 'day');
-              const key = date.format('YYYY-MM-DD');
-              return {
-                date: key,
-                isCovered: taskDate2CountMap.has(key)
-              };
-            })
-          };
+          // const debugData = {
+          //   timestamp: new Date().toISOString(),
+          //   errorMessage: `Too many days are not covered: ${missngCOunt}`,
+          //   inputs: {
+          //     subject: {
+          //       subjectCode: subject.subjectCode,
+          //       subjectNname: subject.subjectNname,
+          //       examFocus: subject.examFocus,
+          //       topics: subject.topics.map(topic => ({
+          //         code: topic.code,
+          //         baselineMinutes: topic.baselineMinutes,
+          //         subtopics: topic.subtopics.map(subtopic => ({
+          //           code: subtopic.code,
+          //           name: subtopic.name,
+          //           baselineMinutes: subtopic.baselineMinutes,
+          //           isEssential: subtopic.isEssential,
+          //           priorityLevel: subtopic.priorityLevel
+          //         }))
+          //       })),
+          //       baselineMinutes: subject.baselineMinutes
+          //     },
+          //     sortedTopics: sortedTopics.map(topic => ({
+          //       code: topic.code,
+          //       baselineMinutes: topic.baselineMinutes,
+          //       subtopics: topic.subtopics.map(subtopic => ({
+          //         code: subtopic.code,
+          //         name: subtopic.name,
+          //         baselineMinutes: subtopic.baselineMinutes,
+          //         isEssential: subtopic.isEssential,
+          //         priorityLevel: subtopic.priorityLevel
+          //       }))
+          //     })),
+          //     from: from.format('YYYY-MM-DD HH:mm:ss'),
+          //     to: to.format('YYYY-MM-DD HH:mm:ss'),
+          //     constraints: {
+          //       cycleType: constraints.cycleType,
+          //       dayMaxMinutes: constraints.dayMaxMinutes,
+          //       dayMinMinutes: constraints.dayMinMinutes,
+          //       catchupDay: constraints.catchupDay,
+          //       testDay: constraints.testDay,
+          //       testMinutes: constraints.testMinutes,
+          //       taskEffortSplit: constraints.taskEffortSplit
+          //     }
+          //   },
+          //   generatedTasks: tasks.map(task => ({
+          //     topicCode: task.topicCode,
+          //     subjectCode: task.subjectCode,
+          //     taskType: task.taskType,
+          //     minutes: task.minutes,
+          //     date: task.date.format('YYYY-MM-DD HH:mm:ss')
+          //   })),
+          //   missingDays: Array(allDays).fill(0).map((_, i) => {
+          //     const date = from.add(i, 'day');
+          //     const key = date.format('YYYY-MM-DD');
+          //     return {
+          //       date: key,
+          //       isCovered: taskDate2CountMap.has(key)
+          //     };
+          //   })
+          // };
 
           // Write debug data to file
-          const debugDir = path.join(__dirname, '..', 'debug');
-          if (!fs.existsSync(debugDir)) {
-            fs.mkdirSync(debugDir, { recursive: true });
-          }
-          
-          const debugFile = path.join(debugDir, `createTasks_v2_debug_${Date.now()}.json`);
-          fs.writeFileSync(debugFile, JSON.stringify(debugData, null, 2));
-          
-          console.log(`Debug data written to: ${debugFile}`);
+          // const debugDir = path.join(__dirname, '..', 'debug');
+          // if (!fs.existsSync(debugDir)) {
+          //   fs.mkdirSync(debugDir, { recursive: true });
+          // }
+          // 
+          // const debugFile = path.join(debugDir, `createTasks_v2_debug_${Date.now()}.json`);
+          // fs.writeFileSync(debugFile, JSON.stringify(debugData, null, 2));
+          // 
+          // console.log(`Debug data written to: ${debugFile}`);
           console.log(`Missing days count: ${missngCOunt}`);
           console.log(`Total days: ${allDays}`);
           console.log(`Tasks generated: ${tasks.length}`);
 
-            process.exit(1);
-          throw new Error(`Too many days are not covered: ${missngCOunt}. Debug data saved to: ${debugFile}`);
+          //  process.exit(1);
+          throw new Error(`Too many days are not covered: ${missngCOunt}.`);
         
 
         }

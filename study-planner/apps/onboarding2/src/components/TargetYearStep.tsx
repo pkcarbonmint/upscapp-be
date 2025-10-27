@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
+import { planCycles, CycleType, PlanningContext, S2WeekDay } from 'helios-scheduler';
+import dayjs from 'dayjs';
 
 const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const handleYearSelect = (year: string) => {
@@ -12,26 +14,84 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     });
   };
 
-  const yearOptions = [
-    {
-      year: '2026',
-      months: 16,
-      intensity: 'High (8-10 hrs/day)',
-      probability: '65%'
-    },
-    {
-      year: '2027', 
-      months: 28,
-      intensity: 'Moderate (6-8 hrs/day)',
-      probability: '78%'
-    },
-    {
-      year: '2028',
-      months: 40,
-      intensity: 'Comfortable (4-6 hrs/day)', 
-      probability: '85%'
-    }
-  ];
+  // Generate year options dynamically from 2026 to 2028
+  const yearOptions = useMemo(() => {
+    const startDate = dayjs(); // Current date
+    const years = ['2026', '2027', '2028'];
+    
+    return years.map(year => {
+      const targetYear = parseInt(year);
+      const prelimsExamDate = dayjs(`${targetYear}-05-16`); // Assumed prelims exam date
+      const mainsExamDate = dayjs(`${targetYear}-09-15`); // Assumed mains exam date
+      
+      // Create a minimal planning context to get cycle information
+      const context: PlanningContext = {
+        startDate,
+        targetYear,
+        prelimsExamDate,
+        mainsExamDate,
+        optionalSubject: {
+          subjectCode: 'OPT',
+          subjectNname: 'Optional',
+          examFocus: 'MainsOnly',
+          topics: [],
+          baselineMinutes: 0
+        },
+        subjects: [],
+        relativeAllocationWeights: {},
+        constraints: {
+          optionalSubjectCode: 'OPT',
+          confidenceMap: {},
+          optionalFirst: false,
+          catchupDay: S2WeekDay.Sunday,
+          testDay: S2WeekDay.Saturday,
+          workingHoursPerDay: 8,
+          breaks: [],
+          testMinutes: 180
+        }
+      };
+
+      try {
+        const result = planCycles(context);
+        const monthsAvailable = Math.round(result.totalTimeAvailable);
+        
+        // Determine intensity based on available months
+        let intensity: string;
+        let probability: string;
+        
+        if (monthsAvailable >= 30) {
+          intensity = 'Comfortable (4-6 hrs/day)';
+          probability = '85%';
+        } else if (monthsAvailable >= 20) {
+          intensity = 'Moderate (6-8 hrs/day)';
+          probability = '78%';
+        } else if (monthsAvailable >= 12) {
+          intensity = 'High (8-10 hrs/day)';
+          probability = '65%';
+        } else {
+          intensity = 'Very High (10-12 hrs/day)';
+          probability = '50%';
+        }
+        
+        return {
+          year,
+          months: monthsAvailable,
+          intensity,
+          probability,
+          cycles: result.schedules
+        };
+      } catch (error) {
+        // Fallback if planning fails
+        return {
+          year,
+          months: prelimsExamDate.diff(startDate, 'month'),
+          intensity: 'Variable',
+          probability: 'N/A',
+          cycles: []
+        };
+      }
+    });
+  }, []);
 
   return (
     <StepLayout
@@ -80,36 +140,71 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 marginBottom: '16px'
               }}
             >
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Foundation:</strong> Now - Jan {option.year}
-              </div>
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Prelims:</strong> Feb - May {option.year}
-              </div>
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Mains:</strong> May - Aug {option.year}
-              </div>
+              {option.cycles && option.cycles.length > 0 ? (
+                option.cycles.slice(0, 3).map((cycle, idx) => {
+                  const cycleNames: Record<string, string> = {
+                    [CycleType.C1]: 'NCERT Foundation',
+                    [CycleType.C2]: 'Foundation',
+                    [CycleType.C3]: 'Revision',
+                    [CycleType.C4]: 'Prelims Reading',
+                    [CycleType.C5]: 'Prelims Revision',
+                    [CycleType.C5B]: 'Rapid Revision',
+                    [CycleType.C6]: 'Mains Revision',
+                    [CycleType.C7]: 'Mains Rapid',
+                    [CycleType.C8]: 'Mains Foundation'
+                  };
+                  
+                  const startDate = dayjs(cycle.startDate);
+                  const endDate = dayjs(cycle.endDate);
+                  
+                  return (
+                    <div 
+                      key={idx}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        fontSize: '12px'
+                      }}
+                    >
+                      <strong>{cycleNames[cycle.cycleType] || cycle.cycleType}:</strong> {startDate.format('MMM YYYY')} - {endDate.format('MMM YYYY')}
+                    </div>
+                  );
+                })
+              ) : (
+                <>
+                  <div 
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      padding: '8px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    <strong>Foundation:</strong> Now - Jan {option.year}
+                  </div>
+                  <div 
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      padding: '8px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    <strong>Prelims:</strong> Feb - May {option.year}
+                  </div>
+                  <div 
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      padding: '8px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    <strong>Mains:</strong> May - Aug {option.year}
+                  </div>
+                </>
+              )}
             </div>
             <div 
               style={{

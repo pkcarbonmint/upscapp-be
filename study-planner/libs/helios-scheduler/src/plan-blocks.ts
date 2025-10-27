@@ -1,7 +1,7 @@
 import type { Dayjs } from "dayjs";
 import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode } from "./types";
-import * as fs from 'fs';
-import * as path from 'path';
+// import * as fs from 'fs';
+// import * as path from 'path';
 /*
  * PSEUDO CODE FOR TIME DISTRIBUTION AMONG SUBJECTS
  * 
@@ -109,7 +109,7 @@ const availableMinutes = Array.from({ length: numAvailableDays }, (_, index) => 
 const exitOnFail = false;
 function verifyBlocks(  timeWindowFrom: Dayjs,
   timeWindowTo: Dayjs,
-  subjects: S2Subject[],
+  _subjects: S2Subject[],
   constraints: BlockAllocConstraints
 , blocks: BlockSlot[]): void {
 
@@ -137,42 +137,42 @@ function verifyBlocks(  timeWindowFrom: Dayjs,
       }
         // write the time window, subjects, constraints, and blocks to a file
         // and exit if exitOnFail is true
-        const debugData = {
-          timestamp: new Date().toISOString(),
-          errorMessage: `No blocks allocated for day ${date.format('YYYY-MM-DD')}`,
-            timeWindowFrom: timeWindowFrom.format('YYYY-MM-DD HH:mm:ss'),
-            timeWindowTo: timeWindowTo.format('YYYY-MM-DD HH:mm:ss'),
-            subjects,
-            constraints,
-            generatedBlocks: blocks,
-            problematicDay: {
-              date: date.format('YYYY-MM-DD'),
-              dayOfWeek: date.format('dddd'),
-              isCatchupDay: isCatchupDay(date, constraints.catchupDay),
-              isTestDay: isTestDay(date, constraints.testDay),
-              blocksOnDay: blocksOnTheDay.length,
-              totalMinutes: totalMinutes
-            }
-          }
+        // const debugData = {
+        //   timestamp: new Date().toISOString(),
+        //   errorMessage: `No blocks allocated for day ${date.format('YYYY-MM-DD')}`,
+        //     timeWindowFrom: timeWindowFrom.format('YYYY-MM-DD HH:mm:ss'),
+        //     timeWindowTo: timeWindowTo.format('YYYY-MM-DD HH:mm:ss'),
+        //     subjects,
+        //     constraints,
+        //     generatedBlocks: blocks,
+        //     problematicDay: {
+        //       date: date.format('YYYY-MM-DD'),
+        //       dayOfWeek: date.format('dddd'),
+        //       isCatchupDay: isCatchupDay(date, constraints.catchupDay),
+        //       isTestDay: isTestDay(date, constraints.testDay),
+        //       blocksOnDay: blocksOnTheDay.length,
+        //       totalMinutes: totalMinutes
+        //     }
+        //   }
 
         // Write debug data to file
-        const debugDir = path.join(__dirname, '..', 'debug');
-        if (!fs.existsSync(debugDir)) {
-          fs.mkdirSync(debugDir, { recursive: true });
-        }
-        
-        const debugFile = path.join(debugDir, `planBlocks_debug_${Date.now()}.json`);
-        fs.writeFileSync(debugFile, JSON.stringify(debugData, null, 2));
-        
-        console.log(`Debug data written to: ${debugFile}`);
+        // const debugDir = path.join(__dirname, '..', 'debug');
+        // if (!fs.existsSync(debugDir)) {
+        //   fs.mkdirSync(debugDir, { recursive: true });
+        // }
+        // 
+        // const debugFile = path.join(debugDir, `planBlocks_debug_${Date.now()}.json`);
+        // fs.writeFileSync(debugFile, JSON.stringify(debugData, null, 2));
+        // 
+        // console.log(`Debug data written to: ${debugFile}`);
         console.log(`No blocks allocated for dates: ${failureDates.map(date => date.format('YYYY-MM-DD')).join(', ')}`);
         console.log(`Total blocks generated: ${blocks.length}`);
         console.log(`Blocks on this day: ${blocksOnTheDay.length}`);
 
-        if (exitOnFail) {
-          process.exit(1);
-        }
-        throw new Error(`No blocks allocated for day ${date.format('YYYY-MM-DD')}. Debug data saved to: ${debugFile}`);
+        // if (exitOnFail) {
+        //   process.exit(1);
+        // }
+        throw new Error(`No blocks allocated for day ${date.format('YYYY-MM-DD')}.`);
     }
   });
 }
