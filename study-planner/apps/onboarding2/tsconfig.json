@@ -23,7 +23,10 @@
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@helios/helios-ts/*": ["../../libs/helios-ts/*"],
+      "@helios/helios-scheduler": ["../../libs/helios-scheduler/src"],
+      "@helios/helios-scheduler/*": ["../../libs/helios-scheduler/src/*"]
     }
   },
   "include": ["src"],

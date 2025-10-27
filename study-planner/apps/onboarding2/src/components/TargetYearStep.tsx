@@ -1,8 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
+import { planCycles, PlanningContext, CycleType } from '@helios/helios-scheduler';
+import dayjs from 'dayjs';
 
 const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
+  const [cyclesByYear, setCyclesByYear] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    // Calculate cycles for each year option
+    const today = dayjs();
+    const years = ['2026', '2027', '2028'];
+    
+    const calculatedCycles: Record<string, any> = {};
+    years.forEach(year => {
+      const targetYear = parseInt(year);
+      const prelimsDate = dayjs(`${targetYear}-05-15`); // Approximate prelims date
+      const mainsDate = dayjs(`${targetYear}-09-15`); // Approximate mains date
+      
+      const context: PlanningContext = {
+        startDate: today,
+        targetYear,
+        prelimsExamDate: prelimsDate,
+        mainsExamDate: mainsDate,
+        optionalSubject: { subjectCode: 'OPT-SOC', subjectNname: 'Sociology', examFocus: 'MainsOnly', topics: [], baselineMinutes: 0 },
+        constraints: {
+          optionalSubjectCode: 'OPT-SOC',
+          confidenceMap: {},
+          optionalFirst: false,
+          catchupDay: 6,
+          testDay: 0,
+          workingHoursPerDay: 6,
+          breaks: [],
+          testMinutes: 180
+        },
+        subjects: [],
+        relativeAllocationWeights: {}
+      };
+
+      try {
+        const result = planCycles(context);
+        calculatedCycles[year] = result;
+      } catch (error) {
+        console.error(`Error calculating cycles for ${year}:`, error);
+        calculatedCycles[year] = { schedules: [] };
+      }
+    });
+
+    setCyclesByYear(calculatedCycles);
+  }, []);
+
   const handleYearSelect = (year: string) => {
     updateFormData({
       targetYear: {
@@ -32,6 +79,21 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       probability: '85%'
     }
   ];
+
+  const getCycleDescription = (cycleType: CycleType): string => {
+    const descriptions: Record<CycleType, string> = {
+      [CycleType.C1]: 'NCERT Foundation - Building basic concepts',
+      [CycleType.C2]: 'Comprehensive Foundation - Deep subject coverage',
+      [CycleType.C3]: 'Mains Revision Pre-Prelims - Strategic preparation',
+      [CycleType.C4]: 'Prelims Reading - Intensive prelims focus',
+      [CycleType.C5]: 'Prelims Revision - Final prelims preparation',
+      [CycleType.C5B]: 'Prelims Rapid Revision - Last minute prep',
+      [CycleType.C6]: 'Mains Revision - Mains focused study',
+      [CycleType.C7]: 'Mains Rapid Revision - Final mains push',
+      [CycleType.C8]: 'Mains Foundation - Direct mains preparation'
+    };
+    return descriptions[cycleType] || 'Study cycle';
+  };
 
   return (
     <StepLayout
@@ -76,40 +138,60 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '8px',
-                marginBottom: '16px'
+                gap: '6px',
+                marginBottom: '16px',
+                maxHeight: '200px',
+                overflowY: 'auto'
               }}
             >
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Foundation:</strong> Now - Jan {option.year}
-              </div>
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Prelims:</strong> Feb - May {option.year}
-              </div>
-              <div 
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              >
-                <strong>Mains:</strong> May - Aug {option.year}
-              </div>
+              {cyclesByYear[option.year]?.schedules?.length > 0 ? (
+                cyclesByYear[option.year].schedules.map((cycle: any, idx: number) => (
+                  <div 
+                    key={idx}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      padding: '6px 10px',
+                      borderRadius: '4px',
+                      fontSize: '11px'
+                    }}
+                  >
+                    <strong>{cycle.cycleType}:</strong> {dayjs(cycle.startDate).format('MMM D')} - {dayjs(cycle.endDate).format('MMM D, YYYY')}
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div 
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      padding: '8px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    <strong>Foundation:</strong> Now - Jan {option.year}
+                  </div>
+                  <div 
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      padding: '8px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    <strong>Prelims:</strong> Feb - May {option.year}
+                  </div>
+                  <div 
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      padding: '8px 12px',
+                      borderRadius: '4px',
+                      fontSize: '12px'
+                    }}
+                  >
+                    <strong>Mains:</strong> May - Aug {option.year}
+                  </div>
+                </>
+              )}
             </div>
             <div 
               style={{

@@ -8,6 +8,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@helios/helios-ts': path.resolve(__dirname, '../../libs/helios-ts'),
+      '@helios/helios-scheduler': path.resolve(__dirname, '../../libs/helios-scheduler'),
     },
   },
 })

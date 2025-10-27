@@ -1,6 +1,7 @@
 import React from 'react';
 import { StepProps, TimeCommitmentOption } from '@/types';
 import StepLayout from './StepLayout';
+import optionalSubjectsData from '@helios/helios-ts/src/config/optional_subjects.json';
 
 const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const timeCommitmentOptions: TimeCommitmentOption[] = [
@@ -11,11 +12,22 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     { value: 10, label: '10+ hours', description: 'Full-time preparation, maximum dedication' }
   ];
 
+  const optionalSubjects = optionalSubjectsData.subjects;
+
   const handleCommitmentSelect = (value: number) => {
     updateFormData({
       commitment: {
         ...formData.commitment,
         timeCommitment: value
+      }
+    });
+  };
+
+  const handleOptionalSubjectChange = (value: string) => {
+    updateFormData({
+      commitment: {
+        ...formData.commitment,
+        upscOptionalSubject: value
       }
     });
   };
@@ -38,6 +50,30 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       >
         Choose Your Daily Study Hours
       </h2>
+      
+      <div style={{ marginBottom: '32px' }}>
+        <label className="ms-label">Optional Subject</label>
+        <select
+          className="ms-select"
+          value={formData.commitment.upscOptionalSubject}
+          onChange={(e) => handleOptionalSubjectChange(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '12px',
+            fontSize: '14px',
+            borderRadius: '4px',
+            border: '1px solid var(--ms-gray-60)',
+            background: 'var(--ms-white)'
+          }}
+        >
+          <option value="">Select Optional Subject</option>
+          {optionalSubjects.map((subject) => (
+            <option key={subject.code} value={subject.code}>
+              {subject.name} ({subject.category})
+            </option>
+          ))}
+        </select>
+      </div>
       
       <div className="choice-grid choice-grid-2">
         {timeCommitmentOptions.map((option) => (

@@ -4,17 +4,17 @@ import { OnboardingService } from '@/services/onboardingService';
 
 const initialFormData: OnboardingFormData = {
   personalInfo: {
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    presentLocation: '',
-    graduationStream: '',
-    collegeUniversity: '',
-    yearOfPassing: 2024,
+    fullName: 'Rajesh Kumar',
+    email: 'rajesh.kumar@example.com',
+    phoneNumber: '+91 98765 43210',
+    presentLocation: 'New Delhi',
+    graduationStream: 'engineering',
+    collegeUniversity: 'Delhi University',
+    yearOfPassing: 2023,
     about: ''
   },
   targetYear: {
-    targetYear: '',
+    targetYear: '2027',
     startDate: undefined
   },
   commitment: {
@@ -86,7 +86,7 @@ export function useOnboarding() {
       case 'commitment':
         return formData.commitment.timeCommitment > 0;
       case 'confidence':
-        return Object.keys(formData.confidenceLevel).length >= 12; // At least 12 subjects rated
+        return Object.keys(formData.confidenceLevel).length > 0; // At least one subject rated
       case 'target-year':
         return formData.targetYear.targetYear;
       case 'preview':

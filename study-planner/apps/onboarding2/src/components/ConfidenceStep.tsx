@@ -1,40 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StepProps, SubjectCategory } from '@/types';
 import StepLayout from './StepLayout';
+import { SubjectLoader } from '@helios/helios-ts/src/services/SubjectLoader';
 
 const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
-  const confidenceLevels = [
-    { value: 1, label: 'Beginner' },
-    { value: 2, label: 'Basic' },
-    { value: 3, label: 'Average' },
-    { value: 4, label: 'Good' },
-    { value: 5, label: 'Expert' }
-  ];
+  const [subjectCategories, setSubjectCategories] = useState<SubjectCategory[]>([]);
 
-  const subjectCategories: SubjectCategory[] = [
-    {
-      name: 'Core GS Subjects',
-      subjects: [
-        { key: 'history', name: 'History' },
-        { key: 'geography', name: 'Geography' },
-        { key: 'polity', name: 'Indian Polity' },
-        { key: 'economy', name: 'Indian Economy' },
-        { key: 'environment', name: 'Environment & Ecology' },
-        { key: 'science', name: 'Science & Technology' }
-      ]
-    },
-    {
-      name: 'Additional Areas',
-      subjects: [
-        { key: 'international', name: 'International Relations' },
-        { key: 'security', name: 'Internal Security' },
-        { key: 'society', name: 'Society & Social Justice' },
-        { key: 'governance', name: 'Governance' },
-        { key: 'ethics', name: 'Ethics & Integrity' },
-        { key: 'current', name: 'Current Affairs' }
-      ]
+  useEffect(() => {
+    // Load subjects from helios-ts
+    const gsSubjects = SubjectLoader.loadAllSubjects();
+    
+    // Group subjects by category
+    const macroSubjects = gsSubjects
+      .filter(s => s.category === 'Macro')
+      .map(s => ({ key: s.subjectCode, name: s.subjectName }));
+    
+    const microSubjects = gsSubjects
+      .filter(s => s.category === 'Micro')
+      .map(s => ({ key: s.subjectCode, name: s.subjectName }));
+
+    const categories: SubjectCategory[] = [
+      {
+        name: 'Core GS Subjects (Macro)',
+        subjects: macroSubjects
+      },
+      {
+        name: 'Additional Areas (Micro)',
+        subjects: microSubjects
+      }
+    ];
+
+    setSubjectCategories(categories);
+
+    // Initialize all subjects with "average" (3) rating if not already set
+    const initialConfidence: { [key: string]: number } = {};
+    [...macroSubjects, ...microSubjects].forEach(subject => {
+      if (!(subject.key in formData.confidenceLevel)) {
+        initialConfidence[subject.key] = 3; // Default to "average"
+      }
+    });
+    
+    if (Object.keys(initialConfidence).length > 0) {
+      updateFormData({
+        confidenceLevel: {
+          ...formData.confidenceLevel,
+          ...initialConfidence
+        }
+      });
     }
-  ];
+  }, []);
 
   const handleConfidenceChange = (subjectKey: string, level: number) => {
     updateFormData({
@@ -98,47 +112,46 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 <label className="ms-label">{subject.name}</label>
                 <div 
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(5, 1fr)',
-                    gap: '8px',
-                    marginTop: '8px'
+                    display: 'flex',
+                    gap: '4px',
+                    marginTop: '8px',
+                    alignItems: 'center'
                   }}
                 >
-                  {confidenceLevels.map((level) => (
+                  {[1, 2, 3, 4, 5].map((star) => (
                     <button
-                      key={level.value}
+                      key={star}
                       type="button"
                       style={{
-                        padding: '8px 4px',
-                        border: '1px solid var(--ms-gray-60)',
-                        borderRadius: '4px',
-                        background: formData.confidenceLevel[subject.key] === level.value 
-                          ? 'var(--ms-blue)' 
-                          : 'var(--ms-white)',
-                        color: formData.confidenceLevel[subject.key] === level.value 
-                          ? 'var(--ms-white)' 
-                          : 'var(--ms-gray-130)',
+                        background: 'none',
+                        border: 'none',
                         cursor: 'pointer',
-                        transition: 'all 0.1s ease',
-                        fontSize: '11px',
-                        textAlign: 'center',
-                        fontWeight: '500'
+                        padding: '4px',
+                        fontSize: '24px',
+                        transition: 'transform 0.1s ease',
+                        lineHeight: '1'
                       }}
-                      onClick={() => handleConfidenceChange(subject.key, level.value)}
+                      onClick={() => handleConfidenceChange(subject.key, star)}
                       onMouseEnter={(e) => {
-                        if (formData.confidenceLevel[subject.key] !== level.value) {
-                          e.currentTarget.style.borderColor = 'var(--ms-blue)';
-                        }
+                        e.currentTarget.style.transform = 'scale(1.2)';
                       }}
                       onMouseLeave={(e) => {
-                        if (formData.confidenceLevel[subject.key] !== level.value) {
-                          e.currentTarget.style.borderColor = 'var(--ms-gray-60)';
-                        }
+                        e.currentTarget.style.transform = 'scale(1)';
                       }}
                     >
-                      {level.label}
+                      {(formData.confidenceLevel[subject.key] || 3) >= star ? '⭐' : '☆'}
                     </button>
                   ))}
+                  <span 
+                    style={{
+                      marginLeft: '8px',
+                      fontSize: '12px',
+                      color: 'var(--ms-gray-90)',
+                      fontWeight: '500'
+                    }}
+                  >
+                    {['', 'Beginner', 'Basic', 'Average', 'Good', 'Expert'][formData.confidenceLevel[subject.key] || 3]}
+                  </span>
                 </div>
               </div>
             ))}
@@ -146,7 +159,7 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
         </div>
       ))}
       
-      {Object.keys(formData.confidenceLevel).length >= 12 && (
+      {Object.keys(formData.confidenceLevel).length > 0 && (
         <div 
           style={{
             background: 'var(--ms-blue-light)',
