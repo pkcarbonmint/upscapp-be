@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helios Study Plan Assistant - Microsoft Style</title>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        /* Microsoft Fluent Design System Variables */
+        :root {
+            --ms-blue: #0078d4;
+            --ms-blue-hover: #106ebe;
+            --ms-blue-pressed: #005a9e;
+            --ms-blue-light: #deecf9;
+            --ms-gray-10: #faf9f8;
+            --ms-gray-20: #f3f2f1;
+            --ms-gray-30: #edebe9;
+            --ms-gray-40: #e1dfdd;
+            --ms-gray-50: #d2d0ce;
+            --ms-gray-60: #c8c6c4;
+            --ms-gray-70: #a19f9d;
+            --ms-gray-80: #797775;
+            --ms-gray-90: #605e5c;
+            --ms-gray-100: #484644;
+            --ms-gray-110: #3b3a39;
+            --ms-gray-120: #323130;
+            --ms-gray-130: #201f1e;
+            --ms-white: #ffffff;
+            --ms-black: #000000;
+            --ms-green: #107c10;
+            --ms-red: #d13438;
+            --ms-orange: #ff8c00;
+            --ms-purple: #5c2d91;
+            --ms-teal: #008272;
+        }
+
+        /* Microsoft Typography - Segoe UI */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--ms-gray-10);
+            color: var(--ms-gray-130);
+            line-height: 1.4;
+        }
+
+        /* Microsoft Typography Scale */
+        .ms-font-hero {
+            font-size: 42px;
+            font-weight: 600;
+            line-height: 52px;
+        }
+
+        .ms-font-title {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 36px;
+        }
+
+        .ms-font-subtitle {
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 28px;
+        }
+
+        .ms-font-body {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        .ms-font-caption {
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 16px;
+        }
+
+        /* Microsoft Fluent Cards */
+        .ms-card {
+            background: var(--ms-white);
+            border: 1px solid var(--ms-gray-40);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .ms-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+            border-color: var(--ms-gray-50);
+        }
+
+        /* Microsoft Buttons */
+        .ms-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            min-height: 32px;
+        }
+
+        .ms-button-primary {
+            background-color: var(--ms-blue);
+            color: var(--ms-white);
+            border-color: var(--ms-blue);
+        }
+
+        .ms-button-primary:hover {
+            background-color: var(--ms-blue-hover);
+            border-color: var(--ms-blue-hover);
+        }
+
+        .ms-button-primary:active {
+            background-color: var(--ms-blue-pressed);
+            border-color: var(--ms-blue-pressed);
+        }
+
+        .ms-button-secondary {
+            background-color: var(--ms-white);
+            color: var(--ms-gray-130);
+            border-color: var(--ms-gray-60);
+        }
+
+        .ms-button-secondary:hover {
+            background-color: var(--ms-gray-20);
+            border-color: var(--ms-gray-70);
+        }
+
+        .ms-button-ghost {
+            background-color: transparent;
+            color: var(--ms-blue);
+            border: none;
+        }
+
+        .ms-button-ghost:hover {
+            background-color: var(--ms-blue-light);
+        }
+
+        .ms-button:disabled {
+            background-color: var(--ms-gray-20);
+            color: var(--ms-gray-70);
+            border-color: var(--ms-gray-40);
+            cursor: not-allowed;
+        }
+
+        /* Microsoft Form Controls */
+        .ms-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--ms-gray-60);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            background-color: var(--ms-white);
+            transition: border-color 0.1s ease;
+        }
+
+        .ms-input:focus {
+            outline: none;
+            border-color: var(--ms-blue);
+            box-shadow: 0 0 0 1px var(--ms-blue);
+        }
+
+        .ms-label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--ms-gray-130);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-purple) 100%);
+            color: var(--ms-white);
+            padding: 24px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--ms-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ms-blue);
+            font-weight: 600;
+        }
+
+        /* Progress Indicator */
+        .progress-section {
+            background: var(--ms-white);
+            border-bottom: 1px solid var(--ms-gray-30);
+            padding: 16px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--ms-gray-30);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ms-blue) 0%, var(--ms-teal) 100%);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .step-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .step-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--ms-blue-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: var(--ms-blue);
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .step-title {
+            margin: 0 0 8px;
+            color: var(--ms-gray-130);
+        }
+
+        .step-description {
+            margin: 0;
+            color: var(--ms-gray-90);
+        }
+
+        /* Form Sections */
+        .form-section {
+            background: var(--ms-white);
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .form-grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .form-grid-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Choice Cards */
+        .choice-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .choice-grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .choice-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .choice-card {
+            background: var(--ms-white);
+            border: 2px solid var(--ms-gray-40);
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .choice-card:hover {
+            border-color: var(--ms-blue);
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.15);
+        }
+
+        .choice-card.selected {
+            border-color: var(--ms-blue);
+            background: var(--ms-blue-light);
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.15);
+        }
+
+        .choice-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--ms-gray-130);
+        }
+
+        .choice-description {
+            font-size: 12px;
+            color: var(--ms-gray-90);
+            margin: 0;
+        }
+
+        /* Timeline Cards */
+        .timeline-card {
+            background: linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-teal) 100%);
+            color: var(--ms-white);
+            border-radius: 8px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 120, 212, 0.25);
+        }
+
+        .timeline-card.selected {
+            border-color: var(--ms-white);
+            box-shadow: 0 8px 16px rgba(0, 120, 212, 0.25);
+        }
+
+        .timeline-year {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .timeline-phases {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .timeline-phase {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .timeline-remaining {
+            margin-top: 16px;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Rating Buttons */
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .rating-button {
+            padding: 8px 4px;
+            border: 1px solid var(--ms-gray-60);
+            border-radius: 4px;
+            background: var(--ms-white);
+            cursor: pointer;
+            transition: all 0.1s ease;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .rating-button:hover {
+            border-color: var(--ms-blue);
+        }
+
+        .rating-button.selected {
+            background: var(--ms-blue);
+            color: var(--ms-white);
+            border-color: var(--ms-blue);
+        }
+
+        /* Insight Cards */
+        .insight-card {
+            background: var(--ms-blue-light);
+            border: 1px solid var(--ms-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: var(--ms-blue);
+            font-weight: 600;
+        }
+
+        .insight-content {
+            color: var(--ms-gray-130);
+            font-size: 14px;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--ms-gray-30);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .form-grid-2,
+            .form-grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .choice-grid-2,
+            .choice-grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+
+            .form-section {
+                padding: 24px 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+
+        /* Microsoft Fluent Icons (using text alternatives) */
+        .ms-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Hide steps */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body x-data="onboardingApp()">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">H</div>
+                    <div>
+                        <div class="ms-font-subtitle">Helios Study Assistant</div>
+                        <div class="ms-font-caption" style="opacity: 0.9;">Personalized UPSC Preparation</div>
+                    </div>
+                </div>
+                <div class="ms-font-body">
+                    Step <span x-text="currentStep"></span> of 6
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+        <div class="container">
+            <div class="progress-header">
+                <span class="ms-font-body" style="font-weight: 600;">Setup Progress</span>
+                <span class="ms-font-caption" x-text="Math.round((currentStep/6)*100) + '%'"></span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" :style="`width: ${(currentStep/6)*100}%`"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Step 1: Personal Information -->
+            <div class="step-content" :class="currentStep === 1 ? 'active' : ''">
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-icon">👤</div>
+                        <h1 class="ms-font-title step-title">Welcome to Your UPSC Journey</h1>
+                        <p class="ms-font-body step-description">Let's start by getting to know you better</p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-grid form-grid-2">
+                            <div class="form-field">
+                                <label class="ms-label">Full Name</label>
+                                <input type="text" class="ms-input" x-model="formData.fullName" placeholder="Enter your full name">
+                            </div>
+                            <div class="form-field">
+                                <label class="ms-label">Email Address</label>
+                                <input type="email" class="ms-input" x-model="formData.email" placeholder="your.email@example.com">
+                            </div>
+                            <div class="form-field">
+                                <label class="ms-label">Phone Number</label>
+                                <input type="tel" class="ms-input" x-model="formData.phone" placeholder="+91 98765 43210">
+                            </div>
+                            <div class="form-field">
+                                <label class="ms-label">Current Location</label>
+                                <input type="text" class="ms-input" x-model="formData.location" placeholder="City, State">
+                            </div>
+                            <div class="form-field">
+                                <label class="ms-label">Academic Stream</label>
+                                <select class="ms-input" x-model="formData.stream">
+                                    <option value="">Select Stream</option>
+                                    <option value="engineering">Engineering</option>
+                                    <option value="arts">Arts</option>
+                                    <option value="science">Science</option>
+                                    <option value="commerce">Commerce</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label class="ms-label">Year of Graduation</label>
+                                <input type="number" class="ms-input" x-model="formData.graduationYear" placeholder="2023" min="2000" max="2030">
+                            </div>
+                        </div>
+                        
+                        <div x-show="formData.fullName && formData.location" class="insight-card">
+                            <div class="insight-header">
+                                <span>💡</span>
+                                <span>Personalized Insights</span>
+                            </div>
+                            <div class="insight-content">
+                                Welcome <span x-text="formData.fullName"></span>! Based on your location in <span x-text="formData.location"></span>, 
+                                we've identified study resources and coaching institutes that might interest you.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Target Year -->
+            <div class="step-content" :class="currentStep === 2 ? 'active' : ''">
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-icon">📅</div>
+                        <h1 class="ms-font-title step-title">Choose Your Target Year</h1>
+                        <p class="ms-font-body step-description">Select when you want to appear for the UPSC exam</p>
+                    </div>
+                    
+                    <div class="choice-grid choice-grid-3">
+                        <div class="timeline-card" 
+                             :class="formData.targetYear === '2026' ? 'selected' : ''"
+                             @click="formData.targetYear = '2026'">
+                            <div class="timeline-year">2026</div>
+                            <div class="timeline-phases">
+                                <div class="timeline-phase">
+                                    <strong>Foundation:</strong> Now - Jan 2026
+                                </div>
+                                <div class="timeline-phase">
+                                    <strong>Prelims:</strong> Feb - May 2026
+                                </div>
+                                <div class="timeline-phase">
+                                    <strong>Mains:</strong> May - Aug 2026
+                                </div>
+                            </div>
+                            <div class="timeline-remaining">⏱️ 16 months remaining</div>
+                        </div>
+                        
+                        <div class="timeline-card" 
+                             :class="formData.targetYear === '2027' ? 'selected' : ''"
+                             @click="formData.targetYear = '2027'">
+                            <div class="timeline-year">2027</div>
+                            <div class="timeline-phases">
+                                <div class="timeline-phase">
+                                    <strong>Foundation:</strong> Now - Jan 2027
+                                </div>
+                                <div class="timeline-phase">
+                                    <strong>Prelims:</strong> Feb - May 2027
+                                </div>
+                                <div class="timeline-phase">
+                                    <strong>Mains:</strong> May - Aug 2027
+                                </div>
+                            </div>
+                            <div class="timeline-remaining">⏱️ 28 months remaining</div>
+                        </div>
+                        
+                        <div class="timeline-card" 
+                             :class="formData.targetYear === '2028' ? 'selected' : ''"
+                             @click="formData.targetYear = '2028'">
+                            <div class="timeline-year">2028</div>
+                            <div class="timeline-phases">
+                                <div class="timeline-phase">
+                                    <strong>Foundation:</strong> Now - Jan 2028
+                                </div>
+                                <div class="timeline-phase">
+                                    <strong>Prelims:</strong> Feb - May 2028
+                                </div>
+                                <div class="timeline-phase">
+                                    <strong>Mains:</strong> May - Aug 2028
+                                </div>
+                            </div>
+                            <div class="timeline-remaining">⏱️ 40 months remaining</div>
+                        </div>
+                    </div>
+                    
+                    <div x-show="formData.targetYear" class="insight-card">
+                        <div class="insight-header">
+                            <span>📊</span>
+                            <span>Your Preparation Analysis</span>
+                        </div>
+                        <div class="insight-content">
+                            <div class="form-grid form-grid-3" style="margin-top: 12px;">
+                                <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                    <strong>Time Available:</strong><br>
+                                    <span x-text="formData.targetYear === '2026' ? '16 months' : formData.targetYear === '2027' ? '28 months' : '40 months'"></span>
+                                </div>
+                                <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                    <strong>Recommended Intensity:</strong><br>
+                                    <span x-text="formData.targetYear === '2026' ? 'High (8-10 hrs/day)' : formData.targetYear === '2027' ? 'Moderate (6-8 hrs/day)' : 'Comfortable (4-6 hrs/day)'"></span>
+                                </div>
+                                <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                    <strong>Success Probability:</strong><br>
+                                    <span x-text="formData.targetYear === '2026' ? '65%' : formData.targetYear === '2027' ? '78%' : '85%'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Study Commitment -->
+            <div class="step-content" :class="currentStep === 3 ? 'active' : ''">
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-icon">⏰</div>
+                        <h1 class="ms-font-title step-title">Study Commitment</h1>
+                        <p class="ms-font-body step-description">How many hours can you dedicate to studying daily?</p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="choice-grid choice-grid-2">
+                            <template x-for="option in timeCommitmentOptions" :key="option.value">
+                                <div class="choice-card" 
+                                     :class="formData.timeCommitment === option.value ? 'selected' : ''"
+                                     @click="formData.timeCommitment = option.value">
+                                    <div class="choice-title" x-text="option.label"></div>
+                                    <p class="choice-description" x-text="option.description"></p>
+                                </div>
+                            </template>
+                        </div>
+                        
+                        <div x-show="formData.timeCommitment" class="insight-card">
+                            <div class="insight-header">
+                                <span>👤</span>
+                                <span>Your Study Profile</span>
+                            </div>
+                            <div class="insight-content">
+                                <div class="form-grid form-grid-2" style="margin-top: 12px;">
+                                    <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                        <strong>Study Archetype:</strong><br>
+                                        <span x-text="formData.timeCommitment >= 8 ? 'Full-time Dedicated' : formData.timeCommitment >= 6 ? 'Serious Aspirant' : 'Part-time Learner'"></span>
+                                    </div>
+                                    <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                        <strong>Weekly Hours:</strong><br>
+                                        <span x-text="(formData.timeCommitment * 7) + ' hours/week'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Subject Confidence -->
+            <div class="step-content" :class="currentStep === 4 ? 'active' : ''">
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-icon">📊</div>
+                        <h1 class="ms-font-title step-title">Subject Confidence Assessment</h1>
+                        <p class="ms-font-body step-description">Rate your confidence level in key UPSC subjects</p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <template x-for="category in subjectCategories" :key="category.name">
+                            <div style="margin-bottom: 32px;">
+                                <h3 class="ms-font-subtitle" x-text="category.name" style="margin-bottom: 16px; color: var(--ms-blue);"></h3>
+                                <div class="form-grid form-grid-2">
+                                    <template x-for="subject in category.subjects" :key="subject.key">
+                                        <div>
+                                            <label class="ms-label" x-text="subject.name"></label>
+                                            <div class="rating-grid">
+                                                <template x-for="level in confidenceLevels" :key="level.value">
+                                                    <button type="button" 
+                                                            class="rating-button"
+                                                            :class="formData.confidence[subject.key] === level.value ? 'selected' : ''"
+                                                            @click="formData.confidence[subject.key] = level.value"
+                                                            x-text="level.label">
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <div x-show="Object.keys(formData.confidence).length >= 12" class="insight-card">
+                            <div class="insight-header">
+                                <span>📈</span>
+                                <span>Your Confidence Profile</span>
+                            </div>
+                            <div class="insight-content">
+                                <div class="form-grid form-grid-2" style="margin-top: 12px;">
+                                    <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                        <strong>Average Confidence:</strong><br>
+                                        <span x-text="getAverageConfidence() + '/5'"></span>
+                                    </div>
+                                    <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                        <strong>Focus Area:</strong><br>
+                                        <span x-text="getWeakestSubject()"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Study Approach -->
+            <div class="step-content" :class="currentStep === 5 ? 'active' : ''">
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-icon">📚</div>
+                        <h1 class="ms-font-title step-title">Study Approach</h1>
+                        <p class="ms-font-body step-description">Choose your preferred study methodology</p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div style="margin-bottom: 24px;">
+                            <h3 class="ms-font-subtitle" style="margin-bottom: 16px;">Study Strategy</h3>
+                            <div class="choice-grid choice-grid-2">
+                                <template x-for="approach in studyApproaches" :key="approach.value">
+                                    <div class="choice-card" 
+                                         :class="formData.studyApproach === approach.value ? 'selected' : ''"
+                                         @click="formData.studyApproach = approach.value">
+                                        <div class="choice-title" x-text="approach.title"></div>
+                                        <p class="choice-description" x-text="approach.description"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 24px;">
+                            <h3 class="ms-font-subtitle" style="margin-bottom: 16px;">Focus Areas</h3>
+                            <div class="choice-grid choice-grid-2">
+                                <template x-for="combo in focusCombos" :key="combo.value">
+                                    <div class="choice-card" 
+                                         :class="formData.focusCombo === combo.value ? 'selected' : ''"
+                                         @click="formData.focusCombo = combo.value">
+                                        <div class="choice-title" x-text="combo.label"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        
+                        <div x-show="formData.studyApproach && formData.focusCombo" class="insight-card">
+                            <div class="insight-header">
+                                <span>🎯</span>
+                                <span>Your Study Plan</span>
+                            </div>
+                            <div class="insight-content">
+                                <div class="form-grid form-grid-2" style="margin-top: 12px;">
+                                    <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                        <strong>Study Strategy:</strong><br>
+                                        <span x-text="getStudyApproachName()"></span>
+                                    </div>
+                                    <div style="background: var(--ms-white); padding: 12px; border-radius: 4px;">
+                                        <strong>Focus Areas:</strong><br>
+                                        <span x-text="getFocusComboName()"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Summary -->
+            <div class="step-content" :class="currentStep === 6 ? 'active' : ''">
+                <div class="step-container">
+                    <div class="step-header">
+                        <div class="step-icon">✅</div>
+                        <h1 class="ms-font-title step-title">Setup Complete!</h1>
+                        <p class="ms-font-body step-description">Your personalized UPSC study plan is ready</p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="insight-card" style="background: var(--ms-green); color: var(--ms-white); border-color: var(--ms-green);">
+                            <div class="insight-header" style="color: var(--ms-white);">
+                                <span>🎉</span>
+                                <span>Congratulations!</span>
+                            </div>
+                            <div class="insight-content" style="color: var(--ms-white);">
+                                <p>Welcome to Helios, <strong x-text="formData.fullName"></strong>! Your personalized study plan for UPSC <span x-text="formData.targetYear"></span> has been created.</p>
+                                <div class="form-grid form-grid-2" style="margin-top: 16px;">
+                                    <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 4px;">
+                                        <strong>Daily Commitment:</strong><br>
+                                        <span x-text="formData.timeCommitment + ' hours'"></span>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 4px;">
+                                        <strong>Study Strategy:</strong><br>
+                                        <span x-text="getStudyApproachName()"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 32px;">
+                            <button class="ms-button ms-button-primary" style="padding: 12px 32px; font-size: 16px;">
+                                Start Your Journey
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="navigation">
+                <button x-show="currentStep > 1" 
+                        @click="currentStep--" 
+                        class="ms-button ms-button-secondary">
+                    ← Previous
+                </button>
+                <div x-show="currentStep === 1"></div>
+                
+                <button @click="nextStep()" 
+                        :disabled="!canProceed()"
+                        class="ms-button ms-button-primary"
+                        x-text="currentStep === 6 ? 'Complete Setup' : 'Next →'">
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function onboardingApp() {
+            return {
+                currentStep: 1,
+                formData: {
+                    fullName: '',
+                    email: '',
+                    phone: '',
+                    location: '',
+                    stream: '',
+                    graduationYear: '',
+                    targetYear: '',
+                    timeCommitment: '',
+                    confidence: {},
+                    studyApproach: '',
+                    focusCombo: ''
+                },
+                
+                timeCommitmentOptions: [
+                    { value: 2, label: '2-4 hours', description: 'Light preparation, part-time study' },
+                    { value: 4, label: '4-6 hours', description: 'Moderate preparation, balanced approach' },
+                    { value: 6, label: '6-8 hours', description: 'Serious preparation, dedicated study' },
+                    { value: 8, label: '8-10 hours', description: 'Intensive preparation, full commitment' },
+                    { value: 10, label: '10+ hours', description: 'Full-time preparation, maximum dedication' }
+                ],
+                
+                confidenceLevels: [
+                    { value: 1, label: 'Beginner' },
+                    { value: 2, label: 'Basic' },
+                    { value: 3, label: 'Average' },
+                    { value: 4, label: 'Good' },
+                    { value: 5, label: 'Expert' }
+                ],
+                
+                subjectCategories: [
+                    {
+                        name: 'Core GS Subjects',
+                        subjects: [
+                            { key: 'history', name: 'History' },
+                            { key: 'geography', name: 'Geography' },
+                            { key: 'polity', name: 'Indian Polity' },
+                            { key: 'economy', name: 'Indian Economy' },
+                            { key: 'environment', name: 'Environment & Ecology' },
+                            { key: 'science', name: 'Science & Technology' }
+                        ]
+                    },
+                    {
+                        name: 'Additional Areas',
+                        subjects: [
+                            { key: 'international', name: 'International Relations' },
+                            { key: 'security', name: 'Internal Security' },
+                            { key: 'society', name: 'Society & Social Justice' },
+                            { key: 'governance', name: 'Governance' },
+                            { key: 'ethics', name: 'Ethics & Integrity' },
+                            { key: 'current', name: 'Current Affairs' }
+                        ]
+                    }
+                ],
+                
+                studyApproaches: [
+                    { value: 'foundation-first', title: 'Foundation First', description: 'Build strong basics before advanced topics' },
+                    { value: 'integrated', title: 'Integrated Approach', description: 'Study multiple subjects simultaneously' },
+                    { value: 'subject-wise', title: 'Subject-wise Mastery', description: 'Complete one subject before moving to next' },
+                    { value: 'weakness-focused', title: 'Weakness Focused', description: 'Prioritize weak areas for improvement' }
+                ],
+                
+                focusCombos: [
+                    { value: 'gs-only', label: 'GS Papers Only' },
+                    { value: 'gs-optional', label: 'GS + Optional Subject' },
+                    { value: 'comprehensive', label: 'Comprehensive (GS + Optional + Essay)' }
+                ],
+
+                nextStep() {
+                    if (this.canProceed()) {
+                        if (this.currentStep < 6) {
+                            this.currentStep++;
+                        } else {
+                            console.log('Setup complete:', this.formData);
+                            alert('Setup complete! Your personalized study plan is ready.');
+                        }
+                    }
+                },
+
+                canProceed() {
+                    switch(this.currentStep) {
+                        case 1:
+                            return this.formData.fullName && this.formData.email && this.formData.location && this.formData.stream;
+                        case 2:
+                            return this.formData.targetYear;
+                        case 3:
+                            return this.formData.timeCommitment;
+                        case 4:
+                            return Object.keys(this.formData.confidence).length >= 12;
+                        case 5:
+                            return this.formData.studyApproach && this.formData.focusCombo;
+                        case 6:
+                            return true;
+                        default:
+                            return true;
+                    }
+                },
+
+                getAverageConfidence() {
+                    const values = Object.values(this.formData.confidence);
+                    if (values.length === 0) return 0;
+                    const sum = values.reduce((a, b) => a + b, 0);
+                    return (sum / values.length).toFixed(1);
+                },
+
+                getWeakestSubject() {
+                    let weakest = null;
+                    let minConfidence = 6;
+                    
+                    for (const [subject, confidence] of Object.entries(this.formData.confidence)) {
+                        if (confidence < minConfidence) {
+                            minConfidence = confidence;
+                            weakest = subject;
+                        }
+                    }
+                    
+                    // Find the subject name
+                    for (const category of this.subjectCategories) {
+                        for (const subject of category.subjects) {
+                            if (subject.key === weakest) {
+                                return subject.name;
+                            }
+                        }
+                    }
+                    
+                    return 'Not determined';
+                },
+
+                getStudyApproachName() {
+                    const approach = this.studyApproaches.find(a => a.value === this.formData.studyApproach);
+                    return approach ? approach.title : '';
+                },
+
+                getFocusComboName() {
+                    const combo = this.focusCombos.find(c => c.value === this.formData.focusCombo);
+                    return combo ? combo.label : '';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
