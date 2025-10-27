@@ -134,127 +134,193 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           <div
             key={option.year}
             style={{
-              background: 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-teal) 100%)',
-              color: 'var(--ms-white)',
+              background: formData.targetYear.targetYear === option.year 
+                ? 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-teal) 100%)'
+                : 'var(--ms-white)',
+              color: formData.targetYear.targetYear === option.year 
+                ? 'var(--ms-white)' 
+                : 'var(--ms-blue)',
               borderRadius: '12px',
               padding: '24px',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
+              transition: 'all 0.3s ease',
               border: formData.targetYear.targetYear === option.year 
-                ? '2px solid var(--ms-white)' 
-                : '2px solid transparent',
+                ? '3px solid var(--ms-blue)' 
+                : '2px solid var(--ms-gray-light)',
               transform: formData.targetYear.targetYear === option.year 
-                ? 'translateY(-2px)' 
-                : 'translateY(0)',
+                ? 'translateY(-4px) scale(1.02)' 
+                : 'translateY(0) scale(1)',
               boxShadow: formData.targetYear.targetYear === option.year 
-                ? '0 8px 16px rgba(0, 120, 212, 0.25)' 
-                : '0 4px 8px rgba(0, 120, 212, 0.15)'
+                ? '0 12px 24px rgba(0, 120, 212, 0.3)' 
+                : '0 4px 8px rgba(0, 0, 0, 0.1)',
+              position: 'relative'
             }}
             onClick={() => handleYearSelect(option.year)}
           >
+            {formData.targetYear.targetYear === option.year && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: 'var(--ms-white)',
+                  color: 'var(--ms-blue)',
+                  borderRadius: '50%',
+                  width: '24px',
+                  height: '24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                  fontWeight: 'bold'
+                }}
+              >
+                ✓
+              </div>
+            )}
             <div 
               style={{
-                fontSize: '32px',
-                fontWeight: '600',
-                marginBottom: '16px',
+                fontSize: '36px',
+                fontWeight: '700',
+                marginBottom: '12px',
                 textAlign: 'center'
               }}
             >
               {option.year}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '16px' }}>
-              {getCyclesForYear(option.year).map(c => (
-                <span key={`${option.year}-${c.cycleType}-${c.startDate}`}
-                  style={{ background: 'rgba(255,255,255,0.2)', padding: '6px 10px', borderRadius: '999px', fontSize: '12px' }}>
-                  {getCycleDescription(c.cycleType)}
-                </span>
-              ))}
-            </div>
             <div 
               style={{
-                fontSize: '12px',
+                fontSize: '16px',
                 opacity: 0.9,
-                textAlign: 'center'
+                textAlign: 'center',
+                fontWeight: '500'
               }}
             >
-              ⏱️ {option.months} months remaining
+              ⏱️ {option.months} months
             </div>
           </div>
         ))}
       </div>
       
       {formData.targetYear.targetYear && (
-        <div 
-          style={{
-            background: 'var(--ms-blue-light)',
-            border: '1px solid var(--ms-blue)',
-            borderRadius: '12px',
-            padding: '24px',
-            marginTop: '32px'
-          }}
-        >
-          <div 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '16px',
-              color: 'var(--ms-blue)',
-              fontWeight: '600',
-              fontSize: '18px'
-            }}
-          >
-            <span>📊</span>
-            <span>Your Preparation Analysis</span>
-          </div>
-          <div className="form-grid form-grid-3" style={{ marginTop: '12px' }}>
-            {yearOptions
-              .filter(option => option.year === formData.targetYear.targetYear)
-              .map(option => (
-                <React.Fragment key={option.year}>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Time Available:</strong><br />
-                    {option.months} months
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Recommended Intensity:</strong><br />
-                    {option.intensity}
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Success Probability:</strong><br />
-                    {option.probability}
-                  </div>
-                </React.Fragment>
-              ))}
-          </div>
+        <div style={{ marginTop: '32px' }}>
+          {/* Calculated Cycles Section */}
           {plannedCycles.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Calculated Cycles</div>
-              <ul style={{ margin: 0, paddingLeft: 18 }}>
+            <div 
+              style={{
+                background: 'var(--ms-blue-light)',
+                border: '1px solid var(--ms-blue)',
+                borderRadius: '12px',
+                padding: '24px',
+                marginBottom: '24px'
+              }}
+            >
+              <div 
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '16px',
+                  color: 'var(--ms-blue)',
+                  fontWeight: '600',
+                  fontSize: '18px'
+                }}
+              >
+                <span>🔄</span>
+                <span>Your Study Plan - {formData.targetYear.targetYear}</span>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {plannedCycles.map(c => (
-                  <li key={`${c.cycleType}-${c.startDate}`}>{getCycleDescription(c.cycleType)}: {c.startDate} → {c.endDate}</li>
+                  <div
+                    key={`${c.cycleType}-${c.startDate}`}
+                    style={{
+                      background: 'var(--ms-white)',
+                      border: '1px solid var(--ms-blue)',
+                      borderRadius: '8px',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      color: 'var(--ms-blue)',
+                      boxShadow: '0 2px 4px rgba(0, 120, 212, 0.1)'
+                    }}
+                  >
+                    <div style={{ fontWeight: '600', marginBottom: '4px' }}>
+                      {getCycleDescription(c.cycleType)}
+                    </div>
+                    <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                      {c.startDate} → {c.endDate}
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
+
+          {/* Preparation Analysis Section */}
+          <div 
+            style={{
+              background: 'var(--ms-gray-light)',
+              border: '1px solid var(--ms-gray)',
+              borderRadius: '12px',
+              padding: '24px'
+            }}
+          >
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '16px',
+                color: 'var(--ms-blue)',
+                fontWeight: '600',
+                fontSize: '18px'
+              }}
+            >
+              <span>📊</span>
+              <span>Preparation Analysis</span>
+            </div>
+            <div className="form-grid form-grid-3" style={{ marginTop: '12px' }}>
+              {yearOptions
+                .filter(option => option.year === formData.targetYear.targetYear)
+                .map(option => (
+                  <React.Fragment key={option.year}>
+                    <div 
+                      style={{
+                        background: 'var(--ms-white)',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--ms-gray)'
+                      }}
+                    >
+                      <strong>Time Available:</strong><br />
+                      {option.months} months
+                    </div>
+                    <div 
+                      style={{
+                        background: 'var(--ms-white)',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--ms-gray)'
+                      }}
+                    >
+                      <strong>Recommended Intensity:</strong><br />
+                      {option.intensity}
+                    </div>
+                    <div 
+                      style={{
+                        background: 'var(--ms-white)',
+                        padding: '16px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--ms-gray)'
+                      }}
+                    >
+                      <strong>Success Probability:</strong><br />
+                      {option.probability}
+                    </div>
+                  </React.Fragment>
+                ))}
+            </div>
+          </div>
         </div>
       )}
     </StepLayout>
