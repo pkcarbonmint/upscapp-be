@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
 import dayjs from 'dayjs';
-import { planCycles } from 'helios-scheduler';
+import { planCycles, S2WeekDay } from 'helios-scheduler';
 
 const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const getCycleDescription = (cycleType: string) => {
@@ -87,8 +87,14 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           optionalSubjectCode: formData.commitment.upscOptionalSubject,
           confidenceMap: {},
           optionalFirst: formData.commitment.optionalFirst,
-          catchupDay: 6,
-          testDay: 0,
+          catchupDay: (
+            ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+              .indexOf(formData.commitment.catchupDayPreference) as S2WeekDay
+          ),
+          testDay: (
+            ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+              .indexOf(formData.commitment.weeklyTestDayPreference) as S2WeekDay
+          ),
           workingHoursPerDay: formData.commitment.timeCommitment,
           breaks: [],
           testMinutes: formData.commitment.testMinutes,

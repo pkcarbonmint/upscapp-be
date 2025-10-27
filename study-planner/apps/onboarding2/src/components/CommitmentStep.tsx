@@ -46,6 +46,53 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           <Options />
         </select>
       </div>
+
+      <div className="form-grid form-grid-3" style={{ marginBottom: 16 }}>
+        <div>
+          <label className="ms-label">Weekly Test Day</label>
+          <select
+            className="ms-select"
+            value={formData.commitment.weeklyTestDayPreference}
+            onChange={(e) => updateFormData({
+              commitment: { ...formData.commitment, weeklyTestDayPreference: e.target.value }
+            })}
+          >
+            {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="ms-label">Catchup Day</label>
+          <select
+            className="ms-select"
+            value={formData.commitment.catchupDayPreference}
+            onChange={(e) => updateFormData({
+              commitment: { ...formData.commitment, catchupDayPreference: e.target.value }
+            })}
+          >
+            {['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="ms-label">Prioritize Optional Subject</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <input
+              id="toggle-optional-first"
+              type="checkbox"
+              checked={formData.commitment.optionalFirst}
+              onChange={(e) => updateFormData({
+                commitment: { ...formData.commitment, optionalFirst: e.target.checked }
+              })}
+            />
+            <label htmlFor="toggle-optional-first" style={{ cursor: 'pointer' }}>
+              Start cycles focusing on optional subject earlier
+            </label>
+          </div>
+        </div>
+      </div>
       <h2 
         className="ms-font-subtitle" 
         style={{ marginBottom: '20px', color: 'var(--ms-gray-130)' }}

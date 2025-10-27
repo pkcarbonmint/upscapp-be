@@ -1,10 +1,34 @@
 type StudyPlan = any;
 
 import dayjs from 'dayjs';
-import { planCycles } from 'helios-scheduler';
+import { planCycles, S2WeekDay } from 'helios-scheduler';
 import { OnboardingFormData } from '@/types';
 
 export class HeliosService {
+  /**
+   * Convert a weekday name to S2WeekDay enum value
+   */
+  static toS2WeekDay(dayName?: string): S2WeekDay {
+    const name = String(dayName || '').toLowerCase();
+    switch (name) {
+      case 'sunday':
+        return S2WeekDay.Sunday;
+      case 'monday':
+        return S2WeekDay.Monday;
+      case 'tuesday':
+        return S2WeekDay.Tuesday;
+      case 'wednesday':
+        return S2WeekDay.Wednesday;
+      case 'thursday':
+        return S2WeekDay.Thursday;
+      case 'friday':
+        return S2WeekDay.Friday;
+      case 'saturday':
+        return S2WeekDay.Saturday;
+      default:
+        return S2WeekDay.Sunday;
+    }
+  }
   /**
    * Generate a study plan preview using helios-ts
    */
@@ -35,8 +59,8 @@ export class HeliosService {
         optionalSubjectCode: formData.commitment.upscOptionalSubject,
         confidenceMap: formData.confidenceLevel as any,
         optionalFirst: formData.commitment.optionalFirst,
-        catchupDay: 6,
-        testDay: 0,
+        catchupDay: HeliosService.toS2WeekDay(formData.commitment.catchupDayPreference),
+        testDay: HeliosService.toS2WeekDay(formData.commitment.weeklyTestDayPreference),
         workingHoursPerDay: formData.commitment.timeCommitment,
         breaks: [],
         testMinutes: formData.commitment.testMinutes,
