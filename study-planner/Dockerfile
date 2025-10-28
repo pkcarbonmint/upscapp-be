@@ -4,7 +4,8 @@ FROM study-planner:base
 # # Copy resource files
 COPY resources/ ./resources/
 
-RUN (cd study-planner && pnpm --filter servers\* build)
+WORKDIR /app/study-planner
+RUN pnpm --filter ./libs/\* --filter ./servers\* build
 
 # Install curl for health checks
 RUN apk add --no-cache curl
