@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
 import CycleTimeline from './CycleTimeline';
+import { downloadStudyPlanDocument, canGenerateDocument } from '@/services/documentService';
 
 const PreviewStep: React.FC<StepProps> = ({ formData }) => {
   const { personalInfo, targetYear, commitment, confidenceLevel, preview } = formData;
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  const handleDownloadDocument = async () => {
+    try {
+      setIsDownloading(true);
+      setDownloadError(null);
+      await downloadStudyPlanDocument(formData);
+    } catch (error) {
+      console.error('Download failed:', error);
+      setDownloadError(error instanceof Error ? error.message : 'Failed to download document');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <StepLayout
@@ -123,6 +139,44 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
             Cycle Timeline
           </h3>
           <CycleTimeline cycles={preview.raw_helios_data.cycles as any} />
+        </div>
+      )}
+
+      {/* Download Document Section */}
+      {canGenerateDocument(formData) && (
+        <div className="preview-section">
+          <h3 className="ms-font-subtitle preview-section-title">
+            Download Your Plan
+          </h3>
+          <div className="preview-download-card">
+            <div className="preview-download-content">
+              <div className="preview-download-icon">📄</div>
+              <div className="preview-download-text">
+                <h4>Study Plan Document</h4>
+                <p>Download your complete study plan as a Word document with detailed schedules, resources, and milestones.</p>
+              </div>
+            </div>
+            <button
+              onClick={handleDownloadDocument}
+              disabled={isDownloading}
+              className="ms-button ms-button-primary"
+              style={{ marginTop: '1rem' }}
+            >
+              {isDownloading ? '⏳ Generating...' : '⬇️ Download Word Document'}
+            </button>
+            {downloadError && (
+              <div className="preview-error-message" style={{ 
+                marginTop: '1rem', 
+                padding: '0.75rem', 
+                backgroundColor: '#FFF4F4', 
+                border: '1px solid #FFE0E0', 
+                borderRadius: '4px',
+                color: '#D32F2F'
+              }}>
+                ⚠️ {downloadError}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

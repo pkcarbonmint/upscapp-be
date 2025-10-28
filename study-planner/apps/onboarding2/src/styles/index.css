@@ -766,6 +766,43 @@ body {
   color: var(--ms-gray-130);
 }
 
+.preview-download-card {
+  background: var(--ms-white);
+  border: 1px solid var(--ms-gray-40);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.preview-download-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--ms-blue-light);
+}
+
+.preview-download-content {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.preview-download-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.preview-download-text h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ms-gray-130);
+}
+
+.preview-download-text p {
+  margin: 0;
+  color: var(--ms-gray-90);
+  line-height: 1.5;
+}
+
 .preview-next-steps-card {
   background: var(--ms-orange);
   color: var(--ms-white);
