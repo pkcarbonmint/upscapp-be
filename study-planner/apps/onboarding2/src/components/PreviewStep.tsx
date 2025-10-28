@@ -5,7 +5,7 @@ import CycleTimeline from './CycleTimeline';
 import { downloadPlan } from './util/download';
 
 const PreviewStep: React.FC<StepProps> = (stepProps) => {
-  const { personalInfo, targetYear, commitment, confidenceLevel, preview } = stepProps.formData;
+  const { personalInfo, targetYear, commitment, preview } = stepProps.formData;
   const downloadHandler = async () => downloadPlan(stepProps);
   return (
     <StepLayout
@@ -64,7 +64,6 @@ const PreviewStep: React.FC<StepProps> = (stepProps) => {
           <CycleTimeline cycles={preview.raw_helios_data.cycles as any} />
         </div>
       )}
-
 
     </StepLayout>
   );
