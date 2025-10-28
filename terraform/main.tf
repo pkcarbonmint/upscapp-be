@@ -29,6 +29,20 @@ provider "aws" {
   }
 }
 
+# Provider for us-east-1 (required for CloudFront certificates)
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Environment = var.environment
+      Project     = var.project_name
+      ManagedBy   = "terraform"
+    }
+  }
+}
+
 # Data source for Ubuntu 22.04 LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -52,6 +66,14 @@ data "aws_availability_zones" "available" {
 
 # Data source for current AWS account
 data "aws_caller_identity" "current" {}
+
+# Data source to look up existing wildcard certificate for Study Planner
+data "aws_acm_certificate" "study_planner" {
+  count   = var.study_planner_domain != "" ? 1 : 0
+  domain  = "*.upscpro.laex.in"
+  statuses = ["ISSUED"]
+  provider = aws.us_east_1
+}
 
 # Data source to check if S3 bucket already exists
 data "aws_s3_bucket" "existing_study_planner" {
@@ -1368,7 +1390,7 @@ resource "aws_s3_bucket_public_access_block" "study_planner" {
   }
 }
 
-# S3 Bucket Policy for Study Planner (allow CloudFront access)
+# S3 Bucket Policy for Study Planner (allow CloudFront OAI access)
 resource "aws_s3_bucket_policy" "study_planner" {
   bucket = aws_s3_bucket.study_planner.id
 
@@ -1376,23 +1398,21 @@ resource "aws_s3_bucket_policy" "study_planner" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid       = "AllowCloudFrontServicePrincipal"
-        Effect    = "Allow"
+        Sid    = "AllowCloudFrontOAI"
+        Effect = "Allow"
         Principal = {
-          Service = "cloudfront.amazonaws.com"
+          AWS = aws_cloudfront_origin_access_identity.study_planner.iam_arn
         }
         Action   = "s3:GetObject"
         Resource = "${aws_s3_bucket.study_planner.arn}/*"
-        Condition = {
-          StringEquals = {
-            "AWS:SourceArn" = aws_cloudfront_distribution.study_planner.arn
-          }
-        }
       }
     ]
   })
 
-  depends_on = [aws_cloudfront_distribution.study_planner]
+  depends_on = [
+    aws_cloudfront_origin_access_identity.study_planner,
+    aws_s3_bucket.study_planner
+  ]
 
   # Allow updates but prevent destruction
   lifecycle {
@@ -1516,6 +1536,9 @@ resource "aws_cloudfront_distribution" "study_planner" {
   is_ipv6_enabled     = true
   comment             = "CloudFront distribution for Study Planner Application"
   default_root_object = "index.html"
+  
+  # Custom domain aliases
+  aliases = var.study_planner_domain != "" ? [var.study_planner_domain] : []
 
   default_cache_behavior {
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -1600,10 +1623,12 @@ resource "aws_cloudfront_distribution" "study_planner" {
     }
   }
 
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
-
+viewer_certificate {
+  cloudfront_default_certificate = var.study_planner_domain == ""
+  acm_certificate_arn            = var.study_planner_domain != "" ? data.aws_acm_certificate.study_planner[0].arn : null
+  ssl_support_method             = var.study_planner_domain != "" ? "sni-only" : null
+  minimum_protocol_version       = var.study_planner_domain != "" ? "TLSv1.2_2021" : null
+}
   tags = {
     Name = "study-planner-cloudfront"
     Purpose = "Study Planner Application"
@@ -1622,5 +1647,32 @@ resource "aws_cloudfront_origin_access_identity" "study_planner" {
   # Allow updates but prevent destruction
   lifecycle {
     prevent_destroy = true
+  }
+}
+
+# Route53 records for Study Planner domain
+resource "aws_route53_record" "study_planner" {
+  count   = var.study_planner_domain != "" && var.route53_zone_id != "" ? 1 : 0
+  zone_id = var.study_planner_zone_id != "" ? var.study_planner_zone_id : var.route53_zone_id
+  name    = var.study_planner_domain
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.study_planner.domain_name
+    zone_id                = aws_cloudfront_distribution.study_planner.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "study_planner_ipv6" {
+  count   = var.study_planner_domain != "" && var.route53_zone_id != "" ? 1 : 0
+  zone_id = var.study_planner_zone_id != "" ? var.study_planner_zone_id : var.route53_zone_id
+  name    = var.study_planner_domain
+  type    = "AAAA"
+
+  alias {
+    name                   = aws_cloudfront_distribution.study_planner.domain_name
+    zone_id                = aws_cloudfront_distribution.study_planner.hosted_zone_id
+    evaluate_target_health = false
   }
 }

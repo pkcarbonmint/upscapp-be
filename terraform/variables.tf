@@ -499,3 +499,15 @@ variable "study_planner_bucket_name" {
   type        = string
   default     = "study-planner.upscpro.laex.in"
 }
+
+variable "study_planner_domain" {
+  description = "Custom domain for Study Planner application"
+  type        = string
+  default     = "study-planner.upscpro.laex.in"
+}
+
+variable "study_planner_zone_id" {
+  description = "Route53 zone ID for Study Planner domain (uses route53_zone_id if not specified)"
+  type        = string
+  default     = ""
+}

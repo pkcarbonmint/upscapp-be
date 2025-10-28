@@ -311,5 +311,5 @@ output "study_planner_cloudfront_hosted_zone_id" {
 
 output "study_planner_url" {
   description = "URL to access the Study Planner application"
-  value       = "https://${aws_cloudfront_distribution.study_planner.domain_name}"
+  value       = var.study_planner_domain != "" && var.route53_zone_id != "" ? "https://${var.study_planner_domain}" : "https://${aws_cloudfront_distribution.study_planner.domain_name}"
 }

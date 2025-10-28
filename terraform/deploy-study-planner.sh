@@ -7,7 +7,12 @@ set -e
 
 # Configuration
 BUCKET_NAME="study-planner.upscpro.laex.in"
-APP_DIR="/workspace/study-planner/apps/onboarding2"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Configuration
+BUCKET_NAME="study-planner.upscpro.laex.in"
+APP_DIR="$REPO_ROOT/study-planner/apps/onboarding2"
 BUILD_DIR="$APP_DIR/dist"
 AWS_REGION="ap-south-1"
 
@@ -124,26 +129,42 @@ sync_to_s3() {
 get_cloudfront_distribution_id() {
     print_status "Getting CloudFront distribution ID..."
     
+    # First, try to get the distribution ID from Terraform output
+    TERRAFORM_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
+    # Try to get distribution ID from terraform output
+    if [ -f "$TERRAFORM_DIR/terraform.tfstate" ]; then
+        DISTRIBUTION_ID=$(terraform -chdir="$TERRAFORM_DIR" output -raw study_planner_cloudfront_distribution_id 2>/dev/null)
+        
+        if [ ! -z "$DISTRIBUTION_ID" ]; then
+            print_success "Found CloudFront distribution ID: $DISTRIBUTION_ID"
+            echo "$DISTRIBUTION_ID"
+            return 0
+        fi
+    fi
+    
+    # Fallback: Query by origin (S3 bucket domain)
+    BUCKET_DOMAIN="study-planner.upscpro.laex.in.s3.ap-south-1.amazonaws.com"
     DISTRIBUTION_ID=$(aws cloudfront list-distributions \
-        --query "DistributionList.Items[?Comment=='CloudFront distribution for Study Planner Application'].Id" \
+        --query "DistributionList.Items[?Origins.Items[?DomainName=='$BUCKET_DOMAIN']].Id" \
         --output text \
         --region "$AWS_REGION")
     
     if [ -z "$DISTRIBUTION_ID" ]; then
-        print_error "CloudFront distribution not found for Study Planner Application"
+        print_error "CloudFront distribution not found. Please ensure Terraform has been applied."
+        print_error "Run: cd terraform && terraform apply"
         exit 1
     fi
     
     print_success "Found CloudFront distribution ID: $DISTRIBUTION_ID"
     echo "$DISTRIBUTION_ID"
 }
-
 # Function to invalidate CloudFront cache
 invalidate_cloudfront() {
     print_status "Invalidating CloudFront cache..."
     
     DISTRIBUTION_ID=$(get_cloudfront_distribution_id)
-    
+    DISTRIBUTION_ID="E3LZ9SVGVBX134"
     # Create invalidation
     INVALIDATION_ID=$(aws cloudfront create-invalidation \
         --distribution-id "$DISTRIBUTION_ID" \
@@ -168,8 +189,9 @@ invalidate_cloudfront() {
 get_cloudfront_url() {
     print_status "Getting CloudFront URL..."
     
-    DISTRIBUTION_ID=$(get_cloudfront_distribution_id)
-    
+    # DISTRIBUTION_ID=$(get_cloudfront_distribution_id)
+    DISTRIBUTION_ID="E3LZ9SVGVBX134"
+
     CLOUDFRONT_URL=$(aws cloudfront get-distribution \
         --id "$DISTRIBUTION_ID" \
         --query "Distribution.DomainName" \
