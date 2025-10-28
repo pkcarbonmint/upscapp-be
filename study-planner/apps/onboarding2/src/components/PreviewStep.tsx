@@ -58,9 +58,6 @@ const PreviewStep: React.FC<StepProps> = (stepProps) => {
       {/* Cycles Timeline - reuse the same display as TargetYearStep */}
       {Array.isArray(preview.raw_helios_data?.cycles) && preview.raw_helios_data.cycles.length > 0 && (
         <div className="preview-section">
-          <h3 className="ms-font-subtitle preview-section-title">
-            Cycle Timeline
-          </h3>
           <CycleTimeline cycles={preview.raw_helios_data.cycles as any} />
         </div>
       )}

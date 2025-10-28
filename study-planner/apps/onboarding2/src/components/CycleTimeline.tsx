@@ -9,6 +9,7 @@ export interface CycleItem {
 
 interface CycleTimelineProps {
   cycles: CycleItem[];
+  variant?: 'timeline' | 'milestones';
 }
 
 const getCycleDescription = (cycleType: string) => {
@@ -41,7 +42,55 @@ const getCycleColor = (cycleType: string) => {
   }
 };
 
-const CycleTimeline: React.FC<CycleTimelineProps> = ({ cycles }) => {
+// Milestones List View Component
+const CycleMilestonesView: React.FC<{ cycles: CycleItem[] }> = ({ cycles }) => {
+  if (!Array.isArray(cycles) || cycles.length === 0) {
+    return null;
+  }
+
+  const parsed = cycles
+    .map((c) => ({
+      ...c,
+      start: dayjs(c.startDate as any),
+      end: dayjs(c.endDate as any),
+    }))
+    .sort((a, b) => a.start.valueOf() - b.start.valueOf());
+
+  return (
+    <div className="cycle-timeline">
+      <div className="cycle-milestones-compact">
+        {parsed.map((c, index) => {
+          const cycleDesc = getCycleDescription(c.cycleType);
+          const cycleColor = getCycleColor(c.cycleType);
+          const duration = c.end.diff(c.start, 'day');
+          
+          return (
+            <div key={`${c.cycleType}-${String(c.startDate)}`} className="cycle-milestone-row">
+              <div className="cycle-milestone-row-header">
+                <div className="cycle-milestone-row-number">{index + 1}</div>
+                <div className="cycle-milestone-row-content">
+                  <span className="cycle-milestone-row-title" style={{ color: cycleColor }}>
+                  {cycleDesc}
+                  </span>
+                  <span className="cycle-milestone-row-dates">
+                    {c.start.format('MMM D')} — {c.end.format('MMM D')}
+                  </span>
+                </div>
+                <div className="cycle-milestone-row-footer">
+                  <span className="cycle-milestone-row-code">{c.cycleType}</span>
+                  <span className="cycle-milestone-row-duration">{duration}d</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// Original Timeline View Component
+const CycleTimelineView: React.FC<{ cycles: CycleItem[] }> = ({ cycles }) => {
   if (!Array.isArray(cycles) || cycles.length === 0) {
     return null;
   }
@@ -111,6 +160,15 @@ const CycleTimeline: React.FC<CycleTimelineProps> = ({ cycles }) => {
       </div>
     </div>
   );
+};
+
+// Main component that switches between views
+const CycleTimeline: React.FC<CycleTimelineProps> = ({ cycles, variant = 'timeline' }) => {
+  if (variant === 'milestones') {
+    return <CycleMilestonesView cycles={cycles} />;
+  }
+  
+  return <CycleTimelineView cycles={cycles} />;
 };
 
 export default CycleTimeline;

@@ -119,7 +119,7 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           </div>
 
           {plannedCycles.length > 0 && (
-            <CycleTimeline cycles={plannedCycles as any} />
+            <CycleTimeline cycles={plannedCycles as any} variant="milestones" />
           )}
         </div>
       )}

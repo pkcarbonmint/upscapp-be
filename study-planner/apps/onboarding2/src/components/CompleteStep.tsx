@@ -9,7 +9,7 @@ const CompleteStep: React.FC<StepProps> = ({ formData }) => {
       </div>
       
       <h1 className="ms-font-title complete-title">
-        Welcome to Helios!
+        Welcome to La Mentora Study Planner!
       </h1>
       
       <p className="ms-font-body complete-description">

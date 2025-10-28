@@ -1,4 +1,4 @@
-import { lazy, useState } from "react";
+import { lazy, useState, Suspense } from "react";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import Header from "@/components/Header";
 
@@ -114,7 +114,14 @@ function App() {
             </div>
           )}
 
-          {renderStep()}
+          <Suspense fallback={
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              <div className="navigation-spinner" style={{ margin: '0 auto' }} />
+              <p style={{ marginTop: '16px', color: 'var(--ms-gray-90)' }}>Loading...</p>
+            </div>
+          }>
+            {renderStep()}
+          </Suspense>
 
           {currentStep !== "complete" && (
             <Navigation

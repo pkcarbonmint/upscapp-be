@@ -11,8 +11,8 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({
-  currentStep: _currentStep,
-  totalSteps: _totalSteps,
+  currentStep,
+  totalSteps,
   canGoNext,
   canGoPrevious,
   isSubmitting,
@@ -20,37 +20,70 @@ const Navigation: React.FC<NavigationProps> = ({
   onPrevious
 }) => {
   return (
-    <>
-      <div className="navigation-button-container navigation-button-container--left">
+    <div 
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: '40px',
+        paddingTop: '24px',
+        borderTop: '1px solid var(--ms-gray-30)'
+      }}
+    >
+      <div>
         {canGoPrevious && (
           <button 
+            className="ms-button ms-button-secondary"
             onClick={onPrevious}
             disabled={isSubmitting}
-            className="navigation-button"
+            style={{
+              padding: '12px 24px',
+              minHeight: '40px'
+            }}
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ms-gray-130)' }} />
-            </svg>
+            ← Previous Step
           </button>
         )}
       </div>
-
-      <div className="navigation-button-container navigation-button-container--right">
-        <button 
-          onClick={onNext}
-          disabled={!canGoNext || isSubmitting}
-          className="navigation-button"
-        >
-          {isSubmitting ? (
-            <div className="navigation-spinner" />
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: canGoNext ? 'var(--ms-blue)' : 'var(--ms-gray-60)' }} />
-            </svg>
-          )}
-        </button>
-      </div>
-    </>
+      
+      <button 
+        className="ms-button ms-button-primary"
+        onClick={onNext}
+        disabled={!canGoNext || isSubmitting}
+        style={{
+          padding: '12px 24px',
+          minHeight: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}
+      >
+        {isSubmitting && (
+          <div 
+            style={{
+              width: '16px',
+              height: '16px',
+              border: '2px solid var(--ms-white)',
+              borderTop: '2px solid transparent',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}
+          />
+        )}
+        {currentStep === totalSteps - 1 
+          ? 'Complete Setup' 
+          : `Continue to Step ${currentStep + 1} →`}
+      </button>
+      
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+    </div>
   );
 };
 

@@ -104,24 +104,6 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
         ))
       )}
 
-      {Object.keys(formData.confidenceLevel).length >= 12 && (
-        <div className="info-card">
-          <div className="info-card-header">
-            <span>📈</span>
-            <span>Your Confidence Profile</span>
-          </div>
-          <div className="form-grid form-grid-2 form-grid--margin-top">
-            <div className="confidence-profile-card">
-              <div className="confidence-profile-value">{getAverageConfidence()}/5</div>
-              <div className="confidence-profile-label">Average Confidence</div>
-            </div>
-            <div className="confidence-profile-card">
-              <div className="confidence-profile-value confidence-profile-value--small">{getWeakestSubject()}</div>
-              <div className="confidence-profile-label">Focus Area</div>
-            </div>
-          </div>
-        </div>
-      )}
     </StepLayout>
   );
 };
