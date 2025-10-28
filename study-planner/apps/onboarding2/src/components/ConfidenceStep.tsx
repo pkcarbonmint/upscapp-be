@@ -3,15 +3,7 @@ import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
 import { type Subject } from 'helios-ts';
 
-const starStyle: React.CSSProperties = {
-  cursor: 'pointer',
-  color: 'var(--ms-gray-90)',
-  fontSize: '18px',
-};
-
-const activeStarStyle: React.CSSProperties = {
-  color: 'var(--ms-yellow, #f5a623)'
-};
+// Removed inline styles - now using CSS classes
 
 const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -69,13 +61,13 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
   };
 
   const renderStars = (current: number, onChange: (v: number) => void) => (
-    <div style={{ display: 'flex', gap: 6 }}>
+    <div className="confidence-stars">
       {[1,2,3,4,5].map(n => (
         <span
           key={n}
           role="button"
           aria-label={`${n} star`}
-          style={{ ...starStyle, ...(current >= n ? activeStarStyle : {}) }}
+          className={`confidence-star ${current >= n ? 'confidence-star--active' : ''}`}
           onClick={() => onChange(n)}
         >
           ★
@@ -94,15 +86,15 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
         <div>Loading subjects…</div>
       ) : (
         grouped.map(group => (
-          <div key={group.name} style={{ marginBottom: '24px' }}>
-            <h3 className="ms-font-subtitle" style={{ marginBottom: '12px', color: 'var(--ms-blue)' }}>
+          <div key={group.name} className="form-section">
+            <h3 className="ms-font-subtitle group-title">
               {group.name}
             </h3>
             <div className="form-grid form-grid-2">
               {group.list.map(subject => (
                 <div key={subject.subjectCode}>
                   <label className="ms-label">{subject.subjectName}</label>
-                  <div style={{ marginTop: 8 }}>
+                  <div className="stars-container">
                     {renderStars(formData.confidenceLevel[subject.subjectCode] || 3, (v) => handleConfidenceChange(subject.subjectCode, v))}
                   </div>
                 </div>
@@ -113,27 +105,19 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       )}
 
       {Object.keys(formData.confidenceLevel).length >= 12 && (
-        <div 
-          style={{
-            background: 'var(--ms-blue-light)',
-            border: '1px solid var(--ms-blue)',
-            borderRadius: '12px',
-            padding: '24px',
-            marginTop: '24px'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, color: 'var(--ms-blue)', fontWeight: 600, fontSize: 18 }}>
+        <div className="info-card">
+          <div className="info-card-header">
             <span>📈</span>
             <span>Your Confidence Profile</span>
           </div>
-          <div className="form-grid form-grid-2" style={{ marginTop: 12 }}>
-            <div style={{ background: 'var(--ms-white)', padding: 12, borderRadius: 4, textAlign: 'center' }}>
-              <div style={{ fontSize: 24, fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 4 }}>{getAverageConfidence()}/5</div>
-              <div style={{ fontSize: 12, color: 'var(--ms-gray-90)', fontWeight: 500 }}>Average Confidence</div>
+          <div className="form-grid form-grid-2 form-grid--margin-top">
+            <div className="confidence-profile-card">
+              <div className="confidence-profile-value">{getAverageConfidence()}/5</div>
+              <div className="confidence-profile-label">Average Confidence</div>
             </div>
-            <div style={{ background: 'var(--ms-white)', padding: 12, borderRadius: 4, textAlign: 'center' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 4 }}>{getWeakestSubject()}</div>
-              <div style={{ fontSize: 12, color: 'var(--ms-gray-90)', fontWeight: 500 }}>Focus Area</div>
+            <div className="confidence-profile-card">
+              <div className="confidence-profile-value confidence-profile-value--small">{getWeakestSubject()}</div>
+              <div className="confidence-profile-label">Focus Area</div>
             </div>
           </div>
         </div>

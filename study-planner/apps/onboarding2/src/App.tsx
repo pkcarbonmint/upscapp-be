@@ -74,24 +74,12 @@ function App() {
   };
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--ms-gray-10)" }}
-    >
+    <div className="app-container">
       <Header currentStep={getStepNumber()} totalSteps={7} />
-      <main style={{ padding: "24px 0", minHeight: "calc(100vh - 120px)" }}>
+      <main className="app-main">
         <div className="container">
           {error && (
-            <div
-              style={{
-                background: "var(--ms-red)",
-                color: "var(--ms-white)",
-                padding: "12px 16px",
-                borderRadius: "4px",
-                marginBottom: "24px",
-                textAlign: "center",
-              }}
-            >
+            <div className="error-message">
               {error}
             </div>
           )}

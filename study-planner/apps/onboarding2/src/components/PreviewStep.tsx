@@ -13,20 +13,11 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
       description="Review your personalized UPSC study plan"
     >
       {/* Personal Summary */}
-      <div style={{ marginBottom: '32px' }}>
-        <h3 
-          className="ms-font-subtitle" 
-          style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}
-        >
+      <div className="preview-section">
+        <h3 className="ms-font-subtitle preview-section-title">
           Personal Summary
         </h3>
-        <div 
-          style={{
-            background: 'var(--ms-gray-20)',
-            padding: '20px',
-            borderRadius: '8px'
-          }}
-        >
+        <div className="preview-summary-card">
           <div className="form-grid form-grid-2">
             <div>
               <strong>Name:</strong> {personalInfo.fullName}
@@ -45,121 +36,50 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
       </div>
 
       {/* Study Plan Overview */}
-      <div style={{ marginBottom: '32px' }}>
-        <h3 
-          className="ms-font-subtitle" 
-          style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}
-        >
+      <div className="preview-section">
+        <h3 className="ms-font-subtitle preview-section-title">
           Study Plan Overview
         </h3>
-        <div 
-          style={{
-            background: 'var(--ms-green)',
-            color: 'var(--ms-white)',
-            padding: '24px',
-            borderRadius: '12px'
-          }}
-        >
-          <div 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '16px',
-              fontSize: '18px',
-              fontWeight: '600'
-            }}
-          >
+        <div className="preview-success-card">
+          <div className="preview-success-header">
             <span>🎯</span>
             <span>Your Personalized Plan is Ready!</span>
           </div>
-          <p style={{ margin: '0 0 16px', lineHeight: '1.6' }}>
+          <p className="preview-success-content">
             Based on your inputs, we've created a comprehensive study plan tailored to your 
             target year ({targetYear.targetYear}) and daily commitment ({commitment.timeCommitment}+ hours).
           </p>
           
-          <div className="form-grid form-grid-2" style={{ marginTop: '16px' }}>
-            <div 
-              style={{
-                background: 'rgba(255,255,255,0.2)',
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}
-            >
-              <div 
-                style={{
-                  fontSize: '24px',
-                  fontWeight: '600',
-                  marginBottom: '4px'
-                }}
-              >
+          <div className="form-grid form-grid-2 preview-stats-grid">
+            <div className="preview-stat-card">
+              <div className="preview-stat-value">
                 {preview.raw_helios_data?.totalHours || 2400}
               </div>
-              <div style={{ fontSize: '12px', opacity: 0.9 }}>
+              <div className="preview-stat-label">
                 Total Study Hours
               </div>
             </div>
-            <div 
-              style={{
-                background: 'rgba(255,255,255,0.2)',
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}
-            >
-              <div 
-                style={{
-                  fontSize: '24px',
-                  fontWeight: '600',
-                  marginBottom: '4px'
-                }}
-              >
+            <div className="preview-stat-card">
+              <div className="preview-stat-value">
                 {Array.isArray(preview.raw_helios_data?.cycles) ? preview.raw_helios_data.cycles.length : (preview.raw_helios_data?.cycles || 3)}
               </div>
-              <div style={{ fontSize: '12px', opacity: 0.9 }}>
+              <div className="preview-stat-label">
                 Study Cycles
               </div>
             </div>
-            <div 
-              style={{
-                background: 'rgba(255,255,255,0.2)',
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}
-            >
-              <div 
-                style={{
-                  fontSize: '24px',
-                  fontWeight: '600',
-                  marginBottom: '4px'
-                }}
-              >
+            <div className="preview-stat-card">
+              <div className="preview-stat-value">
                 {preview.raw_helios_data?.blocks || 12}
               </div>
-              <div style={{ fontSize: '12px', opacity: 0.9 }}>
+              <div className="preview-stat-label">
                 Study Blocks
               </div>
             </div>
-            <div 
-              style={{
-                background: 'rgba(255,255,255,0.2)',
-                padding: '16px',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}
-            >
-              <div 
-                style={{
-                  fontSize: '24px',
-                  fontWeight: '600',
-                  marginBottom: '4px'
-                }}
-              >
+            <div className="preview-stat-card">
+              <div className="preview-stat-value">
                 {Object.keys(confidenceLevel).length}
               </div>
-              <div style={{ fontSize: '12px', opacity: 0.9 }}>
+              <div className="preview-stat-label">
                 Subjects Covered
               </div>
             </div>
@@ -168,59 +88,26 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
       </div>
 
       {/* Key Milestones */}
-      <div style={{ marginBottom: '32px' }}>
-        <h3 
-          className="ms-font-subtitle" 
-          style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}
-        >
+      <div className="preview-section">
+        <h3 className="ms-font-subtitle preview-section-title">
           Key Milestones
         </h3>
         <div className="form-grid form-grid-2">
-          <div 
-            style={{
-              background: 'var(--ms-blue-light)',
-              border: '1px solid var(--ms-blue)',
-              padding: '20px',
-              borderRadius: '8px',
-              textAlign: 'center'
-            }}
-          >
-            <div 
-              style={{
-                fontSize: '18px',
-                fontWeight: '600',
-                color: 'var(--ms-blue)',
-                marginBottom: '8px'
-              }}
-            >
+          <div className="preview-milestone-card">
+            <div className="preview-milestone-title">
               Foundation Complete
             </div>
-            <div style={{ color: 'var(--ms-gray-130)' }}>
+            <div className="preview-milestone-date">
               {preview.milestones.foundationToPrelimsDate 
                 ? preview.milestones.foundationToPrelimsDate.toLocaleDateString()
                 : 'Feb 1, ' + targetYear.targetYear}
             </div>
           </div>
-          <div 
-            style={{
-              background: 'var(--ms-blue-light)',
-              border: '1px solid var(--ms-blue)',
-              padding: '20px',
-              borderRadius: '8px',
-              textAlign: 'center'
-            }}
-          >
-            <div 
-              style={{
-                fontSize: '18px',
-                fontWeight: '600',
-                color: 'var(--ms-blue)',
-                marginBottom: '8px'
-              }}
-            >
+          <div className="preview-milestone-card">
+            <div className="preview-milestone-title">
               Prelims Ready
             </div>
-            <div style={{ color: 'var(--ms-gray-130)' }}>
+            <div className="preview-milestone-date">
               {preview.milestones.prelimsToMainsDate 
                 ? preview.milestones.prelimsToMainsDate.toLocaleDateString()
                 : 'May 20, ' + targetYear.targetYear}
@@ -231,8 +118,8 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
 
       {/* Cycles Timeline - reuse the same display as TargetYearStep */}
       {Array.isArray(preview.raw_helios_data?.cycles) && preview.raw_helios_data.cycles.length > 0 && (
-        <div style={{ marginBottom: '32px' }}>
-          <h3 className="ms-font-subtitle" style={{ marginBottom: '16px', color: 'var(--ms-blue)' }}>
+        <div className="preview-section">
+          <h3 className="ms-font-subtitle preview-section-title">
             Cycle Timeline
           </h3>
           <CycleTimeline cycles={preview.raw_helios_data.cycles as any} />
@@ -240,28 +127,12 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
       )}
 
       {/* Next Steps */}
-      <div 
-        style={{
-          background: 'var(--ms-orange)',
-          color: 'var(--ms-white)',
-          padding: '24px',
-          borderRadius: '12px'
-        }}
-      >
-        <div 
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '12px',
-            fontSize: '18px',
-            fontWeight: '600'
-          }}
-        >
+      <div className="preview-next-steps-card">
+        <div className="preview-next-steps-header">
           <span>🚀</span>
           <span>Ready to Begin?</span>
         </div>
-        <p style={{ margin: '0', lineHeight: '1.6' }}>
+        <p className="preview-next-steps-content">
           Your personalized study plan is ready! Click "Complete Setup" to finalize your 
           registration and start your UPSC preparation journey with Helios.
         </p>
