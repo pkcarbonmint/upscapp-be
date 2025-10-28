@@ -7,49 +7,21 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ currentStep, totalSteps }) => {
   return (
-    <header 
-      style={{
-        background: 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-purple) 100%)',
-        color: 'var(--ms-white)',
-        padding: '10px 0'
-      }}
-    >
+    <header className="header">
       <div className="container">
-        <div 
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div 
-              style={{
-                width: '24px',
-                height: '24px',
-                background: 'var(--ms-white)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--ms-blue)',
-                fontWeight: '600',
-                fontSize: '12px'
-              }}
-            >
+        <div className="header-content">
+          <div className="header-brand">
+            <div className="header-logo">
               LM
             </div>
             <div>
               <div className="ms-font-body">La Mentory UPSC Study Planner</div>
-              <div 
-                className="ms-font-caption" 
-                style={{ opacity: 0.9 }}
-              >
+              <div className="ms-font-caption header-subtitle">
                 Personalized UPSC Preparation
               </div>
             </div>
           </div>
-          <div className="ms-font-caption" style={{ opacity: 0.95 }}>
+          <div className="ms-font-caption header-step-info">
             Step {currentStep} of {totalSteps}
           </div>
         </div>
