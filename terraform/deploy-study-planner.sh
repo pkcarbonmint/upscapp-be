@@ -73,11 +73,35 @@ check_prerequisites() {
     print_success "Prerequisites check passed"
 }
 
+# Function to generate version file
+generate_version() {
+    print_status "Generating version information..."
+    
+    cd "$REPO_ROOT"
+    
+    # Get git commit hash (first 6 characters)
+    GIT_COMMIT=$(git rev-parse --short=6 HEAD 2>/dev/null || echo "unknown")
+    
+    # Create version string
+    VERSION="1.0.0-${GIT_COMMIT}"
+    
+    # Create public directory if it doesn't exist
+    mkdir -p "$APP_DIR/public"
+    
+    # Write version to public/version.json
+    echo "{\"version\":\"${VERSION}\"}" > "$APP_DIR/public/version.json"
+    
+    print_success "Version file generated: ${VERSION}"
+}
+
 # Function to build the application
 build_app() {
     print_status "Building the onboarding2 application..."
     
     cd "$APP_DIR"
+    
+    # Generate version file
+    generate_version
     
     # Install dependencies if node_modules doesn't exist
     if [ ! -d "node_modules" ]; then

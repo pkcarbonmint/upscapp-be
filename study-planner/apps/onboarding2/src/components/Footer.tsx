@@ -1,12 +1,26 @@
 import React from 'react';
 
 interface FooterProps {
-  currentStep: number;
-  totalSteps: number;
+  currentStep?: number;
+  totalSteps?: number;
 }
 
-const Footer: React.FC<FooterProps> = ({ currentStep, totalSteps }) => {
+const Footer: React.FC<FooterProps> = () => {
   const currentYear = new Date().getFullYear();
+  
+  // Try to load version from generated file
+  const [version, setVersion] = React.useState<string>('');
+  
+  React.useEffect(() => {
+    // Load version from generated file if it exists
+    fetch('/version.json')
+      .then(res => res.json())
+      .then(data => setVersion(data.version))
+      .catch(() => {
+        // Fallback if version file doesn't exist
+        setVersion('dev');
+      });
+  }, []);
   
   return (
     <footer className="footer">
@@ -23,8 +37,13 @@ const Footer: React.FC<FooterProps> = ({ currentStep, totalSteps }) => {
               </div>
             </div>
           </div>
-          <div className="footer-copyright">
-            <div className="ms-font-caption">
+          <div className="footer-right">
+            {version && (
+              <div className="ms-font-caption footer-version">
+                v{version}
+              </div>
+            )}
+            <div className="ms-font-caption footer-copyright">
               © {currentYear} La Mentora. All rights reserved.
             </div>
           </div>

@@ -137,7 +137,7 @@ function App() {
           )}
         </div>
       </main>
-      <Footer currentStep={getStepNumber()} totalSteps={7} />
+      <Footer />
     </div>
   );
   
