@@ -45,8 +45,8 @@ services:
     env_file:
       - docker.env
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: py-backend
+      dockerfile: Dockerfile.prod
     restart: always
     volumes:
       - ./:/code
