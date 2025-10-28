@@ -25,58 +25,22 @@ const PaymentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       title="Complete Your Payment"
       description="Secure your spot in our UPSC preparation program"
     >
-      <div 
-        style={{
-          maxWidth: '600px',
-          margin: '0 auto'
-        }}
-      >
+      <div className="payment-container">
         {/* Pricing Display */}
-        <div
-          style={{
-            background: 'var(--ms-white)',
-            border: '2px solid var(--ms-blue)',
-            borderRadius: '12px',
-            padding: '32px',
-            textAlign: 'center',
-            marginBottom: '24px',
-            boxShadow: '0 4px 16px rgba(0, 120, 212, 0.12)'
-          }}
-        >
-          <div 
-            style={{
-              fontSize: '48px',
-              fontWeight: '600',
-              color: 'var(--ms-blue)',
-              marginBottom: '8px'
-            }}
-          >
+        <div className="pricing-card">
+          <div className="price-amount">
             ₹{FIXED_AMOUNT}
           </div>
-          <div 
-            style={{
-              fontSize: '16px',
-              color: 'var(--ms-gray-90)',
-              marginBottom: '24px'
-            }}
-          >
+          <div className="price-description">
             UPSC Preparation Program
           </div>
           
           {/* Features */}
           <div style={{ textAlign: 'left', marginTop: '24px' }}>
-            <h4 
-              style={{
-                fontSize: '14px',
-                fontWeight: '600',
-                marginBottom: '16px',
-                color: 'var(--ms-gray-130)',
-                textAlign: 'center'
-              }}
-            >
+            <h4 className="features-title">
               What you'll get:
             </h4>
-            <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+            <ul className="features-list">
               {[
                 'Personalized study schedule',
                 'Subject-wise preparation plan',
@@ -84,88 +48,29 @@ const PaymentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 'Progress tracking and analytics',
                 'Expert mentor support'
               ].map((feature, index) => (
-                <li 
-                  key={index}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    marginBottom: '12px',
-                    fontSize: '14px',
-                    color: 'var(--ms-gray-90)'
-                  }}
-                >
-                  <span style={{ color: 'var(--ms-green)', fontSize: '16px' }}>✓</span>
+                <li key={index} className="feature-item">
+                  <span className="feature-checkmark">✓</span>
                   <span>{feature}</span>
                 </li>
               ))}
             </ul>
-            <div 
-              style={{
-                background: 'var(--ms-white)',
-                padding: '16px',
-                borderRadius: '8px',
-                border: '1px solid var(--ms-blue)'
-              }}
-            >
-              <div 
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '12px'
-                }}
-              >
-                <span style={{ fontWeight: '600', color: 'var(--ms-gray-130)' }}>
+            <div className="payment-link-box">
+              <div className="payment-link-header">
+                <span className="payment-link-title">
                   Payment Link Ready
                 </span>
-                <span 
-                  style={{
-                    background: 'var(--ms-green)',
-                    color: 'var(--ms-white)',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    fontWeight: '600'
-                  }}
-                >
+                <span className="payment-badge">
                   Secure
                 </span>
               </div>
-              <div 
-                style={{
-                  fontSize: '12px',
-                  color: 'var(--ms-gray-90)',
-                  marginBottom: '12px'
-                }}
-              >
+              <div className="payment-link-instruction">
                 Click the link below to complete your payment securely:
               </div>
               <a
                 href={payment.paymentLink||undefined}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '12px 24px',
-                  background: 'var(--ms-blue)',
-                  color: 'var(--ms-white)',
-                  textDecoration: 'none',
-                  borderRadius: '6px',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  transition: 'background-color 0.2s ease',
-                  width: '100%',
-                  justifyContent: 'center'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--ms-blue-hover)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--ms-blue)';
-                }}
+                className="payment-button"
               >
                 <span>🔒</span>
                 <span>Pay ₹{FIXED_AMOUNT}</span>
@@ -177,32 +82,11 @@ const PaymentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       
       </div>
       
-      <div 
-        style={{
-          marginTop: '24px',
-          padding: '16px',
-          background: 'var(--ms-gray-20)',
-          borderRadius: '8px',
-          textAlign: 'center',
-          maxWidth: '600px',
-          margin: '24px auto 0'
-        }}
-      >
-        <div 
-          style={{
-            fontSize: '12px',
-            color: 'var(--ms-gray-90)',
-            marginBottom: '8px'
-          }}
-        >
+      <div className="payment-footer">
+        <div className="payment-footer-features">
           🔒 Secure Payment • 💰 Money Back Guarantee • 📞 24/7 Support
         </div>
-        <div 
-          style={{
-            fontSize: '11px',
-            color: 'var(--ms-gray-80)'
-          }}
-        >
+        <div className="payment-footer-disclaimer">
           All payments are processed securely. You can cancel anytime within 7 days for a full refund.
         </div>
       </div>

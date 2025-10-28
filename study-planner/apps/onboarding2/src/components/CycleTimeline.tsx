@@ -75,63 +75,29 @@ const CycleTimeline: React.FC<CycleTimelineProps> = ({ cycles }) => {
   });
 
   return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Timeline</div>
-      <div
-        style={{
-          background: 'var(--ms-white)',
-          border: '1px solid #e5e7eb',
-          borderRadius: 8,
-          padding: 12,
-        }}
-      >
-        <div
-          style={{
-            maxHeight: 360,
-            overflowY: 'auto',
-            position: 'relative',
-            paddingLeft: 24,
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              left: 8,
-              top: 0,
-              bottom: 0,
-              width: 2,
-              background: '#e5e7eb',
-            }}
-          />
+    <div className="timeline-container">
+      <div className="timeline-title">Preparation Timeline</div>
+      <div className="timeline-box">
+        <div className="timeline-scroll-container">
+          <div className="timeline-line" />
           {segments.map((seg) => (
-            <div key={seg.key} style={{ position: 'relative', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                <div style={{ fontWeight: 700, color: seg.color }}>{seg.label}</div>
-                <div style={{ fontSize: 12, color: 'var(--ms-blue)' }}>
+            <div key={seg.key} className="cycle-item">
+              <div className="cycle-header">
+                <div className="cycle-label" style={{ color: seg.color }}>{seg.label}</div>
+                <div className="cycle-dates">
                   {seg.startLabel} — {seg.endLabel}
                 </div>
               </div>
               <div
                 title={`${seg.label}: ${seg.startLabel} → ${seg.endLabel}`}
-                style={{
-                  position: 'relative',
-                  height: 10,
-                  marginTop: 6,
-                  background: '#f5f7fa',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 6,
-                  overflow: 'hidden',
-                }}
+                className="cycle-bar-container"
               >
                 <div
+                  className="cycle-bar-fill"
                   style={{
-                    position: 'absolute',
                     left: `${seg.leftPercent}%`,
                     width: `${seg.widthPercent}%`,
-                    top: 0,
-                    bottom: 0,
                     background: seg.color,
-                    opacity: 0.9,
                   }}
                 />
               </div>
@@ -139,15 +105,7 @@ const CycleTimeline: React.FC<CycleTimelineProps> = ({ cycles }) => {
           ))}
         </div>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: 6,
-          fontSize: 12,
-          color: 'var(--ms-blue)',
-        }}
-      >
+      <div className="timeline-footer">
         <span>{earliest.format('MMM D, YYYY')}</span>
         <span>{latest.format('MMM D, YYYY')}</span>
       </div>
