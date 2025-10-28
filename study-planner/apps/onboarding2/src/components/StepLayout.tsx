@@ -13,28 +13,28 @@ const StepLayout: React.FC<StepLayoutProps> = ({ icon, title, description, child
       <div 
         style={{
           textAlign: 'center',
-          marginBottom: '24px'
+          marginBottom: '12px'
         }}
       >
         <div 
           style={{
-            width: '56px',
-            height: '56px',
+            width: '40px',
+            height: '40px',
             background: 'var(--ms-blue-light)',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 12px',
-            fontSize: '24px'
+            margin: '0 auto 8px',
+            fontSize: '18px'
           }}
         >
           {icon}
         </div>
         <h1 
-          className="ms-font-title" 
+          className="ms-font-title"
           style={{ 
-            margin: '0 0 8px',
+            margin: '0 0 4px',
             color: 'var(--ms-gray-130)'
           }}
         >
