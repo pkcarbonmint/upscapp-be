@@ -43,7 +43,7 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     const start = dayjs(formData.targetYear.startDate || new Date());
     try {
       const prelims = dayjs(`${target}-05-20`);
-      const mains = dayjs(`${target}-09-20`);
+      const mains = dayjs(`${target}-08-20`);
       const result = planCycles({
         optionalSubject: {
           subjectCode: formData.commitment.upscOptionalSubject,
@@ -184,44 +184,7 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
             <span>📊</span>
             <span>Your Preparation Analysis</span>
           </div>
-          <div className="form-grid form-grid-3" style={{ marginTop: '12px' }}>
-            {yearOptions
-              .filter(option => option.year === formData.targetYear.targetYear)
-              .map(option => (
-                <React.Fragment key={option.year}>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Time Available:</strong><br />
-                    {option.months} months
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Recommended Intensity:</strong><br />
-                    {option.intensity}
-                  </div>
-                  <div 
-                    style={{
-                      background: 'var(--ms-white)',
-                      padding: '12px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    <strong>Success Probability:</strong><br />
-                    {option.probability}
-                  </div>
-                </React.Fragment>
-              ))}
-          </div>
+
           {plannedCycles.length > 0 && (
             <CycleTimeline cycles={plannedCycles as any} />
           )}

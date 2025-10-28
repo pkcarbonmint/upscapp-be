@@ -11,8 +11,8 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({
-  currentStep,
-  totalSteps,
+  currentStep: _currentStep,
+  totalSteps: _totalSteps,
   canGoNext,
   canGoPrevious,
   isSubmitting,
@@ -20,61 +20,110 @@ const Navigation: React.FC<NavigationProps> = ({
   onPrevious
 }) => {
   return (
-    <div 
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: '40px',
-        paddingTop: '24px',
-        borderTop: '1px solid var(--ms-gray-30)'
-      }}
-    >
-      <div>
+    <>
+      <div 
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '20px',
+          transform: 'translateY(-50%)',
+          zIndex: 1000,
+          transition: 'opacity 0.3s ease'
+        }}
+      >
         {canGoPrevious && (
           <button 
-            className="ms-button ms-button-secondary"
             onClick={onPrevious}
             disabled={isSubmitting}
             style={{
-              padding: '12px 24px',
-              minHeight: '40px'
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              border: 'none',
+              background: 'var(--ms-white)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              opacity: isSubmitting ? 0.5 : 1,
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              if (!isSubmitting) {
+                e.currentTarget.style.background = 'var(--ms-gray-10)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'var(--ms-white)';
+              e.currentTarget.style.transform = 'scale(1)';
             }}
           >
-            ← Previous Step
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--ms-gray-130)' }} />
+            </svg>
           </button>
         )}
       </div>
-      
-      <button 
-        className="ms-button ms-button-primary"
-        onClick={onNext}
-        disabled={!canGoNext || isSubmitting}
+
+      <div 
         style={{
-          padding: '12px 24px',
-          minHeight: '40px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
+          position: 'fixed',
+          top: '50%',
+          right: '20px',
+          transform: 'translateY(-50%)',
+          zIndex: 1000,
+          transition: 'opacity 0.3s ease'
         }}
       >
-        {isSubmitting && (
-          <div 
-            style={{
-              width: '16px',
-              height: '16px',
-              border: '2px solid var(--ms-white)',
-              borderTop: '2px solid transparent',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite'
-            }}
-          />
-        )}
-        {currentStep === totalSteps - 1 
-          ? 'Complete Setup' 
-          : `Continue to Step ${currentStep + 1} →`}
-      </button>
-      
+        <button 
+          onClick={onNext}
+          disabled={!canGoNext || isSubmitting}
+          style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            border: 'none',
+            background: 'var(--ms-white)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            cursor: (!canGoNext || isSubmitting) ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: (!canGoNext || isSubmitting) ? 0.5 : 1,
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            if (canGoNext && !isSubmitting) {
+              e.currentTarget.style.background = 'var(--ms-gray-10)';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'var(--ms-white)';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          {isSubmitting ? (
+            <div 
+              style={{
+                width: '20px',
+                height: '20px',
+                border: '2px solid var(--ms-gray-60)',
+                borderTop: '2px solid transparent',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}
+            />
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: canGoNext ? 'var(--ms-blue)' : 'var(--ms-gray-60)' }} />
+            </svg>
+          )}
+        </button>
+      </div>
+
       <style>
         {`
           @keyframes spin {
@@ -83,7 +132,7 @@ const Navigation: React.FC<NavigationProps> = ({
           }
         `}
       </style>
-    </div>
+    </>
   );
 };
 
