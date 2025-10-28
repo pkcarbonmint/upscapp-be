@@ -214,7 +214,7 @@ const baseStepSequence: Step[] = [
 // Step sequence with OTP
 const stepSequenceWithOTP: Step[] = [
   'Background',
-  'OTPVerification',
+  // 'OTPVerification',
   'Commitment', 
   'ConfidenceLevel',
   'TargetYear',

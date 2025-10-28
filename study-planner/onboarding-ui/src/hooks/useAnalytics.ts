@@ -45,12 +45,12 @@ export const useFormTracking = (stepName: string) => {
   };
 };
 
+const theme = getStyleVariant();
 /**
  * Hook to track theme-related events
  */
 export const useThemeTracking = () => {
   const trackThemeView = useCallback(() => {
-    const theme = getStyleVariant();
     analytics.track('theme_viewed', {
       theme_variant: theme,
       page: window.location.pathname

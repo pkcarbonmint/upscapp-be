@@ -44,24 +44,28 @@ WORKDIR /app
 
 # Copy all package.json files for dependency resolution
 
-COPY study-planner/pnpm-workspace.yaml study-planner/pnpm-lock.yaml ./
+COPY study-planner/pnpm-workspace.yaml study-planner/pnpm-lock.yaml /app/study-planner/
+# docker-package-jsons is created by docker-build.sh
+COPY docker-package-jsons/ /app/study-planner/
 # RUN (cd study-planner && find . -name package.json | tar czf - -T - |tar tzf -)
 
-
-COPY study-planner/package.json study-planner/pnpm-workspace.yaml study-planner/pnpm-lock.yaml ./
-COPY study-planner/servers/helios-server/package.json ./servers/helios-server/
-COPY study-planner/libs/helios-scheduler/package.json ./libs/helios-scheduler/
-COPY study-planner/libs/old-scheduler/package.json ./libs/old-scheduler/
-COPY study-planner/libs/helios-ts/package.json ./libs/helios-ts/
-COPY study-planner/shared-ui-library/package.json ./shared-ui-library/
-COPY study-planner/plan-editor-library/package.json ./plan-editor-library/
-COPY study-planner/onboarding-ui/package.json ./onboarding-ui/
-COPY study-planner/faculty-ui/package.json ./faculty-ui/
+# COPY study-planner/package.json study-planner/pnpm-workspace.yaml study-planner/pnpm-lock.yaml ./
+# COPY study-planner/servers/helios-server/package.json ./servers/helios-server/
+# COPY study-planner/libs/*/package.json ./libs/helios-scheduler/
+# COPY study-planner/apps/*/package.json ./libs/helios-scheduler/
+# COPY study-planner/servers/*/package.json ./libs/helios-scheduler/
+# # COPY study-planner/libs/old-scheduler/package.json ./libs/old-scheduler/
+# # COPY study-planner/libs/helios-ts/package.json ./libs/helios-ts/
+# COPY study-planner/shared-ui-library/package.json ./shared-ui-library/
+# COPY study-planner/plan-editor-library/package.json ./plan-editor-library/
+# COPY study-planner/onboarding-ui/package.json ./onboarding-ui/
+# COPY study-planner/faculty-ui/package.json ./faculty-ui/
 
 
 # Install all dependencies
-RUN pnpm install --frozen-lockfile
+RUN (cd study-planner && pnpm install --frozen-lockfile)
 
-COPY study-planner/ ./
-RUN pnpm install
-RUN pnpm --filter ./libs/\*  build
+COPY study-planner/ ./study-planner/
+RUN (cd study-planner && pnpm install)
+RUN (cd study-planner &&  pnpm --filter ./libs/\*  build)
+

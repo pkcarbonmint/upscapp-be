@@ -37,6 +37,9 @@ declare global {
   }
 }
 
+const theme = getStyleVariant();
+const themeLabel = getStyleVariantLabel();
+
 class AnalyticsService {
   private isInitialized = false;
   private measurementId: string | null = null;
@@ -84,8 +87,6 @@ class AnalyticsService {
   trackPageView(page?: string): void {
     if (!this.isInitialized) return;
 
-    const theme = getStyleVariant();
-    const themeLabel = getStyleVariantLabel();
 
     window.gtag('event', 'page_view', {
       page_title: document.title,

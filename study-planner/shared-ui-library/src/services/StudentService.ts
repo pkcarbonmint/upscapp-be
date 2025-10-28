@@ -2,6 +2,8 @@ import { StudentCreationData, StudentCreationResponse, ApiResponse } from '../au
 
 export class StudentService {
   private baseUrl: string;
+  private pendingCommitmentData: { studentId: string; commitmentData: any } | null = null;
+  private pendingConfidenceData: { studentId: string; confidenceData: any } | null = null;
 
   constructor(baseUrl: string = '/api/studyplanner') {
     this.baseUrl = baseUrl;
@@ -41,19 +43,14 @@ export class StudentService {
 
   // Create student from onboarding data
   async createStudent(studentData: StudentCreationData): Promise<StudentCreationResponse> {
-    const response = await this.makeRequest<any>('/onboarding/students', {
+    const response: unknown = await this.makeRequest<any>('/onboarding/students', {
       method: 'POST',
       body: JSON.stringify(studentData),
     });
-    // Support both wrapped { success, data } and direct payloads
-    if (response && typeof response === 'object') {
-      if ('success' in response) {
-        if (response.success && response.data) return response.data as StudentCreationResponse;
-        throw new Error('Failed to create student');
-      }
-      if ('student_id' in response) {
-        return response as StudentCreationResponse;
-      }
+    console.log('** Create Student Response from server:', response);
+    const { student_id, created }: {student_id: string, created: boolean} = response as any;
+    if (student_id && created !== undefined) {
+      return { student_id, created };
     }
     throw new Error('Failed to create student: unexpected response shape');
   }
@@ -71,37 +68,27 @@ export class StudentService {
         throw new Error('Failed to update student target');
       }
       if ('updated' in response) {
-        if (response.updated) return;
+        if ((response as any).updated) return;
         throw new Error('Failed to update student target');
       }
     }
     throw new Error('Failed to update student target: unexpected response');
   }
 
-  // Update student commitment
+  // Update student commitment - store locally, will be sent on final submission
   async updateStudentCommitment(studentId: string, commitmentData: any): Promise<void> {
-    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/commitment`, {
-      method: 'PATCH',
-      body: JSON.stringify(commitmentData),
-    });
-    if (response && typeof response === 'object') {
-      if ('success' in response && response.success) return;
-      if ('updated' in response && response.updated) return;
-    }
-    throw new Error('Failed to update student commitment');
+    // Store commitment data locally to be sent later
+    this.pendingCommitmentData = { studentId, commitmentData };
+    // Return success immediately without making API call
+    return Promise.resolve();
   }
 
-  // Update student confidence levels
+  // Update student confidence levels - store locally, will be sent on final submission
   async updateStudentConfidence(studentId: string, confidenceData: any): Promise<void> {
-    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/confidence`, {
-      method: 'PATCH',
-      body: JSON.stringify(confidenceData),
-    });
-    if (response && typeof response === 'object') {
-      if ('success' in response && response.success) return;
-      if ('updated' in response && response.updated) return;
-    }
-    throw new Error('Failed to update student confidence');
+    // Store confidence data locally to be sent later
+    this.pendingConfidenceData = { studentId, confidenceData };
+    // Return success immediately without making API call
+    return Promise.resolve();
   }
 
   // Get student preview/plan
@@ -119,6 +106,20 @@ export class StudentService {
 
   // Submit final application
   async submitStudentApplication(studentId: string): Promise<any> {
+    // First, send any pending commitment data
+    if (this.pendingCommitmentData && this.pendingCommitmentData.studentId === studentId) {
+      await this.sendCommitmentData(studentId, this.pendingCommitmentData.commitmentData);
+      // Clear the pending data after sending
+      this.pendingCommitmentData = null;
+    }
+    
+    // Also send any pending confidence data
+    if (this.pendingConfidenceData && this.pendingConfidenceData.studentId === studentId) {
+      await this.sendConfidenceData(studentId, this.pendingConfidenceData.confidenceData);
+      // Clear the pending data after sending
+      this.pendingConfidenceData = null;
+    }
+    
     const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/submit`, {
       method: 'POST',
     });
@@ -127,6 +128,86 @@ export class StudentService {
       if ('submitted' in response) return response;
     }
     throw new Error('Failed to submit student application');
+  }
+
+  // Send commitment data to the server
+  private async sendCommitmentData(studentId: string, commitmentData: any): Promise<void> {
+    // Transform frontend field names to match Python schema
+    // Collect performance data for constraints
+    const performanceEntries = Object.entries(commitmentData.performance || {})
+      .filter(([_, value]) => value !== "")
+      .map(([subject, level]) => `${subject}: ${level}`);
+    
+    const performanceText = performanceEntries.length > 0 
+      ? `Performance - ${performanceEntries.join(', ')}` 
+      : '';
+    
+    const constraintsText = [
+      `Study Preference: ${commitmentData.studyPreference || ''}`,
+      `Subject Approach: ${commitmentData.subjectApproach || ''}`,
+      performanceText
+    ].filter(text => text !== '').join('; ');
+    
+    const transformedData = {
+      weekly_hours: commitmentData.timeCommitment ? commitmentData.timeCommitment * 7 : 0, // Convert daily to weekly
+      available_days: null,
+      constraints: constraintsText
+    };
+    
+    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/commitment`, {
+      method: 'PATCH',
+      body: JSON.stringify(transformedData),
+    });
+    if (response && typeof response === 'object') {
+      if ('success' in response && response.success) return;
+      if ('updated' in response && response.updated) return;
+    }
+    throw new Error('Failed to update student commitment');
+  }
+
+  // Send confidence data to the server
+  private async sendConfidenceData(studentId: string, confidenceData: any): Promise<void> {
+    // Transform helios-ts confidence levels to numeric values for backend
+    const levelToNum = (level: string): number => {
+      switch (level) {
+        case 'NotStarted': return 20;
+        case 'VeryWeak': return 30;
+        case 'Weak': return 40;
+        case 'Moderate': return 60;
+        case 'Strong': return 80;
+        case 'VeryStrong': return 100;
+        default: return 60;
+      }
+    };
+    
+    // Calculate average confidence from all subjects
+    const subjectValues = Object.values(confidenceData).filter(val => val && typeof val === 'string') as string[];
+    const avgConfidence = subjectValues.length > 0 
+      ? Math.round(subjectValues.reduce((sum: number, level: string) => sum + levelToNum(level), 0) / subjectValues.length)
+      : 60;
+    
+    // Collect areas of concern (subjects with low confidence)
+    const areasOfConcern: string[] = [];
+    Object.entries(confidenceData).forEach(([subjectCode, level]) => {
+      if (level === 'NotStarted' || level === 'VeryWeak' || level === 'Weak') {
+        areasOfConcern.push(subjectCode);
+      }
+    });
+    
+    const transformedData = {
+      confidence: avgConfidence,
+      areas_of_concern: areasOfConcern.length > 0 ? areasOfConcern : null
+    };
+    
+    const response = await this.makeRequest<any>(`/onboarding/students/${studentId}/confidence`, {
+      method: 'PATCH',
+      body: JSON.stringify(transformedData),
+    });
+    if (response && typeof response === 'object') {
+      if ('success' in response && response.success) return;
+      if ('updated' in response && response.updated) return;
+    }
+    throw new Error('Failed to update student confidence');
   }
 
   // Faculty endpoints for student management

@@ -23,15 +23,15 @@ import FinalStep from './components/FinalStep';
 
 // Initial data matching Elm app
 const initialBackground: IWFBackground = {
-  fullName: "",
-  email: "",
-  phoneNumber: "",
+  fullName: "Example User",
+  email: "example-user@example.com",
+  phoneNumber: "+911234567890",
   phoneVerified: false,
-  presentLocation: "",
-  graduationStream: "",
-  collegeUniversity: "",
+  presentLocation: "New York, NY",
+  graduationStream: "Engineering",
+  collegeUniversity: "Example University",
   yearOfPassing: 2024,
-  about: ""
+  about: "I am a software engineer with a passion for building scalable and efficient systems."
 }
 
 const initialOTPVerification: IWFOTPVerification = {

@@ -156,3 +156,4 @@ docker.env
 # Generated documentation files
 study-planner/helios-ts/generated-docs/
 .terraform
+docker-package-jsons

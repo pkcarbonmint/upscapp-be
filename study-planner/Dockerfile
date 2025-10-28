@@ -1,17 +1,10 @@
 # Use the base image with pnpm setup and Chromium dependencies
 FROM study-planner:base
 
-# # Copy source code
-# COPY study-planner/helios-ts ./helios-ts
-# COPY study-planner/libs ./libs
-# COPY study-planner/servers/helios-server ./servers/helios-server
-
 # # Copy resource files
 COPY resources/ ./resources/
 
-RUN rm -rf onboarding-ui faculty-ui shared-ui-library plan-editor-library
-# Build the helios-ts library first, then the server
-RUN pnpm -r build
+RUN (cd study-planner && pnpm --filter servers\* build)
 
 # Install curl for health checks
 RUN apk add --no-cache curl
@@ -37,5 +30,5 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # Set the command to run the application
-WORKDIR /app/servers/helios-server
+WORKDIR /app/study-planner/servers/helios-server
 CMD ["node", "dist/index.js"]

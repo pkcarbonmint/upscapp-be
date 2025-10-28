@@ -14,6 +14,8 @@ interface OTPVerificationStepProps {
   onAuthSuccess?: (authResult: any) => void; // New callback for successful auth
 }
 
+const useFirebase = isFeatureEnabled('useFirebaseOTP');
+
 const OTPVerificationStep: React.FC<OTPVerificationStepProps> = ({
   data,
   phoneNumber,
@@ -25,8 +27,6 @@ const OTPVerificationStep: React.FC<OTPVerificationStepProps> = ({
   const [useEnhancedAuth, setUseEnhancedAuth] = useState(false);
   const [error, setError] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string>('');
-
-  const useFirebase = isFeatureEnabled('useFirebaseOTP');
 
   // Initialize OTP data if not present
   useEffect(() => {
