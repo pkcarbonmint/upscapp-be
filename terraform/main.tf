@@ -53,6 +53,12 @@ data "aws_availability_zones" "available" {
 # Data source for current AWS account
 data "aws_caller_identity" "current" {}
 
+# Data source to check if S3 bucket already exists
+data "aws_s3_bucket" "existing_study_planner" {
+  count  = var.import_existing_resources ? 1 : 0
+  bucket = var.study_planner_bucket_name
+}
+
 # Local values for RDS configuration
 locals {
   # Determine RDS endpoint based on deployment method
@@ -1286,11 +1292,16 @@ resource "aws_s3_bucket" "images" {
 
 # S3 Bucket for Study Planner Application
 resource "aws_s3_bucket" "study_planner" {
-  bucket = "study-planner.upscpro.laex.in"
+  bucket = var.study_planner_bucket_name
 
   tags = {
-    Name = "study-planner.upscpro.laex.in"
+    Name = var.study_planner_bucket_name
     Purpose = "Study Planner Application"
+  }
+
+  # Prevent accidental deletion
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
@@ -1336,6 +1347,11 @@ resource "aws_s3_bucket_versioning" "study_planner" {
   versioning_configuration {
     status = "Enabled"
   }
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "study_planner" {
@@ -1345,6 +1361,11 @@ resource "aws_s3_bucket_public_access_block" "study_planner" {
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # S3 Bucket Policy for Study Planner (allow CloudFront access)
@@ -1372,6 +1393,11 @@ resource "aws_s3_bucket_policy" "study_planner" {
   })
 
   depends_on = [aws_cloudfront_distribution.study_planner]
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # S3 Bucket Website Configuration
@@ -1384,6 +1410,11 @@ resource "aws_s3_bucket_website_configuration" "study_planner" {
 
   error_document {
     key = "index.html"
+  }
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
@@ -1577,9 +1608,19 @@ resource "aws_cloudfront_distribution" "study_planner" {
     Name = "study-planner-cloudfront"
     Purpose = "Study Planner Application"
   }
+
+  # Prevent accidental deletion
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # CloudFront Origin Access Identity for Study Planner
 resource "aws_cloudfront_origin_access_identity" "study_planner" {
   comment = "OAI for Study Planner S3 bucket"
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
 }
