@@ -87,7 +87,7 @@ const PersonalInfoStep: React.FC<StepProps> = ({ formData, updateFormData }) => 
         </div>
       </div>
       
-      <div style={{ marginTop: '24px' }}>
+      <div className="form-section">
         <label className="ms-label">College/University</label>
         <input
           type="text"
@@ -99,36 +99,12 @@ const PersonalInfoStep: React.FC<StepProps> = ({ formData, updateFormData }) => 
       </div>
       
       {formData.personalInfo.fullName && formData.personalInfo.presentLocation && (
-        <div 
-          style={{
-            background: 'var(--ms-blue-light)',
-            border: '1px solid var(--ms-blue)',
-            borderRadius: '12px',
-            padding: '24px',
-            marginTop: '32px'
-          }}
-        >
-          <div 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '16px',
-              color: 'var(--ms-blue)',
-              fontWeight: '600',
-              fontSize: '18px'
-            }}
-          >
+        <div className="info-card">
+          <div className="info-card-header">
             <span>💡</span>
             <span>Personalized Insights</span>
           </div>
-          <div 
-            style={{
-              color: 'var(--ms-gray-130)',
-              fontSize: '14px',
-              lineHeight: '1.6'
-            }}
-          >
+          <div className="info-card-content">
             Welcome <strong>{formData.personalInfo.fullName}</strong>! Based on your location in{' '}
             <strong>{formData.personalInfo.presentLocation}</strong>, we've identified study resources 
             and coaching institutes that might interest you.

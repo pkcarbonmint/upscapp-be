@@ -92,67 +92,18 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
           return (
             <div
               key={option.year}
-              style={{
-                background: isSelected 
-                  ? 'linear-gradient(135deg, #0078D4 0%, #106EBE 100%)'
-                  : 'linear-gradient(135deg, rgba(0, 120, 212, 0.1) 0%, rgba(16, 110, 190, 0.1) 100%)',
-                color: isSelected ? 'var(--ms-white)' : 'var(--ms-blue)',
-                borderRadius: '12px',
-                padding: '24px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                border: isSelected 
-                  ? '3px solid #0078D4' 
-                  : '2px solid #E1E1E1',
-                transform: isSelected 
-                  ? 'scale(1.05)' 
-                  : 'scale(1)',
-                boxShadow: isSelected 
-                  ? '0 12px 24px rgba(0, 120, 212, 0.35)' 
-                  : '0 2px 4px rgba(0, 0, 0, 0.1)',
-                position: 'relative'
-              }}
+              className={`year-option ${isSelected ? 'year-option--selected' : ''}`}
               onClick={() => handleYearSelect(option.year)}
             >
               {isSelected && (
-                <div 
-                  style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    background: 'var(--ms-white)',
-                    color: 'var(--ms-blue)',
-                    borderRadius: '50%',
-                    width: '28px',
-                    height: '28px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '16px',
-                    fontWeight: 'bold'
-                  }}
-                >
+                <div className="year-option-checkmark">
                   ✓
                 </div>
               )}
-              <div 
-                style={{
-                  fontSize: '48px',
-                  fontWeight: '700',
-                  marginBottom: '12px',
-                  textAlign: 'center'
-                }}
-              >
+              <div className="year-option-number">
                 {option.year}
               </div>
-              <div 
-                style={{
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  textAlign: 'center',
-                  opacity: isSelected ? 1 : 0.8
-                }}
-              >
+              <div className={`year-option-duration ${isSelected ? 'year-option-duration--selected' : ''}`}>
                 ⏱️ {option.months} months available
               </div>
             </div>
@@ -161,26 +112,8 @@ const TargetYearStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       </div>
       
       {formData.targetYear.targetYear && (
-        <div 
-          style={{
-            background: 'var(--ms-blue-light)',
-            border: '1px solid var(--ms-blue)',
-            borderRadius: '12px',
-            padding: '24px',
-            marginTop: '32px'
-          }}
-        >
-          <div 
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '16px',
-              color: 'var(--ms-blue)',
-              fontWeight: '600',
-              fontSize: '18px'
-            }}
-          >
+        <div className="info-card">
+          <div className="info-card-header">
             <span>📊</span>
             <span>Your Preparation Analysis</span>
           </div>
