@@ -1,3 +1,7 @@
+/* Import shared design system first */
+@import "./shared/index.css";
+
+/* Tailwind CSS */
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
