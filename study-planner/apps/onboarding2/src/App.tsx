@@ -1,6 +1,7 @@
 import { lazy, useState, Suspense } from "react";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 import Navigation from "@/components/Navigation";
 import PersonalInfoStep from "@/components/PersonalInfoStep";
@@ -136,6 +137,7 @@ function App() {
           )}
         </div>
       </main>
+      <Footer currentStep={getStepNumber()} totalSteps={7} />
     </div>
   );
   

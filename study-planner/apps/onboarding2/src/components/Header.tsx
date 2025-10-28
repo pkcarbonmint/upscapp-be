@@ -15,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ currentStep, totalSteps }) => {
               LM
             </div>
             <div>
-              <div className="ms-font-body">La Mentory UPSC Study Planner</div>
+              <div className="ms-font-body">La Mentora UPSC Study Planner</div>
               <div className="ms-font-caption header-subtitle">
                 Personalized UPSC Preparation
               </div>
