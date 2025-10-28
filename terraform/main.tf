@@ -53,6 +53,12 @@ data "aws_availability_zones" "available" {
 # Data source for current AWS account
 data "aws_caller_identity" "current" {}
 
+# Data source to check if S3 bucket already exists
+data "aws_s3_bucket" "existing_study_planner" {
+  count  = var.import_existing_resources ? 1 : 0
+  bucket = var.study_planner_bucket_name
+}
+
 # Local values for RDS configuration
 locals {
   # Determine RDS endpoint based on deployment method
@@ -1284,6 +1290,21 @@ resource "aws_s3_bucket" "images" {
   }
 }
 
+# S3 Bucket for Study Planner Application
+resource "aws_s3_bucket" "study_planner" {
+  bucket = var.study_planner_bucket_name
+
+  tags = {
+    Name = var.study_planner_bucket_name
+    Purpose = "Study Planner Application"
+  }
+
+  # Prevent accidental deletion
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 resource "aws_s3_bucket_versioning" "assets" {
   count  = var.enable_s3_buckets ? 1 : 0
   bucket = aws_s3_bucket.assets[0].id
@@ -1318,6 +1339,83 @@ resource "aws_s3_bucket_public_access_block" "images" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+# S3 Bucket Configuration for Study Planner
+resource "aws_s3_bucket_versioning" "study_planner" {
+  bucket = aws_s3_bucket.study_planner.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "study_planner" {
+  bucket = aws_s3_bucket.study_planner.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# S3 Bucket Policy for Study Planner (allow CloudFront access)
+resource "aws_s3_bucket_policy" "study_planner" {
+  bucket = aws_s3_bucket.study_planner.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowCloudFrontServicePrincipal"
+        Effect    = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.study_planner.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceArn" = aws_cloudfront_distribution.study_planner.arn
+          }
+        }
+      }
+    ]
+  })
+
+  depends_on = [aws_cloudfront_distribution.study_planner]
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# S3 Bucket Website Configuration
+resource "aws_s3_bucket_website_configuration" "study_planner" {
+  bucket = aws_s3_bucket.study_planner.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "index.html"
+  }
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # CloudFront Distribution
@@ -1400,5 +1498,129 @@ resource "aws_cloudfront_distribution" "main" {
 
   tags = {
     Name = "${var.project_name}-cloudfront"
+  }
+}
+
+# CloudFront Distribution for Study Planner S3 Bucket
+resource "aws_cloudfront_distribution" "study_planner" {
+  origin {
+    domain_name = aws_s3_bucket.study_planner.bucket_regional_domain_name
+    origin_id   = "S3-study-planner"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.study_planner.cloudfront_access_identity_path
+    }
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "CloudFront distribution for Study Planner Application"
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "S3-study-planner"
+    compress               = true
+    viewer_protocol_policy = "redirect-to-https"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 3600
+    max_ttl     = 86400
+  }
+
+  # Cache behavior for static assets
+  ordered_cache_behavior {
+    path_pattern           = "/assets/*"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "S3-study-planner"
+    compress               = true
+    viewer_protocol_policy = "redirect-to-https"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 31536000
+  }
+
+  # Cache behavior for API calls (no caching)
+  ordered_cache_behavior {
+    path_pattern           = "/api/*"
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods         = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id       = "S3-study-planner"
+    compress               = true
+    viewer_protocol_policy = "redirect-to-https"
+
+    forwarded_values {
+      query_string = true
+      headers      = ["Authorization", "Content-Type"]
+      cookies {
+        forward = "all"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 0
+    max_ttl     = 0
+  }
+
+  # Custom error pages for SPA
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  price_class = "PriceClass_100"
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Name = "study-planner-cloudfront"
+    Purpose = "Study Planner Application"
+  }
+
+  # Prevent accidental deletion
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# CloudFront Origin Access Identity for Study Planner
+resource "aws_cloudfront_origin_access_identity" "study_planner" {
+  comment = "OAI for Study Planner S3 bucket"
+
+  # Allow updates but prevent destruction
+  lifecycle {
+    prevent_destroy = true
   }
 }

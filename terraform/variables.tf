@@ -486,3 +486,16 @@ variable "cloudfront_price_class" {
     error_message = "CloudFront price class must be one of: PriceClass_All, PriceClass_200, PriceClass_100."
   }
 }
+
+# Study Planner Configuration
+variable "import_existing_resources" {
+  description = "Whether to import existing resources instead of creating new ones"
+  type        = bool
+  default     = false
+}
+
+variable "study_planner_bucket_name" {
+  description = "Name of the Study Planner S3 bucket"
+  type        = string
+  default     = "study-planner.upscpro.laex.in"
+}
