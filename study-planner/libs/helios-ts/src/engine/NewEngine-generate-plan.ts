@@ -20,6 +20,41 @@ import type { PlanningContext, S2Subject,  S2ExamFocus } from 'helios-scheduler'
 import { S2WeekDay } from 'helios-scheduler';
 import { mapFromS2Tasks } from './s2-mapper';
 
+export async function generatePlan(userId: string, intake: StudentIntake): Promise<StudyPlan> {
+  const config = {
+    block_duration_clamp: {
+      min_weeks: 2,
+      max_weeks: 8,
+    },
+    daily_hour_limits: {
+      regular_day: 8,
+      catch_up_day: 5,
+      test_day: 6,
+    },
+    task_effort_split: {
+      study: 0.6,
+      revision: 0.2,
+      practice: 0.15,
+      test: 0.05,
+      gs_optional_ratio: 1,
+    }
+  } as const;
+  
+  const archetype: Archetype = {
+    archetype: 'Full-Time Professional',
+    timeCommitment: 'FullTime',
+    weeklyHoursMin: 35,
+    weeklyHoursMax: 50,
+    description: 'Full-time student with 40+ hours per week',
+    defaultPacing: 'Balanced',
+    defaultApproach: 'DualSubject',
+    specialFocus: [],
+  };
+  
+  const { plan } = await generateInitialPlan(userId, config, archetype, intake);
+  return plan;
+}
+
 /**
  * Generate an initial study plan for a student using scheduler2.
    */

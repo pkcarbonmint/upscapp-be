@@ -13,9 +13,7 @@ export {
   validatePlan
 } from './engine/Engine';
 
-export {
-  generateInitialPlan,
-} from './engine/NewEngine-generate-plan';
+export {  generatePlan, generateInitialPlan } from './engine/NewEngine-generate-plan';
 
 export { CalendarDocxService } from './services/CalendarDocxService';
 
