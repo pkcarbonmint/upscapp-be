@@ -5,7 +5,8 @@ FROM study-planner:base
 COPY resources/ ./resources/
 
 WORKDIR /app/study-planner
-RUN pnpm --filter ./libs/\* --filter ./servers\* build
+RUN pnpm --filter ./libs/\* build
+RUN pnpm --filter helios-server build
 
 # Install curl for health checks
 RUN apk add --no-cache curl
