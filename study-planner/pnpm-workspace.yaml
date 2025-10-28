@@ -4,5 +4,3 @@ packages:
   - servers/*
   - shared-ui-library
   - plan-editor-library
-  - faculty-ui
-  - onboarding-ui

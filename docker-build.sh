@@ -69,11 +69,17 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-mkdir -p docker-package-jsons
+rm -rf docker-package-jsons && mkdir -p docker-package-jsons
 (cd study-planner && find . -name package.json | tar cf - -T - | (cd ../docker-package-jsons && tar xf -))
 
 # Build base image first
 log_info "Building base image with pnpm setup..."
+if docker build -f Dockerfile.pnpm -t node:alpine-pnpm $NO_CACHE .; then
+    log_success "alpine-pnpm image built successfully"
+else
+    log_error "alpine-pnpm image build failed"
+    exit 1
+fi
 if docker build -f Dockerfile.base -t study-planner:base $NO_CACHE .; then
     log_success "Base image built successfully"
 else

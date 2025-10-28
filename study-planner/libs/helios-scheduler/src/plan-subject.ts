@@ -1,7 +1,5 @@
 import type { Dayjs } from "dayjs";
 import { S2Constraints, S2Slot, S2SlotType, S2Subject, S2Task, S2Topic, S2TopicWithMinutes, S2WeekDay } from "./types";
-import * as fs from 'fs';
-import * as path from 'path';
 
 export function planSubjectTasks(
   from: Dayjs,
@@ -352,7 +350,8 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
         missngCOunt++;
         missingDays.push(key);
         console.log(`#### verifyAllDays: Day ${key} (${date.format('dddd')}) is not covered`);
-        if (exitIfFailed && missngCOunt >= 3) {
+        if (missngCOunt >= 3) {
+/*
           // Capture inputs for createTasks_v2 and write to JSON file for debugging
           const debugData = {
             timestamp: new Date().toISOString(),
@@ -428,9 +427,10 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
           console.log(`Missing days count: ${missngCOunt}`);
           console.log(`Total days: ${allDays}`);
           console.log(`Tasks generated: ${tasks.length}`);
-
-            process.exit(1);
-          throw new Error(`Too many days are not covered: ${missngCOunt}. Debug data saved to: ${debugFile}`);
+          console.log(`Debug data written to: ${debugFile}`);
+          if (exitIfFailed) process.exit(1);
+*/
+          throw new Error(`Too many days are not covered: ${missngCOunt}.`);
         
 
         }
