@@ -339,7 +339,6 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
     console.log(`#### verifyAllDays: Tasks cover ${taskDate2CountMap.size} unique days`);
     console.log(`#### verifyAllDays: Covered days:`, Array.from(taskDate2CountMap.keys()).sort());
 
-    const exitIfFailed = true;
     let missngCOunt = 0;
     const missingDays: string[] = [];
     Array(allDays).fill(0).forEach((_, i) => {
@@ -352,6 +351,7 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
         console.log(`#### verifyAllDays: Day ${key} (${date.format('dddd')}) is not covered`);
         if (missngCOunt >= 3) {
 /*
+          const exitIfFailed = true;
           // Capture inputs for createTasks_v2 and write to JSON file for debugging
           const debugData = {
             timestamp: new Date().toISOString(),

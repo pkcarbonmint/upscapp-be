@@ -3,6 +3,7 @@ FROM study-planner:base AS workspace-builder
 WORKDIR /app/study-planner
 RUN rm -rf servers
 RUN pnpm install --frozen-lockfile
+RUN pnpm  --filter ./libs/\* build
 RUN pnpm  --filter ./apps/\* build
 
 # Production stage with nginx

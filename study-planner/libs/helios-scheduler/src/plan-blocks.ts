@@ -107,6 +107,7 @@ const availableMinutes = Array.from({ length: numAvailableDays }, (_, index) => 
 const exitOnFail = false;
 function verifyBlocks(  timeWindowFrom: Dayjs,
   timeWindowTo: Dayjs,
+  // @ts-ignore
   subjects: S2Subject[],
   constraints: BlockAllocConstraints
 , blocks: BlockSlot[]): void {
@@ -166,11 +167,11 @@ function verifyBlocks(  timeWindowFrom: Dayjs,
         console.log(`Total blocks generated: ${blocks.length}`);
         console.log(`Blocks on this day: ${blocksOnTheDay.length}`);
         console.log(`Debug data written to: ${debugFile}`);
-*/
-
         if (exitOnFail) {
           process.exit(1);
         }
+*/
+
         throw new Error(`No blocks allocated for day ${date.format('YYYY-MM-DD')}.`);
     }
   });
