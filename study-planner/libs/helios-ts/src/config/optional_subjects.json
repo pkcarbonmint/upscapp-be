@@ -80,7 +80,7 @@
             "popularity": "Medium"
         },
         {
-            "code": "OPT-GEO",
+            "code": "OPT-GEOGRAPHY",
             "name": "Geography",
             "category": "Social Science",
             "baseline_hours": 200,
@@ -88,7 +88,7 @@
             "popularity": "Very High"
         },
         {
-            "code": "OPT-GEO",
+            "code": "OPT-GEOLOGY",
             "name": "Geology",
             "category": "Science",
             "baseline_hours": 200,
@@ -336,7 +336,7 @@
             "popularity": "Medium"
         },
         {
-            "code": "OPT-SAN",
+            "code": "OPT-SANSKRIT",
             "name": "Sanskrit Literature",
             "category": "Literature",
             "baseline_hours": 150,
@@ -344,7 +344,7 @@
             "popularity": "Low"
         },
         {
-            "code": "OPT-SAN",
+            "code": "OPT-SANTHALI",
             "name": "Santhali Literature",
             "category": "Literature",
             "baseline_hours": 150,

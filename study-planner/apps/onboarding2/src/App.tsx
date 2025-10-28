@@ -2,7 +2,7 @@ import { lazy, useState } from "react";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import Header from "@/components/Header";
 
-import  Navigation from "@/components/Navigation";
+import Navigation from "@/components/Navigation";
 import PersonalInfoStep from "@/components/PersonalInfoStep";
 
 const TargetYearStep = lazy(() => import("@/components/TargetYearStep"));
@@ -31,13 +31,19 @@ const stepMap = steps.reduce<Record<string, number>>((acc, step, index) => {
 }, {});
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(getStoredAuth());
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === APP_PASSWORD) {
+      const authData = {
+        timestamp: new Date().getTime(),
+        authenticated: true
+      };
+      localStorage.setItem('helios-auth', JSON.stringify(authData));
+
       setIsAuthenticated(true);
       setPasswordError("");
     } else {
@@ -56,6 +62,8 @@ function App() {
     isSubmitting,
     error,
   } = useOnboarding();
+
+
 
   const renderStep = () => {
     const stepProps = {
@@ -92,97 +100,7 @@ function App() {
 
   // Show password screen if not authenticated
   if (!isAuthenticated) {
-    return (
-      <div className="app-container">
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '100vh',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <div style={{
-            background: 'white',
-            padding: '2rem',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            width: '100%',
-            maxWidth: '400px'
-          }}>
-            <h2 style={{ 
-              marginBottom: '1.5rem', 
-              textAlign: 'center',
-              color: '#333'
-            }}>
-              App Login
-            </h2>
-            <form onSubmit={handlePasswordSubmit}>
-              <div style={{ marginBottom: '1rem' }}>
-                <label 
-                  htmlFor="password" 
-                  style={{ 
-                    display: 'block', 
-                    marginBottom: '0.5rem',
-                    fontWeight: '500',
-                    color: '#555'
-                  }}
-                >
-                  Enter Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    fontSize: '1rem',
-                    boxSizing: 'border-box'
-                  }}
-                  autoFocus
-                />
-              </div>
-              {passwordError && (
-                <div style={{
-                  color: '#e74c3c',
-                  marginBottom: '1rem',
-                  fontSize: '0.875rem'
-                }}>
-                  {passwordError}
-                </div>
-              )}
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  fontSize: '1rem',
-                  cursor: 'pointer',
-                  fontWeight: '500',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = '#0056b3';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = '#007bff';
-                }}
-              >
-                Enter
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    );
+    return <PasswordBox />
   }
 
   return (
@@ -213,6 +131,102 @@ function App() {
       </main>
     </div>
   );
+  
+  function getStoredAuth() {
+    const stored = localStorage.getItem('helios-auth');
+    if (!stored) return false;
+
+    try {
+      const { timestamp } = JSON.parse(stored);
+      const now = new Date().getTime();
+      const daysSinceAuth = (now - timestamp) / (1000 * 60 * 60 * 24);
+
+      // Check if authentication is still valid (less than 30 days)
+      return daysSinceAuth < 30;
+    } catch {
+      return false;
+    }
+  };
+
+  function PasswordBox() {
+    return (
+      <div className="app-container">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          padding: '24px'
+        }}>
+          <div className="step-card" style={{ maxWidth: '420px', width: '100%' }}>
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                background: 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-purple) 100%)',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px',
+                fontSize: '24px'
+              }}>
+                🔒
+              </div>
+              <h2 className="step-title" style={{ marginBottom: '8px' }}>
+                Secure Access
+              </h2>
+              <p className="step-description">
+                Please enter your password to continue
+              </p>
+            </div>
+
+            <form onSubmit={handlePasswordSubmit}>
+              <div style={{ marginBottom: '16px' }}>
+                <label
+                  htmlFor="password"
+                  className="ms-label"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  className="ms-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  autoFocus
+                  style={{ marginTop: '4px' }}
+                />
+              </div>
+
+              {passwordError && (
+                <div style={{
+                  marginBottom: '16px',
+                  fontSize: '14px',
+                  padding: '8px 12px',
+                  backgroundColor: 'var(--ms-red)',
+                  color: 'white',
+                  borderRadius: '4px'
+                }}>
+                  {passwordError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="ms-button ms-button-primary"
+                style={{ width: '100%', padding: '10px 24px' }}
+              >
+                Continue
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  };
 }
 
 export default App;
