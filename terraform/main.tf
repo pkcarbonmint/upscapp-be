@@ -29,6 +29,20 @@ provider "aws" {
   }
 }
 
+# Additional provider for us-east-1 (required for CloudFront certificates)
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Environment = var.environment
+      Project     = var.project_name
+      ManagedBy   = "terraform"
+    }
+  }
+}
+
 # Data source for Ubuntu 22.04 LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -1400,5 +1414,234 @@ resource "aws_cloudfront_distribution" "main" {
 
   tags = {
     Name = "${var.project_name}-cloudfront"
+  }
+}
+
+# S3 Bucket for Study Planner Application
+resource "aws_s3_bucket" "study_planner" {
+  count  = var.enable_study_planner_s3 ? 1 : 0
+  bucket = var.study_planner_bucket_name
+
+  tags = {
+    Name        = var.study_planner_bucket_name
+    Purpose     = "Study Planner Static Website"
+    Environment = var.environment
+  }
+}
+
+# Enable versioning for Study Planner bucket
+resource "aws_s3_bucket_versioning" "study_planner" {
+  count  = var.enable_study_planner_s3 ? 1 : 0
+  bucket = aws_s3_bucket.study_planner[0].id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# Configure website hosting for Study Planner bucket
+resource "aws_s3_bucket_website_configuration" "study_planner" {
+  count  = var.enable_study_planner_s3 ? 1 : 0
+  bucket = aws_s3_bucket.study_planner[0].id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "index.html"
+  }
+}
+
+# CloudFront Origin Access Identity for Study Planner
+resource "aws_cloudfront_origin_access_identity" "study_planner" {
+  count   = var.enable_study_planner_s3 ? 1 : 0
+  comment = "OAI for Study Planner S3 bucket"
+}
+
+# S3 Bucket Policy to allow CloudFront access
+resource "aws_s3_bucket_policy" "study_planner" {
+  count  = var.enable_study_planner_s3 ? 1 : 0
+  bucket = aws_s3_bucket.study_planner[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontAccess"
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_cloudfront_origin_access_identity.study_planner[0].iam_arn
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.study_planner[0].arn}/*"
+      }
+    ]
+  })
+}
+
+# Block public access to Study Planner bucket (CloudFront will serve content)
+resource "aws_s3_bucket_public_access_block" "study_planner" {
+  count  = var.enable_study_planner_s3 ? 1 : 0
+  bucket = aws_s3_bucket.study_planner[0].id
+
+  block_public_acls       = true
+  block_public_policy     = false  # Allow bucket policy for CloudFront
+  ignore_public_acls      = true
+  restrict_public_buckets = false  # Allow bucket policy for CloudFront
+}
+
+# SSL Certificate for Study Planner (us-east-1 required for CloudFront)
+resource "aws_acm_certificate" "study_planner" {
+  count    = var.enable_study_planner_s3 && var.study_planner_domain_name != "" ? 1 : 0
+  provider = aws.us_east_1
+
+  domain_name       = var.study_planner_domain_name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    Name = "${var.project_name}-study-planner-ssl-cert"
+  }
+}
+
+# Route53 DNS validation records for Study Planner certificate
+resource "aws_route53_record" "study_planner_cert_validation" {
+  for_each = var.enable_study_planner_s3 && var.study_planner_domain_name != "" && var.route53_zone_id != "" ? {
+    for dvo in aws_acm_certificate.study_planner[0].domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  } : {}
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = var.route53_zone_id
+}
+
+# Certificate validation for Study Planner
+resource "aws_acm_certificate_validation" "study_planner" {
+  count    = var.enable_study_planner_s3 && var.study_planner_domain_name != "" && var.route53_zone_id != "" ? 1 : 0
+  provider = aws.us_east_1
+
+  certificate_arn         = aws_acm_certificate.study_planner[0].arn
+  validation_record_fqdns = [for record in aws_route53_record.study_planner_cert_validation : record.fqdn]
+
+  timeouts {
+    create = "5m"
+  }
+}
+
+# CloudFront Distribution for Study Planner
+resource "aws_cloudfront_distribution" "study_planner" {
+  count = var.enable_study_planner_s3 ? 1 : 0
+
+  origin {
+    domain_name = aws_s3_bucket.study_planner[0].bucket_regional_domain_name
+    origin_id   = "S3-${var.study_planner_bucket_name}"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.study_planner[0].cloudfront_access_identity_path
+    }
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "CloudFront distribution for Study Planner"
+  default_root_object = "index.html"
+  price_class         = var.cloudfront_price_class
+
+  # Aliases (domain names)
+  aliases = var.study_planner_domain_name != "" ? [var.study_planner_domain_name] : []
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "S3-${var.study_planner_bucket_name}"
+    compress         = true
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
+  }
+
+  # Cache behavior for static assets (JS, CSS, images)
+  ordered_cache_behavior {
+    path_pattern     = "/assets/*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "S3-${var.study_planner_bucket_name}"
+    compress         = true
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+  }
+
+  # Custom error response to serve index.html for SPA routing
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  custom_error_response {
+    error_code         = 403
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = var.study_planner_domain_name == "" ? true : false
+    acm_certificate_arn            = var.study_planner_domain_name != "" ? aws_acm_certificate.study_planner[0].arn : null
+    ssl_support_method             = var.study_planner_domain_name != "" ? "sni-only" : null
+    minimum_protocol_version       = var.study_planner_domain_name != "" ? "TLSv1.2_2021" : "TLSv1"
+  }
+
+  tags = {
+    Name = "${var.project_name}-study-planner-cloudfront"
+  }
+}
+
+# Route53 record for Study Planner domain
+resource "aws_route53_record" "study_planner" {
+  count   = var.enable_study_planner_s3 && var.study_planner_domain_name != "" && var.route53_zone_id != "" ? 1 : 0
+  zone_id = var.route53_zone_id
+  name    = var.study_planner_domain_name
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.study_planner[0].domain_name
+    zone_id                = aws_cloudfront_distribution.study_planner[0].hosted_zone_id
+    evaluate_target_health = false
   }
 }

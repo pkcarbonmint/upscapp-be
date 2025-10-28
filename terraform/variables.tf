@@ -486,3 +486,22 @@ variable "cloudfront_price_class" {
     error_message = "CloudFront price class must be one of: PriceClass_All, PriceClass_200, PriceClass_100."
   }
 }
+
+# Study Planner Configuration
+variable "enable_study_planner_s3" {
+  description = "Enable S3 bucket and CloudFront for Study Planner application"
+  type        = bool
+  default     = true
+}
+
+variable "study_planner_bucket_name" {
+  description = "S3 bucket name for Study Planner application"
+  type        = string
+  default     = "study-planner.upscpro.laex.in"
+}
+
+variable "study_planner_domain_name" {
+  description = "Domain name for Study Planner application (optional)"
+  type        = string
+  default     = "study-planner.upscpro.laex.in"
+}

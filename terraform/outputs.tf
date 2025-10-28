@@ -272,3 +272,34 @@ output "cloudfront_hosted_zone_id" {
   description = "CloudFront hosted zone ID"
   value       = var.enable_cloudfront ? aws_cloudfront_distribution.main[0].hosted_zone_id : null
 }
+
+# Study Planner Outputs
+output "study_planner_bucket_name" {
+  description = "Name of the Study Planner S3 bucket"
+  value       = var.enable_study_planner_s3 ? aws_s3_bucket.study_planner[0].bucket : null
+}
+
+output "study_planner_bucket_arn" {
+  description = "ARN of the Study Planner S3 bucket"
+  value       = var.enable_study_planner_s3 ? aws_s3_bucket.study_planner[0].arn : null
+}
+
+output "study_planner_cloudfront_id" {
+  description = "ID of the Study Planner CloudFront distribution"
+  value       = var.enable_study_planner_s3 ? aws_cloudfront_distribution.study_planner[0].id : null
+}
+
+output "study_planner_cloudfront_arn" {
+  description = "ARN of the Study Planner CloudFront distribution"
+  value       = var.enable_study_planner_s3 ? aws_cloudfront_distribution.study_planner[0].arn : null
+}
+
+output "study_planner_cloudfront_domain" {
+  description = "Domain name of the Study Planner CloudFront distribution"
+  value       = var.enable_study_planner_s3 ? aws_cloudfront_distribution.study_planner[0].domain_name : null
+}
+
+output "study_planner_url" {
+  description = "URL to access the Study Planner application"
+  value       = var.enable_study_planner_s3 ? (var.study_planner_domain_name != "" ? "https://${var.study_planner_domain_name}" : "https://${aws_cloudfront_distribution.study_planner[0].domain_name}") : null
+}
