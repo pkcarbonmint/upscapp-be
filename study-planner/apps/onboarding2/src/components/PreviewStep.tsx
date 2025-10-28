@@ -2,9 +2,127 @@ import React from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
 import CycleTimeline from './CycleTimeline';
+import type { Archetype, StudentIntake } from 'helios-ts';
+import type { StudyStrategy, PersonalDetails } from 'helios-ts';
+import { CalendarDocxService, createStudentIntake } from 'helios-ts';
+
+const config = {
+  block_duration_clamp: {
+    min_weeks: 2,
+    max_weeks: 8,
+},
+daily_hour_limits: {
+    regular_day: 8,
+    catch_up_day: 5,
+    test_day: 6,
+},
+task_effort_split: {
+  study: 0.6,
+  revision: 0.2,
+  practice: 0.15,
+  test: 0.05,
+  gs_optional_ratio: 1,
+}
+
+} as const;
+
+const studyStrategy: StudyStrategy = {
+  study_focus_combo: 'OneGSPlusOptional',
+  weekly_study_hours: '40',
+  time_distribution: 'Balanced',
+  study_approach: 'Balanced',
+  revision_strategy: 'Balanced',
+  test_frequency: 'Balanced',
+  seasonal_windows: [],
+  catch_up_day_preference: 'Sunday',
+  upsc_optional_subject: 'OPT-SOC',
+};
+
+const archetype: Archetype = {
+  archetype: 'Full-Time Professional',
+  timeCommitment: 'FullTime',
+  weeklyHoursMin: 35,
+  weeklyHoursMax: 50,
+  description: 'Full-time student with 40+ hours per week',
+  defaultPacing: 'Balanced',
+  defaultApproach: 'DualSubject',
+  specialFocus: [],
+};
+const personalDetails: PersonalDetails = {
+  full_name: 'John Doe',
+  email: 'john.doe@example.com',
+  phone_number: '1234567890',
+  present_location: 'New York, NY',
+  student_archetype: 'Full-Time Professional',
+  graduation_stream: 'Bachelor of Science',
+  college_university: 'Example University',
+  year_of_passing: 2024,
+};
+
 
 const PreviewStep: React.FC<StepProps> = ({ formData }) => {
   const { personalInfo, targetYear, commitment, confidenceLevel, preview } = formData;
+
+  async function downloadPlan() {
+    // generate plan using generateInitialPlan function
+    // pass the plan to CalendarDocxService to generate word document
+    // the document should be saved in a buffer and downloaded to the user's browser
+    const intake: StudentIntake = createStudentIntake({
+      subject_confidence: {},
+      study_strategy: studyStrategy,
+      subject_approach: 'DualSubject',
+      target_year: targetYear.targetYear,
+      start_date: new Date().toISOString(),
+      personal_details: personalDetails,
+      preparation_background: {
+        preparing_since: '2024-01-01',
+        number_of_attempts: '1',
+        highest_stage_per_attempt: 'Prelims',
+        last_attempt_gs_prelims_score: 85,
+        last_attempt_csat_score: 120,
+      },
+      coaching_details: {
+        prior_coaching: 'No',
+        prior_mentorship: 'No',
+        place_of_preparation: 'Home',
+        coaching_institute_name: 'Example Coaching Institute',
+        programme_mentor_name: 'Example Programme Mentor',
+      },
+      optional_subject: {
+        optional_subject_name: 'Public Administration',
+        optional_status: 'Done coaching',
+        optional_taken_from: 'Example Institute',
+      },
+      test_experience: {
+        test_series_attempted: ['Test Series A', 'Test Series B'],
+        csat_self_assessment: 'Average',
+        csat_weak_areas: ['Area 1', 'Area 2'],
+      },
+      syllabus_awareness: {
+        gs_syllabus_understanding: 'Average',
+        optional_syllabus_understanding: 'Average',
+        pyq_awareness_and_use: 'Average',
+      },
+    })
+    const userId = 'fakeuserid'
+    const { generateInitialPlan } = await import('helios-ts');
+    const {plan} = await generateInitialPlan(userId, config, archetype, intake);
+    const blob = await CalendarDocxService.generateStudyPlanDocxBlob(plan, intake);
+    const url = URL.createObjectURL(blob);
+    
+    // Create a temporary anchor element to trigger download
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `study-plan-${targetYear.targetYear}.docx`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    
+    // Clean up the blob URL
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+  }
+
+
 
   return (
     <StepLayout
@@ -136,6 +254,7 @@ const PreviewStep: React.FC<StepProps> = ({ formData }) => {
           Your personalized study plan is ready! Click "Complete Setup" to finalize your 
           registration and start your UPSC preparation journey with Helios.
         </p>
+        <button onClick={downloadPlan} className="ms-button ms-button-primary">Download Plan</button>
       </div>
     </StepLayout>
   );

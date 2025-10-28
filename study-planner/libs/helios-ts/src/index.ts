@@ -17,6 +17,8 @@ export {
   generateInitialPlan,
 } from './engine/NewEngine-generate-plan';
 
+export { CalendarDocxService } from './services/CalendarDocxService';
+
 // Configuration and Types
 export type { Config } from './engine/engine-types';
 export type { 
@@ -26,7 +28,10 @@ export type {
   TimelineAnalysis, 
   MajorMilestones, 
   Archetype,
-  StudentIntake 
+  StudentIntake,
+
+  StudyStrategy,
+  PersonalDetails,
 } from './types/models';
 
 export { createStudentIntake } from './types/models';

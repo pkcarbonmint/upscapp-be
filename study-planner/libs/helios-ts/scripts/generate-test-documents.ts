@@ -23,7 +23,6 @@ import { DocumentService } from '../src/services/DocumentService';
 import { CalendarDocxService } from '../src/services/CalendarDocxService';
 import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
-import { DayOfWeek } from 'scheduler';
 import * as path from 'path';
 import * as fs from 'fs';
 import { createWriteStream } from 'fs';

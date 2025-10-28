@@ -252,6 +252,23 @@ export class CalendarDocxService {
   }
 
   /**
+   * Generate a Blob for browser environments (browser-compatible version)
+   */
+  static async generateStudyPlanDocxBlob(
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake
+  ): Promise<Blob> {
+    try {
+      const [coverPageElements, mainContentElements] = await createStructuredWordDocument(studyPlan, studentIntake);
+      const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
+      return await Packer.toBlob(document);
+    } catch (error) {
+      console.error('Failed to generate Word document blob:', error);
+      throw new Error('Word document blob generation failed');
+    }
+  }
+
+  /**
    * Generate a styled template document for manual editing
    * This creates a blank document with all styles defined but no content
    */
@@ -259,13 +276,6 @@ export class CalendarDocxService {
     return generateStyledTemplate();
   }
 
-  /**
-   * Load a Word template document with pre-defined styles
-   * This allows users to customize table styles in Word and save as template
-   */
-  static async loadTemplateDocument(templatePath?: string): Promise<Document> {
-    return loadTemplateDocument(templatePath);
-  }
 }
 
 // ===== CORE WORD DOCUMENT GENERATION METHODS =====
@@ -1199,6 +1209,8 @@ function getCycleDescription(cycleType: string): string {
   return descriptions[cycleType] || 'Study cycle for comprehensive preparation';
 }
 
+const PDF_MAX_MONTHS = 36;
+
 /**
  * Generate monthly views with daily/weekly pages
  */
@@ -1211,7 +1223,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan, studentInta
   const endDate = maxDate.endOf('month');
 
   // Configurable limit - set to null for all months, or a number to limit
-  const maxMonths = process.env.PDF_MAX_MONTHS ? parseInt(process.env.PDF_MAX_MONTHS) : null;
+  const maxMonths = PDF_MAX_MONTHS
   let monthCount = 0;
 
   for (
@@ -3301,40 +3313,6 @@ async function generateStyledTemplate(): Promise<void> {
   // Save the template
   await saveDocx(templateDocument, 'study-plan-template.docx');
   console.log('✅ Styled template document generated: study-plan-template.docx');
-}
-
-/**
- * Load a Word template document with pre-defined styles
- * This allows users to customize table styles in Word and save as template
- */
-async function loadTemplateDocument(templatePath?: string): Promise<Document> {
-  const fs = await import('fs');
-  const path = await import('path');
-
-  // Default template path
-  const defaultTemplatePath = path.join(process.cwd(), 'templates', 'calendar-template.docx');
-  const templateFile = templatePath || defaultTemplatePath;
-
-  if (fs.existsSync(templateFile)) {
-    try {
-      // Read template file (currently not used due to docx library limitations)
-      fs.readFileSync(templateFile);
-      console.log(`📁 Template found at: ${templateFile}`);
-      console.log(`⚠️  Note: Direct template loading not yet implemented in docx library`);
-      console.log(`   For now, the service will create new documents with the defined styles.`);
-    } catch (error) {
-      console.warn(`⚠️ Failed to load template from ${templateFile}:`, error);
-    }
-  } else {
-    console.log(`📁 No template found at: ${templateFile}`);
-    console.log(`   Using default styles. Run 'npm run generate-template' to create a template.`);
-  }
-
-  // Fallback to creating new document with styles
-  return new Document({
-    styles: getDocumentStyles(),
-    sections: []
-  });
 }
 
 /**

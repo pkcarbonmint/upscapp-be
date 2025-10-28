@@ -19,7 +19,6 @@ import { planMain, CycleType } from 'helios-scheduler';
 import type { PlanningContext, S2Subject,  S2ExamFocus } from 'helios-scheduler';
 import { S2WeekDay } from 'helios-scheduler';
 import { mapFromS2Tasks } from './s2-mapper';
-import crypto from 'crypto';
 
 /**
  * Generate an initial study plan for a student using scheduler2.
@@ -201,6 +200,10 @@ function mapCycleTypeToIntensity(cycleType: CycleType): CycleIntensity {
   }
 }
 
+function randomID(): string {
+  return Math.random().toString(36).substring(2, 15);
+}
+
 async function mapScheduler2ResultToStudyPlan(
   result: { cycles: any[], blocks: any[], tasks: any[] },
   intake: StudentIntake,
@@ -211,7 +214,7 @@ async function mapScheduler2ResultToStudyPlan(
   const plan: StudyPlan = {
     targeted_year: intake.getTargetYear(),
     start_date: new Date(intake.start_date),
-    study_plan_id: crypto.randomUUID(),
+    study_plan_id: randomID(),
     user_id: userId,
     plan_title: `Study Plan for ${intake.getTargetYear()}`,
     curated_resources: {
