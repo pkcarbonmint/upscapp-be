@@ -4,8 +4,35 @@ set -e
 exec > >(tee -a /var/log/user-data.log) 2>&1
 echo "=== Starting minimal user data script at $(date) ==="
 
+# Create app directory
+mkdir -p /opt/upscpro
+chown ubuntu:ubuntu /opt/upscpro
+cd /opt/upscpro
+
+echo "==== ENV ==="
+cat << ENVEOF
+DATABASE_URL=postgresql://${rds_username}:${rds_password}@${rds_endpoint}:${rds_port}/${rds_database}
+STRAPI_URL=http://${strapi_ip}:1337
+ENVIRONMENT=${environment}
+GITHUB_TOKEN=${github_token}
+GITHUB_REPOSITORY_URL=${github_repository_url}
+GITHUB_BRANCH=${github_branch}
+ENVEOF
+
+# Create .env file
+cat > /opt/upscpro/.env << 'ENVEOF'
+DATABASE_URL=postgresql://${rds_username}:${rds_password}@${rds_endpoint}:${rds_port}/${rds_database}
+STRAPI_URL=http://${strapi_ip}:1337
+ENVIRONMENT=${environment}
+GITHUB_TOKEN=${github_token}
+GITHUB_REPOSITORY_URL=${github_repository_url}
+GITHUB_BRANCH=${github_branch}
+ENVEOF
+echo "==== WROTE /opt/upscpro/.env ===="
+
+
 # Update system
-apt update -y
+sudo apt update -y
 
 # Install Docker
 apt install -y docker.io
@@ -28,11 +55,7 @@ apt install -y nodejs
 # Install pnpm globally
 npm install -g pnpm
 
-# Create app directory
-mkdir -p /opt/upscpro
-chown ubuntu:ubuntu /opt/upscpro
-cd /opt/upscpro
-
+echo "=== Cloning repository...  ==="
 # Clone repository using template variables
 git clone "${github_repository_url}" upscapp-be
 cd upscapp-be
@@ -45,16 +68,8 @@ chmod +x deploy.sh 2>/dev/null || true
 # Install required Python packages for validation scripts
 pip3 install jsonschema
 
-# Create .env file
-cat > .env << 'ENVEOF'
-DATABASE_URL=postgresql://${rds_username}:${rds_password}@${rds_endpoint}:${rds_port}/${rds_database}
-STRAPI_URL=http://${strapi_ip}:1337
-ENVIRONMENT=${environment}
-GITHUB_TOKEN=${github_token}
-GITHUB_REPOSITORY_URL=${github_repository_url}
-GITHUB_BRANCH=${github_branch}
-ENVEOF
-cp .env docker.env
+cp /opt/upscpro/.env docker.env
+cp /opt/upscpro/.env .env
 
 # Start Docker build in background with proper detachment
 echo "Starting Docker build in background..."
