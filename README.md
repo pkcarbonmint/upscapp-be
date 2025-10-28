@@ -38,10 +38,22 @@ No dependencies. All required packages are present in "requirements/" folder. Us
 This application uses a PostgreSQL database. Setup the database and provide database connection details in the ".env" file.
 
 * How to run tests
-TODO
+
+See `tests/` directory for unit tests. For Docker deployment testing, use:
+```bash
+node test_docker_deployment.js
+```
+See [TEST_DOCKER_DEPLOYMENT.md](TEST_DOCKER_DEPLOYMENT.md) for details.
 
 * Deployment instructions
-TODO
+
+See [PRODUCTION_DEPLOYMENT_GUIDE.md](PRODUCTION_DEPLOYMENT_GUIDE.md) for production deployment.
+
+For Docker deployment, use:
+```bash
+docker-compose up -d
+node test_docker_deployment.js  # Verify deployment
+```
 
 ### Contribution guidelines ###
 
