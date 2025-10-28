@@ -75,79 +75,27 @@ const CycleTimeline: React.FC<CycleTimelineProps> = ({ cycles }) => {
   });
 
   return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ fontWeight: 600, color: 'var(--ms-blue)', marginBottom: 8 }}>Preparation Timeline</div>
-      <div
-        style={{
-          background: 'var(--ms-white)',
-          border: '1px solid #e5e7eb',
-          borderRadius: 8,
-          padding: 12,
-        }}
-      >
-        <div
-          style={{
-            maxHeight: 360,
-            overflowY: 'auto',
-            position: 'relative',
-            paddingLeft: 24,
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              left: 8,
-              top: 0,
-              bottom: 0,
-              width: 2,
-              background: '#e5e7eb',
-            }}
-          />
+    <div className="timeline">
+      <div className="timeline__title">Preparation Timeline</div>
+      <div className="timeline__panel">
+        <div className="timeline__scroll">
+          <div className="timeline__rail" />
           {segments.map((seg) => (
-            <div key={seg.key} style={{ position: 'relative', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                <div style={{ fontWeight: 700, color: seg.color }}>{seg.label}</div>
-                <div style={{ fontSize: 12, color: 'var(--ms-blue)' }}>
+            <div key={seg.key} className="timeline__row">
+              <div className="timeline__meta">
+                <div className="timeline__label" style={{ color: seg.color }}>{seg.label}</div>
+                <div className="timeline__date">
                   {seg.startLabel} — {seg.endLabel}
                 </div>
               </div>
-              <div
-                title={`${seg.label}: ${seg.startLabel} → ${seg.endLabel}`}
-                style={{
-                  position: 'relative',
-                  height: 10,
-                  marginTop: 6,
-                  background: '#f5f7fa',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 6,
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: `${seg.leftPercent}%`,
-                    width: `${seg.widthPercent}%`,
-                    top: 0,
-                    bottom: 0,
-                    background: seg.color,
-                    opacity: 0.9,
-                  }}
-                />
+              <div className="timeline__bar" title={`${seg.label}: ${seg.startLabel} → ${seg.endLabel}`}>
+                <div className="timeline__bar-fill" style={{ left: `${seg.leftPercent}%`, width: `${seg.widthPercent}%`, background: seg.color }} />
               </div>
             </div>
           ))}
         </div>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: 6,
-          fontSize: 12,
-          color: 'var(--ms-blue)',
-        }}
-      >
+      <div className="timeline__footer">
         <span>{earliest.format('MMM D, YYYY')}</span>
         <span>{latest.format('MMM D, YYYY')}</span>
       </div>

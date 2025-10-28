@@ -28,7 +28,7 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       title="Study Preferences"
       description="Tell us about your study preferences and strategies so we can tailor your plan"
     >
-      <div style={{ marginBottom: 16 }}>
+      <div className="section-compact">
         <label className="ms-label">Select Optional Subject</label>
         <select
           className="ms-select"
@@ -42,84 +42,28 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
         </select>
       </div>
       <h2
-        className="ms-font-subtitle"
-        style={{ marginBottom: '16px', color: 'var(--ms-gray-130)' }}
+        className="ms-font-subtitle section__title section__title--muted"
       >
         Choose Your Daily Study Hours
       </h2>
       
-      <div style={{
-        display: 'flex',
-        gap: '8px',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between'
-      }}>
+      <div className="options-row">
         {timeCommitmentOptions.map((option) => (
           <div
             key={option.value}
-            style={{
-              background: 'var(--ms-white)',
-              border: formData.commitment.timeCommitment === option.value 
-                ? '2px solid var(--ms-blue)' 
-                : '2px solid var(--ms-gray-40)',
-              borderRadius: '8px',
-              padding: '12px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              textAlign: 'center',
-              position: 'relative',
-              flex: '1 1 auto',
-              minWidth: '120px',
-              maxWidth: '200px',
-              transform: formData.commitment.timeCommitment === option.value 
-                ? 'translateY(-2px)' 
-                : 'translateY(0)',
-              boxShadow: formData.commitment.timeCommitment === option.value 
-                ? '0 3px 12px rgba(0, 120, 212, 0.2)' 
-                : '0 1px 4px rgba(0, 0, 0, 0.08)'
-            }}
+            className={`commit-option ${formData.commitment.timeCommitment === option.value ? 'commit-option--selected' : ''}`}
             onClick={() => handleCommitmentSelect(option.value)}
           >
             {formData.commitment.timeCommitment === option.value && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '6px',
-                  right: '6px',
-                  background: 'var(--ms-blue)',
-                  color: 'var(--ms-white)',
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '11px',
-                  fontWeight: '600'
-                }}
-              >
+              <div className="commit-option__check">
                 ✓
               </div>
             )}
             
-            <div 
-              style={{
-                fontSize: '16px',
-                fontWeight: '600',
-                marginBottom: '4px',
-                color: 'var(--ms-gray-130)'
-              }}
-            >
+            <div className="commit-option__label">
               {option.label}
             </div>
-            <p 
-              style={{
-                fontSize: '11px',
-                color: 'var(--ms-gray-90)',
-                margin: '0',
-                lineHeight: '1.3'
-              }}
-            >
+            <p className="commit-option__desc">
               {option.description}
             </p>
           </div>
@@ -129,37 +73,13 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
       {formData.commitment.timeCommitment > 0 && (
         <>
           {/* Study Preferences Section */}
-          <div 
-            style={{
-              background: 'var(--ms-white)',
-              border: '1px solid var(--ms-gray-40)',
-              borderRadius: '12px',
-              padding: '12px',
-              marginTop: '24px'
-            }}
-          >
-            <h3 
-              style={{
-                fontSize: '18px',
-                fontWeight: '600',
-                color: 'var(--ms-gray-130)',
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-            >
-              <span>⚙️</span>
-              <span>Study Preferences</span>
-            </h3>
+          <div className="preferences-card">
+            <h3 className="preferences-title"><span>⚙️</span><span>Study Preferences</span></h3>
 
-            <div className="form-grid form-grid-2" style={{ gap: '20px' }}>
+            <div className="form-grid form-grid-2 gap-20">
               {/* Catchup Day */}
               <div>
-                <label 
-                  className="ms-label"
-                  style={{ marginBottom: '8px', display: 'block' }}
-                >
+                <label className="ms-label mb-8">
                   📅 Catchup Day
                 </label>
                 <select
@@ -168,7 +88,6 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                   onChange={(e) => updateFormData({
                     commitment: { ...formData.commitment, catchupDayPreference: e.target.value }
                   })}
-                  style={{ width: '100%' }}
                 >
                   <option value="Monday">Monday</option>
                   <option value="Tuesday">Tuesday</option>
@@ -178,24 +97,14 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                   <option value="Saturday">Saturday</option>
                   <option value="Sunday">Sunday</option>
                 </select>
-                <p 
-                  style={{
-                    fontSize: '12px',
-                    color: 'var(--ms-gray-90)',
-                    marginTop: '4px',
-                    lineHeight: '1.4'
-                  }}
-                >
+                <p className="help-text">
                   Day reserved for catching up on pending topics
                 </p>
               </div>
 
               {/* Test Day */}
               <div>
-                <label 
-                  className="ms-label"
-                  style={{ marginBottom: '8px', display: 'block' }}
-                >
+                <label className="ms-label mb-8">
                   📝 Weekly Test Day
                 </label>
                 <select
@@ -204,7 +113,6 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                   onChange={(e) => updateFormData({
                     commitment: { ...formData.commitment, weeklyTestDayPreference: e.target.value }
                   })}
-                  style={{ width: '100%' }}
                 >
                   <option value="Monday">Monday</option>
                   <option value="Tuesday">Tuesday</option>
@@ -214,51 +122,20 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                   <option value="Saturday">Saturday</option>
                   <option value="Sunday">Sunday</option>
                 </select>
-                <p 
-                  style={{
-                    fontSize: '12px',
-                    color: 'var(--ms-gray-90)',
-                    marginTop: '4px',
-                    lineHeight: '1.4'
-                  }}
-                >
+                <p className="help-text">
                   Day for weekly mock tests and assessments
                 </p>
               </div>
             </div>
 
             {/* Prioritize Optional Subject Toggle */}
-            <div 
-              style={{
-                marginTop: '20px',
-                padding: '16px',
-                background: 'var(--ms-gray-10)',
-                borderRadius: '8px'
-              }}
-            >
-              <label 
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: 'var(--ms-gray-130)'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="toggle-section">
+              <label className="toggle-row">
+                <div className="toggle-row__left">
                   <span>🎯</span>
                   <div>
                     <div>Prioritize Optional Subject</div>
-                    <div 
-                      style={{
-                        fontSize: '12px',
-                        fontWeight: '400',
-                        color: 'var(--ms-gray-90)',
-                        marginTop: '2px'
-                      }}
-                    >
+                    <div className="help-text mt-2">
                       Focus on optional subject first in your study schedule
                     </div>
                   </div>
@@ -273,31 +150,9 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                       }
                     });
                   }}
-                  style={{
-                    position: 'relative',
-                    width: '48px',
-                    height: '24px',
-                    background: formData.commitment.optionalFirst 
-                      ? 'var(--ms-blue)' 
-                      : 'var(--ms-gray-60)',
-                    borderRadius: '12px',
-                    transition: 'background 0.2s ease',
-                    cursor: 'pointer'
-                  }}
+                  className={`toggle ${formData.commitment.optionalFirst ? 'toggle--on' : ''}`}
                 >
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '2px',
-                      left: formData.commitment.optionalFirst ? '26px' : '2px',
-                      width: '20px',
-                      height: '20px',
-                      background: 'var(--ms-white)',
-                      borderRadius: '50%',
-                      transition: 'left 0.2s ease',
-                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-                    }}
-                  />
+                  <div className="toggle__thumb" />
                 </div>
               </label>
             </div>
