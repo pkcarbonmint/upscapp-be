@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @page {
+            size: A4;
+            margin: 1in;
+
+            @top-center {
+                content: element(header);
+            }
+
+            @bottom-center {
+                content: element(footer);
+            }
+        }
+
+        #header {
+            position: running(header);
+            width: 100%;
+            height: 60px;
+            /* Adjust height as needed */
+            text-align: center;
+            font-size: 12px;
+            margin-bottom: 20px;
+            /* position: relative; */
+            display: flex;
+            align-items: center;
+            /* margin-top: -80px; */
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content img.laex-icon {
+            height: 40px;
+            margin-top: 10px;
+            margin-right: 15px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-content .text-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content .text-content p {
+            margin: 10px;
+            font-weight: 400;
+            font-size: 25px;
+            /* Adjust as needed */
+            font-family: 'Open Sans';
+        }
+
+        .header-content .text-content div {
+            display: flex;
+            align-items: center;
+
+        }
+
+        .header-content .text-content .laex-link {
+            margin-top: -15px;
+            margin-left: 5px;
+
+        }
+
+        .header-content .text-content div img {
+            height: 15px;
+            /* Adjust as needed */
+            margin-right: -5px;
+            width: auto;
+        }
+
+        .line {
+
+            margin-top: 10px;
+            /* Adjust as needed */
+        }
+
+        .line img {
+            margin-top: 50px;
+            height: 27px;
+            width: 895px;
+            margin-left: -200px;
+
+        }
+
+        #footer {
+            position: running(footer);
+            bottom: 0;
+            margin-left: -320px;
+            /* width: 100%; */
+            font-size: 12px;
+            color: #5F6D7E;
+        }
+
+
+        thead {
+            display: table-header-group;
+        }
+
+        tfoot {
+            display: table-footer-group;
+        }
+
+        body {
+            /* margin-left: 30px; */
+            margin-left: -30px;
+            padding: 10px;
+            font-family: 'Open Sans';
+
+        }
+
+        .page {
+            page-break-after: always;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .title p {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            color: #36393E;
+            font-weight: 500;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            display: block;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 200;
+            color: #5F6D7E;
+            margin-bottom: 20px;
+        }
+
+        .test-data {
+            display: inline-flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-item {
+            display: inline-block;
+            text-align: center;
+            font-family: 'Open Sans';
+
+        }
+
+        .user-details {
+            display: flex;
+            align-items: center;
+            margin-bottom: -25px;
+        }
+
+        .user-details p {
+            font-size: 20px;
+            font-weight: 300;
+        }
+
+        .test-name {
+            border: 1px solid white;
+            background: rgb(210, 208, 208);
+            border-radius: 5px;
+            padding: 10px;
+            margin-right: 10px;
+        }
+
+        .subject-container {
+            display: inline;
+            margin-right: 5px;
+            color: rgb(95, 197, 197);
+        }
+
+        .subjects-list {
+            display: inline;
+            white-space: normal;
+            /* Ensure line breaks are allowed */
+        }
+
+        .test-min {
+            display: inline-flex;
+            align-items: center;
+            /* margin: 10px; */
+            /* justify-content: space-between; */
+            padding-bottom: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="header">
+        <div class="header-content">
+            <img src="{{ laex_icon }}" class="laex-icon" alt="La Excellence Icon">
+            <div class="text-content">
+                <div>
+                    <p style="display: inline-flex;">La Excellence</p>
+                </div>
+                <div class="laex-link">
+                    <img src="{{ link }}" alt="Link Icon">
+                    <p style="font-size: 14px; color: #5773d9; font-weight: 500;"><a
+                            href="https://www.laex.in/">laex.in</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="line">
+            <img src="{{ headerline }}" alt="Header Line">
+        </div>
+    </div>
+    <div id="footer">
+        <div class="footer-left">
+            Performance Analysis Test Specific
+        </div>
+    </div>
+    <div class="title">
+        <p style="margin-left: 25px;">PERFORMANCE ANALYSIS REPORT</p>
+    </div>
+    <span class="subtitle">Test Specific (Question Bank/PYQ)</span>
+    <div class="test-data">
+        <div class="test-type">
+            <div class="user-details">
+                {% if user_details.photo %}
+                <img style="width: 30px; height: 30px; margin-right: 10px;object-fit: cover; border-radius: 50%;"
+                    src="{{user_details.photo}}" />
+                {% else %}
+                <img style="width: 30px; height: 30px; margin-right: 10px;object-fit: cover; border-radius: 50%;"
+                    src="{{bckgrd_icon}}" />
+                {% endif %}
+                <p>{{user_details.full_name}}</p>
+            </div>
+            <div>
+                <p style="font-weight: 300;font-size: 20px;margin-bottom: -5px;margin-left: 5px;">
+                    {{test_result_resp.test.title}}</p>
+            </div>
+            <div class="test-min">
+                {% if test_result_resp.test.stage.name == "UPSC Prelims" %}
+                <p class="test-name">Prelims</p>
+                {% else %}
+                <p class="test-name">Mains</p>
+                {% endif %}
+                <p class="test-name">{{((test_result_resp.test.paper.name).split(" ", 2))[2]}}</p>
+            </div>
+        </div>
+        <div class="test-date">
+            <p>{{ test_attempt_time.split("-")[0] }}</p>
+        </div>
+    </div>
+    <div>
+        <p style="display: block;">Subjects:
+            <span class="subjects-list">
+                {% for option in test_subjs %}
+                <span class="subject-container">{{ option }}{% if not loop.last %},{% endif %}</span>
+                {% endfor %}
+            </span>
+        </p>
+        <div class="test-min">
+            <div style="display: inline-flex; align-items: center; margin: 10px;">
+                <img style="margin-right: 3px;" src="{{q_icon}}" />
+                <p style="font-weight: 300;font-size: 18px;">{{test_result_resp.test.questions_count}}<span
+                        style="font-weight: 200; font-size: 14px; margin-right: 15px; margin-left: 2px;">Questions</span>
+                </p>
+            </div>
+            <div style="display: inline-flex; align-items: center;">
+                <img style="margin-right: 3px;" src="{{time_icon}}" />
+                <p style="font-weight: 300;font-size: 18px">{{test_result_resp.test.max_duration}}<span
+                        style="font-weight: 200; font-size: 14px; margin-right: 15px;  margin-left: 2px;">Minutes</span>
+                </p>
+            </div>
+            <div style="display: inline-flex; align-items: center;">
+                <img style="margin-right: 3px;" src="{{tick_icon}}" />
+                <p style="font-weight: 300;font-size: 18px">{{test_result_resp.test.max_marks}}<span
+                        style="font-weight: 200; font-size: 14px; margin-right: 15px;  margin-left: 2px;">Marks</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

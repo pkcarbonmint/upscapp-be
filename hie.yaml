@@ -1,8 +1,0 @@
-cradle:
-  stack:
-    - path: "./helios-hs/src"
-      component: "helios-hs:lib"
-    - path: "./helios-hs/app/Main.hs"
-      component: "helios-hs:exe:helios-hs"
-    - path: "./helios-hs/test"
-      component: "helios-hs:test:helios-verification"

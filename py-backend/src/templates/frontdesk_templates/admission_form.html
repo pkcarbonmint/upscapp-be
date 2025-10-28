@@ -1,0 +1,248 @@
+<html>
+
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5in;
+        }
+
+        body {
+            font-family: 'Open Sans';
+            font-size: 10px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .title {
+            font-size: 15px;
+            font-family: 'Open Sans';
+            color: rgb(78, 77, 77);
+            font-weight: 600;
+            padding: 10px;
+        }
+
+        .title p {
+            font-size: 17px;
+            text-align: center;
+            font-family: 'Open Sans';
+            color: rgb(60, 60, 60);
+            font-weight: 700;
+            padding: 5px;
+        }
+
+        table {
+            width: 100%;
+            table-layout: auto;
+            border-collapse: collapse;
+            word-wrap: break-word;
+
+        }
+
+        th {
+            padding: 10px;
+            font-size: 12px;
+            font-family: 'Open Sans';
+            color: rgb(78, 77, 77);
+            font-weight: 400;
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+            word-break: break-word;
+            /* Break long words if necessary */
+            white-space: normal;
+        }
+
+        td {
+            width: 10%;
+            font-size: 13px;
+            color: rgb(47, 46, 46);
+            padding: 10px;
+            text-align: left;
+            font-weight: 500;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Table styling */
+        .purchase-summary {
+            margin-left: auto;
+            text-align: right;
+            width: 300px;
+            /* Adjust width as needed */
+        }
+
+        /* Signature and stamp layout */
+        .container {
+            position: relative;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .signature,
+        .stamp {
+            width: auto;
+            text-align: center;
+        }
+
+        /* Adjust vertical spacing */
+        .signature p+p {
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <p>Admission Form</p>
+    </div>
+    <div style=" border: 1px solid lightgray; border-radius: 10px; margin-bottom: 5px; padding: 3px;">
+        <div class="title">Student Details</div>
+        <div>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Gender</th>
+                    <th>Date of Birth</th>
+                    <th>Mobile Number</th>
+                    <th>Email Id</th>
+                </tr>
+                <tr>
+                    <td>{{admission.user.full_name if admission.user.full_name else 'N/A'}}</td>
+                    <td>S-{{admission.user.id}}</td>
+                    <td>{{admission.user.gender if admission.user.gender else 'N/A'}}</td>
+                    <td>{{walkin.profile_details.birth_date if walkin.profile_details.birth_date else 'N/A'}}</td>
+                    <td>{{admission.user.phone_number if admission.user.phone_number else 'N/A'}}</td>
+                    <td>{{admission.user.email if admission.user.email else 'N/A'}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div style=" border: 1px solid lightgray; border-radius: 10px; margin-bottom: 5px; padding: 3px;">
+        <div class="title">Admission Details</div>
+        <div>
+            <table>
+                <tr>
+                    <th>Admission ID</th>
+                    <th>Admission Date</th>
+                    <th>Status</th>
+                    <th>Branch</th>
+                    <th>Manager</th>
+                </tr>
+                <tr>
+                    <td>AD-{{ "%04d" | format(admission.id) }}</td>
+
+                    <td>{{admission_date}}</td>
+                    <td>{{status}}</td>
+                    <td>{{admission.branch.name if admission.branch.name else 'N/A'}}</td>
+                    <td>{{admission.admission_details.admission_manager_name}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div style=" border: 1px solid lightgray; border-radius: 10px; margin-bottom: 5px; padding: 3px;">
+        <div class="title">Counselling Details</div>
+        <div>
+            <table>
+                <tr>
+                    <th>Counselling ID</th>
+                    <th>Counselling Date</th>
+                    <th>Counsellor</th>
+                </tr>
+                <tr>
+                    <td>C-{{ "%04d" | format(walkin.id) }}</td>
+
+                    <td>{{walkin.counselling.counselling_date}}</td>
+                    <td>{{walkin.counselling.counsellor_name}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div style=" border: 1px solid lightgray; border-radius: 10px; margin-bottom: 5px; padding: 3px;">
+        <div class="title">Products & Fee</div>
+        <div>
+            <table style="border-bottom: 1px solid lightgray; padding: 1px">
+                <tr>
+                    <th>S.no</th>
+                    <th>Product info</th>
+                    <th>Qyt</th>
+                    <th>Bought/Booked</th>
+                    <th>Installment</th>
+                    <th>Rate</th>
+                    <th>Discount</th>
+                    <th>Installment Amount</th>
+                    <th>Total Payable</th>
+                </tr>
+                {% for purchase, product_name in purchases %}
+                <tr>
+                    <td>{{loop.index}}</td>
+                    <td>{{product_name}}</td>
+                    <td>{{purchase.quantity}}</td>
+                    {% if purchase.purchase_type == 'BUY' %}
+                    <td style="color:rgb(20, 149, 20)">Bought</td>
+                    {% else %}
+                    <td style="color: rgb(223, 102, 58);">Booked</td>
+                    {% endif %}
+                    {% if purchase.purchase_installments %}
+                    {% for installment in purchase.purchase_installments %}
+                    {% if installment.transaction_id %}
+                    <td>Installment</td>
+                    <td>{{ purchase.amount }}</td>
+                    <td>{{purchase.discount_amount + purchase.additional_disc_amt }}</td>
+                    <td>{{ installment.installment_amount }}</td>
+                    <td>{{installment.installment_amount}}</td>
+                    {% endif %}
+                    {% endfor %}
+                    {% else %}
+                    <td>Full</td>
+                    <td>{{ purchase.amount }}</td>
+                    <td>{{purchase.discount_amount + purchase.additional_disc_amt }}</td>
+                    <td> - </td>
+                    <td>{{purchase.total_amount}}</td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </table>
+            <table class="purchase-summary">
+                <tr>
+                    <td>Total Base Amount</td>
+                    <td>{{total_purchase_amt}}</td>
+                </tr>
+                <tr>
+                    <td>Total Discounts</td>
+                    <td style="color: rgb(223, 102, 58)">{{discount_amt}}</td>
+                </tr>
+                <tr>
+                    <td>Net Amount</td>
+                    <td style="color:rgb(20, 149, 20)">{{total_purchase_amt - discount_amt}}</td>
+                </tr>
+                <tr>
+                    <td>Net Amount Payable</td>
+                    <td style="color:rgb(20, 149, 20)">{{net_amt}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="font-weight: 300; font-size: 8px;">(Inclusive of GST)</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="container">
+        <div class="signature">
+            <p>Student Name</p>
+            <p>Student Signature</p>
+        </div>
+        <div class="stamp">
+            <p>Laex Stamp</p>
+        </div>
+    </div>
+</body>
+
+</html>

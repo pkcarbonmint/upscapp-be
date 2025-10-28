@@ -1,0 +1,90 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: always
+    volumes:
+      - ./:/code
+    ports:
+      - "9000:9000"
+    networks:
+      - upscpro-be
+    # depends_on:
+    #   - app_db
+
+    # app_db:
+    #   container_name: app_db
+    #   hostname: app_db
+    #   image: library/postgres:14.1
+    #   environment:
+    #     - POSTGRES_USER=app
+    #     - POSTGRES_PASSWORD=app
+    #     - POSTGRES_DB=app
+    #   volumes:
+    #     - app_pg_data:/var/lib/postgresql/data
+    #   ports:
+    #     - "5432:5432"
+
+  app_redis:
+    container_name: app_redis
+    image: redis:6.2-alpine
+    hostname: redis
+    command:
+      - 'redis-server'
+      - '--requirepass ${REDIS_PASSWORD}'
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - upscpro-be
+
+  celery_worker:
+    container_name: celery_worker
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: always
+    command: celery -A src.tasks.celery_tasks worker -l INFO -E
+    volumes:
+      - ./:/code
+    networks:
+      - upscpro-be
+    depends_on:
+      - app
+      - app_redis
+
+  celery_flower:
+    container_name: celery_flower
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: celery -A src.tasks.celery_tasks flower --url-prefix=flower --basic-auth=${FLOWER_USER}:${FLOWER_PASSWORD}
+    ports:
+      - 5555:5555
+    volumes:
+      - ./:/code
+    networks:
+      - upscpro-be
+    depends_on:
+      - app
+      - app_redis
+      - celery_worker
+
+# volumes:
+#   app_pg_data:
+#     driver: "local"
+
+networks:
+  upscpro-be:
+    external: false
+    name: upscpro-be

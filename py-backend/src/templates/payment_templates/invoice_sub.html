@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tax Invoice</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.5in;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 0px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            page-break-before: auto;
+            break-before: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: dodgerblue;
+        }
+
+        .no-border {
+            border: none;
+        }
+
+        .totals td {
+            text-align: right;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+
+        .header {
+            flex: 1;
+        }
+
+        .invoice-box {
+            flex: 1;
+        }
+
+        .invoice-box,
+        .footer {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .invoice-box h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .invoice-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+            margin-bottom: 5px;
+        }
+
+        .invoice-details div {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .invoice-details div strong,
+        .invoice-details div span:first-child {
+            margin-left: 10px;
+        }
+
+        .invoice-summary-footer {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .space {
+            margin-bottom: 2.8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="text-align: center; height: 40px;">
+                <img src="{{ laex_icon }}" alt="Logo" height="40">
+            </div>
+            <h4>La Excellence Edu Services Private Limited</h4>
+            <p>
+                H.No: 302, 3rd Floor, SY No 58-60, Guttala<br>
+                Madhapur, Serilingampally, Rangareddi,<br>
+                Hyderabad, Telangana, India - 500081<br>
+                <!-- {% if gst_no %}
+                GSTN: {{ gst_no }}
+                {% else %}
+                GSTN: N/A
+                {% endif %} -->
+            </p>
+        </div>
+
+        <div class="invoice-box">
+            <h2 style="text-align: center; color:dodgerblue; margin-bottom: 20px;">TAX INVOICE</h2>
+            <div class="invoice-details">
+                <div class="space"><strong>Date:</strong> <span>{{ date }}</span></div>
+                <div class="space"><strong>Invoice #:</strong> <span>{{ invoice_number }}</span></div>
+                <div class="space"><strong>Student ID:</strong> <span>{{ user_id }}</span></div>
+                <div class="space"><strong>Subscription ID:</strong> <span>{{subscription.id}}</span></div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th colspan="4">Bill To</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    {{name}}<br>
+                    {{phone_no}}<br>
+                    {{email}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+            <tr>
+                <th>Subscription Description</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>
+                    Subscription:
+                    {{subscription.plan.name}}<span style="font-weight: 400;">(UPSC Prelims
+                        Package)</span><br>
+                    <span class="lighter">Plan ID: {{subscription.plan.id}}</span><br>
+                    <span class="lighter">Subscription ID: {{subscription.id}}</span>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <table style="margin-bottom: 20px;">
+        <thead>
+            <tr>
+                <th>Sl.</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>GST</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>1.</td>
+
+                <td style="width: 50%;">
+                    <div>
+                        {{subscription.plan.name}}
+                    </div>
+                </td>
+
+                <td>
+
+                    <div>
+                        {{total_base_amt}}
+                    </div>
+
+                </td>
+
+                <td>
+
+                    <div>
+                        {{total_sub_gst_amt}}(18%)
+                    </div>
+
+                </td>
+
+                <td>
+                    {{total_price_amt}}
+                </td>
+            </tr>
+        </tbody>
+
+
+    </table>
+    <div class="invoice-summary-footer">
+        <div class="container">
+            <div class="header">
+
+            </div>
+            <div class="invoice-box">
+                <div class="invoice-details">
+                    <div class="space"><span>Price</span> <span>Rs. {{ indian_format(total_base_amt| int) }}</span>
+                    </div>
+                    {% if total_gst_amt %}
+                    <div class="space"><span>GST</span> <span>Rs. {{ indian_format(total_sub_gst_amt| int) }}</span>
+                    </div>
+                    {% else %}
+                    <div class="space"><span>GST</span> <span>N/A</span></div>
+                    {% endif %}
+                    <div class="space"><strong>Total</strong> <span>Rs. {{ indian_format(total_price_amt| int) }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="footer">
+            <p>This is an electronic invoice and does not need a signature.</p>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
