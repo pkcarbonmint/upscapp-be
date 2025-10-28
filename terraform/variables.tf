@@ -486,3 +486,48 @@ variable "cloudfront_price_class" {
     error_message = "CloudFront price class must be one of: PriceClass_All, PriceClass_200, PriceClass_100."
   }
 }
+
+# Study Planner Static Site (S3 + CloudFront)
+variable "study_planner_enable" {
+  description = "Enable S3 + CloudFront for study planner SPA"
+  type        = bool
+  default     = true
+}
+
+variable "study_planner_bucket_name" {
+  description = "S3 bucket name for study planner static site"
+  type        = string
+  default     = "study-planner.upscpro.laex.in"
+}
+
+variable "study_planner_domain_name" {
+  description = "Custom domain for study planner CloudFront (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "study_planner_route53_zone_id" {
+  description = "Route53 Hosted Zone ID for study planner domain (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "study_planner_certificate_arn" {
+  description = "Existing ACM certificate ARN in us-east-1 for study planner (optional)"
+  type        = string
+  default     = ""
+}
+
+variable "study_planner_cloudfront_price_class" {
+  description = "CloudFront price class for study planner"
+  type        = string
+  default     = "PriceClass_100"
+  validation {
+    condition = contains([
+      "PriceClass_All",
+      "PriceClass_200",
+      "PriceClass_100"
+    ], var.study_planner_cloudfront_price_class)
+    error_message = "CloudFront price class must be one of: PriceClass_All, PriceClass_200, PriceClass_100."
+  }
+}

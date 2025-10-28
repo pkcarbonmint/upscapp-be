@@ -1402,3 +1402,232 @@ resource "aws_cloudfront_distribution" "main" {
     Name = "${var.project_name}-cloudfront"
   }
 }
+
+#############################
+# Study Planner Static Hosting
+#############################
+
+resource "aws_s3_bucket" "study_planner" {
+  count  = var.study_planner_enable ? 1 : 0
+  bucket = var.study_planner_bucket_name
+
+  tags = {
+    Name = var.study_planner_bucket_name
+    App  = "study-planner"
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "study_planner" {
+  count  = var.study_planner_enable ? 1 : 0
+  bucket = aws_s3_bucket.study_planner[0].id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "study_planner" {
+  count  = var.study_planner_enable ? 1 : 0
+  bucket = aws_s3_bucket.study_planner[0].id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_cloudfront_origin_access_control" "study_planner" {
+  count = var.study_planner_enable ? 1 : 0
+
+  name                              = "oac-${var.study_planner_bucket_name}"
+  description                       = "OAC for study planner S3 origin"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+data "aws_iam_policy_document" "study_planner_s3_policy" {
+  count = var.study_planner_enable ? 1 : 0
+
+  statement {
+    sid    = "AllowCloudFrontReadObjects"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetObject"
+    ]
+
+    resources = [
+      "${aws_s3_bucket.study_planner[0].arn}/*"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.study_planner[0].arn]
+    }
+  }
+
+  statement {
+    sid    = "AllowCloudFrontListBucket"
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:ListBucket"
+    ]
+
+    resources = [
+      aws_s3_bucket.study_planner[0].arn
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.study_planner[0].arn]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "study_planner" {
+  count  = var.study_planner_enable ? 1 : 0
+  bucket = aws_s3_bucket.study_planner[0].id
+  policy = data.aws_iam_policy_document.study_planner_s3_policy[0].json
+}
+
+resource "aws_cloudfront_distribution" "study_planner" {
+  count = var.study_planner_enable ? 1 : 0
+
+  enabled         = true
+  is_ipv6_enabled = true
+  comment         = "Study Planner static site"
+  price_class     = var.study_planner_cloudfront_price_class
+  aliases         = var.study_planner_domain_name != "" ? [var.study_planner_domain_name] : []
+  default_root_object = "index.html"
+
+  origin {
+    domain_name              = aws_s3_bucket.study_planner[0].bucket_regional_domain_name
+    origin_id                = "s3-${var.study_planner_bucket_name}"
+    origin_access_control_id = aws_cloudfront_origin_access_control.study_planner[0].id
+  }
+
+  default_cache_behavior {
+    target_origin_id       = "s3-${var.study_planner_bucket_name}"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
+
+    forwarded_values {
+      query_string = true
+      cookies {
+        forward = "none"
+      }
+    }
+
+    min_ttl     = 0
+    default_ttl = 300
+    max_ttl     = 86400
+  }
+
+  # SPA routing support: serve index.html for 403/404
+  custom_error_response {
+    error_caching_min_ttl = 0
+    error_code            = 404
+    response_code         = 200
+    response_page_path    = "/index.html"
+  }
+
+  custom_error_response {
+    error_caching_min_ttl = 0
+    error_code            = 403
+    response_code         = 200
+    response_page_path    = "/index.html"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = var.study_planner_domain_name == ""
+    acm_certificate_arn            = var.study_planner_domain_name != "" ? (var.study_planner_certificate_arn != "" ? var.study_planner_certificate_arn : (length(aws_acm_certificate.study_planner_us_east_1) > 0 ? aws_acm_certificate.study_planner_us_east_1[0].arn : null)) : null
+    ssl_support_method             = var.study_planner_domain_name != "" ? "sni-only" : null
+    minimum_protocol_version       = var.study_planner_domain_name != "" ? "TLSv1.2_2021" : null
+  }
+
+  tags = {
+    Name = "cf-${var.study_planner_bucket_name}"
+    App  = "study-planner"
+  }
+}
+
+# Optional ACM certificate in us-east-1 for CloudFront when domain is provided and no cert ARN is passed
+provider "aws" {
+  alias  = "use1"
+  region = "us-east-1"
+}
+
+resource "aws_acm_certificate" "study_planner_us_east_1" {
+  count  = var.study_planner_enable && var.study_planner_domain_name != "" && var.study_planner_certificate_arn == "" ? 1 : 0
+  provider = aws.use1
+
+  domain_name       = var.study_planner_domain_name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "study_planner_cert_validation" {
+  for_each = var.study_planner_enable && var.study_planner_domain_name != "" && var.study_planner_certificate_arn == "" && var.study_planner_route53_zone_id != "" ? {
+    for dvo in aws_acm_certificate.study_planner_us_east_1[0].domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  } : {}
+
+  zone_id = var.study_planner_route53_zone_id
+  name    = each.value.name
+  type    = each.value.type
+  ttl     = 60
+  records = [each.value.record]
+}
+
+resource "aws_acm_certificate_validation" "study_planner_us_east_1" {
+  count = var.study_planner_enable && var.study_planner_domain_name != "" && var.study_planner_certificate_arn == "" && var.study_planner_route53_zone_id != "" ? 1 : 0
+  provider = aws.use1
+
+  certificate_arn         = aws_acm_certificate.study_planner_us_east_1[0].arn
+  validation_record_fqdns = [for record in aws_route53_record.study_planner_cert_validation : record.fqdn]
+
+  timeouts {
+    create = "10m"
+  }
+}
+
+resource "aws_route53_record" "study_planner" {
+  count = var.study_planner_enable && var.study_planner_domain_name != "" && var.study_planner_route53_zone_id != "" ? 1 : 0
+
+  zone_id = var.study_planner_route53_zone_id
+  name    = var.study_planner_domain_name
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.study_planner[0].domain_name
+    zone_id                = aws_cloudfront_distribution.study_planner[0].hosted_zone_id
+    evaluate_target_health = false
+  }
+}

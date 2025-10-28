@@ -272,3 +272,29 @@ output "cloudfront_hosted_zone_id" {
   description = "CloudFront hosted zone ID"
   value       = var.enable_cloudfront ? aws_cloudfront_distribution.main[0].hosted_zone_id : null
 }
+
+# Study Planner outputs
+output "study_planner_bucket_name" {
+  description = "S3 bucket name for study planner"
+  value       = var.study_planner_enable ? aws_s3_bucket.study_planner[0].bucket : null
+}
+
+output "study_planner_bucket_arn" {
+  description = "S3 bucket ARN for study planner"
+  value       = var.study_planner_enable ? aws_s3_bucket.study_planner[0].arn : null
+}
+
+output "study_planner_cloudfront_distribution_id" {
+  description = "CloudFront distribution ID for study planner"
+  value       = var.study_planner_enable ? aws_cloudfront_distribution.study_planner[0].id : null
+}
+
+output "study_planner_cloudfront_domain_name" {
+  description = "CloudFront domain name for study planner"
+  value       = var.study_planner_enable ? aws_cloudfront_distribution.study_planner[0].domain_name : null
+}
+
+output "study_planner_domain" {
+  description = "Custom domain for study planner (if provided)"
+  value       = var.study_planner_domain_name != "" ? var.study_planner_domain_name : null
+}
