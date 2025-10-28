@@ -2,15 +2,14 @@
 FROM study-planner:base AS workspace-builder
 
 RUN rm -rf servers
-RUN pnpm -r  build
-RUN pnpm build:onboarding
+RUN pnpm --filter ./apps/\* build
 
 # Production stage with nginx
 FROM nginx:alpine
 
 # Copy built files from workspace builder
-COPY --from=workspace-builder /app/faculty-ui/dist/ /usr/share/nginx/html/faculty/
-COPY --from=workspace-builder /app/onboarding-ui/dist/ /usr/share/nginx/html/onboarding/
+# COPY --from=workspace-builder /app/faculty-ui/dist/ /usr/share/nginx/html/faculty/
+COPY --from=workspace-builder /app/apps/onboarding2/dist/ /usr/share/nginx/html/onboarding/
 # Copy unified nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 

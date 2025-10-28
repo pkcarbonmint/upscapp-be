@@ -63,3 +63,5 @@ COPY study-planner/faculty-ui/package.json ./faculty-ui/
 RUN pnpm install --frozen-lockfile
 
 COPY study-planner/ ./
+RUN pnpm install
+RUN pnpm --filter ./libs/\*  build
