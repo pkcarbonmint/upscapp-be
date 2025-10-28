@@ -65,7 +65,14 @@ const steps: OnboardingStep[] = [
 ];
 
 export function useOnboarding() {
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('personal-info');
+  // Get initial step from URL or default to first step
+  const getStepFromURL = () => {
+    const params = new URLSearchParams(window.location.search);
+    const urlStep = params.get('step') as OnboardingStep | null;
+    return urlStep && steps.includes(urlStep) ? urlStep : 'personal-info';
+  };
+  
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>(getStepFromURL());
   const [formData, setFormData] = useState<OnboardingFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -131,16 +138,20 @@ export function useOnboarding() {
       // Move to next step
       const currentIndex = getCurrentStepIndex();
       if (currentIndex < steps.length - 1) {
-        setCurrentStep(steps[currentIndex + 1]);
+        const nextStep = steps[currentIndex + 1];
+        setCurrentStep(nextStep);
+        
+        // Push new state to history so browser back button works
+        window.history.pushState({ step: nextStep }, '', `?step=${nextStep}`);
         
         // Generate preview when moving to preview step
-        if (steps[currentIndex + 1] === 'preview') {
+        if (nextStep === 'preview') {
           const preview = await OnboardingService.generatePreview(formData);
           updateFormData({ preview });
         }
         
         // Generate payment link when moving to payment step
-        if (steps[currentIndex + 1] === 'payment') {
+        if (nextStep === 'payment') {
           const paymentData = await OnboardingService.generatePaymentLink(formData);
           updateFormData({ payment: paymentData });
         }
@@ -155,9 +166,33 @@ export function useOnboarding() {
   const goPrevious = useCallback(() => {
     const currentIndex = getCurrentStepIndex();
     if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
+      const prevStep = steps[currentIndex - 1];
+      setCurrentStep(prevStep);
+      // Update URL without pushing to history (browser back button will handle it)
+      window.history.replaceState({}, '', `?step=${prevStep}`);
     }
   }, [getCurrentStepIndex]);
+
+  // Initialize URL if not present (first load)
+  useEffect(() => {
+    const urlStep = getStepFromURL();
+    if (!urlStep) {
+      window.history.replaceState({}, '', `?step=${currentStep}`);
+    }
+  }, []); // Only run once on mount
+
+  // Listen to browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const urlStep = getStepFromURL();
+      if (urlStep && urlStep !== currentStep) {
+        setCurrentStep(urlStep);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [currentStep]);
 
   // Prefill confidence to 'average' (3 stars) for all subjects from helios-ts
   useEffect(() => {
