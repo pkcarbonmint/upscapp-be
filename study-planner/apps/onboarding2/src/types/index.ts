@@ -31,6 +31,7 @@ export interface Commitment {
   subjectApproach: string;
   upscOptionalSubject: string;
   optionalFirst: boolean;
+  subjectOrderingPreference: 'weakest-first' | 'strongest-first' | 'balanced';
   weeklyTestDayPreference: string;
   catchupDayPreference: string;
   testMinutes: number;

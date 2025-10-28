@@ -129,6 +129,53 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
               </div>
             </div>
 
+            {/* Subject Ordering Preference */}
+            <div className="form-section" style={{ marginTop: '24px' }}>
+              <label className="ms-label" style={{ marginBottom: '12px' }}>
+                📚 Subject Study Order
+              </label>
+              <div className="choice-grid choice-grid-3" style={{ marginTop: '0' }}>
+                <div
+                  className={`choice-option ${formData.commitment.subjectOrderingPreference === 'weakest-first' ? 'choice-option--selected' : ''}`}
+                  onClick={() => updateFormData({
+                    commitment: { ...formData.commitment, subjectOrderingPreference: 'weakest-first' }
+                  })}
+                >
+                  {formData.commitment.subjectOrderingPreference === 'weakest-first' && (
+                    <div className="choice-option-checkmark">✓</div>
+                  )}
+                  <div className="choice-option-label">Weakest First</div>
+                  <p className="choice-option-description">Focus on improving areas you struggle with</p>
+                </div>
+
+                <div
+                  className={`choice-option ${formData.commitment.subjectOrderingPreference === 'balanced' ? 'choice-option--selected' : ''}`}
+                  onClick={() => updateFormData({
+                    commitment: { ...formData.commitment, subjectOrderingPreference: 'balanced' }
+                  })}
+                >
+                  {formData.commitment.subjectOrderingPreference === 'balanced' && (
+                    <div className="choice-option-checkmark">✓</div>
+                  )}
+                  <div className="choice-option-label">Balanced</div>
+                  <p className="choice-option-description">Mix of strong and weak subjects</p>
+                </div>
+
+                <div
+                  className={`choice-option ${formData.commitment.subjectOrderingPreference === 'strongest-first' ? 'choice-option--selected' : ''}`}
+                  onClick={() => updateFormData({
+                    commitment: { ...formData.commitment, subjectOrderingPreference: 'strongest-first' }
+                  })}
+                >
+                  {formData.commitment.subjectOrderingPreference === 'strongest-first' && (
+                    <div className="choice-option-checkmark">✓</div>
+                  )}
+                  <div className="choice-option-label">Strongest First</div>
+                  <p className="choice-option-description">Build momentum with your strengths</p>
+                </div>
+              </div>
+            </div>
+
             {/* Prioritize Optional Subject Toggle */}
             <div className="toggle-container">
               <label className="toggle-label">

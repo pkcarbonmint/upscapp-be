@@ -32,6 +32,7 @@ const initialFormData: OnboardingFormData = {
     subjectApproach: 'DualSubject',
     upscOptionalSubject: 'OPT-SOC',
     optionalFirst: false,
+    subjectOrderingPreference: 'balanced',
     weeklyTestDayPreference: 'Sunday',
     catchupDayPreference: 'Saturday',
     testMinutes: 180

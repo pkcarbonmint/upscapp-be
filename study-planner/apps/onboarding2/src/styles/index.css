@@ -1,29 +1,37 @@
-/* Microsoft Fluent Design System Variables */
+/* Modern Warm Glassmorphism Theme */
 :root {
-  --ms-blue: #0078d4;
-  --ms-blue-hover: #106ebe;
-  --ms-blue-pressed: #005a9e;
-  --ms-blue-light: #deecf9;
-  --ms-gray-10: #faf9f8;
-  --ms-gray-20: #f3f2f1;
-  --ms-gray-30: #edebe9;
-  --ms-gray-40: #e1dfdd;
-  --ms-gray-50: #d2d0ce;
+  /* Primary Colors - Warm & Energetic */
+  --ms-blue: #ff6b35;
+  --ms-blue-hover: #ff8a5c;
+  --ms-blue-pressed: #e55100;
+  --ms-blue-light: #fff4e6;
+  
+  /* Neutral Colors - Soft & Modern */
+  --ms-gray-10: #fefcfb;
+  --ms-gray-20: #faf9f7;
+  --ms-gray-30: #f5f3f0;
+  --ms-gray-40: #e8e6e3;
+  --ms-gray-50: #d4d1cd;
   --ms-gray-60: #c8c6c4;
   --ms-gray-70: #a19f9d;
   --ms-gray-80: #797775;
-  --ms-gray-90: #605e5c;
-  --ms-gray-100: #484644;
+  --ms-gray-90: #5f5d59;
+  --ms-gray-100: #4a4845;
   --ms-gray-110: #3b3a39;
   --ms-gray-120: #323130;
-  --ms-gray-130: #201f1e;
+  --ms-gray-130: #1a1816;
+  
   --ms-white: #ffffff;
   --ms-black: #000000;
-  --ms-green: #107c10;
-  --ms-red: #d13438;
+  --ms-green: #10b981;
+  --ms-red: #ef4444;
   --ms-orange: #ff8c00;
-  --ms-purple: #5c2d91;
-  --ms-teal: #008272;
+  --ms-purple: #a855f7;
+  --ms-teal: #2dd4bf;
+  
+  /* Gradient */
+  --primary-gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd23f 100%);
+  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 /* Reset and Base Styles */
@@ -38,10 +46,11 @@ html, body {
 }
 
 body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
-  background-color: var(--ms-gray-10);
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--ms-gray-130);
-  line-height: 1.4;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -81,52 +90,58 @@ body {
   line-height: 16px;
 }
 
-/* Microsoft Fluent Cards */
+/* Modern Glassmorphism Cards */
 .ms-card {
-  background: var(--ms-white);
-  border: 1px solid var(--ms-gray-40);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ms-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-  border-color: var(--ms-gray-50);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
 }
 
-/* Microsoft Buttons */
+/* Modern Buttons - Pill Shape with Gradient */
 .ms-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 20px;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 50px;
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.1s ease;
-  min-height: 32px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 44px;
   background: none;
 }
 
 .ms-button-primary {
-  background-color: var(--ms-blue);
+  background: var(--primary-gradient);
   color: var(--ms-white);
-  border-color: var(--ms-blue);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
 }
 
 .ms-button-primary:hover {
-  background-color: var(--ms-blue-hover);
-  border-color: var(--ms-blue-hover);
+  box-shadow: 0 6px 25px rgba(255, 107, 53, 0.6);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .ms-button-primary:active {
-  background-color: var(--ms-blue-pressed);
-  border-color: var(--ms-blue-pressed);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
 }
 
 .ms-button-secondary {
@@ -147,22 +162,26 @@ body {
   cursor: not-allowed;
 }
 
-/* Microsoft Form Controls */
+/* Modern Glass Input Fields */
 .ms-input {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--ms-gray-60);
-  border-radius: 4px;
+  padding: 12px 16px;
+  border: 2px solid var(--ms-gray-40);
+  border-radius: 12px;
   font-family: inherit;
   font-size: 14px;
-  background-color: var(--ms-white);
-  transition: border-color 0.1s ease;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
 }
 
 .ms-input:focus {
   outline: none;
   border-color: var(--ms-blue);
-  box-shadow: 0 0 0 1px var(--ms-blue);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+  transform: translateY(-2px);
 }
 
 .ms-label {
@@ -175,20 +194,24 @@ body {
 
 .ms-select {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--ms-gray-60);
-  border-radius: 4px;
+  padding: 12px 16px;
+  border: 2px solid var(--ms-gray-40);
+  border-radius: 12px;
   font-family: inherit;
   font-size: 14px;
-  background-color: var(--ms-white);
-  transition: border-color 0.1s ease;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .ms-select:focus {
   outline: none;
   border-color: var(--ms-blue);
-  box-shadow: 0 0 0 1px var(--ms-blue);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+  transform: translateY(-2px);
 }
 
 /* Layout utilities */
@@ -228,7 +251,8 @@ body {
 /* App Layout */
 .app-container {
   min-height: 100vh;
-  background-color: var(--ms-gray-10);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
 }
 
 .app-main {
@@ -246,11 +270,15 @@ body {
   text-align: center;
 }
 
-/* Header Styles */
+/* Glassmorphism Header */
 .header {
-  background: linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-purple) 100%);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   color: var(--ms-white);
-  padding: 10px 0;
+  padding: 16px 0;
 }
 
 .header-content {
@@ -308,17 +336,23 @@ body {
   height: 56px;
   border-radius: 50%;
   border: none;
-  background: var(--ms-white);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 8px 20px rgba(0,0,0,0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .navigation-button:hover:not(:disabled) {
-  background: var(--ms-gray-10);
+  box-shadow: 
+    0 12px 30px rgba(0,0,0,0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
   transform: scale(1.1);
 }
 
@@ -353,15 +387,16 @@ body {
 }
 
 .step-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--ms-blue-light);
+  width: 48px;
+  height: 48px;
+  background: var(--primary-gradient);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 8px;
-  font-size: 18px;
+  margin: 0 auto 12px;
+  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
 }
 
 .step-title {
@@ -375,10 +410,16 @@ body {
 }
 
 .step-card {
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Form Spacing */
@@ -437,23 +478,46 @@ body {
 }
 
 .choice-option {
-  background: var(--ms-white);
-  border: 2px solid var(--ms-gray-40);
-  border-radius: 8px;
-  padding: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 20px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
   position: relative;
   flex: 1 1 auto;
   min-width: 120px;
   max-width: 200px;
+  overflow: hidden;
+}
+
+.choice-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary-gradient);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.choice-option--selected::before {
+  transform: scaleX(1);
 }
 
 .choice-option--selected {
   border-color: var(--ms-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 3px 12px rgba(0, 120, 212, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+}
+
+.choice-option:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .choice-option-label {
@@ -488,22 +552,24 @@ body {
 
 /* Year Selection */
 .year-option {
-  background: linear-gradient(135deg, rgba(0, 120, 212, 0.1) 0%, rgba(16, 110, 190, 0.1) 100%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   color: var(--ms-blue);
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 32px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid #E1E1E1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .year-option--selected {
-  background: linear-gradient(135deg, #0078D4 0%, #106EBE 100%);
+  background: var(--primary-gradient);
   color: var(--ms-white);
-  border-color: #0078D4;
-  transform: scale(1.05);
-  box-shadow: 0 12px 24px rgba(0, 120, 212, 0.35);
+  border-color: var(--ms-blue);
+  transform: scale(1.05) translateY(-4px);
+  box-shadow: 0 12px 30px rgba(255, 107, 53, 0.4);
 }
 
 .year-option-checkmark {
@@ -542,11 +608,12 @@ body {
 
 /* Info Cards */
 .info-card {
-  background: var(--ms-blue-light);
-  border: 1px solid var(--ms-blue);
-  border-radius: 12px;
+  background: linear-gradient(135deg, #ffe0b2 0%, #ffccbc 100%);
+  border: none;
+  border-radius: 20px;
   padding: 24px;
   margin-top: 32px;
+  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.2);
 }
 
 .info-card--small {

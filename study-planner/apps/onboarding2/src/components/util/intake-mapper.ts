@@ -4,17 +4,29 @@ import type { StudyStrategy, PersonalDetails } from 'helios-ts';
 import { createStudentIntake } from 'helios-ts';
 
 
-const studyStrategy: StudyStrategy = {
-  study_focus_combo: 'OneGSPlusOptional',
-  weekly_study_hours: '40',
-  time_distribution: 'Balanced',
-  study_approach: 'Balanced',
-  revision_strategy: 'Balanced',
-  test_frequency: 'Balanced',
-  seasonal_windows: [],
-  catch_up_day_preference: 'Sunday',
-  upsc_optional_subject: 'OPT-SOC',
-};
+function createStudyStrategy(stepProps: StepProps): StudyStrategy {
+  return {
+    study_focus_combo: 'OneGSPlusOptional',
+    weekly_study_hours: String(stepProps.formData.commitment.timeCommitment * 7), // Convert daily hours to weekly
+    time_distribution: 'Balanced',
+    study_approach: 'Balanced',
+    revision_strategy: 'Balanced',
+    test_frequency: 'Balanced',
+    seasonal_windows: [],
+    catch_up_day_preference: stepProps.formData.commitment.catchupDayPreference,
+    optional_first_preference: stepProps.formData.commitment.optionalFirst,
+    upsc_optional_subject: stepProps.formData.commitment.upscOptionalSubject,
+    weekly_test_day_preference: getDayOfWeekNumber(stepProps.formData.commitment.weeklyTestDayPreference),
+    // Store subject ordering preference for future use
+    // This can be used in engine later to order subjects
+    subject_ordering_preference: stepProps.formData.commitment.subjectOrderingPreference,
+  } as any; // Type assertion to include the new field
+}
+
+function getDayOfWeekNumber(day: string): number {
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return days.indexOf(day);
+}
 
 function mapPersonalDetails(personalInfo: PersonalInfo): PersonalDetails {
   return {
@@ -74,7 +86,7 @@ export function map2StudentIntake(stepProps: StepProps): StudentIntake {
   const { personalInfo, targetYear, commitment, confidenceLevel, preview } = stepProps.formData;
   const intake: StudentIntake = createStudentIntake({
     ...dummyStuff,
-    study_strategy: studyStrategy,
+    study_strategy: createStudyStrategy(stepProps),
     target_year: targetYear.targetYear,
     start_date: new Date().toISOString(),
     personal_details: mapPersonalDetails(personalInfo),

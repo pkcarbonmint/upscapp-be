@@ -43,6 +43,7 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     ];
   }, [subjects]);
 
+  // @ts-ignore
   const getAverageConfidence = () => {
     const values = Object.values(formData.confidenceLevel);
     if (values.length === 0) return 0;
@@ -50,6 +51,7 @@ const ConfidenceStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
     return (sum / values.length).toFixed(1);
   };
 
+  // @ts-ignore
   const getWeakestSubject = () => {
     let minCode: string | null = null;
     let minVal = 6;
