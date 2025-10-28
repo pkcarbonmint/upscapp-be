@@ -11,7 +11,7 @@ const Header: React.FC<HeaderProps> = ({ currentStep, totalSteps }) => {
       style={{
         background: 'linear-gradient(135deg, var(--ms-blue) 0%, var(--ms-purple) 100%)',
         color: 'var(--ms-white)',
-        padding: '24px 0'
+        padding: '12px 0'
       }}
     >
       <div className="container">
@@ -22,11 +22,11 @@ const Header: React.FC<HeaderProps> = ({ currentStep, totalSteps }) => {
             justifyContent: 'space-between'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div 
               style={{
-                width: '32px',
-                height: '32px',
+                width: '28px',
+                height: '28px',
                 background: 'var(--ms-white)',
                 borderRadius: '50%',
                 display: 'flex',
@@ -34,22 +34,16 @@ const Header: React.FC<HeaderProps> = ({ currentStep, totalSteps }) => {
                 justifyContent: 'center',
                 color: 'var(--ms-blue)',
                 fontWeight: '600',
-                fontSize: '18px'
+                fontSize: '14px'
               }}
             >
               LM
             </div>
             <div>
-              <div className="ms-font-subtitle">La Mentory UPSC Study Planner</div>
-              <div 
-                className="ms-font-caption" 
-                style={{ opacity: 0.9 }}
-              >
-                Personalized UPSC Preparation
-              </div>
+              <div className="ms-font-body" style={{ fontWeight: '600' }}>La Mentory UPSC Study Planner</div>
             </div>
           </div>
-          <div className="ms-font-body">
+          <div className="ms-font-caption" style={{ fontWeight: '500' }}>
             Step {currentStep} of {totalSteps}
           </div>
         </div>

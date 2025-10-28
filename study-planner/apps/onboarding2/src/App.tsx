@@ -1,7 +1,6 @@
 import { lazy } from "react";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import Header from "@/components/Header";
-import ProgressBar from "@/components/ProgressBar";
 
 import  Navigation from "@/components/Navigation";
 import PersonalInfoStep from "@/components/PersonalInfoStep";
@@ -81,8 +80,7 @@ function App() {
       style={{ backgroundColor: "var(--ms-gray-10)" }}
     >
       <Header currentStep={getStepNumber()} totalSteps={7} />
-      <ProgressBar progress={progress} />
-      <main style={{ padding: "24px 0", minHeight: "calc(100vh - 200px)" }}>
+      <main style={{ padding: "24px 0", minHeight: "calc(100vh - 120px)" }}>
         <div className="container">
           {error && (
             <div
