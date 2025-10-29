@@ -101,8 +101,8 @@ const PersonalInfoStep: React.FC<StepProps> = ({ formData, updateFormData }) => 
       {formData.personalInfo.fullName && formData.personalInfo.presentLocation && (
         <div className="info-card">
           <div className="info-card-header">
-            <span>💡</span>
-            <span>Let's start!</span>
+            <span>🚀</span>
+            <span>Let's go!</span>
           </div>
           <div className="info-card-content">
             Welcome <strong>{formData.personalInfo.fullName}</strong>! We will ask a few questions about your 
