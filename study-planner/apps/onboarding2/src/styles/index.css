@@ -275,10 +275,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, .1);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   color: var(--ms-gray-130);
   padding: 16px 0;
@@ -295,6 +294,12 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 600;
+}
+
+.header-brand .ms-font-body,
+.header-brand .ms-font-caption {
+  font-weight: 600;
 }
 
 .header-logo {
@@ -314,10 +319,12 @@ body {
 
 .header-subtitle {
   opacity: 0.7;
+  font-weight: 600;
 }
 
 .header-step-info {
   opacity: 0.8;
+  font-weight: 600;
 }
 
 /* Navigation Styles */
