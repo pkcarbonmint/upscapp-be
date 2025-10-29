@@ -28,7 +28,7 @@ const Footer: React.FC<FooterProps> = () => {
         <div className="footer-content">
           <div className="footer-brand">
             <div className="header-logo">
-              LM
+              <img src="/helios-logo.png" alt="Helios Logo" />
             </div>
             <div>
               <div className="ms-font-caption">La Mentora</div>

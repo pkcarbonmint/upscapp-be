@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ currentStep, totalSteps }) => {
         <div className="header-content">
           <div className="header-brand">
             <div className="header-logo">
-              LM
+              <img src="/helios-logo.png" alt="Helios Logo" />
             </div>
             <div>
               <div className="ms-font-body">La Mentora UPSC Study Planner</div>
