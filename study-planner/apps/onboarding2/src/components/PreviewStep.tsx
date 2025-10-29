@@ -2,11 +2,9 @@ import React from 'react';
 import { StepProps } from '@/types';
 import StepLayout from './StepLayout';
 import CycleTimeline from './CycleTimeline';
-import { downloadPlan } from './util/download';
 
 const PreviewStep: React.FC<StepProps> = (stepProps) => {
   const { personalInfo, targetYear, commitment, preview } = stepProps.formData;
-  const downloadHandler = async () => downloadPlan(stepProps);
   return (
     <StepLayout
       icon="👁️"
@@ -50,7 +48,6 @@ const PreviewStep: React.FC<StepProps> = (stepProps) => {
             Based on your inputs, we've created a comprehensive study plan tailored to your
             target year ({targetYear.targetYear}) and daily commitment ({commitment.timeCommitment}+ hours).
           </p>
-          <button onClick={downloadHandler} className="ms-button ms-button-primary">Download Plan</button>
 
         </div>
       </div>

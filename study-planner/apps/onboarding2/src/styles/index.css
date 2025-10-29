@@ -1404,12 +1404,24 @@ body {
     flex-direction: column;
     text-align: center;
   }
+
+  /* Compact day buttons on mobile */
+  .day-button {
+    padding: 6px 1px;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    border-width: 1px;
+  }
+
+  .day-buttons-row {
+    gap: 2px;
+  }
 }
 
 /* Day Buttons Row - 3D Style */
 .day-buttons-row {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   flex-wrap: wrap;
   justify-content: space-between;
 }
@@ -1417,7 +1429,7 @@ body {
 .day-button {
   flex: 1;
   min-width: 0;
-  padding: 10px 6px;
+  padding: 8px 2px;
   border: 2px solid var(--ms-gray-40);
   border-radius: 12px;
   background: linear-gradient(145deg, #f0f0f0, #ffffff);
@@ -1430,10 +1442,10 @@ body {
   position: relative;
   overflow: hidden;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 10px;
   color: var(--ms-gray-130);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .day-button-text {

@@ -1,7 +1,10 @@
 import React from 'react';
 import { StepProps } from '@/types';
+import { downloadPlan } from './util/download';
 
-const CompleteStep: React.FC<StepProps> = ({ formData }) => {
+const CompleteStep: React.FC<StepProps> = (stepProps) => {
+  const { formData } = stepProps;
+  const downloadHandler = async () => downloadPlan(stepProps);
   return (
     <div className="complete-container">
       <div className="complete-icon">
@@ -80,10 +83,17 @@ const CompleteStep: React.FC<StepProps> = ({ formData }) => {
       
       <button 
         className="ms-button ms-button-primary complete-button"
+        onClick={downloadHandler}
+      >
+        Download Study Plan
+      </button>
+      <button 
+        className="ms-button ms-button-secondary complete-button"
         onClick={() => {
           // TODO: Navigate to dashboard
           console.log('Navigate to dashboard');
         }}
+        style={{ marginTop: '12px' }}
       >
         Go to Dashboard
       </button>

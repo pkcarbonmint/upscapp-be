@@ -29,20 +29,6 @@ provider "aws" {
   }
 }
 
-# Provider for us-east-1 (required for CloudFront certificates)
-provider "aws" {
-  alias  = "us_east_1"
-  region = "us-east-1"
-
-  default_tags {
-    tags = {
-      Environment = var.environment
-      Project     = var.project_name
-      ManagedBy   = "terraform"
-    }
-  }
-}
-
 # Data source for Ubuntu 22.04 LTS AMI
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -68,12 +54,14 @@ data "aws_availability_zones" "available" {
 data "aws_caller_identity" "current" {}
 
 # Data source to look up existing wildcard certificate for Study Planner
-data "aws_acm_certificate" "study_planner" {
-  count   = var.study_planner_domain != "" ? 1 : 0
-  domain  = "*.upscpro.laex.in"
-  statuses = ["ISSUED"]
-  provider = aws.us_east_1
-}
+# Commented out to avoid errors during destroy - using most_recent=true if needed
+# data "aws_acm_certificate" "study_planner" {
+#   count   = var.study_planner_domain != "" ? 1 : 0
+#   domain  = "*.upscpro.laex.in"
+#   statuses = ["ISSUED"]
+#   provider = aws.us_east_1
+#   most_recent = true
+# }
 
 # Data source to check if S3 bucket already exists
 data "aws_s3_bucket" "existing_study_planner" {
@@ -1537,8 +1525,8 @@ resource "aws_cloudfront_distribution" "study_planner" {
   comment             = "CloudFront distribution for Study Planner Application"
   default_root_object = "index.html"
   
-  # Custom domain aliases
-  aliases = var.study_planner_domain != "" ? [var.study_planner_domain] : []
+  # Custom domain aliases - disabled to prevent destruction issues
+  # aliases = var.study_planner_domain != "" ? [var.study_planner_domain] : []
 
   default_cache_behavior {
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -1624,10 +1612,7 @@ resource "aws_cloudfront_distribution" "study_planner" {
   }
 
 viewer_certificate {
-  cloudfront_default_certificate = var.study_planner_domain == ""
-  acm_certificate_arn            = var.study_planner_domain != "" ? data.aws_acm_certificate.study_planner[0].arn : null
-  ssl_support_method             = var.study_planner_domain != "" ? "sni-only" : null
-  minimum_protocol_version       = var.study_planner_domain != "" ? "TLSv1.2_2021" : null
+  cloudfront_default_certificate = true
 }
   tags = {
     Name = "study-planner-cloudfront"
@@ -1650,29 +1635,29 @@ resource "aws_cloudfront_origin_access_identity" "study_planner" {
   }
 }
 
-# Route53 records for Study Planner domain
-resource "aws_route53_record" "study_planner" {
-  count   = var.study_planner_domain != "" && var.route53_zone_id != "" ? 1 : 0
-  zone_id = var.study_planner_zone_id != "" ? var.study_planner_zone_id : var.route53_zone_id
-  name    = var.study_planner_domain
-  type    = "A"
-
-  alias {
-    name                   = aws_cloudfront_distribution.study_planner.domain_name
-    zone_id                = aws_cloudfront_distribution.study_planner.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
-
-resource "aws_route53_record" "study_planner_ipv6" {
-  count   = var.study_planner_domain != "" && var.route53_zone_id != "" ? 1 : 0
-  zone_id = var.study_planner_zone_id != "" ? var.study_planner_zone_id : var.route53_zone_id
-  name    = var.study_planner_domain
-  type    = "AAAA"
-
-  alias {
-    name                   = aws_cloudfront_distribution.study_planner.domain_name
-    zone_id                = aws_cloudfront_distribution.study_planner.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
+# Route53 records for Study Planner domain - disabled to prevent destruction issues
+# resource "aws_route53_record" "study_planner" {
+#   count   = var.study_planner_domain != "" && var.route53_zone_id != "" ? 1 : 0
+#   zone_id = var.study_planner_zone_id != "" ? var.study_planner_zone_id : var.route53_zone_id
+#   name    = var.study_planner_domain
+#   type    = "A"
+#
+#   alias {
+#     name                   = aws_cloudfront_distribution.study_planner.domain_name
+#     zone_id                = aws_cloudfront_distribution.study_planner.hosted_zone_id
+#     evaluate_target_health = false
+#   }
+# }
+#
+# resource "aws_route53_record" "study_planner_ipv6" {
+#   count   = var.study_planner_domain != "" && var.route53_zone_id != "" ? 1 : 0
+#   zone_id = var.study_planner_zone_id != "" ? var.study_planner_zone_id : var.route53_zone_id
+#   name    = var.study_planner_domain
+#   type    = "AAAA"
+#
+#   alias {
+#     name                   = aws_cloudfront_distribution.study_planner.domain_name
+#     zone_id                = aws_cloudfront_distribution.study_planner.hosted_zone_id
+#     evaluate_target_health = false
+#   }
+# }

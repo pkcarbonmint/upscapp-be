@@ -102,12 +102,11 @@ const PersonalInfoStep: React.FC<StepProps> = ({ formData, updateFormData }) => 
         <div className="info-card">
           <div className="info-card-header">
             <span>💡</span>
-            <span>Personalized Insights</span>
+            <span>Let's start!</span>
           </div>
           <div className="info-card-content">
-            Welcome <strong>{formData.personalInfo.fullName}</strong>! Based on your location in{' '}
-            <strong>{formData.personalInfo.presentLocation}</strong>, we've identified study resources 
-            and coaching institutes that might interest you.
+            Welcome <strong>{formData.personalInfo.fullName}</strong>! We will ask a few questions about your 
+            preparation background and preferences to create a personalized study plan for you.
           </div>
         </div>
       )}
