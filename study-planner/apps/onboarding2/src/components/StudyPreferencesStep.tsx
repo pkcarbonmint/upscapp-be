@@ -83,24 +83,23 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 <label className="ms-label form-label--block">
                   📅 Catchup Day
                 </label>
-                <select
-                  className="ms-select form-input--full"
-                  value={formData.commitment.catchupDayPreference}
-                  onChange={(e) => updateFormData({
-                    commitment: { ...formData.commitment, catchupDayPreference: e.target.value }
-                  })}
-                >
-                  <option value="Monday">Monday</option>
-                  <option value="Tuesday">Tuesday</option>
-                  <option value="Wednesday">Wednesday</option>
-                  <option value="Thursday">Thursday</option>
-                  <option value="Friday">Friday</option>
-                  <option value="Saturday">Saturday</option>
-                  <option value="Sunday">Sunday</option>
-                </select>
-                <p className="form-description">
+                <p className="form-description" style={{ marginBottom: '12px' }}>
                   Day reserved for catching up on pending topics
                 </p>
+                <div className="day-buttons-row">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      className={`day-button ${formData.commitment.catchupDayPreference === day ? 'day-button--selected' : ''}`}
+                      onClick={() => updateFormData({
+                        commitment: { ...formData.commitment, catchupDayPreference: day }
+                      })}
+                    >
+                      <span className="day-button-text">{day.slice(0, 3)}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Test Day */}
@@ -108,24 +107,23 @@ const CommitmentStep: React.FC<StepProps> = ({ formData, updateFormData }) => {
                 <label className="ms-label form-label--block">
                   📝 Weekly Test Day
                 </label>
-                <select
-                  className="ms-select form-input--full"
-                  value={formData.commitment.weeklyTestDayPreference}
-                  onChange={(e) => updateFormData({
-                    commitment: { ...formData.commitment, weeklyTestDayPreference: e.target.value }
-                  })}
-                >
-                  <option value="Monday">Monday</option>
-                  <option value="Tuesday">Tuesday</option>
-                  <option value="Wednesday">Wednesday</option>
-                  <option value="Thursday">Thursday</option>
-                  <option value="Friday">Friday</option>
-                  <option value="Saturday">Saturday</option>
-                  <option value="Sunday">Sunday</option>
-                </select>
-                <p className="form-description">
+                <p className="form-description" style={{ marginBottom: '12px' }}>
                   Day for weekly mock tests and assessments
                 </p>
+                <div className="day-buttons-row">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                    <button
+                      key={day}
+                      type="button"
+                      className={`day-button ${formData.commitment.weeklyTestDayPreference === day ? 'day-button--selected' : ''}`}
+                      onClick={() => updateFormData({
+                        commitment: { ...formData.commitment, weeklyTestDayPreference: day }
+                      })}
+                    >
+                      <span className="day-button-text">{day.slice(0, 3)}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
