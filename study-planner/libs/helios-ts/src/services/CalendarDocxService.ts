@@ -362,11 +362,8 @@ async function createStructuredWordDocument(studyPlan: StudyPlan, studentIntake:
   // Build main content elements
   const mainContentElements: (Paragraph | Table)[] = [];
 
-  // Birds Eye View
+  // Birds Eye View Timeline
   mainContentElements.push(...generateBirdsEyeView(studyPlan));
-
-  // Birds Eye View Legend
-  mainContentElements.push(...generateBirdsEyeLegend(studyPlan));
 
   // Page break before Monthly Views
   mainContentElements.push(new Paragraph({
@@ -407,11 +404,8 @@ async function createWordDocumentWithoutWeeklyViews(studyPlan: StudyPlan, studen
   // Build main content elements
   const mainContentElements: (Paragraph | Table)[] = [];
 
-  // Birds Eye View
+  // Birds Eye View Timeline
   mainContentElements.push(...generateBirdsEyeView(studyPlan));
-
-  // Birds Eye View Legend
-  mainContentElements.push(...generateBirdsEyeLegend(studyPlan));
 
   // Page break before Monthly Views
   mainContentElements.push(new Paragraph({
@@ -1434,200 +1428,103 @@ async function generateCoverPage(studentIntake: StudentIntake, studyPlan: StudyP
 }
 
 /**
- * Generate birds eye view calendar
+ * Generate birds eye view timeline of cycles (color-coded)
  */
 function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
-  const cycles = studyPlan.cycles || [];
   const elements: (Paragraph | Table)[] = [];
+  const cycles = (studyPlan.cycles || []).slice().sort((a, b) => {
+    const aStart = dayjs(a.cycleStartDate).valueOf();
+    const bStart = dayjs(b.cycleStartDate).valueOf();
+    return aStart - bStart;
+  });
 
   // Title
   elements.push(new Paragraph({
-    children: [new TextRun({
-      text: 'Birds Eye View - Yearly Calendar'
-    })],
+    children: [new TextRun({ text: 'Birds Eye View - Cycle Timeline' })],
     style: 'SectionHeading1'
   }));
 
-  const minDate = dayjs(studyPlan.start_date);
-  const maxDate = dayjs(`${studyPlan.targeted_year}-08-31`);
-  const endDate = maxDate.endOf('month');
-
-  // Create monthly calendar grid (6 months per row)
-  const months: Array<{ month: dayjs.Dayjs; cycle: any }> = [];
-
-  for (
-    let currentDate = minDate.startOf('month');
-    currentDate.isSameOrBefore(endDate, 'month');
-    currentDate = currentDate.add(1, 'month')
-  ) {
-    const monthDate = currentDate;
-    let cycle = null;
-
-    for (const c of cycles) {
-      const cycleStart = dayjs(c.cycleStartDate);
-      const cycleEnd = dayjs(c.cycleEndDate);
-      if (monthDate.isBetween(cycleStart, cycleEnd, 'month', '[]')) {
-        cycle = c;
-        break;
-      }
-    }
-
-    months.push({ month: monthDate, cycle });
+  if (cycles.length === 0) {
+    return elements;
   }
 
-  // Group months into rows of 6
-  const monthRows: Array<Array<{ month: dayjs.Dayjs; cycle: any }>> = [];
-  for (let i = 0; i < months.length; i += 6) {
-    monthRows.push(months.slice(i, i + 6));
-  }
+  const rows: TableRow[] = [];
 
-  // Create single table with all month rows
-  const allTableRows: TableRow[] = [];
-
-  monthRows.forEach(async (monthRow) => {
-    // Header row with month names
-    const headerCells: TableCell[] = monthRow.map(({ month, cycle }) => {
-      const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
-      const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
-
-      return new TableCell({
-        children: [
-          new Paragraph({
-            children: [new TextRun({
-              text: cycleName
-            })],
-            style: 'TableCellMonthName'
-          }),
-          new Paragraph({
-            children: [new TextRun({
-              text: month.format('MMM YYYY').toUpperCase()
-            })],
-            style: 'TableCellMonthYear'
-          })
-        ],
-        width: { size: 16.67, type: WidthType.PERCENTAGE },
-        shading: { fill: cycleColor },
-        margins: { top: 200, bottom: 200, left: 100, right: 100 }
-      });
-    });
-
-    // Fill remaining cells if less than 6 months
-    while (headerCells.length < 6) {
-      headerCells.push(new TableCell({
+  // Header row
+  rows.push(new TableRow({
+    children: [
+      new TableCell({
         children: [new Paragraph({ text: '' })],
-        width: { size: 16.67, type: WidthType.PERCENTAGE }
-      }));
-    }
+        width: { size: 4, type: WidthType.PERCENTAGE },
+        shading: { fill: 'F1F5F9' }
+      }),
+      new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'Cycle', bold: true })], style: 'TableCellBold' })],
+        width: { size: 26, type: WidthType.PERCENTAGE },
+        shading: { fill: 'F1F5F9' }
+      }),
+      new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'Dates', bold: true })], style: 'TableCellBold' })],
+        width: { size: 20, type: WidthType.PERCENTAGE },
+        shading: { fill: 'F1F5F9' }
+      }),
+      new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: 'Description', bold: true })], style: 'TableCellBold' })],
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        shading: { fill: 'F1F5F9' }
+      })
+    ]
+  }));
 
-    allTableRows.push(new TableRow({ children: headerCells }));
+  // Cycle rows
+  for (const cycle of cycles) {
+    const color = CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS] || { bg: 'FFFFFF', border: 'E5E7EB', fg: DOCUMENT_STYLES.colors.primary };
+    const name = (cycle.cycleName || '').replace(/ Cycle$/, '');
+    const start = dayjs(cycle.cycleStartDate).format('DD MMM YYYY');
+    const end = dayjs(cycle.cycleEndDate).format('DD MMM YYYY');
+    const dates = `${start} — ${end}`;
+    const description = getCycleDescription(cycle.cycleType);
 
-    // Calendar grid for each month - use table structure for perfect alignment
-    const calendarCells: TableCell[] = monthRow.map(({ month }) => {
-      const daysInMonth = month.daysInMonth();
-      const firstDayOfMonth = month.startOf('month').day();
-
-      // Create a mini table for the calendar with proper alignment
-      const calendarTableRows: TableRow[] = [];
-
-      // Header row with day names
-      const dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day =>
+    rows.push(new TableRow({
+      children: [
+        // Color bar
+        new TableCell({
+          children: [new Paragraph({ text: '' })],
+          width: { size: 4, type: WidthType.PERCENTAGE },
+          shading: { fill: color.border }
+        }),
+        // Cycle name
         new TableCell({
           children: [
             new Paragraph({
-              children: [new TextRun({
-                text: day
-              })],
-              style: 'TableCellBirdsEyeDay'
+              children: [new TextRun({ text: name, bold: true, color: color.fg })],
+              style: 'TableCellBold'
             })
           ],
-          width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 50, bottom: 50, left: 20, right: 20 }
+          width: { size: 26, type: WidthType.PERCENTAGE },
+          shading: { fill: color.bg },
+          margins: { top: 100, bottom: 100, left: 200, right: 100 }
+        }),
+        // Dates
+        new TableCell({
+          children: [new Paragraph({ text: dates, style: 'BodyText' })],
+          width: { size: 20, type: WidthType.PERCENTAGE },
+          shading: { fill: color.bg },
+          margins: { top: 100, bottom: 100, left: 100, right: 100 }
+        }),
+        // Description
+        new TableCell({
+          children: [new Paragraph({ text: description, style: 'BodyText' })],
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          shading: { fill: color.bg },
+          margins: { top: 100, bottom: 100, left: 100, right: 200 }
         })
-      );
-      calendarTableRows.push(new TableRow({ children: dayHeaders }));
+      ]
+    }));
+  }
 
-      // Create calendar weeks
-      let currentWeek: TableCell[] = [];
-
-      // Add empty cells for days before month starts
-      for (let i = 0; i < firstDayOfMonth; i++) {
-        currentWeek.push(new TableCell({
-          children: [new Paragraph({ text: '' })],
-          width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 20, bottom: 20, left: 10, right: 10 }
-        }));
-      }
-
-      // Add days of the month
-      for (let day = 1; day <= daysInMonth; day++) {
-        currentWeek.push(new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({
-                text: day.toString()
-              })],
-              style: 'TableCellBirdsEyeDayNumber'
-            })
-          ],
-          width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 20, bottom: 20, left: 10, right: 10 }
-        }));
-
-        // Start new week if we have 7 days
-        if (currentWeek.length === 7) {
-          calendarTableRows.push(new TableRow({ children: currentWeek }));
-          currentWeek = [];
-        }
-      }
-
-      // Fill remaining cells in the last week
-      while (currentWeek.length < 7) {
-        currentWeek.push(new TableCell({
-          children: [new Paragraph({ text: '' })],
-          width: { size: 14.28, type: WidthType.PERCENTAGE },
-          margins: { top: 20, bottom: 20, left: 10, right: 10 }
-        }));
-      }
-      if (currentWeek.length > 0) {
-        calendarTableRows.push(new TableRow({ children: currentWeek }));
-      }
-
-      // Create the mini calendar table
-      const calendarTable = new Table({
-        rows: calendarTableRows,
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        style: TABLE_STYLE_NAMES.miniCalendar,
-        borders: {
-          top: { style: BorderStyle.NONE, size: 0 },
-          bottom: { style: BorderStyle.NONE, size: 0 },
-          left: { style: BorderStyle.NONE, size: 0 },
-          right: { style: BorderStyle.NONE, size: 0 },
-          insideHorizontal: { style: BorderStyle.NONE, size: 0 },
-          insideVertical: { style: BorderStyle.NONE, size: 0 }
-        }
-      });
-
-      return new TableCell({
-        children: [calendarTable],
-        width: { size: 16.67, type: WidthType.PERCENTAGE },
-        margins: { top: 100, bottom: 100, left: 50, right: 50 }
-      });
-    });
-
-    // Fill remaining cells
-    while (calendarCells.length < 6) {
-      calendarCells.push(new TableCell({
-        children: [new Paragraph({ text: '' })],
-        width: { size: 16.67, type: WidthType.PERCENTAGE }
-      }));
-    }
-
-    allTableRows.push(new TableRow({ children: calendarCells }));
-  });
-
-  // Create single table with all rows
   elements.push(new Table({
-    rows: allTableRows,
+    rows,
     width: { size: 100, type: WidthType.PERCENTAGE },
     style: TABLE_STYLE_NAMES.birdsEyeView,
     borders: {
@@ -1639,6 +1536,9 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
       insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
     }
   }));
+
+  // Spacing after timeline
+  elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
 
   return elements;
 }
