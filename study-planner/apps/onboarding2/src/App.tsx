@@ -1,7 +1,8 @@
-import { lazy, useState, Suspense } from "react";
+import { lazy, useState, Suspense, useEffect } from "react";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import StudentDashboard from "@/components/StudentDashboard";
 
 import Navigation from "@/components/Navigation";
 import PersonalInfoStep from "@/components/PersonalInfoStep";
@@ -33,6 +34,9 @@ const stepMap = steps.reduce<Record<string, number>>((acc, step, index) => {
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(getStoredAuth());
+  const [view, setView] = useState<'onboarding' | 'dashboard'>(() => {
+    return window.location.hash === '#/dashboard' ? 'dashboard' : 'onboarding';
+  });
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
@@ -64,7 +68,15 @@ function App() {
     error,
   } = useOnboarding();
 
-
+  // Hash-based routing for simple Dashboard view
+  useEffect(() => {
+    const onHashChange = () => {
+      setView(window.location.hash === '#/dashboard' ? 'dashboard' : 'onboarding');
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   const renderStep = () => {
     const stepProps = {
@@ -106,38 +118,54 @@ function App() {
 
   return (
     <div className="app-container">
-      <Header currentStep={getStepNumber()} totalSteps={7} />
-      <main className="app-main">
-        <div className="container">
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
+      {view === 'onboarding' && (
+        <>
+          <Header currentStep={getStepNumber()} totalSteps={7} />
+          <main className="app-main">
+            <div className="container">
+              {error && (
+                <div className="error-message">
+                  {error}
+                </div>
+              )}
 
-          <Suspense fallback={
-            <div style={{ textAlign: 'center', padding: '40px' }}>
-              <div className="navigation-spinner" style={{ margin: '0 auto' }} />
-              <p style={{ marginTop: '16px', color: 'var(--ms-gray-90)' }}>Loading...</p>
-            </div>
-          }>
-            {renderStep()}
-          </Suspense>
+              <Suspense fallback={
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <div className="navigation-spinner" style={{ margin: '0 auto' }} />
+                  <p style={{ marginTop: '16px', color: 'var(--ms-gray-90)' }}>Loading...</p>
+                </div>
+              }>
+                {renderStep()}
+              </Suspense>
 
-          {currentStep !== "complete" && (
-            <Navigation
-              currentStep={getStepNumber()}
-              totalSteps={steps.length}
-              canGoNext={canGoNext as boolean}
-              canGoPrevious={getStepNumber() > 1}
-              isSubmitting={isSubmitting}
-              onNext={goNext}
-              onPrevious={goPrevious}
-            />
-          )}
-        </div>
-      </main>
-      <Footer />
+              {currentStep !== "complete" && (
+                <Navigation
+                  currentStep={getStepNumber()}
+                  totalSteps={steps.length}
+                  canGoNext={canGoNext as boolean}
+                  canGoPrevious={getStepNumber() > 1}
+                  isSubmitting={isSubmitting}
+                  onNext={goNext}
+                  onPrevious={goPrevious}
+                />
+              )}
+            </div>
+          </main>
+          <Footer />
+        </>
+      )}
+
+      {view === 'dashboard' && (
+        <main className="app-main">
+          <StudentDashboard
+            formData={formData}
+            updateFormData={updateFormData}
+            onNext={goNext}
+            onPrevious={goPrevious}
+            isValid={canGoNext as boolean}
+          />
+        </main>
+      )}
     </div>
   );
   
