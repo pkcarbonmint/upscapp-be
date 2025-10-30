@@ -147,12 +147,12 @@ body {
 .ms-button-secondary {
   background-color: var(--ms-white);
   color: var(--ms-gray-130);
-  border-color: var(--ms-gray-60);
+  border: 2px solid var(--ms-gray-60);
 }
 
 .ms-button-secondary:hover {
   background-color: var(--ms-gray-20);
-  border-color: var(--ms-gray-70);
+  border-color: var(--ms-gray-100);
 }
 
 .ms-button:disabled {

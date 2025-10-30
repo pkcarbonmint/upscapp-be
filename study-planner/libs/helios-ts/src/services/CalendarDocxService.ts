@@ -276,6 +276,76 @@ export class CalendarDocxService {
     return generateStyledTemplate();
   }
 
+  /**
+   * Generate Word document without detailed weekly plans (monthly view only)
+   */
+  static async generateStudyPlanDocxWithoutWeeklyViews(
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake
+  ): Promise<Buffer> {
+    try {
+      const [coverPageElements, mainContentElements] = await createWordDocumentWithoutWeeklyViews(studyPlan, studentIntake);
+      const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
+      return await Packer.toBuffer(document);
+    } catch (error) {
+      console.error('Failed to generate Word document without weekly views:', error);
+      throw new Error('Word document generation without weekly views failed');
+    }
+  }
+
+  /**
+   * Generate Word document for a specific month (cover page + month view + weeks)
+   */
+  static async generateMonthDocx(
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake,
+    monthIndex: number // 0-based index of the month from start of study plan
+  ): Promise<Buffer> {
+    try {
+      const [coverPageElements, mainContentElements] = await createMonthDocument(studyPlan, studentIntake, monthIndex);
+      const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
+      return await Packer.toBuffer(document);
+    } catch (error) {
+      console.error('Failed to generate month Word document:', error);
+      throw new Error('Month Word document generation failed');
+    }
+  }
+
+  /**
+   * Generate Blob for a document without weekly views (browser-compatible)
+   */
+  static async generateStudyPlanDocxWithoutWeeklyViewsBlob(
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake
+  ): Promise<Blob> {
+    try {
+      const [coverPageElements, mainContentElements] = await createWordDocumentWithoutWeeklyViews(studyPlan, studentIntake);
+      const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
+      return await Packer.toBlob(document);
+    } catch (error) {
+      console.error('Failed to generate Word document without weekly views blob:', error);
+      throw new Error('Word document blob generation without weekly views failed');
+    }
+  }
+
+  /**
+   * Generate Blob for a specific month (browser-compatible)
+   */
+  static async generateMonthDocxBlob(
+    studyPlan: StudyPlan,
+    studentIntake: StudentIntake,
+    monthIndex: number
+  ): Promise<Blob> {
+    try {
+      const [coverPageElements, mainContentElements] = await createMonthDocument(studyPlan, studentIntake, monthIndex);
+      const document = createDocument(studyPlan, studentIntake)(coverPageElements, mainContentElements);
+      return await Packer.toBlob(document);
+    } catch (error) {
+      console.error('Failed to generate month Word document blob:', error);
+      throw new Error('Month Word document blob generation failed');
+    }
+  }
+
 }
 
 // ===== CORE WORD DOCUMENT GENERATION METHODS =====
@@ -322,6 +392,509 @@ async function createStructuredWordDocument(studyPlan: StudyPlan, studentIntake:
 
   // Legend
   mainContentElements.push(...generateLegend(studyPlan));
+  return [coverPageElements, mainContentElements];
+}
+
+/**
+ * Create Word document without weekly views (monthly calendar only)
+ */
+async function createWordDocumentWithoutWeeklyViews(studyPlan: StudyPlan, studentIntake: StudentIntake) {
+  const year = studyPlan.targeted_year || new Date().getFullYear();
+
+  // Build cover page elements
+  const coverPageElements = await generateCoverPage(studentIntake, studyPlan, year);
+
+  // Build main content elements
+  const mainContentElements: (Paragraph | Table)[] = [];
+
+  // Birds Eye View
+  mainContentElements.push(...generateBirdsEyeView(studyPlan));
+
+  // Birds Eye View Legend
+  mainContentElements.push(...generateBirdsEyeLegend(studyPlan));
+
+  // Page break before Monthly Views
+  mainContentElements.push(new Paragraph({
+    children: [new PageBreak()]
+  }));
+
+  // Monthly Views only (without weekly views)
+  const cycles = studyPlan.cycles || [];
+  const minDate = dayjs(studyPlan.start_date);
+  const maxDate = dayjs(`${studyPlan.targeted_year}-08-31`);
+  const endDate = maxDate.endOf('month');
+
+  const PDF_MAX_MONTHS = 36;
+  let monthCount = 0;
+
+  for (
+    let currentDate = minDate.startOf('month');
+    currentDate.isSameOrBefore(endDate, 'month') && monthCount < PDF_MAX_MONTHS;
+    currentDate = currentDate.add(1, 'month')
+  ) {
+    const monthDate = currentDate;
+    const monthName = monthDate.format('MMMM');
+    const monthYear = monthDate.format('YYYY');
+
+    // Find which cycle this month belongs to
+    let cycle = null;
+    for (const c of cycles) {
+      const cycleStart = dayjs(c.cycleStartDate);
+      const cycleEnd = dayjs(c.cycleEndDate);
+      if (monthDate.isBetween(cycleStart, cycleEnd, 'month', '[]')) {
+        cycle = c;
+        break;
+      }
+    }
+
+    // Page break before each month (except the first one)
+    if (monthCount > 0) {
+      mainContentElements.push(new Paragraph({
+        children: [new PageBreak()]
+      }));
+    }
+
+    // Month title with cycle name
+    const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
+    const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
+
+    mainContentElements.push(new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [new TextRun({
+                    text: `${monthName.toUpperCase()} ${monthYear}`,
+                    color: cycleColor
+                  })],
+                  style: 'MonthTitle'
+                })
+              ],
+              width: { size: 50, type: WidthType.PERCENTAGE },
+              margins: { top: 0, bottom: 0, left: 0, right: 0 }
+            }),
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [new TextRun({
+                    text: cycleName,
+                    color: cycleColor
+                  })],
+                  style: 'CycleName'
+                })
+              ],
+              width: { size: 50, type: WidthType.PERCENTAGE },
+              margins: { top: 0, bottom: 0, left: 0, right: 0 }
+            })
+          ]
+        })
+      ],
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      style: TABLE_STYLE_NAMES.monthTitle,
+      borders: {
+        top: { style: BorderStyle.NONE, size: 0 },
+        bottom: { style: BorderStyle.NONE, size: 0 },
+        left: { style: BorderStyle.NONE, size: 0 },
+        right: { style: BorderStyle.NONE, size: 0 },
+        insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+        insideVertical: { style: BorderStyle.NONE, size: 0 }
+      }
+    }));
+
+    // Add spacing after the title
+    mainContentElements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+
+    // Monthly calendar grid (without weekly details)
+    const daysInMonth = monthDate.daysInMonth();
+    const firstDayOfMonth = monthDate.startOf('month').day();
+
+    const calendarRows: TableRow[] = [];
+
+    // Header row
+    const headerCells = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day =>
+      new TableCell({
+        children: [
+          new Paragraph({
+            children: [new TextRun({
+              text: day
+            })],
+            style: 'TableCellCalendarHeader'
+          })
+        ],
+        width: { size: 14.28, type: WidthType.PERCENTAGE },
+        shading: { fill: 'F8F9FA' },
+        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+      })
+    );
+    calendarRows.push(new TableRow({ children: headerCells }));
+
+    // Calendar days
+    let currentWeek: TableCell[] = [];
+
+    // Add empty cells for days before month starts
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      currentWeek.push(new TableCell({
+        children: [new Paragraph({ text: '' })],
+        width: { size: 14.28, type: WidthType.PERCENTAGE },
+        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+      }));
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const currentDay = monthDate.date(day);
+
+      // Determine which cycle this day belongs to for background color
+      let dayCycle = null;
+      for (const cycle of cycles) {
+        const cycleStart = dayjs(cycle.cycleStartDate);
+        const cycleEnd = dayjs(cycle.cycleEndDate);
+        if (currentDay.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
+          dayCycle = cycle;
+          break;
+        }
+      }
+
+      const cycleColor = dayCycle ? CYCLE_TYPE_COLORS[dayCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
+
+      // Get subjects for this day
+      const daySubjects: string[] = [];
+      for (const cycle of cycles) {
+        for (const block of cycle.cycleBlocks) {
+          const blockStart = dayjs(block.block_start_date);
+          const blockEnd = dayjs(block.block_end_date);
+
+          if (currentDay.isBetween(blockStart, blockEnd, 'day', '[]')) {
+            for (const subject of block.subjects) {
+              const subjectName = getSubjectName(subject);
+              daySubjects.push(subjectName);
+            }
+          }
+        }
+      }
+
+      const cellContent = [
+        new Paragraph({
+          children: [new TextRun({
+            text: day.toString()
+          })],
+          style: 'TableCellCalendarDayNumberBold'
+        })
+      ];
+
+      // Add subjects
+      daySubjects.forEach(subject => {
+        cellContent.push(new Paragraph({
+          children: [new TextRun({
+            text: subject
+          })],
+          style: 'TableCellCalendarSubject'
+        }));
+      });
+
+      currentWeek.push(new TableCell({
+        children: cellContent,
+        width: { size: 14.28, type: WidthType.PERCENTAGE },
+        shading: { fill: cycleColor },
+        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+      }));
+
+      // Start new week if we have 7 days
+      if (currentWeek.length === 7) {
+        calendarRows.push(new TableRow({ children: currentWeek }));
+        currentWeek = [];
+      }
+    }
+
+    // Fill remaining cells in the last week
+    while (currentWeek.length < 7) {
+      currentWeek.push(new TableCell({
+        children: [new Paragraph({ text: '' })],
+        width: { size: 14.28, type: WidthType.PERCENTAGE },
+        margins: { top: 200, bottom: 200, left: 100, right: 100 }
+      }));
+    }
+    if (currentWeek.length > 0) {
+      calendarRows.push(new TableRow({ children: currentWeek }));
+    }
+
+    mainContentElements.push(new Table({
+      rows: calendarRows,
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      style: TABLE_STYLE_NAMES.monthlyCalendar,
+      borders: {
+        top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+        bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+        left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+        right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+        insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+        insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+      }
+    }));
+
+    // Add monthly resources
+    mainContentElements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+    mainContentElements.push(...await generateMonthlyResources(studyPlan, monthDate));
+
+    monthCount++;
+  }
+
+  // Page break before Resources Table
+  mainContentElements.push(new Paragraph({
+    children: [new PageBreak()]
+  }));
+
+  // Resources Table
+  mainContentElements.push(...await generateResourcesTable(studyPlan));
+
+  // Page break before Legend
+  mainContentElements.push(new Paragraph({
+    children: [new PageBreak()]
+  }));
+
+  // Legend
+  mainContentElements.push(...generateLegend(studyPlan));
+  return [coverPageElements, mainContentElements];
+}
+
+/**
+ * Create Word document for a specific month (cover + month view + week views)
+ */
+async function createMonthDocument(studyPlan: StudyPlan, studentIntake: StudentIntake, monthIndex: number) {
+  const year = studyPlan.targeted_year || new Date().getFullYear();
+
+  // Build cover page elements
+  const coverPageElements = await generateCoverPage(studentIntake, studyPlan, year);
+
+  // Build main content elements
+  const mainContentElements: (Paragraph | Table)[] = [];
+
+  const cycles = studyPlan.cycles || [];
+  const minDate = dayjs(studyPlan.start_date);
+  const maxDate = dayjs(`${studyPlan.targeted_year}-08-31`);
+  const endDate = maxDate.endOf('month');
+
+  // Get all months in the study plan
+  const allMonths: dayjs.Dayjs[] = [];
+  for (
+    let currentDate = minDate.startOf('month');
+    currentDate.isSameOrBefore(endDate, 'month');
+    currentDate = currentDate.add(1, 'month')
+  ) {
+    allMonths.push(currentDate);
+  }
+
+  // Get the specific month
+  if (monthIndex < 0 || monthIndex >= allMonths.length) {
+    throw new Error(`Invalid month index: ${monthIndex}. Valid range: 0-${allMonths.length - 1}`);
+  }
+
+  const monthDate = allMonths[monthIndex];
+  const monthName = monthDate.format('MMMM');
+  const monthYear = monthDate.format('YYYY');
+
+  // Find which cycle this month belongs to
+  let cycle = null;
+  for (const c of cycles) {
+    const cycleStart = dayjs(c.cycleStartDate);
+    const cycleEnd = dayjs(c.cycleEndDate);
+    if (monthDate.isBetween(cycleStart, cycleEnd, 'month', '[]')) {
+      cycle = c;
+      break;
+    }
+  }
+
+  // Month title with cycle name
+  const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
+  const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
+
+  mainContentElements.push(new Table({
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [new TextRun({
+                  text: `${monthName.toUpperCase()} ${monthYear}`,
+                  color: cycleColor
+                })],
+                style: 'MonthTitle'
+              })
+            ],
+            width: { size: 50, type: WidthType.PERCENTAGE },
+            margins: { top: 0, bottom: 0, left: 0, right: 0 }
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [new TextRun({
+                  text: cycleName,
+                  color: cycleColor
+                })],
+                style: 'CycleName'
+              })
+            ],
+            width: { size: 50, type: WidthType.PERCENTAGE },
+            margins: { top: 0, bottom: 0, left: 0, right: 0 }
+          })
+        ]
+      })
+    ],
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    style: TABLE_STYLE_NAMES.monthTitle,
+    borders: {
+      top: { style: BorderStyle.NONE, size: 0 },
+      bottom: { style: BorderStyle.NONE, size: 0 },
+      left: { style: BorderStyle.NONE, size: 0 },
+      right: { style: BorderStyle.NONE, size: 0 },
+      insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+      insideVertical: { style: BorderStyle.NONE, size: 0 }
+    }
+  }));
+
+  // Add spacing after the title
+  mainContentElements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+
+  // Monthly calendar grid
+  const daysInMonth = monthDate.daysInMonth();
+  const firstDayOfMonth = monthDate.startOf('month').day();
+
+  const calendarRows: TableRow[] = [];
+
+  // Header row
+  const headerCells = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day =>
+    new TableCell({
+      children: [
+        new Paragraph({
+          children: [new TextRun({
+            text: day
+          })],
+          style: 'TableCellCalendarHeader'
+        })
+      ],
+      width: { size: 14.28, type: WidthType.PERCENTAGE },
+      shading: { fill: 'F8F9FA' },
+      margins: { top: 200, bottom: 200, left: 100, right: 100 }
+    })
+  );
+  calendarRows.push(new TableRow({ children: headerCells }));
+
+  // Calendar days
+  let currentWeek: TableCell[] = [];
+
+  // Add empty cells for days before month starts
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    currentWeek.push(new TableCell({
+      children: [new Paragraph({ text: '' })],
+      width: { size: 14.28, type: WidthType.PERCENTAGE },
+      margins: { top: 200, bottom: 200, left: 100, right: 100 }
+    }));
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const currentDay = monthDate.date(day);
+
+    // Determine which cycle this day belongs to for background color
+    let dayCycle = null;
+    for (const cycle of cycles) {
+      const cycleStart = dayjs(cycle.cycleStartDate);
+      const cycleEnd = dayjs(cycle.cycleEndDate);
+      if (currentDay.isBetween(cycleStart, cycleEnd, 'day', '[]')) {
+        dayCycle = cycle;
+        break;
+      }
+    }
+
+    const cycleColor = dayCycle ? CYCLE_TYPE_COLORS[dayCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.bg || 'FFFFFF' : 'FFFFFF';
+
+    // Get subjects for this day
+    const daySubjects: string[] = [];
+    for (const cycle of cycles) {
+      for (const block of cycle.cycleBlocks) {
+        const blockStart = dayjs(block.block_start_date);
+        const blockEnd = dayjs(block.block_end_date);
+
+        if (currentDay.isBetween(blockStart, blockEnd, 'day', '[]')) {
+          for (const subject of block.subjects) {
+            const subjectName = getSubjectName(subject);
+            daySubjects.push(subjectName);
+          }
+        }
+      }
+    }
+
+    const cellContent = [
+      new Paragraph({
+        children: [new TextRun({
+          text: day.toString()
+        })],
+        style: 'TableCellCalendarDayNumberBold'
+      })
+    ];
+
+    // Add subjects
+    daySubjects.forEach(subject => {
+      cellContent.push(new Paragraph({
+        children: [new TextRun({
+          text: subject
+        })],
+        style: 'TableCellCalendarSubject'
+      }));
+    });
+
+    currentWeek.push(new TableCell({
+      children: cellContent,
+      width: { size: 14.28, type: WidthType.PERCENTAGE },
+      shading: { fill: cycleColor },
+      margins: { top: 200, bottom: 200, left: 100, right: 100 }
+    }));
+
+    // Start new week if we have 7 days
+    if (currentWeek.length === 7) {
+      calendarRows.push(new TableRow({ children: currentWeek }));
+      currentWeek = [];
+    }
+  }
+
+  // Fill remaining cells in the last week
+  while (currentWeek.length < 7) {
+    currentWeek.push(new TableCell({
+      children: [new Paragraph({ text: '' })],
+      width: { size: 14.28, type: WidthType.PERCENTAGE },
+      margins: { top: 200, bottom: 200, left: 100, right: 100 }
+    }));
+  }
+  if (currentWeek.length > 0) {
+    calendarRows.push(new TableRow({ children: currentWeek }));
+  }
+
+  mainContentElements.push(new Table({
+    rows: calendarRows,
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    style: TABLE_STYLE_NAMES.monthlyCalendar,
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
+    }
+  }));
+
+  // Add monthly resources
+  mainContentElements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+  mainContentElements.push(...await generateMonthlyResources(studyPlan, monthDate));
+
+  // Add weekly views for this month
+  // For the first month, only generate weeks that start on or after the study plan start date
+  const isFirstMonth = monthIndex === 0;
+  const planStartDate = isFirstMonth ? dayjs(studyPlan.start_date) : null;
+  mainContentElements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
+  mainContentElements.push(...await generateWeeklyViews(studyPlan, studentIntake, monthDate, planStartDate));
+
   return [coverPageElements, mainContentElements];
 }
 
@@ -1437,8 +2010,11 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan, studentInta
     elements.push(...await generateMonthlyResources(studyPlan, monthDate));
 
     // Add weekly views for this month
+    // For the first month, only generate weeks that start on or after the study plan start date
+    const isFirstMonth = monthCount === 0;
+    const planStartDate = isFirstMonth ? minDate : null;
     elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
-    elements.push(...await generateWeeklyViews(studyPlan, studentIntake, monthDate));
+    elements.push(...await generateWeeklyViews(studyPlan, studentIntake, monthDate, planStartDate));
 
     monthCount++;
   }
@@ -1449,7 +2025,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan, studentInta
 /**
  * Generate weekly views for a specific month
  */
-async function generateWeeklyViews(studyPlan: StudyPlan, studentIntake: StudentIntake, monthDate: dayjs.Dayjs): Promise<(Paragraph | Table)[]> {
+async function generateWeeklyViews(studyPlan: StudyPlan, studentIntake: StudentIntake, monthDate: dayjs.Dayjs, minDate?: dayjs.Dayjs | null): Promise<(Paragraph | Table)[]> {
   const elements: (Paragraph | Table)[] = [];
 
   const monthStart = monthDate.startOf('month');
@@ -1460,7 +2036,10 @@ async function generateWeeklyViews(studyPlan: StudyPlan, studentIntake: StudentI
   let currentWeek = monthStart.startOf('week');
 
   while (currentWeek.isBefore(monthEnd) || currentWeek.isSame(monthEnd, 'week')) {
-    weeksInMonth.push(currentWeek);
+    // If minDate is provided, skip weeks that start before it
+    if (!minDate || currentWeek.isSameOrAfter(minDate, 'day')) {
+      weeksInMonth.push(currentWeek);
+    }
     currentWeek = currentWeek.add(1, 'week');
   }
 
