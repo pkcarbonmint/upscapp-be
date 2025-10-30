@@ -1469,84 +1469,40 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
     const cycleColor = CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS];
     const bgColor = cycleColor?.bg || 'FFFFFF';
     const fgColor = cycleColor?.fg || DOCUMENT_STYLES.colors.primary;
-    const borderColor = cycleColor?.border || DOCUMENT_STYLES.colors.primary;
 
     const cycleStart = dayjs(cycle.cycleStartDate);
     const cycleEnd = dayjs(cycle.cycleEndDate);
     const duration = cycleEnd.diff(cycleStart, 'day') + 1;
     const durationText = duration === 1 ? '1 day' : `${duration} days`;
 
-    // Cycle name and dates row
-    const cycleNameCell = new TableCell({
+    // Single cell with all cycle information
+    const cycleCell = new TableCell({
       children: [
         new Paragraph({
           children: [
             new TextRun({
-              text: `${index + 1}. ${cycle.cycleName.replace(/ Cycle$/, '')}`,
+              text: cycle.cycleName.replace(/ Cycle$/, ''),
               bold: true,
-              size: 24,
               color: fgColor
             })
           ],
-          spacing: { after: 100 }
+          style: 'TableCellBold'
         }),
         new Paragraph({
           children: [
             new TextRun({
-              text: `${cycleStart.format('MMM D, YYYY')} — ${cycleEnd.format('MMM D, YYYY')}`,
-              size: 20,
-              color: fgColor
+              text: `${cycleStart.format('MMM D, YYYY')} — ${cycleEnd.format('MMM D, YYYY')} (${durationText})`
             })
           ],
-          spacing: { after: 100 }
-        }),
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: `Duration: ${durationText}`,
-              size: 18,
-              italics: true,
-              color: DOCUMENT_STYLES.colors.secondary
-            })
-          ]
+          style: 'BodyText'
         })
       ],
-      width: { size: 35, type: WidthType.PERCENTAGE },
+      width: { size: 100, type: WidthType.PERCENTAGE },
       shading: { fill: bgColor },
-      margins: { top: 300, bottom: 300, left: 300, right: 200 },
-      borders: {
-        left: { style: BorderStyle.SINGLE, size: 20, color: borderColor },
-        top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
-      }
+      margins: { top: 200, bottom: 200, left: 200, right: 200 }
     });
 
-    // Description cell
-    const descriptionCell = new TableCell({
-      children: [
-        new Paragraph({
-          children: [
-            new TextRun({
-              text: getCycleDescription(cycle.cycleType),
-              size: 20,
-              color: DOCUMENT_STYLES.colors.text
-            })
-          ]
-        })
-      ],
-      width: { size: 65, type: WidthType.PERCENTAGE },
-      shading: { fill: bgColor },
-      margins: { top: 300, bottom: 300, left: 200, right: 300 },
-      borders: {
-        top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
-        right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
-      }
-    });
-
-    timelineRows.push(new TableRow({ children: [cycleNameCell, descriptionCell] }));
+    timelineRows.push(new TableRow({ children: [cycleCell] }));
   });
 
   // Create the timeline table
@@ -1554,10 +1510,10 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
     rows: timelineRows,
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: {
-      top: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.secondary },
-      bottom: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.secondary },
-      left: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.secondary },
-      right: { style: BorderStyle.SINGLE, size: 2, color: DOCUMENT_STYLES.colors.secondary },
+      top: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      left: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
+      right: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
       insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' },
       insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'E0E0E0' }
     }
