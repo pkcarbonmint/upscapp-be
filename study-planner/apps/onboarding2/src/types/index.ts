@@ -73,7 +73,8 @@ export type OnboardingStep =
   | 'confidence'
   | 'preview'
   | 'payment'
-  | 'complete';
+  | 'complete'
+  | 'dashboard';
 
 export interface StepProps {
   formData: OnboardingFormData;

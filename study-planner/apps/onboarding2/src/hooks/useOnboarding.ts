@@ -61,7 +61,8 @@ const steps: OnboardingStep[] = [
   'target-year',
   'preview',
   'payment',
-  'complete'
+  'complete',
+  'dashboard'
 ];
 
 export function useOnboarding() {

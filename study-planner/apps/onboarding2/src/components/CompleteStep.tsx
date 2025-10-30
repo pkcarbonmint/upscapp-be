@@ -161,14 +161,15 @@ const CompleteStep: React.FC<StepProps> = (stepProps) => {
       </div>
       
       <button 
-        className="ms-button ms-button-secondary complete-button"
+        className="ms-button ms-button-primary complete-button"
         onClick={() => {
-          // TODO: Navigate to dashboard
-          console.log('Navigate to dashboard');
+          // Navigate to dashboard
+          window.history.pushState({ step: 'dashboard' }, '', '?step=dashboard');
+          window.location.href = '?step=dashboard';
         }}
         style={{ marginTop: '12px' }}
       >
-        Go to Dashboard
+        Go to Dashboard →
       </button>
       
       <p className="complete-footer">

@@ -12,6 +12,7 @@ const ConfidenceStep = lazy(() => import("@/components/ConfidenceStep"));
 const PreviewStep = lazy(() => import("@/components/PreviewStep"));
 const PaymentStep = lazy(() => import("@/components/PaymentStep"));
 const CompleteStep = lazy(() => import("@/components/CompleteStep"));
+const Dashboard = lazy(() => import("@/components/Dashboard"));
 
 // Temporary fixed password
 const APP_PASSWORD = "helios4success";
@@ -24,6 +25,7 @@ const steps = [
   "preview",
   "payment",
   "complete",
+  "dashboard",
 ];
 
 const stepMap = steps.reduce<Record<string, number>>((acc, step, index) => {
@@ -90,6 +92,8 @@ function App() {
         return <PaymentStep {...stepProps} />;
       case "complete":
         return <CompleteStep {...stepProps} />;
+      case "dashboard":
+        return <Dashboard {...stepProps} />;
       default:
         return <PersonalInfoStep {...stepProps} />;
     }
@@ -124,7 +128,7 @@ function App() {
             {renderStep()}
           </Suspense>
 
-          {currentStep !== "complete" && (
+          {currentStep !== "complete" && currentStep !== "dashboard" && (
             <Navigation
               currentStep={getStepNumber()}
               totalSteps={steps.length}
