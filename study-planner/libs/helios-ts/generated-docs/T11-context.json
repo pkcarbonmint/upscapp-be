@@ -1,0 +1,1107 @@
+{
+  "optionalSubject": {
+    "isNCERT": false,
+    "subjectCode": "OPT-AGR",
+    "subjectNname": "Agriculture",
+    "examFocus": "MainsOnly",
+    "baselineMinutes": 12000,
+    "topics": [
+      {
+        "code": "OPT-AGR/01",
+        "subtopics": []
+      },
+      {
+        "code": "OPT-AGR/02",
+        "subtopics": []
+      }
+    ]
+  },
+  "startDate": "2027-02-27T18:30:00.000Z",
+  "targetYear": 2027,
+  "prelimsExamDate": "2027-05-20T00:00:00.000Z",
+  "mainsExamDate": "2027-08-20T00:00:00.000Z",
+  "constraints": {
+    "optionalSubjectCode": "OPT-AGR",
+    "confidenceMap": {
+      "H01": 0.7,
+      "H02": 0.7,
+      "H03": 0.7,
+      "H04": 0.7,
+      "H05": 0.7,
+      "G": 0.7,
+      "B": 1,
+      "T": 1.2,
+      "P": 1,
+      "E": 1
+    },
+    "optionalFirst": false,
+    "catchupDay": 6,
+    "testDay": 0,
+    "workingHoursPerDay": 7,
+    "breaks": [],
+    "testMinutes": 180
+  },
+  "subjects": [
+    {
+      "isNCERT": false,
+      "subjectCode": "OPT-AGR",
+      "subjectNname": "Agriculture",
+      "examFocus": "MainsOnly",
+      "baselineMinutes": 12000,
+      "topics": [
+        {
+          "code": "OPT-AGR/01",
+          "subtopics": []
+        },
+        {
+          "code": "OPT-AGR/02",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "H01",
+      "subjectNname": "History-Ancient",
+      "examFocus": "BothExams",
+      "baselineMinutes": 1500,
+      "topics": [
+        {
+          "code": "H01/00",
+          "subtopics": []
+        },
+        {
+          "code": "H01/01",
+          "subtopics": []
+        },
+        {
+          "code": "H01/02",
+          "subtopics": []
+        },
+        {
+          "code": "H01/03",
+          "subtopics": []
+        },
+        {
+          "code": "H01/04",
+          "subtopics": []
+        },
+        {
+          "code": "H01/05",
+          "subtopics": []
+        },
+        {
+          "code": "H01/06",
+          "subtopics": []
+        },
+        {
+          "code": "H01/07",
+          "subtopics": []
+        },
+        {
+          "code": "H01/08",
+          "subtopics": []
+        },
+        {
+          "code": "H01/09",
+          "subtopics": []
+        },
+        {
+          "code": "H01/10",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "H02",
+      "subjectNname": "History-Medieval",
+      "examFocus": "BothExams",
+      "baselineMinutes": 1500,
+      "topics": [
+        {
+          "code": "H02/00",
+          "subtopics": []
+        },
+        {
+          "code": "H02/01",
+          "subtopics": []
+        },
+        {
+          "code": "H02/02",
+          "subtopics": []
+        },
+        {
+          "code": "H02/03",
+          "subtopics": []
+        },
+        {
+          "code": "H02/04",
+          "subtopics": []
+        },
+        {
+          "code": "H02/05",
+          "subtopics": []
+        },
+        {
+          "code": "H02/06",
+          "subtopics": []
+        },
+        {
+          "code": "H02/07",
+          "subtopics": []
+        },
+        {
+          "code": "H02/08",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "H03",
+      "subjectNname": "History-Modern",
+      "examFocus": "BothExams",
+      "baselineMinutes": 6000,
+      "topics": [
+        {
+          "code": "H03/00",
+          "subtopics": []
+        },
+        {
+          "code": "H03/01",
+          "subtopics": []
+        },
+        {
+          "code": "H03/02",
+          "subtopics": []
+        },
+        {
+          "code": "H03/03",
+          "subtopics": []
+        },
+        {
+          "code": "H03/04",
+          "subtopics": []
+        },
+        {
+          "code": "H03/05",
+          "subtopics": []
+        },
+        {
+          "code": "H03/06",
+          "subtopics": []
+        },
+        {
+          "code": "H03/07",
+          "subtopics": []
+        },
+        {
+          "code": "H03/08",
+          "subtopics": []
+        },
+        {
+          "code": "H03/09",
+          "subtopics": []
+        },
+        {
+          "code": "H03/10",
+          "subtopics": []
+        },
+        {
+          "code": "H03/11",
+          "subtopics": []
+        },
+        {
+          "code": "H03/12",
+          "subtopics": []
+        },
+        {
+          "code": "H03/13",
+          "subtopics": []
+        },
+        {
+          "code": "H03/14",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "H04",
+      "subjectNname": "History-Art and Culture",
+      "examFocus": "BothExams",
+      "baselineMinutes": 3000,
+      "topics": [
+        {
+          "code": "H04/00",
+          "subtopics": []
+        },
+        {
+          "code": "H04/01",
+          "subtopics": []
+        },
+        {
+          "code": "H04/02",
+          "subtopics": []
+        },
+        {
+          "code": "H04/03",
+          "subtopics": []
+        },
+        {
+          "code": "H04/04",
+          "subtopics": []
+        },
+        {
+          "code": "H04/05",
+          "subtopics": []
+        },
+        {
+          "code": "H04/06",
+          "subtopics": []
+        },
+        {
+          "code": "H04/07",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "H05",
+      "subjectNname": "History-World",
+      "examFocus": "BothExams",
+      "baselineMinutes": 1500,
+      "topics": [
+        {
+          "code": "H05/00",
+          "subtopics": []
+        },
+        {
+          "code": "H05/01",
+          "subtopics": []
+        },
+        {
+          "code": "H05/02",
+          "subtopics": []
+        },
+        {
+          "code": "H05/03",
+          "subtopics": []
+        },
+        {
+          "code": "H05/04",
+          "subtopics": []
+        },
+        {
+          "code": "H05/05",
+          "subtopics": []
+        },
+        {
+          "code": "H05/06",
+          "subtopics": []
+        },
+        {
+          "code": "H05/07",
+          "subtopics": []
+        },
+        {
+          "code": "H05/08",
+          "subtopics": []
+        },
+        {
+          "code": "H05/09",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "H06",
+      "subjectNname": "History-Post Independent India",
+      "examFocus": "BothExams",
+      "baselineMinutes": 1500,
+      "topics": [
+        {
+          "code": "H06/00",
+          "subtopics": []
+        },
+        {
+          "code": "H06/01",
+          "subtopics": []
+        },
+        {
+          "code": "H06/02",
+          "subtopics": []
+        },
+        {
+          "code": "H06/03",
+          "subtopics": []
+        },
+        {
+          "code": "H06/04",
+          "subtopics": []
+        },
+        {
+          "code": "H06/05",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "G",
+      "subjectNname": "Geography",
+      "examFocus": "BothExams",
+      "baselineMinutes": 7800,
+      "topics": [
+        {
+          "code": "G00",
+          "subtopics": []
+        },
+        {
+          "code": "G01",
+          "subtopics": []
+        },
+        {
+          "code": "G02",
+          "subtopics": []
+        },
+        {
+          "code": "G03",
+          "subtopics": []
+        },
+        {
+          "code": "G04",
+          "subtopics": []
+        },
+        {
+          "code": "G05",
+          "subtopics": []
+        },
+        {
+          "code": "G06",
+          "subtopics": []
+        },
+        {
+          "code": "G07",
+          "subtopics": []
+        },
+        {
+          "code": "G08",
+          "subtopics": []
+        },
+        {
+          "code": "G09",
+          "subtopics": []
+        },
+        {
+          "code": "G10",
+          "subtopics": []
+        },
+        {
+          "code": "G11",
+          "subtopics": []
+        },
+        {
+          "code": "G12",
+          "subtopics": []
+        },
+        {
+          "code": "G13",
+          "subtopics": []
+        },
+        {
+          "code": "G14",
+          "subtopics": []
+        },
+        {
+          "code": "G15",
+          "subtopics": []
+        },
+        {
+          "code": "G16",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "B",
+      "subjectNname": "Environment, Ecology and Disaster Management",
+      "examFocus": "BothExams",
+      "baselineMinutes": 4800,
+      "topics": [
+        {
+          "code": "B00",
+          "subtopics": []
+        },
+        {
+          "code": "B01",
+          "subtopics": []
+        },
+        {
+          "code": "B02",
+          "subtopics": []
+        },
+        {
+          "code": "B03",
+          "subtopics": []
+        },
+        {
+          "code": "B04",
+          "subtopics": []
+        },
+        {
+          "code": "B05",
+          "subtopics": []
+        },
+        {
+          "code": "B06",
+          "subtopics": []
+        },
+        {
+          "code": "B07",
+          "subtopics": []
+        },
+        {
+          "code": "B08",
+          "subtopics": []
+        },
+        {
+          "code": "B09",
+          "subtopics": []
+        },
+        {
+          "code": "B10",
+          "subtopics": []
+        },
+        {
+          "code": "B11",
+          "subtopics": []
+        },
+        {
+          "code": "B12",
+          "subtopics": []
+        },
+        {
+          "code": "B13",
+          "subtopics": []
+        },
+        {
+          "code": "B14",
+          "subtopics": []
+        },
+        {
+          "code": "B15",
+          "subtopics": []
+        },
+        {
+          "code": "B16",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "T",
+      "subjectNname": "Science & Technology",
+      "examFocus": "BothExams",
+      "baselineMinutes": 3000,
+      "topics": [
+        {
+          "code": "T00",
+          "subtopics": []
+        },
+        {
+          "code": "T01",
+          "subtopics": []
+        },
+        {
+          "code": "T02",
+          "subtopics": []
+        },
+        {
+          "code": "T03",
+          "subtopics": []
+        },
+        {
+          "code": "T04",
+          "subtopics": []
+        },
+        {
+          "code": "T05",
+          "subtopics": []
+        },
+        {
+          "code": "T06",
+          "subtopics": []
+        },
+        {
+          "code": "T07",
+          "subtopics": []
+        },
+        {
+          "code": "T08",
+          "subtopics": []
+        },
+        {
+          "code": "T09",
+          "subtopics": []
+        },
+        {
+          "code": "T10",
+          "subtopics": []
+        },
+        {
+          "code": "T11",
+          "subtopics": []
+        },
+        {
+          "code": "T12",
+          "subtopics": []
+        },
+        {
+          "code": "T13",
+          "subtopics": []
+        },
+        {
+          "code": "T14",
+          "subtopics": []
+        },
+        {
+          "code": "T15",
+          "subtopics": []
+        },
+        {
+          "code": "T16",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "P",
+      "subjectNname": "Indian Polity and Governance",
+      "examFocus": "BothExams",
+      "baselineMinutes": 7200,
+      "topics": [
+        {
+          "code": "P00",
+          "subtopics": []
+        },
+        {
+          "code": "P01",
+          "subtopics": []
+        },
+        {
+          "code": "P02",
+          "subtopics": []
+        },
+        {
+          "code": "P03",
+          "subtopics": []
+        },
+        {
+          "code": "P04",
+          "subtopics": []
+        },
+        {
+          "code": "P05",
+          "subtopics": []
+        },
+        {
+          "code": "P06",
+          "subtopics": []
+        },
+        {
+          "code": "P07",
+          "subtopics": []
+        },
+        {
+          "code": "P08",
+          "subtopics": []
+        },
+        {
+          "code": "P09",
+          "subtopics": []
+        },
+        {
+          "code": "P10",
+          "subtopics": []
+        },
+        {
+          "code": "P11",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "E",
+      "subjectNname": "Indian Economy",
+      "examFocus": "BothExams",
+      "baselineMinutes": 7200,
+      "topics": [
+        {
+          "code": "E00",
+          "subtopics": []
+        },
+        {
+          "code": "E01",
+          "subtopics": []
+        },
+        {
+          "code": "E02",
+          "subtopics": []
+        },
+        {
+          "code": "E03",
+          "subtopics": []
+        },
+        {
+          "code": "E04",
+          "subtopics": []
+        },
+        {
+          "code": "E05",
+          "subtopics": []
+        },
+        {
+          "code": "E06",
+          "subtopics": []
+        },
+        {
+          "code": "E07",
+          "subtopics": []
+        },
+        {
+          "code": "E08",
+          "subtopics": []
+        },
+        {
+          "code": "E09",
+          "subtopics": []
+        },
+        {
+          "code": "E10",
+          "subtopics": []
+        },
+        {
+          "code": "E11",
+          "subtopics": []
+        },
+        {
+          "code": "E12",
+          "subtopics": []
+        },
+        {
+          "code": "E13",
+          "subtopics": []
+        },
+        {
+          "code": "E14",
+          "subtopics": []
+        },
+        {
+          "code": "E15",
+          "subtopics": []
+        },
+        {
+          "code": "E16",
+          "subtopics": []
+        },
+        {
+          "code": "E17",
+          "subtopics": []
+        },
+        {
+          "code": "E18",
+          "subtopics": []
+        },
+        {
+          "code": "E19",
+          "subtopics": []
+        },
+        {
+          "code": "E20",
+          "subtopics": []
+        },
+        {
+          "code": "E21",
+          "subtopics": []
+        },
+        {
+          "code": "E22",
+          "subtopics": []
+        },
+        {
+          "code": "E23",
+          "subtopics": []
+        },
+        {
+          "code": "E24",
+          "subtopics": []
+        },
+        {
+          "code": "E25",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "O",
+      "subjectNname": "Governance",
+      "examFocus": "BothExams",
+      "baselineMinutes": 2400,
+      "topics": [
+        {
+          "code": "O00",
+          "subtopics": []
+        },
+        {
+          "code": "O01",
+          "subtopics": []
+        },
+        {
+          "code": "O02",
+          "subtopics": []
+        },
+        {
+          "code": "O03",
+          "subtopics": []
+        },
+        {
+          "code": "O04",
+          "subtopics": []
+        },
+        {
+          "code": "O05",
+          "subtopics": []
+        },
+        {
+          "code": "O06",
+          "subtopics": []
+        },
+        {
+          "code": "O07",
+          "subtopics": []
+        },
+        {
+          "code": "O08",
+          "subtopics": []
+        },
+        {
+          "code": "O09",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "I",
+      "subjectNname": "International Relations",
+      "examFocus": "BothExams",
+      "baselineMinutes": 2400,
+      "topics": [
+        {
+          "code": "I00",
+          "subtopics": []
+        },
+        {
+          "code": "I01",
+          "subtopics": []
+        },
+        {
+          "code": "I02",
+          "subtopics": []
+        },
+        {
+          "code": "I03",
+          "subtopics": []
+        },
+        {
+          "code": "I04",
+          "subtopics": []
+        },
+        {
+          "code": "I05",
+          "subtopics": []
+        },
+        {
+          "code": "I06",
+          "subtopics": []
+        },
+        {
+          "code": "I07",
+          "subtopics": []
+        },
+        {
+          "code": "I08",
+          "subtopics": []
+        },
+        {
+          "code": "I09",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "C",
+      "subjectNname": "Internal Security",
+      "examFocus": "BothExams",
+      "baselineMinutes": 3000,
+      "topics": [
+        {
+          "code": "C00",
+          "subtopics": []
+        },
+        {
+          "code": "C01",
+          "subtopics": []
+        },
+        {
+          "code": "C02",
+          "subtopics": []
+        },
+        {
+          "code": "C03",
+          "subtopics": []
+        },
+        {
+          "code": "C04",
+          "subtopics": []
+        },
+        {
+          "code": "C05",
+          "subtopics": []
+        },
+        {
+          "code": "C06",
+          "subtopics": []
+        },
+        {
+          "code": "C07",
+          "subtopics": []
+        },
+        {
+          "code": "C08",
+          "subtopics": []
+        },
+        {
+          "code": "C09",
+          "subtopics": []
+        },
+        {
+          "code": "C10",
+          "subtopics": []
+        },
+        {
+          "code": "C11",
+          "subtopics": []
+        },
+        {
+          "code": "C12",
+          "subtopics": []
+        },
+        {
+          "code": "C13",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
+      "subjectCode": "S",
+      "subjectNname": "Society and Social Justice",
+      "examFocus": "BothExams",
+      "baselineMinutes": 3600,
+      "topics": [
+        {
+          "code": "S00",
+          "subtopics": []
+        },
+        {
+          "code": "S01",
+          "subtopics": []
+        },
+        {
+          "code": "S02",
+          "subtopics": []
+        },
+        {
+          "code": "S03",
+          "subtopics": []
+        },
+        {
+          "code": "S04",
+          "subtopics": []
+        },
+        {
+          "code": "S05",
+          "subtopics": []
+        },
+        {
+          "code": "S06",
+          "subtopics": []
+        },
+        {
+          "code": "S07",
+          "subtopics": []
+        },
+        {
+          "code": "S08",
+          "subtopics": []
+        },
+        {
+          "code": "S09",
+          "subtopics": []
+        },
+        {
+          "code": "S10",
+          "subtopics": []
+        },
+        {
+          "code": "S11",
+          "subtopics": []
+        },
+        {
+          "code": "S12",
+          "subtopics": []
+        },
+        {
+          "code": "S13",
+          "subtopics": []
+        },
+        {
+          "code": "S14",
+          "subtopics": []
+        },
+        {
+          "code": "S15",
+          "subtopics": []
+        },
+        {
+          "code": "S16",
+          "subtopics": []
+        },
+        {
+          "code": "S17",
+          "subtopics": []
+        },
+        {
+          "code": "S18",
+          "subtopics": []
+        },
+        {
+          "code": "S19",
+          "subtopics": []
+        },
+        {
+          "code": "S20",
+          "subtopics": []
+        },
+        {
+          "code": "S21",
+          "subtopics": []
+        },
+        {
+          "code": "S22",
+          "subtopics": []
+        },
+        {
+          "code": "S23",
+          "subtopics": []
+        },
+        {
+          "code": "S24",
+          "subtopics": []
+        },
+        {
+          "code": "S25",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "Z",
+      "subjectNname": "Essay",
+      "examFocus": "BothExams",
+      "baselineMinutes": 6000,
+      "topics": [
+        {
+          "code": "Z01",
+          "subtopics": []
+        },
+        {
+          "code": "Z02",
+          "subtopics": []
+        },
+        {
+          "code": "Z03",
+          "subtopics": []
+        },
+        {
+          "code": "Z04",
+          "subtopics": []
+        },
+        {
+          "code": "Z05",
+          "subtopics": []
+        },
+        {
+          "code": "Z06",
+          "subtopics": []
+        },
+        {
+          "code": "Z07",
+          "subtopics": []
+        },
+        {
+          "code": "Z08",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": false,
+      "subjectCode": "OPT-AGR",
+      "subjectNname": "Agriculture",
+      "examFocus": "MainsOnly",
+      "baselineMinutes": 12000,
+      "topics": [
+        {
+          "code": "OPT-AGR/01",
+          "subtopics": []
+        },
+        {
+          "code": "OPT-AGR/02",
+          "subtopics": []
+        }
+      ]
+    }
+  ],
+  "relativeAllocationWeights": {
+    "OPT-AGR": 200,
+    "H01": 17.5,
+    "H02": 17.5,
+    "H03": 70,
+    "H04": 35,
+    "H05": 17.5,
+    "H06": 25,
+    "G": 91,
+    "B": 80,
+    "T": 60,
+    "P": 120,
+    "E": 120,
+    "O": 40,
+    "I": 40,
+    "C": 50,
+    "S": 60,
+    "Z": 100
+  }
+}

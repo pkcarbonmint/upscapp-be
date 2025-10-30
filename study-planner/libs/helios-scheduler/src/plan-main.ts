@@ -3,7 +3,6 @@ import { planBlocks } from './plan-blocks';
 import { planCycles } from './plan-cycles';
 import { BlockAllocConstraints, BlockSlot, CycleSchedule, CycleType, PlanningContext, S2Constraints, S2ExamFocus, S2SlotType, S2Subject, S2Task, ScenarioResult } from "./types";
 import { planSubjectTasks } from './plan-subject';
-import { constructFrom } from 'date-fns';
 
 // import { writeFileSync } from "fs";
 
