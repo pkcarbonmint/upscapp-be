@@ -71,6 +71,9 @@ export type BlockSlot = {
   from: Dayjs; to: Dayjs;
   numParallel: number;
   minutesPerDay: number;
+  metadata?: {
+    isExcessTime?: boolean;
+  };
 }
 
 export type SubjectWithAllocation = S2Subject & { allocation: number };

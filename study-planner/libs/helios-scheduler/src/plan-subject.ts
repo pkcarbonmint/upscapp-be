@@ -288,13 +288,13 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
   const studySlots = allocateSlots(from, to, S2SlotType.STUDY, constraints, constraints.taskEffortSplit[S2SlotType.STUDY]);
   const revisionSlots = allocateSlots(from, to, S2SlotType.REVISION, constraints, constraints.taskEffortSplit[S2SlotType.REVISION]);
   const practiceSlots = allocateSlots(from, to, S2SlotType.PRACTICE, constraints, constraints.taskEffortSplit[S2SlotType.PRACTICE]);
-  console.log(`**** createTasks_v2: studySlots: ${studySlots.length}, revisionSlots: ${revisionSlots.length}, practiceSlots: ${practiceSlots.length}`);
+  // console.log(`**** createTasks_v2: studySlots: ${studySlots.length}, revisionSlots: ${revisionSlots.length}, practiceSlots: ${practiceSlots.length}`);
 
   const studyTasks = distributeTopics(sortedTopics, studySlots, constraints.taskEffortSplit[S2SlotType.STUDY]);
   const revisionTasks = distributeTopics(sortedTopics, revisionSlots, constraints.taskEffortSplit[S2SlotType.REVISION]);
   const practiceTasks = distributeTopics(sortedTopics, practiceSlots, constraints.taskEffortSplit[S2SlotType.PRACTICE]);
 
-  console.log(`#### createTasks_v2: studyTasks: ${studyTasks.length}, revisionTasks: ${revisionTasks.length}, practiceTasks: ${practiceTasks.length}`);
+  // console.log(`#### createTasks_v2: studyTasks: ${studyTasks.length}, revisionTasks: ${revisionTasks.length}, practiceTasks: ${practiceTasks.length}`);
   // Include explicit TEST tasks so weekly plans include test days; do not add per-subject catchup tasks
   const extraDayTasks: S2Task[] = [];
   const totalDays = to.diff(from, 'day');
@@ -317,14 +317,14 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
   }
 
   const allTasks = [...studyTasks, ...revisionTasks, ...practiceTasks, ...extraDayTasks];
-  console.log(`#### createTasks_v2: allTasks: ${allTasks.length}`);
+  // // console.log(`#### createTasks_v2: allTasks: ${allTasks.length}`);
 
   verifyAllDays(from, to, allTasks);
   return allTasks;
 
   function verifyAllDays(from: Dayjs, to: Dayjs, tasks: S2Task[]) {
     const allDays = to.diff(from, 'day');
-    console.log(`#### verifyAllDays: Checking ${allDays} days from ${from.format('YYYY-MM-DD')} to ${to.format('YYYY-MM-DD')}`);
+    // // console.log(`#### verifyAllDays: Checking ${allDays} days from ${from.format('YYYY-MM-DD')} to ${to.format('YYYY-MM-DD')}`);
     
     const taskDate2CountMap = new Map<string, number>();
     for (const task of tasks) {
@@ -336,8 +336,8 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
       }
     }
 
-    console.log(`#### verifyAllDays: Tasks cover ${taskDate2CountMap.size} unique days`);
-    console.log(`#### verifyAllDays: Covered days:`, Array.from(taskDate2CountMap.keys()).sort());
+    // console.log(`#### verifyAllDays: Tasks cover ${taskDate2CountMap.size} unique days`);
+    // console.log(`#### verifyAllDays: Covered days:`, Array.from(taskDate2CountMap.keys()).sort());
 
     let missngCOunt = 0;
     const missingDays: string[] = [];
@@ -348,7 +348,7 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
       if (!taskDate2CountMap.has(key) && !isCatchupDay(date, constraints.catchupDay)) {
         missngCOunt++;
         missingDays.push(key);
-        console.log(`#### verifyAllDays: Day ${key} (${date.format('dddd')}) is not covered`);
+        // console.log(`#### verifyAllDays: Day ${key} (${date.format('dddd')}) is not covered`);
         if (missngCOunt >= 3) {
 /*
           const exitIfFailed = true;
@@ -437,15 +437,15 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
       }
     });
     
-    console.log(`#### verifyAllDays: Summary - ${missngCOunt} missing days out of ${allDays} total days`);
+    // console.log(`#### verifyAllDays: Summary - ${missngCOunt} missing days out of ${allDays} total days`);
     if (missingDays.length > 0) {
-      console.log(`#### verifyAllDays: Missing days:`, missingDays);
+      // console.log(`#### verifyAllDays: Missing days:`, missingDays);
     }
   }
 
   function distributeTopics(topics: S2TopicWithMinutes[], slots: S2Slot[], shareFraction: number): S2Task[] {
     let availableSlots = [...slots];
-    console.log(`#### distributeTopics: Starting with ${topics.length} topics, ${availableSlots.length} slots, shareFraction=${shareFraction}`);
+    // console.log(`#### distributeTopics: Starting with ${topics.length} topics, ${availableSlots.length} slots, shareFraction=${shareFraction}`);
     
     const tasks: S2Task[] = [];
     
@@ -453,18 +453,18 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
     for (let topicIndex = 0; topicIndex < topics.length; topicIndex++) {
       const topic = topics[topicIndex];
       if (availableSlots.length === 0) {
-        console.log(`#### distributeTopics: No slots left for topic ${topicIndex} (${topic.code})`);
+        // console.log(`#### distributeTopics: No slots left for topic ${topicIndex} (${topic.code})`);
         break;
       }
       
       const minutesToAllocate = topic.baselineMinutes * shareFraction;
       const numSlotsNeeded = Math.floor(minutesToAllocate / slotSize);
-      console.log(`#### distributeTopics: Topic ${topicIndex} (${topic.code}) needs ${numSlotsNeeded} slots (${minutesToAllocate} minutes / ${slotSize})`);
+      // console.log(`#### distributeTopics: Topic ${topicIndex} (${topic.code}) needs ${numSlotsNeeded} slots (${minutesToAllocate} minutes / ${slotSize})`);
       
       const slotsToUse = availableSlots.slice(0, numSlotsNeeded);
       availableSlots = availableSlots.slice(numSlotsNeeded);
       
-      console.log(`#### distributeTopics: Topic ${topicIndex} using ${slotsToUse.length} slots, ${availableSlots.length} slots remaining`);
+      // console.log(`#### distributeTopics: Topic ${topicIndex} using ${slotsToUse.length} slots, ${availableSlots.length} slots remaining`);
 
       const topicTasks = slotsToUse.map((slot): S2Task => ({
         topicCode: topic.code,
@@ -477,28 +477,25 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
     }
     
     // Second pass: distribute remaining slots among topics to ensure all slots are used
-    if (availableSlots.length > 0) {
-      console.log(`#### distributeTopics: Distributing ${availableSlots.length} remaining slots among topics`);
-      let topicIndex = 0;
-      for (const slot of availableSlots) {
-        if (topics.length === 0) break;
-        
-        const topic = topics[topicIndex % topics.length];
-        tasks.push({
+    if (availableSlots.length > 0 && topics.length > 0) {
+      // console.log(`#### distributeTopics: Distributing ${availableSlots.length} remaining slots among topics`);
+      const remainingTasks = availableSlots.map((slot, slotIndex) => {
+        const topic = topics[slotIndex % topics.length];
+        return {
           topicCode: topic.code,
           subjectCode: subject.subjectCode,
           taskType: slot.type,
           minutes: slot.minutes,
           date: slot.date,
-        });
-        topicIndex++;
-      }
+        };
+      });
+      tasks.push(...remainingTasks);
     }
     
-    console.log(`#### distributeTopics: Generated ${tasks.length} tasks, 0 slots unused`);
+    // console.log(`#### distributeTopics: Generated ${tasks.length} tasks, 0 slots unused`);
     
     const merged = mergeConsecutiveTasks(tasks);
-    console.log(`#### distributeTopics: After merging: ${merged.length} tasks`);
+    // console.log(`#### distributeTopics: After merging: ${merged.length} tasks`);
     return merged;
   }
   function mergeConsecutiveTasks(tasks: S2Task[]): S2Task[] {
@@ -536,26 +533,26 @@ function createTasks_v2(subject: S2Subject, sortedTopics: S2TopicWithMinutes[], 
 
 function allocateSlots(from: Dayjs, to: Dayjs, slotType: S2SlotType, constraints: S2Constraints, shareFraction: number): S2Slot[] {
   const calendarDays = to.diff(from, 'day');
-  console.log(`**** allocateSlots: from=${from.format('YYYY-MM-DD')}, to=${to.format('YYYY-MM-DD')}, calendarDays=${calendarDays}, slotType=${slotType}, shareFraction=${shareFraction}`);
+  // console.log(`**** allocateSlots: from=${from.format('YYYY-MM-DD')}, to=${to.format('YYYY-MM-DD')}, calendarDays=${calendarDays}, slotType=${slotType}, shareFraction=${shareFraction}`);
   
   const slots: S2Slot[] = Array(calendarDays).fill(0)
     .map((_, i) => from.add(i, 'day'))
     .map((date: Dayjs): S2Slot[] => {
       // Do not allocate study/revision/practice slots on test or catchup days
       if (isTestDay(date, constraints.testDay) || isCatchupDay(date, constraints.catchupDay)) {
-        console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - RESTRICTED day (test/catchup), skipping ${slotType} slots`);
+        // console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - RESTRICTED day (test/catchup), skipping ${slotType} slots`);
         return [];
       }
       const availableMinutes = Math.floor(constraints.dayMaxMinutes * shareFraction);
       const slots = Math.floor(availableMinutes / slotSize);
-      console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - ${slotType} day: ${slots} slots (${availableMinutes} minutes)`);
+      // console.log(`**** allocateSlots: ${date.format('YYYY-MM-DD')} (${date.format('dddd')}) - ${slotType} day: ${slots} slots (${availableMinutes} minutes)`);
       return Array(slots).fill(0).map((_, _i): S2Slot => {
         return { date: date, minutes: slotSize, type: slotType };
       });
     })
     .flat();
 
-  console.log(`**** allocateSlots: Created ${slots.length} slots total`);
+  // console.log(`**** allocateSlots: Created ${slots.length} slots total`);
   return slots;
 }
 

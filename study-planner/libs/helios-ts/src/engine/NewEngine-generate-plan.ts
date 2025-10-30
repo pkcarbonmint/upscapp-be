@@ -64,7 +64,7 @@ export async function generatePlan(userId: string, intake: StudentIntake): Promi
   _archetypeDetails: Archetype,
   intake: StudentIntake,
   logger0?: Logger
-): Promise<{ plan: StudyPlan; logs: LogEntry[] }> {
+): Promise<{ plan: StudyPlan; context: PlanningContext; logs: LogEntry[] }> {
   const logs: LogEntry[] = [];
   const logger = logger0 || makeLogger(logs);
   const { logInfo: info, } = logger;
@@ -169,7 +169,7 @@ export async function generatePlan(userId: string, intake: StudentIntake): Promi
     // Map result to StudyPlan
     const plan = await mapScheduler2ResultToStudyPlan(result, intake, userId, logger);
     
-    return { plan, logs: logger.getLogs() };
+    return { plan, context, logs: logger.getLogs() };
   } catch (error) {
     logger.logWarn('Engine', `Plan generation rejected: ${error instanceof Error ? error.message : 'Unknown error'}`);
     return Promise.reject(error);

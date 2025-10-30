@@ -27,11 +27,19 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { createWriteStream } from 'fs';
 import { LogEntry, Logger } from '../src/types/Types';
+import dayjs from 'dayjs';
+import { PlanningContext } from 'helios-scheduler';
 
 interface CliArgs {
   scenarios?: string[];
   format?: string;
   help?: boolean;
+}
+type TestScenario = {
+  name: string;
+  config: any;
+  archetype: Archetype;
+  intake: StudentIntake;
 }
 
 /**
@@ -141,22 +149,87 @@ interface DocumentGeneratorOptions {
 }
 
 
-const startDates :  string [] = [
-  '2025-03-01', // T1
-  '2025-12-10', // T2
-  '2026-03-10', // T3
-  '2026-06-10', // T4
-  '2026-09-10', // T5
-  '2026-10-10', // T6
-  '2026-11-10', // T7
-  '2026-12-15', // T8
-  '2026-12-16', // T9
-  '2027-02-01', // T10
-  '2027-02-28', // T11
-  '2027-03-01', // T12
-  '2027-03-15', // T13
-  '2027-04-15', // T14
-  '2027-04-20', // T15
+const baseScenarios :  {name: string; targetYear: number; startDate: string; } [] = [
+  {
+    name: 'T1',
+    targetYear: 2027,
+    startDate: '2025-03-01',
+  }, // T1
+  {
+    name: 'T2',
+    targetYear: 2027,
+    startDate: '2025-12-10',
+  }, // T2
+  {
+    name: 'T3',
+    targetYear: 2027,
+    startDate: '2026-03-10',
+  }, // T3
+  {
+    name: 'T4',
+    targetYear: 2027,
+    startDate: '2026-06-10',
+  }, // T4
+  {
+    name: 'T5',
+    targetYear: 2027,
+    startDate: '2026-09-10',
+  }, // T5
+  {
+    name: 'T6',
+    targetYear: 2027,
+    startDate: '2026-10-10',
+  }, // T6
+  {
+    name: 'T7',
+    targetYear: 2027,
+    startDate: '2026-11-10',
+  }, // T7
+  {
+    name: 'T8',
+    targetYear: 2027,
+    startDate: '2026-12-15',
+  }, // T8
+  {
+    name: 'T9',
+    targetYear: 2027,
+    startDate: '2026-12-16',
+  }, // T9
+  {
+    name: 'T10',
+    targetYear: 2027,
+    startDate: '2027-02-01',
+  }, // T10
+  {
+    name: 'T11',
+    targetYear: 2027,
+    startDate: '2027-02-28',
+  }, // T11
+  {
+    name: 'T12',
+    targetYear: 2027,
+    startDate: '2027-03-01',
+  }, // T12
+    {
+    name: 'T13',
+    targetYear: 2027,
+    startDate: '2027-03-15',
+  }, // T13
+  {
+    name: 'T14',
+    targetYear: 2027,
+    startDate: '2027-04-15',
+  }, // T14
+  {
+    name: 'T15',
+    targetYear: 2027,
+    startDate: '2027-04-20',
+  }, // T15
+  { 
+    name: 'today-2027',
+    targetYear: 2027,
+    startDate: dayjs().format('YYYY-MM-DD')
+  }
 ]
 ;
 
@@ -177,7 +250,9 @@ const dummyStuff = {
 		year_of_passing: 2023
 	},
 	optional_subject: {
-		optional_subject_name: 'Agriculture'
+		optional_subject_name: 'OPT-AGR',
+    optional_status: '',
+    optional_taken_from: ''  
 	}
 }
 
@@ -232,11 +307,11 @@ class TestDocumentGenerator {
     await this.ensureOutputDirectory();
     console.log(`⏱️  Directory setup took: ${Date.now() - dirStartTime}ms`);
     // Define test scenarios for different target years
-    const allScenarios = startDates.map((startDate, i) => ({
-      name: `T${i + 1}`,
+    const allScenarios: TestScenario[] = baseScenarios.map((base, i) => ({
+      name: base.name || `T${i + 1}`,
       config: this.getTestConfig(),
       archetype: this.getArchetype(),
-      intake: this.makeIntake('2027', startDate),
+      intake: this.makeIntake(base.targetYear, base.startDate),
     }));
 
     // Filter scenarios based on command line arguments
@@ -285,6 +360,11 @@ class TestDocumentGenerator {
           const jsonSaveStartTime = Date.now();
           const jsonData = this.generateJsonData(result, result.intake);
           await this.saveJson(jsonData, scenario.name);
+
+          const contextFile = path.join(this.outputDir, `${scenario.name}-context.json`);
+          fs.writeFileSync(contextFile, JSON.stringify(result.context, null, 2));
+
+          // Generate JSON file for raw data debugging
           const jsonSaveTime = Date.now() - jsonSaveStartTime;
           console.log(`  ⏱️  JSON save took: ${jsonSaveTime}ms`);
           console.log(`📊 Generated debug JSON: ${scenario.name}.json`);
@@ -437,7 +517,7 @@ class TestDocumentGenerator {
   /**
    * Generate study plan data for a test scenario (shared by both formats)
    */
-  private async generateStudyPlanData(scenario: any): Promise<{ plan: StudyPlan; logs: LogEntry[]; intake: StudentIntake }> {
+  private async generateStudyPlanData(scenario: any): Promise<{ plan: StudyPlan; logs: LogEntry[]; intake: StudentIntake; context: PlanningContext }> {
     const planGenStartTime = Date.now();
     console.log(`    🔄 Starting plan generation for ${scenario.name}...`);
     const logs: LogEntry[] = [];
@@ -455,7 +535,7 @@ class TestDocumentGenerator {
     console.log(`    ⏱️  Plan generation completed in: ${planGenTime}ms`);
     console.log(`    📊 Generated ${result.plan.cycles?.length || 0} cycles`);
 
-    return { ...result, intake: scenario.intake };
+    return { ...result, intake: scenario.intake, context: result.context };
   
   
     function makeLogger(_logs?: LogEntry[]): Logger {
@@ -607,7 +687,7 @@ class TestDocumentGenerator {
 // Start Date: ${intake.start_date}
 // Target Year: ${intake.target_year}
 // Catch-up Day Preference: ${intake.study_strategy?.catch_up_day_preference || 'Not set'}
-// Test Day Preference: ${intake.study_strategy?.test_day_preference || 'Not set'}
+// Test Day Preference: ${intake.study_strategy?.weekly_test_day_preference || 'Not set'}
 
 const studyPlan = ${JSON.stringify(plan, null, 2)};
 
@@ -829,7 +909,7 @@ ${studyPlan.cycles?.map(cycle =>
     };
   }
 
-  private makeIntake(targetYear: string, startDate: string): StudentIntake {
+  private makeIntake(targetYear: number, startDate: string): StudentIntake {
     return createStudentIntake({
       ...dummyStuff,
       subject_approach: 'DualSubject',
@@ -853,9 +933,11 @@ ${studyPlan.cycles?.map(cycle =>
         revision_strategy: 'Weekly',
         test_frequency: 'Weekly',
         seasonal_windows: ['Foundation', 'Revision', 'Intensive'],
-        upsc_optional_subject: 'OPT-AGR'
+        upsc_optional_subject: 'OPT-AGR',
+        catch_up_day_preference: 'Saturday',
+        optional_first_preference: true,
       },
-      target_year: targetYear,
+      target_year: targetYear.toString(),
       start_date: startDate
     });
   }
