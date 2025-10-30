@@ -28,11 +28,13 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { createWriteStream } from 'fs';
 import { LogEntry, Logger } from '../src/types/Types';
+import { makeLogger as makeInternalLogger } from '../src/services/Log';
 
 interface CliArgs {
   scenarios?: string[];
   format?: string;
   help?: boolean;
+  verbose?: boolean;
 }
 
 /**
@@ -65,6 +67,8 @@ function parseCliArgs(): CliArgs {
       }
     } else if (arg === '-h' || arg === '--help') {
       args.help = true;
+    } else if (arg === '-v' || arg === '--verbose') {
+      args.verbose = true;
     } else if (arg.startsWith('-')) {
       console.error(`❌ Error: Unknown option ${arg}`);
       process.exit(1);
@@ -189,14 +193,22 @@ class TestDocumentGenerator {
   private generateWeeklySchedules: boolean;
   private generatePDFs: boolean;
   private format: string;
+  private verbose: boolean;
 
-  constructor(options: DocumentGeneratorOptions) {
+  constructor(options: DocumentGeneratorOptions, verbose: boolean) {
     this.outputDir = options.outputDir || './generated-docs';
     this.generateMarkdown = options.generateMarkdown;
     this.generateJson = options.generateJson;
     this.generateWeeklySchedules= options.generateWeeklySchedules;
     this.generatePDFs = options.generatePDFs; // Default to true to generate PDFs
     this.format = options.format || 'js';
+    this.verbose = verbose;
+  }
+
+  private vlog(...args: any[]): void {
+    if (this.verbose) {
+      console.log(...args);
+    }
   }
 
   /**
@@ -205,7 +217,6 @@ class TestDocumentGenerator {
   private forceGC(): void {
     if (global.gc) {
       global.gc();
-      console.log('🧹 Forced garbage collection');
     }
   }
 
@@ -225,8 +236,7 @@ class TestDocumentGenerator {
    */
   async generateAllTestDocuments(selectedScenarios?: string[]): Promise<void> {
     const startTime = Date.now();
-    console.log('🚀 Starting document generation for all test scenarios...');
-    console.log(`📊 Initial ${this.getMemoryUsage()}`);
+    console.log('🚀 Starting document generation for test scenarios...');
 
     // Create output directory
     const dirStartTime = Date.now();
@@ -265,14 +275,12 @@ class TestDocumentGenerator {
         const planGenStartTime = Date.now();
         const result = await this.generateStudyPlanData(scenario);
         const planGenTime = Date.now() - planGenStartTime;
-        console.log(`  ⏱️  Plan generation took: ${planGenTime}ms`);
         
         // Collect data for collage
         const collageDataStartTime = Date.now();
         const planDuration = CollageService.calculatePlanDuration(result.intake.start_date, result.intake.target_year || '2027');
         const svgTimeline = DocumentService.generateTimelineSVG(result.plan);
         const collageDataTime = Date.now() - collageDataStartTime;
-        console.log(`  ⏱️  Collage data preparation took: ${collageDataTime}ms`);
         
         allScenarioData.push({
           name: scenario.name,
@@ -287,12 +295,9 @@ class TestDocumentGenerator {
           const jsonData = this.generateJsonData(result, result.intake);
           await this.saveJson(jsonData, scenario.name);
           const jsonSaveTime = Date.now() - jsonSaveStartTime;
-          console.log(`  ⏱️  JSON save took: ${jsonSaveTime}ms`);
-          console.log(`📊 Generated debug JSON: ${scenario.name}.json`);
         
 
         const totalScenarioTime = Date.now() - scenarioStartTime;
-        console.log(`  ✅ ${scenario.name} completed in: ${totalScenarioTime}ms`);
 
       } catch (error) {
         console.error(`❌ Failed to generate ${scenario.name}:`, error);
@@ -301,7 +306,6 @@ class TestDocumentGenerator {
   }
     const totalJsonGenerationTime = Date.now() - jsonGenerationStartTime;
     console.log(`⏱️  Total JSON generation took: ${totalJsonGenerationTime}ms`);
-    console.log(`📊 After JSON generation: ${this.getMemoryUsage()}`);
 
     // Generate collage document
     if (allScenarioData.length > 0) {
@@ -326,7 +330,6 @@ class TestDocumentGenerator {
         const docPlanGenStartTime = Date.now();
         const result = await this.generateStudyPlanData(scenario);
         const docPlanGenTime = Date.now() - docPlanGenStartTime;
-        console.log(`  ⏱️  Plan generation took: ${docPlanGenTime}ms`);
 
         // Generate Word document
         await this.generateWordDocument(
@@ -337,8 +340,6 @@ class TestDocumentGenerator {
           const pdfStartTime = Date.now();
           await this.generatePDFDocument(scenario.name, result.plan, result.intake);
           const pdfTime = Date.now() - pdfStartTime;
-          console.log(`  ⏱️  PDF document generation took: ${pdfTime}ms`);
-          console.log(`📊 Generated PDF: ${scenario.name}.pdf`);
         }
 
         // Generate Weekly Schedule document
@@ -346,13 +347,10 @@ class TestDocumentGenerator {
           const weeklyStartTime = Date.now();
           const weeklySchedule = await this.generateWeeklyScheduleDocument(result.plan);
           const weeklyGenTime = Date.now() - weeklyStartTime;
-          console.log(`  ⏱️  Weekly schedule generation took: ${weeklyGenTime}ms`);
           
           const weeklySaveStartTime = Date.now();
           await this.saveDocument(weeklySchedule, `${scenario.name}-WeeklySchedule`);
           const weeklySaveTime = Date.now() - weeklySaveStartTime;
-          console.log(`  ⏱️  Weekly schedule save took: ${weeklySaveTime}ms`);
-          console.log(`📅 Generated weekly schedule: ${scenario.name}-WeeklySchedule.docx`);
         }
 
         // Generate format-specific output based on format parameter
@@ -360,35 +358,26 @@ class TestDocumentGenerator {
           const jsStartTime = Date.now();
           const jsContent = this.generateJSFormatDocument(result.plan, result.intake, scenario);
           const jsGenTime = Date.now() - jsStartTime;
-          console.log(`  ⏱️  JS format generation took: ${jsGenTime}ms`);
           
           const jsSaveStartTime = Date.now();
           await this.saveJS(jsContent, scenario.name);
           const jsSaveTime = Date.now() - jsSaveStartTime;
-          console.log(`  ⏱️  JS format save took: ${jsSaveTime}ms`);
-          console.log(`📄 Generated JS format: ${scenario.name}.js`);
         } else if (this.format === 'json') {
           const jsonStartTime = Date.now();
           const jsonData = this.generateJsonData(result, result.intake);
           const jsonGenTime = Date.now() - jsonStartTime;
-          console.log(`  ⏱️  JSON format generation took: ${jsonGenTime}ms`);
           
           const jsonSaveStartTime = Date.now();
           await this.saveJson(jsonData, scenario.name);
           const jsonSaveTime = Date.now() - jsonSaveStartTime;
-          console.log(`  ⏱️  JSON format save took: ${jsonSaveTime}ms`);
-          console.log(`📄 Generated JSON format: ${scenario.name}.js`);
         } else if (this.format === 'markdown') {
           const markdownStartTime = Date.now();
           const markdown = this.generateMarkdownDocument(result.plan, scenario);
           const markdownGenTime = Date.now() - markdownStartTime;
-          console.log(`  ⏱️  Markdown format generation took: ${markdownGenTime}ms`);
           
           const markdownSaveStartTime = Date.now();
           await this.saveMarkdown(markdown, scenario.name);
           const markdownSaveTime = Date.now() - markdownSaveStartTime;
-          console.log(`  ⏱️  Markdown format save took: ${markdownSaveTime}ms`);
-          console.log(`📄 Generated Markdown format: ${scenario.name}.md`);
         }
 
         // Generate Markdown file for debugging (legacy)
@@ -405,9 +394,8 @@ class TestDocumentGenerator {
           console.log(`📝 Generated debug markdown: ${scenario.name}.md`);
         }
 
+        // Compute total scenario time (kept for potential future logging)
         const totalDocScenarioTime = Date.now() - docScenarioStartTime;
-        console.log(`  ✅ ${scenario.name} document completed in: ${totalDocScenarioTime}ms`);
-        console.log(`✅ Generated: ${scenario.name}.docx`);
       } catch (error) {
         console.error(`❌ Failed to generate ${scenario.name}:`, error);
       }
@@ -415,20 +403,14 @@ class TestDocumentGenerator {
     
     const totalDocumentGenerationTime = Date.now() - documentGenerationStartTime;
     console.log(`⏱️  Total document generation took: ${totalDocumentGenerationTime}ms`);
-    console.log(`📊 After document generation: ${this.getMemoryUsage()}`);
 
     const totalTime = Date.now() - startTime;
     console.log('🎉 Document generation completed!');
-    console.log(`⏱️  Total execution time: ${totalTime}ms (${(totalTime / 1000).toFixed(2)}s)`);
-    console.log(`📊 ${this.getMemoryUsage()}`);
     console.log(`📁 Documents saved to: ${path.resolve(this.outputDir)}`);
     
     // Performance summary
-    console.log('\n📈 PERFORMANCE SUMMARY:');
-    console.log(`- Total scenarios processed: ${scenarios.length}`);
-    console.log(`- Average time per scenario: ${Math.round(totalTime / scenarios.length)}ms`);
-    console.log(`- JSON generation phase: ${totalJsonGenerationTime}ms`);
-    console.log(`- Document generation phase: ${totalDocumentGenerationTime}ms`);
+    // Reduce verbose performance summary in default run
+    console.log(`📈 Processed ${scenarios.length} scenario(s) in ${(totalTime / 1000).toFixed(2)}s`);
     
     // Force garbage collection at the end
     this.forceGC();
