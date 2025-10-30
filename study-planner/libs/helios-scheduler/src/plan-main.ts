@@ -26,30 +26,30 @@ export function planMain(context: PlanningContext) {
 }
 
 function filterSubjects(subjects: S2Subject[], cycleType: CycleType): S2Subject[] {
-  return subjects.filter(includeSubject(cycleType));
-  // Filter subjects based on cycle exam focus
-  // PrelimsOnly cycles should include PrelimsOnly and BothExams subjects
-  // MainsOnly cycles should include MainsOnly and BothExams subjects  
-  // BothExams cycles should include BothExams subjects
-  function includeSubject(cycleType: CycleType) {
+  return subjects.filter(isIncludeSubjectInCycle(cycleType));
+}
 
-    if (cycleType === CycleType.C1 ) {
-      return function includeSubject(subject: S2Subject): boolean {
-        console.log("C1 - includeSubject", "subject", subject.subjectCode, "isNCERT", subject.isNCERT);
-        return subject.isNCERT ?? false;
-      }
+function isIncludeSubjectInCycle(cycleType: CycleType) {
+  return (cycleType === CycleType.C1 ) ? c1SubjectFilter : nonC1SubjectFilter;
+  
+  function c1SubjectFilter(subject: S2Subject): boolean {
+    // console.log("C1 - includeSubject", "subject", subject.subjectCode, "isNCERT", subject.isNCERT);
+    return subject.isNCERT ?? false;
+  }
+  function nonC1SubjectFilter(subject: S2Subject): boolean {
+    // Filter subjects based on cycle exam focus
+    // PrelimsOnly cycles should include PrelimsOnly and BothExams subjects
+    // MainsOnly cycles should include MainsOnly and BothExams subjects  
+    // BothExams cycles should include BothExams subjects
+    const cycleFocus = cycleType2ExamFocus(cycleType);
+    if (cycleFocus === "PrelimsOnly") {
+      return subject.examFocus === "PrelimsOnly" || subject.examFocus === "BothExams";
+    } else if (cycleFocus === "MainsOnly") {
+      return subject.examFocus === "MainsOnly" || subject.examFocus === "BothExams";
+    } else if (cycleFocus === "BothExams") {
+      return subject.examFocus === "BothExams";
     }
-    return function includeSubject(subject: S2Subject): boolean {
-      const cycleFocus = cycleType2ExamFocus(cycleType);
-      if (cycleFocus === "PrelimsOnly") {
-        return subject.examFocus === "PrelimsOnly" || subject.examFocus === "BothExams";
-      } else if (cycleFocus === "MainsOnly") {
-        return subject.examFocus === "MainsOnly" || subject.examFocus === "BothExams";
-      } else if (cycleFocus === "BothExams") {
-        return subject.examFocus === "BothExams";
-      }
-      return false;
-    }
+    return false;
   }
 }
 
@@ -67,7 +67,7 @@ function cycles2Blocks(context: PlanningContext, cycles: CycleSchedule[]): Block
     const filteredSubjects = filterSubjects(context.subjects, cycleType);
     const reorderedSubjects = reorderSubjects(filteredSubjects, context.optionalSubject, cycle2ExamFocus);
     // console.log("cycles2Blocks", cycleType, "unfilteredSubjects", context.subjects, "reorderedSubjects", reorderedSubjects);
-    console.log("cycles2Blocks", cycleType, "unfilteredSubjects", context.subjects.length, "reorderedSubjects", reorderedSubjects.length);
+    // console.log("cycles2Blocks", cycleType, "unfilteredSubjects", context.subjects.length, "reorderedSubjects", reorderedSubjects.length);
     const numParallel = 2;
     // reorder subjects
     const blkConstraints: BlockAllocConstraints = {
