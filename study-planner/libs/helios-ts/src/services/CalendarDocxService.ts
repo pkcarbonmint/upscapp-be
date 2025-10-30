@@ -1465,7 +1465,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
   // Create timeline table rows - one row per cycle
   const timelineRows: TableRow[] = [];
 
-  cycles.forEach((cycle, index) => {
+  cycles.forEach((cycle, _index) => {
     const cycleColor = CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS];
     const bgColor = cycleColor?.bg || 'FFFFFF';
     const fgColor = cycleColor?.fg || DOCUMENT_STYLES.colors.primary;
@@ -1474,14 +1474,14 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
     const cycleEnd = dayjs(cycle.cycleEndDate);
     const duration = cycleEnd.diff(cycleStart, 'day') + 1;
     const durationText = duration === 1 ? '1 day' : `${duration} days`;
-
+    const cycleDescription = getCycleDescription(cycle.cycleType);
     // Single cell with all cycle information
     const cycleCell = new TableCell({
       children: [
         new Paragraph({
           children: [
             new TextRun({
-              text: cycle.cycleName.replace(/ Cycle$/, ''),
+              text: cycleDescription.replace(/ Cycle$/, ''),
               bold: true,
               color: fgColor
             })
