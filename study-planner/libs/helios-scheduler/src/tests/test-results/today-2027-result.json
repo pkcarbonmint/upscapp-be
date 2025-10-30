@@ -45,6 +45,7 @@
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -63,11 +64,15 @@
       "from": "2025-10-29T18:30:00.000Z",
       "to": "2025-11-27T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -122,11 +127,15 @@
       "from": "2025-10-30T18:30:00.000Z",
       "to": "2025-11-04T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -173,11 +182,15 @@
       "from": "2025-11-04T18:30:00.000Z",
       "to": "2025-11-09T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -248,11 +261,15 @@
       "from": "2025-11-09T18:30:00.000Z",
       "to": "2025-11-24T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -295,11 +312,15 @@
       "from": "2025-11-24T18:30:00.000Z",
       "to": "2025-12-02T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -350,11 +371,15 @@
       "from": "2025-11-27T18:30:00.000Z",
       "to": "2025-12-02T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -389,11 +414,15 @@
       "from": "2025-12-02T18:30:00.000Z",
       "to": "2025-12-07T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -472,11 +501,15 @@
       "from": "2025-12-02T18:30:00.000Z",
       "to": "2025-12-22T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -555,11 +588,15 @@
       "from": "2025-12-07T18:30:00.000Z",
       "to": "2025-12-18T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -638,11 +675,15 @@
       "from": "2025-12-18T18:30:00.000Z",
       "to": "2025-12-28T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -701,11 +742,15 @@
       "from": "2025-12-22T18:30:00.000Z",
       "to": "2026-01-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -820,11 +865,15 @@
       "from": "2025-12-28T18:30:00.000Z",
       "to": "2026-01-14T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "O",
         "subjectNname": "Governance",
         "examFocus": "BothExams",
@@ -875,11 +924,15 @@
       "from": "2026-01-08T18:30:00.000Z",
       "to": "2026-01-15T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "I",
         "subjectNname": "International Relations",
         "examFocus": "BothExams",
@@ -930,11 +983,15 @@
       "from": "2026-01-14T18:30:00.000Z",
       "to": "2026-01-21T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "C",
         "subjectNname": "Internal Security",
         "examFocus": "BothExams",
@@ -1001,11 +1058,15 @@
       "from": "2026-01-15T18:30:00.000Z",
       "to": "2026-01-25T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "S",
         "subjectNname": "Society and Social Justice",
         "examFocus": "BothExams",
@@ -1120,11 +1181,15 @@
       "from": "2026-01-21T18:30:00.000Z",
       "to": "2026-02-01T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C1",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "Z",
         "subjectNname": "Essay",
         "examFocus": "BothExams",
@@ -1167,11 +1232,15 @@
       "from": "2026-01-25T18:30:00.000Z",
       "to": "2026-02-09T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -1190,11 +1259,15 @@
       "from": "2026-01-29T18:30:00.000Z",
       "to": "2026-04-29T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -1249,11 +1322,15 @@
       "from": "2026-01-30T18:30:00.000Z",
       "to": "2026-02-10T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -1300,11 +1377,15 @@
       "from": "2026-02-10T18:30:00.000Z",
       "to": "2026-02-22T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -1375,11 +1456,15 @@
       "from": "2026-02-22T18:30:00.000Z",
       "to": "2026-04-07T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -1422,11 +1507,15 @@
       "from": "2026-04-07T18:30:00.000Z",
       "to": "2026-04-29T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -1477,11 +1566,15 @@
       "from": "2026-04-29T18:30:00.000Z",
       "to": "2026-05-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -1516,11 +1609,15 @@
       "from": "2026-04-29T18:30:00.000Z",
       "to": "2026-05-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -1599,11 +1696,15 @@
       "from": "2026-05-11T18:30:00.000Z",
       "to": "2026-07-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -1682,11 +1783,15 @@
       "from": "2026-05-11T18:30:00.000Z",
       "to": "2026-06-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -1765,11 +1870,15 @@
       "from": "2026-06-16T18:30:00.000Z",
       "to": "2026-07-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -1828,11 +1937,15 @@
       "from": "2026-07-08T18:30:00.000Z",
       "to": "2026-08-31T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -1947,11 +2060,15 @@
       "from": "2026-07-08T18:30:00.000Z",
       "to": "2026-08-31T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "O",
         "subjectNname": "Governance",
         "examFocus": "BothExams",
@@ -2002,11 +2119,15 @@
       "from": "2026-08-31T18:30:00.000Z",
       "to": "2026-09-17T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "I",
         "subjectNname": "International Relations",
         "examFocus": "BothExams",
@@ -2057,11 +2178,15 @@
       "from": "2026-08-31T18:30:00.000Z",
       "to": "2026-09-17T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "C",
         "subjectNname": "Internal Security",
         "examFocus": "BothExams",
@@ -2128,11 +2253,15 @@
       "from": "2026-09-17T18:30:00.000Z",
       "to": "2026-10-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "S",
         "subjectNname": "Society and Social Justice",
         "examFocus": "BothExams",
@@ -2247,11 +2376,15 @@
       "from": "2026-09-17T18:30:00.000Z",
       "to": "2026-10-14T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "Z",
         "subjectNname": "Essay",
         "examFocus": "BothExams",
@@ -2294,11 +2427,15 @@
       "from": "2026-10-11T18:30:00.000Z",
       "to": "2026-11-24T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C2",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -2317,11 +2454,15 @@
       "from": "2026-10-14T18:30:00.000Z",
       "to": "2027-01-12T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -2340,11 +2481,15 @@
       "from": "2026-10-31T18:30:00.000Z",
       "to": "2026-11-15T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -2399,11 +2544,15 @@
       "from": "2026-11-01T18:30:00.000Z",
       "to": "2026-11-03T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -2450,11 +2599,15 @@
       "from": "2026-11-03T18:30:00.000Z",
       "to": "2026-11-05T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -2525,11 +2678,15 @@
       "from": "2026-11-05T18:30:00.000Z",
       "to": "2026-11-15T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -2572,11 +2729,15 @@
       "from": "2026-11-15T18:30:00.000Z",
       "to": "2026-11-18T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -2627,11 +2788,15 @@
       "from": "2026-11-15T18:30:00.000Z",
       "to": "2026-11-17T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -2666,11 +2831,15 @@
       "from": "2026-11-17T18:30:00.000Z",
       "to": "2026-11-19T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -2749,11 +2918,15 @@
       "from": "2026-11-18T18:30:00.000Z",
       "to": "2026-11-29T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -2832,11 +3005,15 @@
       "from": "2026-11-19T18:30:00.000Z",
       "to": "2026-11-26T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -2915,11 +3092,15 @@
       "from": "2026-11-26T18:30:00.000Z",
       "to": "2026-12-01T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -2978,11 +3159,15 @@
       "from": "2026-11-29T18:30:00.000Z",
       "to": "2026-12-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -3097,11 +3282,15 @@
       "from": "2026-12-01T18:30:00.000Z",
       "to": "2026-12-10T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "O",
         "subjectNname": "Governance",
         "examFocus": "BothExams",
@@ -3152,11 +3341,15 @@
       "from": "2026-12-08T18:30:00.000Z",
       "to": "2026-12-13T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "I",
         "subjectNname": "International Relations",
         "examFocus": "BothExams",
@@ -3207,11 +3400,15 @@
       "from": "2026-12-10T18:30:00.000Z",
       "to": "2026-12-15T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "C",
         "subjectNname": "Internal Security",
         "examFocus": "BothExams",
@@ -3278,11 +3475,15 @@
       "from": "2026-12-13T18:30:00.000Z",
       "to": "2026-12-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "S",
         "subjectNname": "Society and Social Justice",
         "examFocus": "BothExams",
@@ -3397,11 +3598,15 @@
       "from": "2026-12-15T18:30:00.000Z",
       "to": "2026-12-21T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "Z",
         "subjectNname": "Essay",
         "examFocus": "BothExams",
@@ -3444,11 +3649,15 @@
       "from": "2026-12-16T18:30:00.000Z",
       "to": "2026-12-24T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -3467,11 +3676,15 @@
       "from": "2026-12-21T18:30:00.000Z",
       "to": "2027-01-05T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -3526,11 +3739,15 @@
       "from": "2026-12-24T18:30:00.000Z",
       "to": "2026-12-28T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C3",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -3577,11 +3794,15 @@
       "from": "2026-12-28T18:30:00.000Z",
       "to": "2026-12-30T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -3636,11 +3857,15 @@
       "from": "2026-12-31T18:30:00.000Z",
       "to": "2027-01-06T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -3687,11 +3912,15 @@
       "from": "2027-01-01T18:30:00.000Z",
       "to": "2027-01-06T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -3762,11 +3991,15 @@
       "from": "2027-01-06T18:30:00.000Z",
       "to": "2027-01-25T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -3809,11 +4042,15 @@
       "from": "2027-01-06T18:30:00.000Z",
       "to": "2027-01-17T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -3864,11 +4101,15 @@
       "from": "2027-01-17T18:30:00.000Z",
       "to": "2027-01-21T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -3903,11 +4144,15 @@
       "from": "2027-01-21T18:30:00.000Z",
       "to": "2027-01-27T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -3986,11 +4231,15 @@
       "from": "2027-01-25T18:30:00.000Z",
       "to": "2027-02-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -4069,11 +4318,15 @@
       "from": "2027-01-27T18:30:00.000Z",
       "to": "2027-02-10T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -4152,11 +4405,15 @@
       "from": "2027-02-10T18:30:00.000Z",
       "to": "2027-02-21T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -4215,11 +4472,15 @@
       "from": "2027-02-16T18:30:00.000Z",
       "to": "2027-03-09T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -4334,11 +4595,15 @@
       "from": "2027-02-21T18:30:00.000Z",
       "to": "2027-03-14T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "O",
         "subjectNname": "Governance",
         "examFocus": "BothExams",
@@ -4389,11 +4654,15 @@
       "from": "2027-03-09T18:30:00.000Z",
       "to": "2027-03-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "I",
         "subjectNname": "International Relations",
         "examFocus": "BothExams",
@@ -4444,11 +4713,15 @@
       "from": "2027-03-14T18:30:00.000Z",
       "to": "2027-03-21T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "C",
         "subjectNname": "Internal Security",
         "examFocus": "BothExams",
@@ -4515,11 +4788,15 @@
       "from": "2027-03-16T18:30:00.000Z",
       "to": "2027-03-25T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "S",
         "subjectNname": "Society and Social Justice",
         "examFocus": "BothExams",
@@ -4634,11 +4911,15 @@
       "from": "2027-03-21T18:30:00.000Z",
       "to": "2027-03-31T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C4",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "Z",
         "subjectNname": "Essay",
         "examFocus": "BothExams",
@@ -4681,11 +4962,15 @@
       "from": "2027-03-25T18:30:00.000Z",
       "to": "2027-04-13T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -4740,11 +5025,15 @@
       "from": "2027-03-31T18:30:00.000Z",
       "to": "2027-04-04T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -4791,11 +5080,15 @@
       "from": "2027-04-01T18:30:00.000Z",
       "to": "2027-04-05T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -4866,11 +5159,15 @@
       "from": "2027-04-04T18:30:00.000Z",
       "to": "2027-04-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -4913,11 +5210,15 @@
       "from": "2027-04-05T18:30:00.000Z",
       "to": "2027-04-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -4968,11 +5269,15 @@
       "from": "2027-04-08T18:30:00.000Z",
       "to": "2027-04-12T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -5007,11 +5312,15 @@
       "from": "2027-04-11T18:30:00.000Z",
       "to": "2027-04-13T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -5090,11 +5399,15 @@
       "from": "2027-04-12T18:30:00.000Z",
       "to": "2027-04-20T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -5173,11 +5486,15 @@
       "from": "2027-04-13T18:30:00.000Z",
       "to": "2027-04-19T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -5256,11 +5573,15 @@
       "from": "2027-04-19T18:30:00.000Z",
       "to": "2027-04-22T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -5319,11 +5640,15 @@
       "from": "2027-04-20T18:30:00.000Z",
       "to": "2027-04-28T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -5438,11 +5763,15 @@
       "from": "2027-04-22T18:30:00.000Z",
       "to": "2027-05-02T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "O",
         "subjectNname": "Governance",
         "examFocus": "BothExams",
@@ -5493,11 +5822,15 @@
       "from": "2027-04-28T18:30:00.000Z",
       "to": "2027-05-02T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "I",
         "subjectNname": "International Relations",
         "examFocus": "BothExams",
@@ -5548,11 +5881,15 @@
       "from": "2027-05-02T18:30:00.000Z",
       "to": "2027-05-04T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "C",
         "subjectNname": "Internal Security",
         "examFocus": "BothExams",
@@ -5619,11 +5956,15 @@
       "from": "2027-05-02T18:30:00.000Z",
       "to": "2027-05-05T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -5678,11 +6019,15 @@
       "from": "2027-05-05T18:30:00.000Z",
       "to": "2027-05-06T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -5729,11 +6074,15 @@
       "from": "2027-05-06T18:30:00.000Z",
       "to": "2027-05-09T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -5804,11 +6153,15 @@
       "from": "2027-05-06T18:30:00.000Z",
       "to": "2027-05-10T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -5851,11 +6204,15 @@
       "from": "2027-05-09T18:30:00.000Z",
       "to": "2027-05-10T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -5906,11 +6263,15 @@
       "from": "2027-05-10T18:30:00.000Z",
       "to": "2027-05-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -5945,11 +6306,15 @@
       "from": "2027-05-10T18:30:00.000Z",
       "to": "2027-05-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -6028,11 +6393,15 @@
       "from": "2027-05-11T18:30:00.000Z",
       "to": "2027-05-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -6111,11 +6480,15 @@
       "from": "2027-05-11T18:30:00.000Z",
       "to": "2027-05-13T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -6194,11 +6567,15 @@
       "from": "2027-05-13T18:30:00.000Z",
       "to": "2027-05-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -6257,11 +6634,15 @@
       "from": "2027-05-16T18:30:00.000Z",
       "to": "2027-05-19T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C5.b",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -6376,11 +6757,15 @@
       "from": "2027-05-16T18:30:00.000Z",
       "to": "2027-05-19T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -6399,11 +6784,15 @@
       "from": "2027-05-19T18:30:00.000Z",
       "to": "2027-06-07T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -6458,11 +6847,15 @@
       "from": "2027-05-20T18:30:00.000Z",
       "to": "2027-05-24T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -6509,11 +6902,15 @@
       "from": "2027-05-24T18:30:00.000Z",
       "to": "2027-05-26T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -6584,11 +6981,15 @@
       "from": "2027-05-26T18:30:00.000Z",
       "to": "2027-06-06T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -6631,11 +7032,15 @@
       "from": "2027-06-06T18:30:00.000Z",
       "to": "2027-06-10T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -6686,11 +7091,15 @@
       "from": "2027-06-07T18:30:00.000Z",
       "to": "2027-06-09T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -6725,11 +7134,15 @@
       "from": "2027-06-09T18:30:00.000Z",
       "to": "2027-06-13T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -6808,11 +7221,15 @@
       "from": "2027-06-10T18:30:00.000Z",
       "to": "2027-06-23T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -6891,11 +7308,15 @@
       "from": "2027-06-13T18:30:00.000Z",
       "to": "2027-06-21T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -6974,11 +7395,15 @@
       "from": "2027-06-21T18:30:00.000Z",
       "to": "2027-06-27T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -7037,11 +7462,15 @@
       "from": "2027-06-23T18:30:00.000Z",
       "to": "2027-07-05T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -7156,11 +7585,15 @@
       "from": "2027-06-27T18:30:00.000Z",
       "to": "2027-07-07T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "O",
         "subjectNname": "Governance",
         "examFocus": "BothExams",
@@ -7211,11 +7644,15 @@
       "from": "2027-07-05T18:30:00.000Z",
       "to": "2027-07-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "I",
         "subjectNname": "International Relations",
         "examFocus": "BothExams",
@@ -7266,11 +7703,15 @@
       "from": "2027-07-07T18:30:00.000Z",
       "to": "2027-07-12T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "C",
         "subjectNname": "Internal Security",
         "examFocus": "BothExams",
@@ -7337,11 +7778,15 @@
       "from": "2027-07-08T18:30:00.000Z",
       "to": "2027-07-14T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "S",
         "subjectNname": "Society and Social Justice",
         "examFocus": "BothExams",
@@ -7456,11 +7901,15 @@
       "from": "2027-07-12T18:30:00.000Z",
       "to": "2027-07-18T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "Z",
         "subjectNname": "Essay",
         "examFocus": "BothExams",
@@ -7503,11 +7952,15 @@
       "from": "2027-07-14T18:30:00.000Z",
       "to": "2027-07-25T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -7526,11 +7979,15 @@
       "from": "2027-07-18T18:30:00.000Z",
       "to": "2027-08-04T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -7585,11 +8042,15 @@
       "from": "2027-07-25T18:30:00.000Z",
       "to": "2027-07-27T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -7636,11 +8097,15 @@
       "from": "2027-07-27T18:30:00.000Z",
       "to": "2027-07-29T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C6",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -7711,11 +8176,15 @@
       "from": "2027-07-29T18:30:00.000Z",
       "to": "2027-08-09T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": true
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "OPT-AGR",
         "subjectNname": "Agriculture",
         "examFocus": "MainsOnly",
@@ -7734,11 +8203,15 @@
       "from": "2027-07-31T18:30:00.000Z",
       "to": "2027-08-04T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H01",
         "subjectNname": "History-Ancient",
         "examFocus": "BothExams",
@@ -7793,11 +8266,15 @@
       "from": "2027-08-01T18:30:00.000Z",
       "to": "2027-08-02T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H02",
         "subjectNname": "History-Medieval",
         "examFocus": "BothExams",
@@ -7844,11 +8321,15 @@
       "from": "2027-08-02T18:30:00.000Z",
       "to": "2027-08-03T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H03",
         "subjectNname": "History-Modern",
         "examFocus": "BothExams",
@@ -7919,11 +8400,15 @@
       "from": "2027-08-03T18:30:00.000Z",
       "to": "2027-08-05T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "H04",
         "subjectNname": "History-Art and Culture",
         "examFocus": "BothExams",
@@ -7966,11 +8451,15 @@
       "from": "2027-08-04T18:30:00.000Z",
       "to": "2027-08-05T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H05",
         "subjectNname": "History-World",
         "examFocus": "BothExams",
@@ -8021,11 +8510,15 @@
       "from": "2027-08-05T18:30:00.000Z",
       "to": "2027-08-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "H06",
         "subjectNname": "History-Post Independent India",
         "examFocus": "BothExams",
@@ -8060,11 +8553,15 @@
       "from": "2027-08-05T18:30:00.000Z",
       "to": "2027-08-08T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "G",
         "subjectNname": "Geography",
         "examFocus": "BothExams",
@@ -8143,11 +8640,15 @@
       "from": "2027-08-08T18:30:00.000Z",
       "to": "2027-08-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "B",
         "subjectNname": "Environment, Ecology and Disaster Management",
         "examFocus": "BothExams",
@@ -8226,11 +8727,15 @@
       "from": "2027-08-08T18:30:00.000Z",
       "to": "2027-08-10T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "T",
         "subjectNname": "Science & Technology",
         "examFocus": "BothExams",
@@ -8309,11 +8814,15 @@
       "from": "2027-08-10T18:30:00.000Z",
       "to": "2027-08-11T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "P",
         "subjectNname": "Indian Polity and Governance",
         "examFocus": "BothExams",
@@ -8372,11 +8881,15 @@
       "from": "2027-08-11T18:30:00.000Z",
       "to": "2027-08-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "E",
         "subjectNname": "Indian Economy",
         "examFocus": "BothExams",
@@ -8491,11 +9004,15 @@
       "from": "2027-08-11T18:30:00.000Z",
       "to": "2027-08-16T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "O",
         "subjectNname": "Governance",
         "examFocus": "BothExams",
@@ -8546,11 +9063,15 @@
       "from": "2027-08-16T18:30:00.000Z",
       "to": "2027-08-17T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "I",
         "subjectNname": "International Relations",
         "examFocus": "BothExams",
@@ -8601,11 +9122,15 @@
       "from": "2027-08-16T18:30:00.000Z",
       "to": "2027-08-17T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "C",
         "subjectNname": "Internal Security",
         "examFocus": "BothExams",
@@ -8672,11 +9197,15 @@
       "from": "2027-08-17T18:30:00.000Z",
       "to": "2027-08-18T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": true,
         "subjectCode": "S",
         "subjectNname": "Society and Social Justice",
         "examFocus": "BothExams",
@@ -8791,11 +9320,15 @@
       "from": "2027-08-17T18:30:00.000Z",
       "to": "2027-08-19T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     },
     {
       "cycleType": "C7",
       "subject": {
+        "isNCERT": false,
         "subjectCode": "Z",
         "subjectNname": "Essay",
         "examFocus": "BothExams",
@@ -8838,7 +9371,10 @@
       "from": "2027-08-18T18:30:00.000Z",
       "to": "2027-08-22T18:30:00.000Z",
       "numParallel": 2,
-      "minutesPerDay": 210
+      "minutesPerDay": 210,
+      "metadata": {
+        "isExcessTime": false
+      }
     }
   ],
   "tasks": [
@@ -21746,722 +22282,267 @@
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-14T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-15T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-18T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-19T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-20T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-21T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-22T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-25T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-26T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-27T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-28T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-10-29T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-01T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-02T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-03T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-04T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-05T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-08T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-09T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-10T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-11T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-12T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-15T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-16T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-17T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-18T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-19T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-22T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-23T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-24T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-25T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-26T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-29T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-11-30T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 60,
-      "date": "2026-12-01T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 60,
-      "date": "2026-12-01T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-02T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-03T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-06T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-07T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-08T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-09T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-10T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-13T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-14T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-15T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-16T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-17T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-20T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-21T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-22T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-23T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-24T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-27T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-28T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-29T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-30T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2026-12-31T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2027-01-03T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2027-01-04T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2027-01-05T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2027-01-06T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2027-01-07T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2027-01-10T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 120,
-      "date": "2027-01-11T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-14T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-15T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-18T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-19T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-20T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-21T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-25T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-26T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-27T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-28T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-01T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-02T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-04T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-05T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-08T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-09T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-10T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-11T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-12T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-15T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-16T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-17T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-18T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-19T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-23T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-24T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-25T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-26T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-30T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-01T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-02T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-06T18:30:00.000Z"
     },
     {
@@ -22472,444 +22553,451 @@
       "date": "2026-12-07T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 60,
+      "date": "2026-12-07T18:30:00.000Z"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 1,
+      "minutes": 90,
       "date": "2026-12-08T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-09T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-10T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-13T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-14T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-15T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-16T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-17T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-20T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-21T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-23T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-30T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-31T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-04T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-05T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-06T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-07T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-10T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-11T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-14T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-15T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-18T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-19T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-20T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-21T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-25T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-26T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-27T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-28T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-10-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-01T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-02T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-04T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-05T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-08T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-09T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-10T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-11T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-12T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-15T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-16T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-17T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-18T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-19T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-23T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-24T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-25T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-26T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-11-30T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-01T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-02T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-06T18:30:00.000Z"
     },
     {
@@ -22920,178 +23008,185 @@
       "date": "2026-12-07T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 60,
+      "date": "2026-12-07T18:30:00.000Z"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 2,
+      "minutes": 90,
       "date": "2026-12-08T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-09T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-10T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-13T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-14T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-15T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/01",
+      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-16T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-17T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-20T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-21T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-23T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-30T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2026-12-31T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-04T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-05T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-06T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-07T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-10T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 90,
       "date": "2027-01-11T18:30:00.000Z"
     },
     {
@@ -25365,162 +25460,169 @@
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-21T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-23T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 90,
+      "taskType": 1,
+      "minutes": 60,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
+      "taskType": 1,
+      "minutes": 60,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-30T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2026-12-31T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2027-01-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 120,
       "date": "2027-01-04T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-21T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-23T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
+      "taskType": 2,
       "minutes": 30,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
+      "taskType": 2,
       "minutes": 30,
+      "date": "2026-12-29T18:30:00.000Z"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-30T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2026-12-31T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2027-01-03T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 30,
+      "taskType": 2,
+      "minutes": 60,
       "date": "2027-01-04T18:30:00.000Z"
     },
     {
@@ -25540,70 +25642,84 @@
     {
       "topicCode": "H01/00",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "H01/01",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "H01/02",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "H01/03",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "H01/04",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "H01/05",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "H01/06",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "H01/07",
       "subjectCode": "H01",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-27T18:30:00.000Z"
     },
     {
       "topicCode": "H01/00",
       "subjectCode": "H01",
-      "taskType": 1,
+      "taskType": 2,
       "minutes": 30,
       "date": "2026-12-24T18:30:00.000Z"
     },
     {
       "topicCode": "H01/01",
       "subjectCode": "H01",
-      "taskType": 1,
+      "taskType": 2,
+      "minutes": 30,
+      "date": "2026-12-24T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H01/02",
+      "subjectCode": "H01",
+      "taskType": 2,
+      "minutes": 30,
+      "date": "2026-12-27T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H01/03",
+      "subjectCode": "H01",
+      "taskType": 2,
       "minutes": 30,
       "date": "2026-12-27T18:30:00.000Z"
     },
@@ -25617,70 +25733,84 @@
     {
       "topicCode": "H02/00",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "H02/01",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "H02/02",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "H02/03",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "H02/04",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "H02/05",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "H02/06",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "H02/07",
       "subjectCode": "H02",
-      "taskType": 0,
+      "taskType": 1,
       "minutes": 30,
       "date": "2026-12-29T18:30:00.000Z"
     },
     {
       "topicCode": "H02/00",
       "subjectCode": "H02",
-      "taskType": 1,
+      "taskType": 2,
       "minutes": 30,
       "date": "2026-12-28T18:30:00.000Z"
     },
     {
       "topicCode": "H02/01",
       "subjectCode": "H02",
-      "taskType": 1,
+      "taskType": 2,
+      "minutes": 30,
+      "date": "2026-12-28T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H02/02",
+      "subjectCode": "H02",
+      "taskType": 2,
+      "minutes": 30,
+      "date": "2026-12-29T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H02/03",
+      "subjectCode": "H02",
+      "taskType": 2,
       "minutes": 30,
       "date": "2026-12-29T18:30:00.000Z"
     },
@@ -35669,152 +35799,54 @@
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-18T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-19T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-20T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-21T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-22T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-25T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-26T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-27T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-28T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-29T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-01T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-02T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-03T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-18T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-19T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-20T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-21T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-22T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-25T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-26T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/01",
-      "subjectCode": "OPT-AGR",
-      "taskType": 1,
-      "minutes": 60,
-      "date": "2027-07-27T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
       "minutes": 30,
@@ -35825,34 +35857,41 @@
       "subjectCode": "OPT-AGR",
       "taskType": 1,
       "minutes": 90,
+      "date": "2027-07-27T18:30:00.000Z"
+    },
+    {
+      "topicCode": "OPT-AGR/02",
+      "subjectCode": "OPT-AGR",
+      "taskType": 1,
+      "minutes": 120,
       "date": "2027-07-28T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-07-29T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-08-01T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-08-02T18:30:00.000Z"
     },
     {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 1,
-      "minutes": 90,
+      "minutes": 120,
       "date": "2027-08-03T18:30:00.000Z"
     },
     {
@@ -35901,28 +35940,28 @@
       "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 30,
+      "minutes": 60,
       "date": "2027-07-26T18:30:00.000Z"
     },
     {
-      "topicCode": "OPT-AGR/02",
-      "subjectCode": "OPT-AGR",
-      "taskType": 2,
-      "minutes": 30,
-      "date": "2027-07-26T18:30:00.000Z"
-    },
-    {
-      "topicCode": "OPT-AGR/02",
+      "topicCode": "OPT-AGR/01",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
       "minutes": 60,
       "date": "2027-07-27T18:30:00.000Z"
     },
     {
+      "topicCode": "OPT-AGR/01",
+      "subjectCode": "OPT-AGR",
+      "taskType": 2,
+      "minutes": 30,
+      "date": "2027-07-28T18:30:00.000Z"
+    },
+    {
       "topicCode": "OPT-AGR/02",
       "subjectCode": "OPT-AGR",
       "taskType": 2,
-      "minutes": 60,
+      "minutes": 30,
       "date": "2027-07-28T18:30:00.000Z"
     },
     {
@@ -35970,20 +36009,6 @@
     {
       "topicCode": "H01/00",
       "subjectCode": "H01",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-25T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H01/01",
-      "subjectCode": "H01",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-26T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H01/00",
-      "subjectCode": "H01",
       "taskType": 1,
       "minutes": 30,
       "date": "2027-07-25T18:30:00.000Z"
@@ -36007,7 +36032,7 @@
       "subjectCode": "H01",
       "taskType": 1,
       "minutes": 30,
-      "date": "2027-07-26T18:30:00.000Z"
+      "date": "2027-07-25T18:30:00.000Z"
     },
     {
       "topicCode": "H01/04",
@@ -36024,6 +36049,20 @@
       "date": "2027-07-26T18:30:00.000Z"
     },
     {
+      "topicCode": "H01/06",
+      "subjectCode": "H01",
+      "taskType": 1,
+      "minutes": 30,
+      "date": "2027-07-26T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H01/07",
+      "subjectCode": "H01",
+      "taskType": 1,
+      "minutes": 30,
+      "date": "2027-07-26T18:30:00.000Z"
+    },
+    {
       "topicCode": "H01/00",
       "subjectCode": "H01",
       "taskType": 2,
@@ -36054,20 +36093,6 @@
     {
       "topicCode": "H02/00",
       "subjectCode": "H02",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-27T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H02/01",
-      "subjectCode": "H02",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-07-28T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H02/00",
-      "subjectCode": "H02",
       "taskType": 1,
       "minutes": 30,
       "date": "2027-07-27T18:30:00.000Z"
@@ -36091,7 +36116,7 @@
       "subjectCode": "H02",
       "taskType": 1,
       "minutes": 30,
-      "date": "2027-07-28T18:30:00.000Z"
+      "date": "2027-07-27T18:30:00.000Z"
     },
     {
       "topicCode": "H02/04",
@@ -36108,6 +36133,20 @@
       "date": "2027-07-28T18:30:00.000Z"
     },
     {
+      "topicCode": "H02/06",
+      "subjectCode": "H02",
+      "taskType": 1,
+      "minutes": 30,
+      "date": "2027-07-28T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H02/07",
+      "subjectCode": "H02",
+      "taskType": 1,
+      "minutes": 30,
+      "date": "2027-07-28T18:30:00.000Z"
+    },
+    {
       "topicCode": "H02/00",
       "subjectCode": "H02",
       "taskType": 2,
@@ -36138,197 +36177,99 @@
     {
       "topicCode": "H03/00",
       "subjectCode": "H03",
-      "taskType": 0,
-      "minutes": 30,
+      "taskType": 1,
+      "minutes": 60,
       "date": "2027-07-29T18:30:00.000Z"
     },
     {
       "topicCode": "H03/01",
       "subjectCode": "H03",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-01T18:30:00.000Z"
+      "taskType": 1,
+      "minutes": 60,
+      "date": "2027-07-29T18:30:00.000Z"
     },
     {
       "topicCode": "H03/02",
       "subjectCode": "H03",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-02T18:30:00.000Z"
+      "taskType": 1,
+      "minutes": 60,
+      "date": "2027-08-01T18:30:00.000Z"
     },
     {
       "topicCode": "H03/03",
       "subjectCode": "H03",
-      "taskType": 0,
-      "minutes": 30,
+      "taskType": 1,
+      "minutes": 60,
+      "date": "2027-08-01T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H03/04",
+      "subjectCode": "H03",
+      "taskType": 1,
+      "minutes": 60,
+      "date": "2027-08-02T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H03/05",
+      "subjectCode": "H03",
+      "taskType": 1,
+      "minutes": 60,
+      "date": "2027-08-02T18:30:00.000Z"
+    },
+    {
+      "topicCode": "H03/06",
+      "subjectCode": "H03",
+      "taskType": 1,
+      "minutes": 60,
       "date": "2027-08-03T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/04",
-      "subjectCode": "H03",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-04T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/05",
-      "subjectCode": "H03",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-05T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/06",
-      "subjectCode": "H03",
-      "taskType": 0,
-      "minutes": 30,
-      "date": "2027-08-08T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/00",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-07-29T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/01",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-07-29T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/02",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-07-29T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/03",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-01T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/04",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-01T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/05",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-01T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/06",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-02T18:30:00.000Z"
     },
     {
       "topicCode": "H03/07",
       "subjectCode": "H03",
       "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-02T18:30:00.000Z"
+      "minutes": 60,
+      "date": "2027-08-03T18:30:00.000Z"
     },
     {
       "topicCode": "H03/08",
       "subjectCode": "H03",
       "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-02T18:30:00.000Z"
+      "minutes": 60,
+      "date": "2027-08-04T18:30:00.000Z"
     },
     {
       "topicCode": "H03/09",
       "subjectCode": "H03",
       "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-03T18:30:00.000Z"
+      "minutes": 60,
+      "date": "2027-08-04T18:30:00.000Z"
     },
     {
       "topicCode": "H03/10",
       "subjectCode": "H03",
       "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-03T18:30:00.000Z"
+      "minutes": 60,
+      "date": "2027-08-05T18:30:00.000Z"
     },
     {
       "topicCode": "H03/11",
       "subjectCode": "H03",
       "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-03T18:30:00.000Z"
+      "minutes": 60,
+      "date": "2027-08-05T18:30:00.000Z"
     },
     {
       "topicCode": "H03/12",
       "subjectCode": "H03",
       "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-04T18:30:00.000Z"
+      "minutes": 60,
+      "date": "2027-08-08T18:30:00.000Z"
     },
     {
       "topicCode": "H03/13",
       "subjectCode": "H03",
       "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-04T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/14",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-04T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/00",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-05T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/01",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-05T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/02",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-05T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/03",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-08T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/04",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
-      "date": "2027-08-08T18:30:00.000Z"
-    },
-    {
-      "topicCode": "H03/05",
-      "subjectCode": "H03",
-      "taskType": 1,
-      "minutes": 30,
+      "minutes": 60,
       "date": "2027-08-08T18:30:00.000Z"
     },
     {

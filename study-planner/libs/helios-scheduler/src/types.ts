@@ -129,6 +129,7 @@ export type S2Subject = {
   examFocus: S2ExamFocus;
   topics: S2Topic[];
   baselineMinutes: number;
+  isNCERT?: boolean;
 }
 
 export type S2Topic = {

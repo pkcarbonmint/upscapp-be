@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import { planBlocks } from './plan-blocks';
 import { planCycles } from './plan-cycles';
-import { BlockAllocConstraints, BlockSlot, CycleSchedule, CycleType, PlanningContext, S2Constraints, S2ExamFocus, S2SlotType, S2Task, ScenarioResult } from "./types";
+import { BlockAllocConstraints, BlockSlot, CycleSchedule, CycleType, PlanningContext, S2Constraints, S2ExamFocus, S2SlotType, S2Subject, S2Task, ScenarioResult } from "./types";
 import { planSubjectTasks } from './plan-subject';
+import { constructFrom } from 'date-fns';
 
 // import { writeFileSync } from "fs";
 
@@ -24,41 +25,61 @@ export function planMain(context: PlanningContext) {
   return { cycles, blocks, tasks };
 }
 
-function cycles2Blocks(context: PlanningContext, schedules: CycleSchedule[]): BlockSlot[] {
-  const blocks = schedules.flatMap((cycle) => {
-    const { cycleType, startDate, endDate } = cycle;
-    const cycle2ExamFocus = cycleType2ExamFocus(cycleType);
-    // Filter subjects based on cycle exam focus
-    // PrelimsOnly cycles should include PrelimsOnly and BothExams subjects
-    // MainsOnly cycles should include MainsOnly and BothExams subjects  
-    // BothExams cycles should include BothExams subjects
-    const subjects = context.subjects.filter((subject) => {
-      if (cycle2ExamFocus === "PrelimsOnly") {
+function filterSubjects(subjects: S2Subject[], cycleType: CycleType): S2Subject[] {
+  return subjects.filter(includeSubject(cycleType));
+  // Filter subjects based on cycle exam focus
+  // PrelimsOnly cycles should include PrelimsOnly and BothExams subjects
+  // MainsOnly cycles should include MainsOnly and BothExams subjects  
+  // BothExams cycles should include BothExams subjects
+  function includeSubject(cycleType: CycleType) {
+
+    if (cycleType === CycleType.C1 ) {
+      return function includeSubject(subject: S2Subject): boolean {
+        console.log("C1 - includeSubject", "subject", subject.subjectCode, "isNCERT", subject.isNCERT);
+        return subject.isNCERT ?? false;
+      }
+    }
+    return function includeSubject(subject: S2Subject): boolean {
+      const cycleFocus = cycleType2ExamFocus(cycleType);
+      if (cycleFocus === "PrelimsOnly") {
         return subject.examFocus === "PrelimsOnly" || subject.examFocus === "BothExams";
-      } else if (cycle2ExamFocus === "MainsOnly") {
+      } else if (cycleFocus === "MainsOnly") {
         return subject.examFocus === "MainsOnly" || subject.examFocus === "BothExams";
-      } else if (cycle2ExamFocus === "BothExams") {
+      } else if (cycleFocus === "BothExams") {
         return subject.examFocus === "BothExams";
       }
       return false;
-    });
+    }
+  }
+}
 
-    // if MainsOnly or BothExams, then bring Optional to the front of the subject array
-    const reorderedSubjects = (cycle2ExamFocus === "MainsOnly" || cycle2ExamFocus === "BothExams") ?
-      [context.optionalSubject, ...subjects] : subjects;
-      
+function reorderSubjects(subjects: S2Subject[], optionalSubject: S2Subject, cycleFocus: S2ExamFocus): S2Subject[] {
+  // if MainsOnly or BothExams, then bring Optional to the front of the subject array
+  return (cycleFocus === "MainsOnly" || cycleFocus === "BothExams") ?
+    [optionalSubject, ...subjects] : subjects;
+}
+
+function cycles2Blocks(context: PlanningContext, cycles: CycleSchedule[]): BlockSlot[] {
+  const blocks = cycles.flatMap((cycle) => {
+    const { cycleType, startDate, endDate } = cycle;
+
+    const cycle2ExamFocus = cycleType2ExamFocus(cycleType);
+    const filteredSubjects = filterSubjects(context.subjects, cycleType);
+    const reorderedSubjects = reorderSubjects(filteredSubjects, context.optionalSubject, cycle2ExamFocus);
+    // console.log("cycles2Blocks", cycleType, "unfilteredSubjects", context.subjects, "reorderedSubjects", reorderedSubjects);
+    console.log("cycles2Blocks", cycleType, "unfilteredSubjects", context.subjects.length, "reorderedSubjects", reorderedSubjects.length);
     const numParallel = 2;
     // reorder subjects
     const blkConstraints: BlockAllocConstraints = {
       cycleType,
       relativeAllocationWeights: context.relativeAllocationWeights,
       numParallel,
-      workingMinutesPerDay: context.constraints.workingHoursPerDay*60 / numParallel,
+      workingMinutesPerDay: context.constraints.workingHoursPerDay * 60 / numParallel,
       catchupDay: context.constraints.catchupDay,
       testDay: context.constraints.testDay,
       testMinutes: context.constraints.testMinutes,
     }
-    
+
     const blocks = planBlocks(dayjs(startDate), dayjs(endDate), reorderedSubjects, blkConstraints);
     return blocks;
   });
@@ -112,13 +133,13 @@ function adjustTaskEffortSplit(taskEffortSplit: Record<S2SlotType, number>): Rec
   const revisionShare = taskEffortSplit[S2SlotType.REVISION];
   const practiceShare = taskEffortSplit[S2SlotType.PRACTICE];
   const totalNonStudy = revisionShare + practiceShare;
-  
+
   // Early return if no STUDY to redistribute
   if (studyShare === 0) {
     return taskEffortSplit;
   }
-  
-  
+
+
   // Calculate new REVISION share:
   // - If both REVISION and PRACTICE exist: redistribute STUDY proportionally maintaining their ratio
   //   (REVISION gets: revisionShare + (studyShare * revisionShare / totalNonStudy))
@@ -132,7 +153,7 @@ function adjustTaskEffortSplit(taskEffortSplit: Record<S2SlotType, number>): Rec
       : practiceShare > 0
         ? 0
         : studyShare;
-  
+
   // Calculate new PRACTICE share:
   // - If both REVISION and PRACTICE exist: redistribute STUDY proportionally maintaining their ratio
   //   (PRACTICE gets: practiceShare + (studyShare * practiceShare / totalNonStudy))
@@ -143,7 +164,7 @@ function adjustTaskEffortSplit(taskEffortSplit: Record<S2SlotType, number>): Rec
     : practiceShare > 0
       ? practiceShare + studyShare
       : 0;
-  
+
   return {
     ...taskEffortSplit,
     [S2SlotType.STUDY]: 0,  // Remove STUDY tasks for excess time blocks
@@ -156,14 +177,14 @@ function blocks2Tasks(context: PlanningContext, blocks: BlockSlot[]): S2Task[] {
   const tasks = blocks.flatMap((block, index) => {
     const { cycleType } = block;
     const { subject, from, to } = block;
-    const taskEffortSplit = block.metadata?.isExcessTime 
-      ? adjustTaskEffortSplit(cycleTypeToTaskEffortSplit(cycleType)) 
-      :  cycleTypeToTaskEffortSplit(cycleType);
+    const taskEffortSplit = block.metadata?.isExcessTime
+      ? adjustTaskEffortSplit(cycleTypeToTaskEffortSplit(cycleType))
+      : cycleTypeToTaskEffortSplit(cycleType);
     const taskPlanConstraints: S2Constraints = {
       cycleType,
       dayMaxMinutes: block.minutesPerDay,
       dayMinMinutes: block.minutesPerDay,
-      catchupDay: context.constraints.catchupDay, 
+      catchupDay: context.constraints.catchupDay,
       testDay: context.constraints.testDay,
       testMinutes: context.constraints.testMinutes,
       taskEffortSplit,
@@ -172,15 +193,15 @@ function blocks2Tasks(context: PlanningContext, blocks: BlockSlot[]): S2Task[] {
     // console.log(`blocks2Tasks: Block ${index + 1} - ${subject.subjectCode} (${cycleType}) from ${from.format('YYYY-MM-DD HH:mm')} to ${to.format('YYYY-MM-DD HH:mm')}`);
     // console.log(`blocks2Tasks: Block duration: ${to.diff(from, 'minutes')} minutes`);
     // console.log(`blocks2Tasks: Task constraints:`, taskPlanConstraints);
-    
+
     try {
       const blockTasks = planSubjectTasks(from, to, subject, taskPlanConstraints);
       // console.log(`blocks2Tasks: Block ${index + 1} generated ${blockTasks.length} tasks`);
       return blockTasks;
-           } catch (error) {
-             console.error(`blocks2Tasks: Error in block ${index + 1}:`, error instanceof Error ? error.message : String(error));
-             return [];
-           }
+    } catch (error) {
+      console.error(`blocks2Tasks: Error in block ${index + 1}:`, error instanceof Error ? error.message : String(error));
+      return [];
+    }
   });
   // console.log(`blocks2Tasks: Total tasks generated: ${tasks.length}`);
   return tasks;

@@ -19,6 +19,7 @@ import { planMain, CycleType } from 'helios-scheduler';
 import type { PlanningContext, S2Subject,  S2ExamFocus } from 'helios-scheduler';
 import { S2WeekDay } from 'helios-scheduler';
 import { mapFromS2Tasks } from './s2-mapper';
+import { NCERTMaterialsService } from '../services/NCERTMaterialsService';
 
 export async function generatePlan(userId: string, intake: StudentIntake): Promise<StudyPlan> {
   const config = {
@@ -77,7 +78,7 @@ export async function generatePlan(userId: string, intake: StudentIntake): Promi
   if (!studentOptionalSubject) {
     throw new Error(`Optional subject ${intake.study_strategy.upsc_optional_subject} not found`);
   }
-  
+  const ncertMaterialsMap = await NCERTMaterialsService.loadNCERTMaterials();
   // Load all subjects including the selected optional subject
   const subjects = [
     studentOptionalSubject,
@@ -93,6 +94,7 @@ export async function generatePlan(userId: string, intake: StudentIntake): Promi
   try {
     // Convert subjects to S2Subject format
     const s2Subjects: S2Subject[] = subjects.map(subject => ({
+      isNCERT: NCERTMaterialsService.isNCERT(ncertMaterialsMap, subject.subjectCode),
       subjectCode: subject.subjectCode,
       subjectNname: subject.subjectName,
       examFocus: mapSubjectToExamFocus(subject.subjectCode, intake.study_strategy.upsc_optional_subject),
@@ -110,6 +112,7 @@ export async function generatePlan(userId: string, intake: StudentIntake): Promi
     }));
 
     const s2OptionalSubject: S2Subject = {
+      isNCERT: false,
       subjectCode: studentOptionalSubject.subjectCode,
       subjectNname: studentOptionalSubject.subjectName,
       examFocus: 'MainsOnly', // Optional subjects are typically for Mains

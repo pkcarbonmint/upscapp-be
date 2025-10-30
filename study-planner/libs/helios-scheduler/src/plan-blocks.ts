@@ -1,5 +1,5 @@
 import type { Dayjs } from "dayjs";
-import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay, SubjectCode } from "./types";
+import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay } from "./types";
 /*
  * PSEUDO CODE FOR TIME DISTRIBUTION AMONG SUBJECTS
  * 

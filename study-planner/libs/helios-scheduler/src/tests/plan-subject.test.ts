@@ -34,6 +34,7 @@ describe('planSubjectTasks - Debug Test Cases', () => {
     
     // Reconstruct the inputs from the debug data
     const subject: S2Subject = {
+      isNCERT: debugData.inputs.subject.isNCERT || false,
       subjectCode: debugData.inputs.subject.subjectCode,
       subjectNname: debugData.inputs.subject.subjectNname,
       examFocus: debugData.inputs.subject.examFocus,

@@ -13,6 +13,7 @@ export interface NCERTMaterial {
  */
 export type NCERTMaterialsMap = Record<string, NCERTMaterial[]>;
 
+
 /**
  * Service for managing NCERT materials for foundation cycle (C1) tasks
  */
@@ -22,7 +23,7 @@ export class NCERTMaterialsService {
   /**
    * Load NCERT materials from the JSON file
    */
-  private static async loadNCERTMaterials(): Promise<NCERTMaterialsMap> {
+  public static async loadNCERTMaterials(): Promise<NCERTMaterialsMap> {
     if (this.materialsCache) {
       return this.materialsCache;
     }
@@ -46,6 +47,11 @@ export class NCERTMaterialsService {
     return materials[topicCode] || [];
   }
 
+
+  static isNCERT(materials: NCERTMaterialsMap, subjectCode: string): boolean {
+    return Object.keys(materials).some(topicCode => topicCode.startsWith(subjectCode));
+  }
+  
   /**
    * Get NCERT materials for multiple topic codes
    */
