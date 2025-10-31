@@ -157,3 +157,7 @@ docker.env
 study-planner/helios-ts/generated-docs/
 .terraform
 docker-package-jsons
+
+# Encrypted environment files and decrypted temp files
+.env.decrypted.*
+terraform/.env.decrypted.*

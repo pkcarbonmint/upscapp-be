@@ -124,7 +124,7 @@ build_app() {
     
     # Build the application
     print_status "Running build command..."
-    pnpm run build
+    pnpm run -r build
     
     if [ ! -d "dist" ]; then
         print_error "Build failed. dist directory not found."
