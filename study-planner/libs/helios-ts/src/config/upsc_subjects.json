@@ -5,6 +5,9 @@
     "last_updated": "2024-12-20",
     "source_authority": "Migrated from SubjectCoding.hs"
   },
+  "preferred_subject_code_sequence": [
+    "P", "H01"
+  ],
   "subjects": [
     {
       "name": "History-Ancient",

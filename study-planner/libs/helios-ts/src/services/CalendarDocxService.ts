@@ -1840,7 +1840,9 @@ async function generateWeeklyViews(studyPlan: StudyPlan, studentIntake: StudentI
 
     // Add weekly resources
     elements.push(new Paragraph({ text: '', spacing: { after: 400 } }));
-    elements.push(...await generateWeeklyResources(studyPlan, weekStart, weekEnd));
+
+    // No weekly resources for now
+    // elements.push(...await generateWeeklyResources(studyPlan, weekStart, weekEnd));
   }
 
   return elements;
@@ -2243,6 +2245,7 @@ function isCatchupDayCheck(day: dayjs.Dayjs, catchUpPreference?: string): boolea
 /**
  * Generate weekly resources section
  */
+// @ts-ignore
 async function generateWeeklyResources(studyPlan: StudyPlan, weekStart: dayjs.Dayjs, weekEnd: dayjs.Dayjs): Promise<(Paragraph | Table)[]> {
   const cycles = studyPlan.cycles || [];
   const elements: (Paragraph | Table)[] = [];

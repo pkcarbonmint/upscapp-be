@@ -21,6 +21,7 @@ import type { StudentIntake, Archetype, StudyPlan } from '../src/types/models';
 import { createStudentIntake } from '../src/types/models';
 import { DocumentService } from '../src/services/DocumentService';
 import { CalendarDocxService } from '../src/services/CalendarDocxService';
+import { TemplateCalendarDocxService } from '../src/services/TemplateCalendarDocxService';
 import { WeeklyScheduleService } from '../src/services/WeeklyScheduleService';
 import { CollageService } from '../src/services/CollageService';
 import * as path from 'path';
@@ -33,6 +34,7 @@ import { PlanningContext } from 'helios-scheduler';
 interface CliArgs {
   scenarios?: string[];
   format?: string;
+  service?: 'template' | 'programmatic';
   help?: boolean;
 }
 type TestScenario = {
@@ -70,6 +72,15 @@ function parseCliArgs(): CliArgs {
         console.error('❌ Error: -f/--format requires a value (e.g., -f js)');
         process.exit(1);
       }
+    } else if (arg === '--service') {
+      const nextArg = argv[i + 1];
+      if (nextArg && (nextArg === 'template' || nextArg === 'programmatic')) {
+        args.service = nextArg as 'template' | 'programmatic';
+        i++; // Skip the next argument as it's the value
+      } else {
+        console.error('❌ Error: --service requires either "template" or "programmatic"');
+        process.exit(1);
+      }
     } else if (arg === '-h' || arg === '--help') {
       args.help = true;
     } else if (arg.startsWith('-')) {
@@ -93,14 +104,16 @@ Usage: node generate-test-documents2.ts [options]
 Options:
   -s, --scenarios <list>    Comma-separated list of scenarios to run (e.g., T1,T2,T12)
   -f, --format <format>     Output format: js, json, markdown (default: js)
+  --service <type>          Document generation service: template, programmatic (default: programmatic)
   -h, --help               Show this help message
 
 Examples:
-  node generate-test-documents2.ts                    # Run all scenarios with JS format
-  node generate-test-documents2.ts -s T1,T2          # Run only T1 and T2 scenarios
-  node generate-test-documents2.ts -s T1,T2,T12      # Run T1, T2, and T12 scenarios
-  node generate-test-documents2.ts -f json           # Generate JSON format for all scenarios
-  node generate-test-documents2.ts -s T1 -f markdown # Generate markdown for T1 only
+  node generate-test-documents2.ts                         # Run all scenarios with JS format
+  node generate-test-documents2.ts -s T1,T2               # Run only T1 and T2 scenarios
+  node generate-test-documents2.ts -s T1,T2,T12           # Run T1, T2, and T12 scenarios
+  node generate-test-documents2.ts -f json                # Generate JSON format for all scenarios
+  node generate-test-documents2.ts -s T1 -f markdown      # Generate markdown for T1 only
+  node generate-test-documents2.ts -s T1 --service template # Use template-based generation for T1
 
 Available Scenarios:
   T1-T15: Test scenarios with different start dates and configurations
@@ -146,6 +159,7 @@ interface DocumentGeneratorOptions {
   generateWeeklySchedules: boolean;
   generatePDFs: boolean; // Generate PDF versions alongside Word documents
   format?: string; // Output format: js, json, markdown
+  service?: 'template' | 'programmatic'; // Document generation service type
 }
 
 
@@ -263,6 +277,7 @@ class TestDocumentGenerator {
   private generateWeeklySchedules: boolean;
   private generatePDFs: boolean;
   private format: string;
+  private service: 'template' | 'programmatic';
 
   constructor(options: DocumentGeneratorOptions) {
     this.outputDir = options.outputDir || './generated-docs';
@@ -271,6 +286,7 @@ class TestDocumentGenerator {
     this.generateWeeklySchedules= options.generateWeeklySchedules;
     this.generatePDFs = options.generatePDFs; // Default to true to generate PDFs
     this.format = options.format || 'js';
+    this.service = options.service || 'programmatic';
   }
 
   /**
@@ -578,20 +594,32 @@ class TestDocumentGenerator {
   }
 
   /**
-   * Generate Word document from study plan data using enhanced DocumentService
+   * Generate Word document from study plan data using selected service
    */
   private async generateWordDocument(
     scenarioName: string,
     studyPlan: StudyPlan, studentIntake: StudentIntake): Promise<void> {
     const wordDocStartTime = Date.now();
-    console.log(`      📄 Generating Word document...`);
+    const serviceName = this.service === 'template' ? 'template-based' : 'programmatic';
+    console.log(`      📄 Generating Word document using ${serviceName} service...`);
     
-    await CalendarDocxService.generateStudyPlanDocxToStream(
-      studyPlan,
-      studentIntake,
-      createWriteStream(path.join(this.outputDir, `${scenarioName}.docx`)),
-      { filename: `${scenarioName}.docx` }
-    );
+    if (this.service === 'template') {
+      // Use template-based service
+      await TemplateCalendarDocxService.generateStudyPlanDocxToStream(
+        studyPlan,
+        studentIntake,
+        createWriteStream(path.join(this.outputDir, `${scenarioName}.docx`)),
+        { filename: `${scenarioName}.docx` }
+      );
+    } else {
+      // Use programmatic service (default)
+      await CalendarDocxService.generateStudyPlanDocxToStream(
+        studyPlan,
+        studentIntake,
+        createWriteStream(path.join(this.outputDir, `${scenarioName}.docx`)),
+        { filename: `${scenarioName}.docx` }
+      );
+    }
 
   }
 
@@ -1041,7 +1069,8 @@ async function main() {
       generateJson: true,
       generateWeeklySchedules: false, // Disabled for performance testing
       generatePDFs: false, // Enable PDF generation
-      format: cliArgs.format || 'js'
+      format: cliArgs.format || 'js',
+      service: cliArgs.service || 'programmatic'
     });
 
     await generator.generateAllTestDocuments(cliArgs.scenarios);
