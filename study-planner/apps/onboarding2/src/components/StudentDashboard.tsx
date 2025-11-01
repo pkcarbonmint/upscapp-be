@@ -20,6 +20,68 @@ const CYCLE_COLORS: Record<string, { bg: string; fg: string; border: string }> =
   'C8': { bg: '#ECFCCB', fg: '#3F6212', border: '#84CC16' },
 };
 
+const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const CATCHUP_COLORS = {
+  bg: '#FFF7ED',
+  fg: '#C2410C',
+  border: '#FB923C',
+};
+
+const asDayIndex = (value: unknown): number | null => {
+  if (typeof value === 'number' && value >= 0 && value <= 6) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) return null;
+    const exactMatch = WEEKDAY_NAMES.findIndex(day => day.toLowerCase() === normalized);
+    if (exactMatch >= 0) return exactMatch;
+    const prefixMatch = WEEKDAY_NAMES.findIndex(day => day.toLowerCase().startsWith(normalized));
+    if (prefixMatch >= 0) return prefixMatch;
+  }
+  return null;
+};
+
+const resolveCatchupDayIndex = (studyPlan: any, studentIntake?: any): number | null => {
+  const numericCandidates = [
+    studyPlan?.constraints?.catchupDay,
+    studyPlan?.catchupDay,
+    studyPlan?.catchUpDay,
+    studyPlan?.constraints?.catch_up_day,
+    studyPlan?.constraints?.catchUpDay,
+    studentIntake?.study_strategy?.catchupDay,
+    studentIntake?.study_strategy?.catchUpDay,
+  ];
+
+  for (const candidate of numericCandidates) {
+    const index = asDayIndex(candidate);
+    if (index !== null) {
+      return index;
+    }
+  }
+
+  const stringCandidates = [
+    studentIntake?.study_strategy?.catch_up_day_preference,
+    studentIntake?.study_strategy?.catchUpDayPreference,
+    studyPlan?.constraints?.catch_up_day_preference,
+    studyPlan?.catch_up_day_preference,
+    studyPlan?.catchupDayPreference,
+    studyPlan?.constraints?.catchupDayPreference,
+  ];
+
+  for (const candidate of stringCandidates) {
+    const index = asDayIndex(candidate);
+    if (index !== null) {
+      return index;
+    }
+  }
+
+  return null;
+};
+
+const getCatchupDayLabel = (index: number | null) => (index !== null ? WEEKDAY_NAMES[index] : null);
+
 const StudentDashboard: React.FC<Props> = (stepProps) => {
   const { formData } = stepProps;
   const [studyPlan, setStudyPlan] = useState<any>(null);
@@ -252,6 +314,7 @@ const StudentDashboard: React.FC<Props> = (stepProps) => {
         {activeView === 'months' && (
           <MonthViews 
             studyPlan={studyPlan} 
+            studentIntake={studentIntake}
             selectedMonth={selectedMonthIndex}
             setSelectedMonth={setSelectedMonthIndex}
             onDayClick={(date) => {
@@ -369,10 +432,11 @@ const BirdsEyeView: React.FC<{ studyPlan: any; onCycleClick: (cycleStartDate: Da
 // Month Views Component
 const MonthViews: React.FC<{ 
   studyPlan: any; 
+  studentIntake: any;
   selectedMonth: number;
   setSelectedMonth: (index: number) => void;
   onDayClick: (date: Date) => void;
-}> = ({ studyPlan, selectedMonth, setSelectedMonth, onDayClick }) => {
+}> = ({ studyPlan, studentIntake, selectedMonth, setSelectedMonth, onDayClick }) => {
   const cycles = studyPlan.cycles || [];
   
   // Get all months in the study plan
@@ -397,6 +461,8 @@ const MonthViews: React.FC<{
   
   const months = getMonthsInPlan();
   const currentMonth = months[selectedMonth];
+  const catchupDayIndex = resolveCatchupDayIndex(studyPlan, studentIntake);
+  const catchupDayLabel = getCatchupDayLabel(catchupDayIndex);
   
   if (!currentMonth) return null;
   
@@ -451,23 +517,24 @@ const MonthViews: React.FC<{
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    const days: Array<{ day: number; date: Date | null; tasks: any[] }> = [];
+    const days: Array<{ day: number; date: Date | null; tasks: any[]; isCatchupDay: boolean }> = [];
     
     // Add empty cells for days before the month starts
     for (let i = 0; i < firstDay; i++) {
-      days.push({ day: 0, date: null, tasks: [] });
+      days.push({ day: 0, date: null, tasks: [], isCatchupDay: false });
     }
     
     // Add cells for each day of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       const tasks = getTasksForDate(date);
-      days.push({ day, date, tasks });
+      const isCatchupDay = catchupDayIndex !== null && date.getDay() === catchupDayIndex;
+      days.push({ day, date, tasks, isCatchupDay });
     }
     
     // Add empty cells to complete the last week
     while (days.length % 7 !== 0) {
-      days.push({ day: 0, date: null, tasks: [] });
+      days.push({ day: 0, date: null, tasks: [], isCatchupDay: false });
     }
     
     return days;
@@ -569,11 +636,12 @@ const MonthViews: React.FC<{
                 minHeight: '80px',
                 display: 'flex',
                 flexDirection: 'column',
-                backgroundColor: dayInfo.day ? 'white' : 'transparent',
+                position: 'relative',
+                backgroundColor: dayInfo.day ? (dayInfo.isCatchupDay ? CATCHUP_COLORS.bg : 'white') : 'transparent',
                 borderRadius: '8px',
                 padding: dayInfo.day ? '8px' : '0',
-                color: dayInfo.day ? colors.fg : 'transparent',
-                border: dayInfo.day ? `1px solid ${colors.border}` : 'none',
+                color: dayInfo.day ? (dayInfo.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg) : 'transparent',
+                border: dayInfo.day ? (dayInfo.isCatchupDay ? `2px dashed ${CATCHUP_COLORS.border}` : `1px solid ${colors.border}`) : 'none',
                 cursor: dayInfo.day ? 'pointer' : 'default',
                 transition: 'transform 0.1s, box-shadow 0.1s'
               }}
@@ -592,6 +660,26 @@ const MonthViews: React.FC<{
             >
               {dayInfo.day && (
                 <>
+                  {dayInfo.isCatchupDay && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '6px',
+                        right: '6px',
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        letterSpacing: '0.5px',
+                        color: CATCHUP_COLORS.fg,
+                        backgroundColor: `${CATCHUP_COLORS.bg}`,
+                        border: `1px solid ${CATCHUP_COLORS.border}`,
+                        borderRadius: '6px',
+                        padding: '2px 6px',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      Catch-up
+                    </span>
+                  )}
                   <div style={{ 
                     fontSize: '14px', 
                     fontWeight: 'bold',
@@ -602,7 +690,7 @@ const MonthViews: React.FC<{
                   {dayInfo.tasks.length > 0 && (
                     <div style={{ 
                       fontSize: '11px',
-                      color: colors.fg,
+                      color: dayInfo.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
                       opacity: 0.8
                     }}>
                       {dayInfo.tasks.length} task{dayInfo.tasks.length !== 1 ? 's' : ''}
@@ -620,7 +708,7 @@ const MonthViews: React.FC<{
                         style={{
                           fontSize: '9px',
                           padding: '2px 4px',
-                          backgroundColor: colors.border + '40',
+                          backgroundColor: dayInfo.isCatchupDay ? '#FDEAD7' : colors.border + '40',
                           borderRadius: '3px',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -634,7 +722,7 @@ const MonthViews: React.FC<{
                       <div style={{ 
                         fontSize: '9px',
                         fontStyle: 'italic',
-                        color: colors.fg,
+                        color: dayInfo.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
                         opacity: 0.7
                       }}>
                         +{dayInfo.tasks.length - 2} more
@@ -646,6 +734,21 @@ const MonthViews: React.FC<{
             </div>
           ))}
         </div>
+        {catchupDayLabel && (
+          <div
+            style={{
+              marginTop: '16px',
+              fontSize: '12px',
+              color: CATCHUP_COLORS.fg,
+              backgroundColor: CATCHUP_COLORS.bg,
+              border: `1px solid ${CATCHUP_COLORS.border}`,
+              borderRadius: '8px',
+              padding: '8px 12px'
+            }}
+          >
+            🧩 {catchupDayLabel} is marked as your catch-up day. These dates are highlighted in orange.
+          </div>
+        )}
       </div>
     </div>
   );
@@ -688,6 +791,8 @@ const WeekViews: React.FC<{
   
   const weeks = getWeeksInPlan();
   const currentWeek = weeks[selectedWeek];
+  const catchupDayIndex = resolveCatchupDayIndex(studyPlan, studentIntake);
+  const catchupDayLabel = getCatchupDayLabel(catchupDayIndex);
   
   if (!currentWeek) return null;
   
@@ -743,13 +848,15 @@ const WeekViews: React.FC<{
     for (let i = 0; i < 7; i++) {
       const date = new Date(current);
       const tasks = getTasksForDate(date);
+      const isCatchupDay = catchupDayIndex !== null && date.getDay() === catchupDayIndex;
       
       days.push({
         date,
         dayName: current.toLocaleDateString('en-US', { weekday: 'short' }),
         dayNumber: current.getDate(),
         monthDay: current.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        tasks
+        tasks,
+        isCatchupDay
       });
       current.setDate(current.getDate() + 1);
     }
@@ -821,6 +928,21 @@ const WeekViews: React.FC<{
             </span>
           )}
         </div>
+        {catchupDayLabel && (
+          <div
+            style={{
+              marginBottom: '16px',
+              fontSize: '13px',
+              color: CATCHUP_COLORS.fg,
+              backgroundColor: CATCHUP_COLORS.bg,
+              border: `1px solid ${CATCHUP_COLORS.border}`,
+              borderRadius: '8px',
+              padding: '8px 12px'
+            }}
+          >
+            🧩 {catchupDayLabel} is your catch-up day this week. The highlighted card marks it for easy planning.
+          </div>
+        )}
         
         <div style={{ 
           display: 'grid', 
@@ -831,8 +953,9 @@ const WeekViews: React.FC<{
             <div 
               key={idx}
               style={{
-                backgroundColor: 'white',
-                border: `2px solid ${colors.border}`,
+                position: 'relative',
+                backgroundColor: day.isCatchupDay ? CATCHUP_COLORS.bg : 'white',
+                border: day.isCatchupDay ? `2px dashed ${CATCHUP_COLORS.border}` : `2px solid ${colors.border}`,
                 borderRadius: '8px',
                 padding: '12px',
                 minHeight: '200px',
@@ -840,10 +963,30 @@ const WeekViews: React.FC<{
                 flexDirection: 'column'
               }}
             >
+              {day.isCatchupDay && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    letterSpacing: '0.5px',
+                    color: CATCHUP_COLORS.fg,
+                    backgroundColor: CATCHUP_COLORS.bg,
+                    border: `1px solid ${CATCHUP_COLORS.border}`,
+                    borderRadius: '6px',
+                    padding: '3px 8px',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  Catch-up
+                </span>
+              )}
               <div style={{ 
                 fontWeight: 'bold', 
                 fontSize: '14px', 
-                color: colors.fg,
+                color: day.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
                 marginBottom: '4px'
               }}>
                 {day.dayName}
@@ -851,18 +994,18 @@ const WeekViews: React.FC<{
               <div style={{ 
                 fontSize: '20px', 
                 fontWeight: 'bold', 
-                color: colors.fg,
+                color: day.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
                 marginBottom: '4px'
               }}>
                 {day.dayNumber}
               </div>
               <div style={{ 
                 fontSize: '11px', 
-                color: colors.fg,
+                color: day.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
                 opacity: 0.8,
                 marginBottom: '12px',
                 paddingBottom: '8px',
-                borderBottom: `1px solid ${colors.border}`
+                borderBottom: `1px solid ${day.isCatchupDay ? CATCHUP_COLORS.border : colors.border}`
               }}>
                 {day.monthDay}
               </div>
@@ -880,7 +1023,7 @@ const WeekViews: React.FC<{
                     <div style={{ 
                       fontSize: '11px',
                       fontWeight: 'bold',
-                      color: colors.fg,
+                      color: day.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
                       marginBottom: '4px'
                     }}>
                       {day.tasks.length} Task{day.tasks.length !== 1 ? 's' : ''}:
@@ -894,20 +1037,20 @@ const WeekViews: React.FC<{
                           style={{
                             fontSize: '11px',
                             padding: '6px 8px',
-                            backgroundColor: colors.bg,
-                            border: `1px solid ${colors.border}`,
+                            backgroundColor: day.isCatchupDay ? '#FDEAD7' : colors.bg,
+                            border: `1px solid ${day.isCatchupDay ? CATCHUP_COLORS.border : colors.border}`,
                             borderRadius: '4px',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '2px'
                           }}
                         >
-                          <div style={{ fontWeight: '600', color: colors.fg }}>
+                          <div style={{ fontWeight: '600', color: day.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg }}>
                             {task.title}
                           </div>
                           <div style={{ 
                             fontSize: '10px', 
-                            color: colors.fg,
+                            color: day.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
                             opacity: 0.7,
                             display: 'flex',
                             justifyContent: 'space-between'
@@ -922,13 +1065,13 @@ const WeekViews: React.FC<{
                 ) : (
                   <div style={{ 
                     fontSize: '11px',
-                    color: colors.fg,
-                    opacity: 0.5,
+                    color: day.isCatchupDay ? CATCHUP_COLORS.fg : colors.fg,
+                    opacity: 0.7,
                     fontStyle: 'italic',
                     textAlign: 'center',
                     marginTop: '20px'
                   }}>
-                    No tasks scheduled
+                    {day.isCatchupDay ? 'Catch-up day — use this time to revise, rest, or clear pending topics.' : 'No tasks scheduled'}
                   </div>
                 )}
               </div>
