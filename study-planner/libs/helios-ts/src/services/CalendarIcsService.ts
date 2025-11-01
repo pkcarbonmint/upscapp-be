@@ -95,7 +95,23 @@ export class CalendarIcsService {
                   studentIntake.study_strategy?.catch_up_day_preference
                 );
 
-                if (dailyPlan.tasks && dailyPlan.tasks.length > 0) {
+                // If it's a catchup day, create a dedicated catchup day event
+                if (isCatchupDay) {
+                  const catchupStart = dayDate.hour(9).minute(0).second(0).millisecond(0);
+                  const catchupEnd = catchupStart.add(4, 'hour'); // 4 hour default duration for catchup
+
+                  events.push({
+                    uid: `catchup-${dayDate.format('YYYY-MM-DD')}`,
+                    summary: '?? Catch-up Day',
+                    description: this.formatCatchupDayDescription(dailyPlan.tasks || [], block.subjects),
+                    start: catchupStart.toDate(),
+                    end: catchupEnd.toDate(),
+                    location: 'Study Session',
+                    categories: ['Study Plan', 'Catch-up Day'],
+                    color: '#F59E0B' // Orange color for catchup days
+                  });
+                } else if (dailyPlan.tasks && dailyPlan.tasks.length > 0) {
+                  // Regular study day with tasks
                   // Group tasks by subject
                   const tasksBySubject = this.groupTasksBySubject(dailyPlan.tasks, block.subjects);
 
@@ -111,8 +127,8 @@ export class CalendarIcsService {
 
                     events.push({
                       uid: `study-${subjectCode}-${dayDate.format('YYYY-MM-DD')}`,
-                      summary: `${isCatchupDay ? 'Catch-up Study Session' : 'Study Session'} - ${subjectName}`,
-                      description: this.formatTasksDescription(tasks, subjectName, isCatchupDay),
+                      summary: `Study Session - ${subjectName}`,
+                      description: this.formatTasksDescription(tasks, subjectName, false),
                       start: eventStart.toDate(),
                       end: eventEnd.toDate(),
                       location: 'Study Session',
@@ -300,6 +316,45 @@ export class CalendarIcsService {
         });
       });
       subjects.forEach(subject => lines.push(`- ${subject}`));
+    }
+
+    return lines.join('\\n');
+  }
+
+  /**
+   * Format catchup day description
+   */
+  private static formatCatchupDayDescription(
+    tasks: any[],
+    subjects: string[]
+  ): string {
+    const lines: string[] = [];
+    
+    lines.push('?? CATCH-UP DAY');
+    lines.push('');
+    lines.push('Use this day to:');
+    lines.push('- Review and consolidate your learning');
+    lines.push('- Complete any pending tasks');
+    lines.push('- Revise difficult topics');
+    lines.push('- Practice previous topics');
+    lines.push('');
+
+    if (subjects && subjects.length > 0) {
+      lines.push('Focus areas:');
+      subjects.forEach(subjectCode => {
+        const subjectName = this.getSubjectName(subjectCode);
+        lines.push(`- ${subjectName}`);
+      });
+      lines.push('');
+    }
+
+    if (tasks && tasks.length > 0) {
+      lines.push('Suggested tasks:');
+      for (const task of tasks) {
+        const duration = this.formatDuration(task.duration_minutes || 0);
+        const title = this.formatTaskTitle(task.title);
+        lines.push(`- ${title} (${duration})`);
+      }
     }
 
     return lines.join('\\n');
