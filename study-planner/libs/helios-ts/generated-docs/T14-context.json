@@ -61,6 +61,63 @@
     },
     {
       "isNCERT": true,
+      "subjectCode": "P",
+      "subjectNname": "Indian Polity and Governance",
+      "examFocus": "BothExams",
+      "baselineMinutes": 7200,
+      "topics": [
+        {
+          "code": "P00",
+          "subtopics": []
+        },
+        {
+          "code": "P01",
+          "subtopics": []
+        },
+        {
+          "code": "P02",
+          "subtopics": []
+        },
+        {
+          "code": "P03",
+          "subtopics": []
+        },
+        {
+          "code": "P04",
+          "subtopics": []
+        },
+        {
+          "code": "P05",
+          "subtopics": []
+        },
+        {
+          "code": "P06",
+          "subtopics": []
+        },
+        {
+          "code": "P07",
+          "subtopics": []
+        },
+        {
+          "code": "P08",
+          "subtopics": []
+        },
+        {
+          "code": "P09",
+          "subtopics": []
+        },
+        {
+          "code": "P10",
+          "subtopics": []
+        },
+        {
+          "code": "P11",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
       "subjectCode": "H01",
       "subjectNname": "History-Ancient",
       "examFocus": "BothExams",
@@ -582,63 +639,6 @@
     },
     {
       "isNCERT": true,
-      "subjectCode": "P",
-      "subjectNname": "Indian Polity and Governance",
-      "examFocus": "BothExams",
-      "baselineMinutes": 7200,
-      "topics": [
-        {
-          "code": "P00",
-          "subtopics": []
-        },
-        {
-          "code": "P01",
-          "subtopics": []
-        },
-        {
-          "code": "P02",
-          "subtopics": []
-        },
-        {
-          "code": "P03",
-          "subtopics": []
-        },
-        {
-          "code": "P04",
-          "subtopics": []
-        },
-        {
-          "code": "P05",
-          "subtopics": []
-        },
-        {
-          "code": "P06",
-          "subtopics": []
-        },
-        {
-          "code": "P07",
-          "subtopics": []
-        },
-        {
-          "code": "P08",
-          "subtopics": []
-        },
-        {
-          "code": "P09",
-          "subtopics": []
-        },
-        {
-          "code": "P10",
-          "subtopics": []
-        },
-        {
-          "code": "P11",
-          "subtopics": []
-        }
-      ]
-    },
-    {
-      "isNCERT": true,
       "subjectCode": "E",
       "subjectNname": "Indian Economy",
       "examFocus": "BothExams",
@@ -1087,6 +1087,7 @@
   ],
   "relativeAllocationWeights": {
     "OPT-AGR": 200,
+    "P": 120,
     "H01": 17.5,
     "H02": 17.5,
     "H03": 70,
@@ -1096,7 +1097,6 @@
     "G": 91,
     "B": 80,
     "T": 60,
-    "P": 120,
     "E": 120,
     "O": 40,
     "I": 40,

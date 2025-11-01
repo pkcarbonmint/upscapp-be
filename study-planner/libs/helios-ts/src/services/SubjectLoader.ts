@@ -293,6 +293,30 @@ export class SubjectLoader {
  * @param optionalSubjectCode - Optional subject code to include in the subjects list
  */
 export async function loadAllSubjects(optionalSubjectCode?: string): Promise<Subject[]> {
-  return SubjectLoader.loadAllSubjects(optionalSubjectCode);
+  return orderSubjects(SubjectLoader.loadAllSubjects(optionalSubjectCode));
 }
 
+function orderSubjects(subjects: Subject[]): Subject[] {
+  const preferredSubjCodeSequence = subjectsData.preferred_subject_code_sequence;
+  // put the subjects in the preferred sequence
+  // if the subject is not in the preferred sequence, leave it alone (maintain relative order at the end)
+  return subjects.sort((a, b) => {
+    const aIndex = preferredSubjCodeSequence.indexOf(a.subjectCode);
+    const bIndex = preferredSubjCodeSequence.indexOf(b.subjectCode);
+    
+    // If both are not in preferred sequence, maintain their relative order
+    if (aIndex === -1 && bIndex === -1) {
+      return 0;
+    }
+    // If only one is in preferred sequence, it comes first
+    if (aIndex === -1) {
+      return 1; // a comes after b
+    }
+    if (bIndex === -1) {
+      return -1; // a comes before b
+    }
+    // Both are in preferred sequence, sort by their index
+    return aIndex - bIndex;
+  });
+
+}

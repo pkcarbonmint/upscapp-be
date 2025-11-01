@@ -1,5 +1,6 @@
 {
   "optionalSubject": {
+    "isNCERT": false,
     "subjectCode": "OPT-AGR",
     "subjectNname": "Agriculture",
     "examFocus": "MainsOnly",
@@ -15,12 +16,12 @@
       }
     ]
   },
-  "startDate": "2025-10-31",
+  "startDate": "2025-10-31T18:30:00.000Z",
   "targetYear": 2027,
   "prelimsExamDate": "2027-05-20T00:00:00.000Z",
   "mainsExamDate": "2027-08-20T00:00:00.000Z",
   "constraints": {
-    "optionalSubjectCode": "OPT-SOC",
+    "optionalSubjectCode": "OPT-AGR",
     "confidenceMap": {
       "H01": 0.7,
       "H02": 0.7,
@@ -42,6 +43,7 @@
   },
   "subjects": [
     {
+      "isNCERT": false,
       "subjectCode": "OPT-AGR",
       "subjectNname": "Agriculture",
       "examFocus": "MainsOnly",
@@ -58,6 +60,64 @@
       ]
     },
     {
+      "isNCERT": true,
+      "subjectCode": "P",
+      "subjectNname": "Indian Polity and Governance",
+      "examFocus": "BothExams",
+      "baselineMinutes": 7200,
+      "topics": [
+        {
+          "code": "P00",
+          "subtopics": []
+        },
+        {
+          "code": "P01",
+          "subtopics": []
+        },
+        {
+          "code": "P02",
+          "subtopics": []
+        },
+        {
+          "code": "P03",
+          "subtopics": []
+        },
+        {
+          "code": "P04",
+          "subtopics": []
+        },
+        {
+          "code": "P05",
+          "subtopics": []
+        },
+        {
+          "code": "P06",
+          "subtopics": []
+        },
+        {
+          "code": "P07",
+          "subtopics": []
+        },
+        {
+          "code": "P08",
+          "subtopics": []
+        },
+        {
+          "code": "P09",
+          "subtopics": []
+        },
+        {
+          "code": "P10",
+          "subtopics": []
+        },
+        {
+          "code": "P11",
+          "subtopics": []
+        }
+      ]
+    },
+    {
+      "isNCERT": true,
       "subjectCode": "H01",
       "subjectNname": "History-Ancient",
       "examFocus": "BothExams",
@@ -110,6 +170,7 @@
       ]
     },
     {
+      "isNCERT": true,
       "subjectCode": "H02",
       "subjectNname": "History-Medieval",
       "examFocus": "BothExams",
@@ -154,6 +215,7 @@
       ]
     },
     {
+      "isNCERT": true,
       "subjectCode": "H03",
       "subjectNname": "History-Modern",
       "examFocus": "BothExams",
@@ -222,6 +284,7 @@
       ]
     },
     {
+      "isNCERT": true,
       "subjectCode": "H04",
       "subjectNname": "History-Art and Culture",
       "examFocus": "BothExams",
@@ -262,6 +325,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "H05",
       "subjectNname": "History-World",
       "examFocus": "BothExams",
@@ -310,6 +374,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "H06",
       "subjectNname": "History-Post Independent India",
       "examFocus": "BothExams",
@@ -342,6 +407,7 @@
       ]
     },
     {
+      "isNCERT": true,
       "subjectCode": "G",
       "subjectNname": "Geography",
       "examFocus": "BothExams",
@@ -418,6 +484,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "B",
       "subjectNname": "Environment, Ecology and Disaster Management",
       "examFocus": "BothExams",
@@ -494,6 +561,7 @@
       ]
     },
     {
+      "isNCERT": true,
       "subjectCode": "T",
       "subjectNname": "Science & Technology",
       "examFocus": "BothExams",
@@ -570,62 +638,7 @@
       ]
     },
     {
-      "subjectCode": "P",
-      "subjectNname": "Indian Polity and Governance",
-      "examFocus": "BothExams",
-      "baselineMinutes": 7200,
-      "topics": [
-        {
-          "code": "P00",
-          "subtopics": []
-        },
-        {
-          "code": "P01",
-          "subtopics": []
-        },
-        {
-          "code": "P02",
-          "subtopics": []
-        },
-        {
-          "code": "P03",
-          "subtopics": []
-        },
-        {
-          "code": "P04",
-          "subtopics": []
-        },
-        {
-          "code": "P05",
-          "subtopics": []
-        },
-        {
-          "code": "P06",
-          "subtopics": []
-        },
-        {
-          "code": "P07",
-          "subtopics": []
-        },
-        {
-          "code": "P08",
-          "subtopics": []
-        },
-        {
-          "code": "P09",
-          "subtopics": []
-        },
-        {
-          "code": "P10",
-          "subtopics": []
-        },
-        {
-          "code": "P11",
-          "subtopics": []
-        }
-      ]
-    },
-    {
+      "isNCERT": true,
       "subjectCode": "E",
       "subjectNname": "Indian Economy",
       "examFocus": "BothExams",
@@ -738,6 +751,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "O",
       "subjectNname": "Governance",
       "examFocus": "BothExams",
@@ -786,6 +800,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "I",
       "subjectNname": "International Relations",
       "examFocus": "BothExams",
@@ -834,6 +849,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "C",
       "subjectNname": "Internal Security",
       "examFocus": "BothExams",
@@ -898,6 +914,7 @@
       ]
     },
     {
+      "isNCERT": true,
       "subjectCode": "S",
       "subjectNname": "Society and Social Justice",
       "examFocus": "BothExams",
@@ -1010,6 +1027,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "Z",
       "subjectNname": "Essay",
       "examFocus": "BothExams",
@@ -1050,6 +1068,7 @@
       ]
     },
     {
+      "isNCERT": false,
       "subjectCode": "OPT-AGR",
       "subjectNname": "Agriculture",
       "examFocus": "MainsOnly",
@@ -1068,6 +1087,7 @@
   ],
   "relativeAllocationWeights": {
     "OPT-AGR": 200,
+    "P": 120,
     "H01": 17.5,
     "H02": 17.5,
     "H03": 70,
@@ -1077,7 +1097,6 @@
     "G": 91,
     "B": 80,
     "T": 60,
-    "P": 120,
     "E": 120,
     "O": 40,
     "I": 40,

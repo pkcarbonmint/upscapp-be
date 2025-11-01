@@ -17,9 +17,14 @@ export function planMain(context: PlanningContext) {
   const scenario: ScenarioResult = planCycles(context);
   const cycles = scenario.schedules;
   // console.log("planMain", "cycles2Blocks");
-  const blocks = cycles2Blocks(context, cycles);
+  const blocks = cycles2Blocks(context, cycles)
+  .map((block, index) => {
+    block.id = ''+index; return block;
+  });
   // console.log("planMain", "blocks2Tasks");
   const tasks = blocks2Tasks(context, blocks);
+  const feb01Tasks = tasks.filter(task => task.date.format('YYYY-MM-DD') === '2026-02-01');
+  console.log(`\nFeb 01 tasks: ${JSON.stringify(feb01Tasks, null, 2)}`);
   // console.log("planMain", "blocks2Tasks returned");
   return { cycles, blocks, tasks };
 }
@@ -29,8 +34,8 @@ function filterSubjects(subjects: S2Subject[], cycleType: CycleType): S2Subject[
 }
 
 function isIncludeSubjectInCycle(cycleType: CycleType) {
-  return (cycleType === CycleType.C1 ) ? c1SubjectFilter : nonC1SubjectFilter;
-  
+  return (cycleType === CycleType.C1) ? c1SubjectFilter : nonC1SubjectFilter;
+
   function c1SubjectFilter(subject: S2Subject): boolean {
     // console.log("C1 - includeSubject", "subject", subject.subjectCode, "isNCERT", subject.isNCERT);
     return subject.isNCERT ?? false;
@@ -58,12 +63,17 @@ function reorderSubjects(subjects: S2Subject[], optionalSubject: S2Subject, cycl
     [optionalSubject, ...subjects] : subjects;
 }
 
-function cycles2Blocks(context: PlanningContext, cycles: CycleSchedule[]): BlockSlot[] {
+
+export function cycles2Blocks(context: PlanningContext, cycles: CycleSchedule[]): BlockSlot[] {
   const blocks = cycles.flatMap((cycle) => {
     const { cycleType, startDate, endDate } = cycle;
 
     const cycle2ExamFocus = cycleType2ExamFocus(cycleType);
-    const filteredSubjects = filterSubjects(context.subjects, cycleType);
+    function dedupFilter(subject: S2Subject): boolean {
+      return subject.subjectCode !== context.constraints.optionalSubjectCode;
+    }
+    const filteredSubjects = filterSubjects(context.subjects, cycleType)
+      .filter(dedupFilter);
     const reorderedSubjects = reorderSubjects(filteredSubjects, context.optionalSubject, cycle2ExamFocus);
     // console.log("cycles2Blocks", cycleType, "unfilteredSubjects", context.subjects, "reorderedSubjects", reorderedSubjects);
     // console.log("cycles2Blocks", cycleType, "unfilteredSubjects", context.subjects.length, "reorderedSubjects", reorderedSubjects.length);
@@ -73,12 +83,18 @@ function cycles2Blocks(context: PlanningContext, cycles: CycleSchedule[]): Block
       cycleType,
       relativeAllocationWeights: context.relativeAllocationWeights,
       numParallel,
-      workingMinutesPerDay: context.constraints.workingHoursPerDay * 60 / numParallel,
+      workingMinutesPerDay: context.constraints.workingHoursPerDay * 60,
       catchupDay: context.constraints.catchupDay,
       testDay: context.constraints.testDay,
       testMinutes: context.constraints.testMinutes,
     }
-
+    // check if we have duplicate subjects
+    const duplicateSubjects = reorderedSubjects.filter((subject, index, self) =>
+      self.findIndex(t => t.subjectCode === subject.subjectCode) !== index
+    );
+    if (duplicateSubjects.length > 0) {
+      throw new Error(`Duplicate subjects found: ${duplicateSubjects.map(s => s.subjectCode).join(', ')}`);
+    }
     const blocks = planBlocks(dayjs(startDate), dayjs(endDate), reorderedSubjects, blkConstraints);
     return blocks;
   });
@@ -171,39 +187,90 @@ function adjustTaskEffortSplit(taskEffortSplit: Record<S2SlotType, number>): Rec
     [S2SlotType.PRACTICE]: newPracticeShare,
   };
 }
+
+function planOneBlock(context: PlanningContext, block: BlockSlot, index: number): S2Task[] {
+  const { cycleType } = block;
+  const { subject, from, to } = block;
+  const taskEffortSplit = cycleTypeToTaskEffortSplit(cycleType);
+  const taskPlanConstraints: S2Constraints = {
+    cycleType,
+    dayMaxMinutes: block.minutesPerDay,
+    dayMinMinutes: block.minutesPerDay,
+    catchupDay: context.constraints.catchupDay,
+    testDay: context.constraints.testDay,
+    testMinutes: context.constraints.testMinutes,
+    taskEffortSplit,
+    optionalSubjectCode: context.constraints.optionalSubjectCode,
+  }
+  // console.log(`blocks2Tasks: Block ${index + 1} - ${subject.subjectCode} (${cycleType}) from ${from.format('YYYY-MM-DD HH:mm')} to ${to.format('YYYY-MM-DD HH:mm')}`);
+  // console.log(`blocks2Tasks: Block duration: ${to.diff(from, 'minutes')} minutes`);
+  // console.log(`blocks2Tasks: Task constraints:`, taskPlanConstraints);
+
+  const blockTasks = planSubjectTasks(from, to, subject, taskPlanConstraints);
+  // console.log(`blocks2Tasks: Block ${index + 1} generated ${blockTasks.length} tasks`);
+  const testTasks = blockTasks.filter(t => t.taskType === S2SlotType.TEST);
+  if (testTasks.length > 0) {
+    console.log(`[DEBUG blocks2Tasks] Block ${index + 1} (${subject.subjectCode}, ${from.format('YYYY-MM-DD')} to ${to.format('YYYY-MM-DD')}) generated ${testTasks.length} test task(s):`);
+    testTasks.forEach(task => {
+      console.log(`  - [${block.id}]Test task on ${task.date.format('YYYY-MM-DD')} for ${task.subjectCode} (${task.minutes} minutes)`);
+    });
+  }
+  const finaltasks = blockTasks.map(task => ({ ...task, blockId: block.id }));
+
+  // verify duplicate test tasks here
+  const duplicateTestTasks = finaltasks.filter(t => t.taskType === S2SlotType.TEST).filter((t, index, self) =>
+    self.findIndex(t2 => t2.date.isSame(t.date) && t2.subjectCode === t.subjectCode) !== index
+  );
+  if (duplicateTestTasks.length > 0) {
+    throw new Error(`Duplicate test tasks found: ${duplicateTestTasks.map(t => t.date.format('YYYY-MM-DD') + ' ' + t.subjectCode).join(', ')}`);
+  }
+  
+  return finaltasks;
+}
+
+
 function blocks2Tasks(context: PlanningContext, blocks: BlockSlot[]): S2Task[] {
   // console.log(`blocks2Tasks: Processing ${blocks.length} blocks`);
-  const tasks = blocks.flatMap((block, index) => {
-    const { cycleType } = block;
-    const { subject, from, to } = block;
-    const taskEffortSplit = block.metadata?.isExcessTime
-      ? adjustTaskEffortSplit(cycleTypeToTaskEffortSplit(cycleType))
-      : cycleTypeToTaskEffortSplit(cycleType);
-    const taskPlanConstraints: S2Constraints = {
-      cycleType,
-      dayMaxMinutes: block.minutesPerDay,
-      dayMinMinutes: block.minutesPerDay,
-      catchupDay: context.constraints.catchupDay,
-      testDay: context.constraints.testDay,
-      testMinutes: context.constraints.testMinutes,
-      taskEffortSplit,
-      optionalSubjectCode: context.constraints.optionalSubjectCode,
-    }
-    // console.log(`blocks2Tasks: Block ${index + 1} - ${subject.subjectCode} (${cycleType}) from ${from.format('YYYY-MM-DD HH:mm')} to ${to.format('YYYY-MM-DD HH:mm')}`);
-    // console.log(`blocks2Tasks: Block duration: ${to.diff(from, 'minutes')} minutes`);
-    // console.log(`blocks2Tasks: Task constraints:`, taskPlanConstraints);
+  const tasks = blocks.flatMap((block, index) => planOneBlock(context, block, index));
+  return dedupTestTasks(tasks);
+}
 
-    try {
-      const blockTasks = planSubjectTasks(from, to, subject, taskPlanConstraints);
-      // console.log(`blocks2Tasks: Block ${index + 1} generated ${blockTasks.length} tasks`);
-      return blockTasks;
-    } catch (error) {
-      console.error(`blocks2Tasks: Error in block ${index + 1}:`, error instanceof Error ? error.message : String(error));
-      return [];
+function dedupTestTasks(tasks: S2Task[]): S2Task[] {
+  // Deduplicate test tasks by date+subject (same subject should only have one test per day)
+  console.log(`[DEBUG blocks2Tasks] Before deduplication: ${tasks.length} total tasks`);
+  const testTasksBefore = tasks.filter(t => t.taskType === S2SlotType.TEST);
+  console.log(`[DEBUG blocks2Tasks] Before deduplication: ${testTasksBefore.length} test tasks`);
+
+  const testTaskMap = new Map<string, S2Task>();
+  const nonTestTasks: S2Task[] = [];
+
+  for (const task of tasks) {
+    if (task.taskType === S2SlotType.TEST) {
+      const key = `${task.date.format('YYYY-MM-DD')}|${task.subjectCode}`;
+      if (testTaskMap.has(key)) {
+        const existing = testTaskMap.get(key)!;
+        console.log(`[DEBUG blocks2Tasks] Found duplicate test task: ${key}`);
+        console.log(`  Existing: blockId=${existing.blockId}, date=${existing.date.format('YYYY-MM-DD')}, minutes=${existing.minutes}`);
+        console.log(`  Duplicate: blockId=${task.blockId}, date=${task.date.format('YYYY-MM-DD')}, minutes=${task.minutes}`);
+        // Keep the first one encountered, or the one with more minutes
+        if (task.minutes > existing.minutes) {
+          testTaskMap.set(key, task);
+        }
+      } else {
+        testTaskMap.set(key, task);
+      }
+    } else {
+      nonTestTasks.push(task);
     }
-  });
+  }
+
+  const deduplicatedTasks = [...nonTestTasks, ...Array.from(testTaskMap.values())];
+  const testTasksAfter = deduplicatedTasks.filter(t => t.taskType === S2SlotType.TEST);
+  console.log(`[DEBUG blocks2Tasks] After deduplication: ${deduplicatedTasks.length} total tasks, ${testTasksAfter.length} test tasks`);
+  console.log(`[DEBUG blocks2Tasks] Removed ${testTasksBefore.length - testTasksAfter.length} duplicate test tasks`);
+
   // console.log(`blocks2Tasks: Total tasks generated: ${tasks.length}`);
-  return tasks;
+  return deduplicatedTasks;
 }
 
 const BASE_TASK_RATIOS = {

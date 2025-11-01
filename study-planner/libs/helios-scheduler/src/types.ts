@@ -66,6 +66,7 @@ export type BlockAllocConstraints = {
 }
 
 export type BlockSlot = {
+  id: string;
   cycleType: CycleType;
   subject: S2Subject;
   from: Dayjs; to: Dayjs;
@@ -151,6 +152,7 @@ export type S2TopicWithMinutes = S2Topic & {
 };
 
 export type S2Task = {
+  blockId: string;
   topicCode?: string;
   subjectCode: string;
   taskType: S2SlotType;
