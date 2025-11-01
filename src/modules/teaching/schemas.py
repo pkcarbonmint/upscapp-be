@@ -138,6 +138,7 @@ class PlanTaskBase(BaseSchema):
     links: list[str] | None = []
     mentorship_meetings: list[MentorshipMeetings] | None = []
     reference_materials: list[str] | None = []
+    current_affairs_type: dict | None = None  # e.g., {"type": "CAReading"}
     created_by_id: int
     created_by: UserInfo
     status: TASK_STATUS
@@ -164,6 +165,7 @@ class PlanTaskUpdate(BaseSchema):
     links: list[str] | None = []
     mentorship_meetings: list[MentorshipMeetings] | None = []
     reference_materials: list[str] | None = []
+    current_affairs_type: dict | None = None
     last_updated_by:UserInfo | None = None
     remarks: str | None = None
     is_deleted: bool | None = None
@@ -237,6 +239,7 @@ class PlanTaskWithUsersSchema(BaseSchema):
     target_marks: int | None = None
     links: list[str] | None = []
     reference_materials: list[str] | None = []
+    current_affairs_type: dict | None = None
     created_by_id: int
     created_by: UserInfo
     status: TASK_STATUS
@@ -314,3 +317,13 @@ class TasksAttemptTests(BaseSchema):
     test_attempt_mode:TEST_ATTEMPT_MODE | None = None
     attempt_status: TEST_ATTEMPT_STATUS | None = None
     is_evaluated: bool | None = None
+
+class GenerateCATasksRequest(BaseSchema):
+    studyplan_id: int
+    start_date: date
+    end_date: date
+    daily_ca_minutes: int | None = 30  # Default 30 minutes
+    cycle_type: str | None = None  # Optional: C2, C3, C4, C5, C6
+    exclude_weekdays: list[int] | None = []  # 0=Monday, 6=Sunday
+    created_by_id: int
+    created_by: UserInfo
