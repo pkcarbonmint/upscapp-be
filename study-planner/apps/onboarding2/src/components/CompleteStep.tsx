@@ -177,8 +177,7 @@ const CompleteStep: React.FC<StepProps> = (stepProps) => {
       <button 
         className="ms-button ms-button-secondary complete-button"
         onClick={() => {
-          // TODO: Navigate to dashboard
-          console.log('Navigate to dashboard');
+          window.location.hash = '#/dashboard';
         }}
         style={{ marginTop: '12px' }}
       >
