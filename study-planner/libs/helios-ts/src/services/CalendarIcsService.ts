@@ -428,8 +428,11 @@ export class CalendarIcsService {
       'SATURDAY': 6
     };
 
-    if (catchUpPreference && dayMap[catchUpPreference] !== undefined) {
-      return dayOfWeek === dayMap[catchUpPreference];
+    if (catchUpPreference) {
+      const normalizedPreference = catchUpPreference.trim().toUpperCase();
+      if (dayMap[normalizedPreference] !== undefined) {
+        return dayOfWeek === dayMap[normalizedPreference];
+      }
     }
 
     return false;
