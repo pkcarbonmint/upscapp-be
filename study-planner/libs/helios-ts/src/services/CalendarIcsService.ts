@@ -59,7 +59,7 @@ export class CalendarIcsService {
       // Add cycle start event
       events.push({
         uid: `cycle-start-${cycle.cycleName}-${cycleStart.format('YYYY-MM-DD')}`,
-        summary: `?? ${cycle.cycleName} - Start`,
+        summary: `Cycle Start: ${cycle.cycleName}`,
         description: this.formatCycleDescription(cycle, 'start'),
         start: cycleStart.toDate(),
         end: cycleStart.add(1, 'hour').toDate(),
@@ -71,7 +71,7 @@ export class CalendarIcsService {
       // Add cycle end event
       events.push({
         uid: `cycle-end-${cycle.cycleName}-${cycleEnd.format('YYYY-MM-DD')}`,
-        summary: `? ${cycle.cycleName} - Complete`,
+        summary: `Cycle Complete: ${cycle.cycleName}`,
         description: this.formatCycleDescription(cycle, 'end'),
         start: cycleEnd.toDate(),
         end: cycleEnd.add(1, 'hour').toDate(),
@@ -98,18 +98,20 @@ export class CalendarIcsService {
                 if (dailyPlan.tasks && dailyPlan.tasks.length > 0) {
                   // Group tasks by subject
                   const tasksBySubject = this.groupTasksBySubject(dailyPlan.tasks, block.subjects);
-                  
+
+                  let currentStart = dayDate.hour(9).minute(0).second(0).millisecond(0); // Default start time 9 AM
+
                   for (const [subjectCode, tasks] of Object.entries(tasksBySubject)) {
                     const subjectName = this.getSubjectName(subjectCode);
                     const totalDuration = tasks.reduce((sum, task) => sum + (task.duration_minutes || 0), 0);
-                    
-                    // Create event for this subject on this day
-                    const eventStart = dayDate.hour(9).minute(0); // Default start time 9 AM
+
+                    // Create event for this subject on this day and move the start time forward sequentially
+                    const eventStart = currentStart;
                     const eventEnd = eventStart.add(totalDuration, 'minute');
 
                     events.push({
                       uid: `study-${subjectCode}-${dayDate.format('YYYY-MM-DD')}`,
-                      summary: `${isCatchupDay ? '?? ' : '?? '}${subjectName}`,
+                      summary: `${isCatchupDay ? 'Catch-up Study Session' : 'Study Session'} - ${subjectName}`,
                       description: this.formatTasksDescription(tasks, subjectName, isCatchupDay),
                       start: eventStart.toDate(),
                       end: eventEnd.toDate(),
@@ -117,6 +119,8 @@ export class CalendarIcsService {
                       categories: ['Study Plan', 'Study Session', subjectName],
                       color: this.getCategoryColor(cycle.cycleType)
                     });
+
+                    currentStart = eventEnd;
                   }
                 }
               }
@@ -130,7 +134,7 @@ export class CalendarIcsService {
     const examDate = dayjs(`${studyPlan.targeted_year}-08-31`);
     events.push({
       uid: `upsc-prelims-${studyPlan.targeted_year}`,
-      summary: `?? UPSC Prelims ${studyPlan.targeted_year}`,
+      summary: `UPSC Prelims ${studyPlan.targeted_year}`,
       description: `UPSC Civil Services Preliminary Examination ${studyPlan.targeted_year}`,
       start: examDate.toDate(),
       end: examDate.add(1, 'day').toDate(),
@@ -312,7 +316,7 @@ export class CalendarIcsService {
     const lines: string[] = [];
     
     if (isCatchupDay) {
-      lines.push('?? CATCH-UP DAY');
+      lines.push('CATCH-UP DAY');
       lines.push('Use this day to review and consolidate your learning.');
       lines.push('');
     }
@@ -326,7 +330,7 @@ export class CalendarIcsService {
       const taskType = task.taskType || 'study';
       const title = this.formatTaskTitle(task.title);
       
-      lines.push(`? ${title} (${duration}) - ${taskType.toUpperCase()}`);
+      lines.push(`- ${title} (${duration}) - ${taskType.toUpperCase()}`);
     }
 
     const totalMinutes = tasks.reduce((sum, task) => sum + (task.duration_minutes || 0), 0);
