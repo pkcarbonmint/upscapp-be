@@ -89,18 +89,40 @@ generate_version() {
     # Change back to original directory
     cd "$ORIGINAL_DIR"
     
-    # Create version string
-    VERSION="1.0.0-${GIT_COMMIT}"
+    # Version file path
+    VERSION_FILE="$APP_DIR/public/version.json"
+    
+    # Read current version if file exists
+    if [ -f "$VERSION_FILE" ]; then
+        # Extract version from JSON (remove commit hash suffix if present)
+        CURRENT_VERSION=$(grep -o '"version":"[^"]*"' "$VERSION_FILE" | cut -d'"' -f4 | cut -d'-' -f1)
+        print_status "Current version: $CURRENT_VERSION"
+        
+        # Parse version (expecting format: MAJOR.MINOR.PATCH)
+        IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+        
+        # Increment minor version
+        MINOR=$((MINOR + 1))
+        NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+        
+        print_status "Incrementing version: ${CURRENT_VERSION} -> ${NEW_VERSION}"
+    else
+        # Initialize version if file doesn't exist
+        NEW_VERSION="1.0.0"
+        print_status "No version file found, initializing to: ${NEW_VERSION}"
+    fi
+    
+    # Create version string with commit hash
+    VERSION="${NEW_VERSION}-${GIT_COMMIT}"
     
     # Create public directory if it doesn't exist
     mkdir -p "$APP_DIR/public"
     
     # Write version to public/version.json
-    echo "{\"version\":\"${VERSION}\"}" > "$APP_DIR/public/version.json"
+    echo "{\"version\":\"${VERSION}\"}" > "$VERSION_FILE"
     
     print_success "Version file generated: ${VERSION}"
 }
-
 # Function to build the application
 build_app() {
     # Generate version file first (before changing directories)
