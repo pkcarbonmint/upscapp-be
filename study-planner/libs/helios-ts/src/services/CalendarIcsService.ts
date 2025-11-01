@@ -38,7 +38,9 @@ export class CalendarIcsService {
     studentIntake: StudentIntake
   ): Promise<Blob> {
     const icsContent = await this.generateStudyPlanIcs(studyPlan, studentIntake);
-    return new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    // Add UTF-8 BOM (Byte Order Mark) to ensure proper encoding in all calendar applications
+    const bomContent = '\uFEFF' + icsContent;
+    return new Blob([bomContent], { type: 'text/calendar;charset=utf-8' });
   }
 
   /**
@@ -99,13 +101,19 @@ export class CalendarIcsService {
                   // Group tasks by subject
                   const tasksBySubject = this.groupTasksBySubject(dailyPlan.tasks, block.subjects);
                   
+                  // Track current time for sequential scheduling
+                  let currentTime = dayDate.hour(9).minute(0); // Start at 9 AM
+                  
                   for (const [subjectCode, tasks] of Object.entries(tasksBySubject)) {
                     const subjectName = this.getSubjectName(subjectCode);
                     const totalDuration = tasks.reduce((sum, task) => sum + (task.duration_minutes || 0), 0);
                     
-                    // Create event for this subject on this day
-                    const eventStart = dayDate.hour(9).minute(0); // Default start time 9 AM
+                    // Create event for this subject on this day - sequential scheduling
+                    const eventStart = currentTime;
                     const eventEnd = eventStart.add(totalDuration, 'minute');
+                    
+                    // Update current time for next subject
+                    currentTime = eventEnd;
 
                     events.push({
                       uid: `study-${subjectCode}-${dayDate.format('YYYY-MM-DD')}`,
