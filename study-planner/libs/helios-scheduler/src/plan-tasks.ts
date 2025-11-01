@@ -467,7 +467,7 @@ function mergeSameTopicDayTasks(tasks: S2TaskNoBlockId[]): S2TaskNoBlockId[] {
   const init = new Map<string, S2TaskNoBlockId[]>() as TaskMap;
   const mergedTasks = tasks.reduce(
     (acc, task, _index, _array) => {
-      const key = `${task.date.format('YYYY-MM-DD')}-${task.topicCode}`;
+      const key = `${task.date.format('YYYY-MM-DD')}-${task.topicCode}-${task.taskType}`;
       if (!acc.has(key)) {
         acc.set(key, []);
       }
