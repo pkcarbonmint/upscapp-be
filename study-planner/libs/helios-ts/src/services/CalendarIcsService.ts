@@ -2,10 +2,12 @@ import type { StudyPlan, StudentIntake } from '../types/models';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import utc from 'dayjs/plugin/utc';
 import { SubjectLoader } from './SubjectLoader';
 
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(utc);
 
 /**
  * CalendarIcsService - Generate iCalendar (.ics) files for Google Calendar import
@@ -80,9 +82,6 @@ export class CalendarIcsService {
 
       // Add daily study tasks
       for (const block of cycle.cycleBlocks) {
-        const blockStart = dayjs(block.block_start_date);
-        const blockEnd = dayjs(block.block_end_date);
-
         // Iterate through weekly plans
         if (block.weekly_plan) {
           for (const weeklyPlan of block.weekly_plan) {
