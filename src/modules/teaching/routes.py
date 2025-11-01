@@ -359,6 +359,66 @@ async def softdelete_plantaskusers(*,plantask_id:int, user: User = Depends(Check
     plantaskusers_delete = await plantaskuser_crud.update(db=db.session,plantask_id=plantask_id,object={"is_deleted":True},allow_multiple=True)
     return ResponseSchema(msg="Deleted successfully", success=True)
 
+@studyplan_router.post("/plantasks/generate-ca", response_model=ResponseListSchema[PlanTaskResponse])
+async def generate_ca_tasks(
+    *,
+    ca_request: GenerateCATasksRequest,
+    request: Request,
+    user: User = Depends(CheckV2UserAccess(user_types=[USER_TYPE.workforce], roles=[USER_ROLE.org_admin, USER_ROLE.branch_admin, USER_ROLE.teacher], apps=[APP.admin_app]))
+):
+    """
+    Generate daily current affairs reading tasks for a study plan.
+    
+    - **studyplan_id**: ID of the study plan
+    - **start_date**: Start date for CA tasks
+    - **end_date**: End date for CA tasks
+    - **daily_ca_minutes**: Minutes per day (optional, default 30)
+    - **cycle_type**: Optional cycle type (C2, C3, C4, C5, C6) - will override daily_ca_minutes
+    - **exclude_weekdays**: List of weekdays to exclude (0=Monday, 6=Sunday)
+    - **created_by_id**: User ID creating the tasks
+    - **created_by**: User info
+    """
+    # If cycle_type is provided, use it to calculate CA minutes
+    if ca_request.cycle_type:
+        ca_minutes = studyplan_service.get_ca_minutes_for_cycle_type(ca_request.cycle_type)
+    else:
+        ca_minutes = ca_request.daily_ca_minutes or 30
+    
+    # Generate CA tasks
+    ca_tasks = await studyplan_service.generate_ca_tasks_for_studyplan(
+        studyplan_id=ca_request.studyplan_id,
+        start_date=ca_request.start_date,
+        end_date=ca_request.end_date,
+        daily_ca_minutes=ca_minutes,
+        created_by_id=ca_request.created_by_id,
+        created_by_info=ca_request.created_by.model_dump(),
+        exclude_weekdays=ca_request.exclude_weekdays or [],
+        db_session=db.session
+    )
+    
+    # Log event
+    await log_event(
+        db=db.session,
+        request=request,
+        event_type=EVENT_TYPE.PLANTASK_CREATE,
+        event_by_user_id=user.id,
+        user_name=user.full_name,
+        user_phone=user.phone_number,
+        event_details={
+            "studyplan_id": ca_request.studyplan_id,
+            "ca_tasks_generated": len(ca_tasks),
+            "start_date": str(ca_request.start_date),
+            "end_date": str(ca_request.end_date),
+            "daily_ca_minutes": ca_minutes
+        }
+    )
+    
+    return ResponseListSchema(
+        data=ca_tasks,
+        success=True,
+        meta={"count": len(ca_tasks), "message": f"Generated {len(ca_tasks)} current affairs tasks"}
+    )
+
 # student app 
 
 @studentprod_router.put("/plantask/tests", response_model=ResponseListSchema[PlanTestResp])

@@ -39,6 +39,7 @@ class PlanTask(Base,BaseMixin):
     links = mapped_column(ARRAY(String))
     mentorship_meetings = mapped_column(ARRAY(JSON))
     reference_materials = mapped_column(ARRAY(String))
+    current_affairs_type = mapped_column(JSON, nullable=True)  # e.g., {"type": "CAReading"}
     created_by_id = mapped_column(ForeignKey("users.id"))
     created_by = mapped_column(JSON)
     last_updated_by = mapped_column(JSON)

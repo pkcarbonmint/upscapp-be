@@ -2049,7 +2049,7 @@ class StudyPlanService(BaseService[StudyPlan, StudyPlanCreate, StudyPlanUpdate])
             .outerjoin(assigned_subq, assigned_subq.c.student_id == User.id)
             .outerjoin(strongest_final, strongest_final.c.student_id == User.id)
         )
-        # 💡 Execute the final_query *before* using student IDs
+        # ?? Execute the final_query *before* using student IDs
         result = await session.execute(final_query)
         students = [dict(row._mapping) for row in result.fetchall()]
 
@@ -2099,4 +2099,111 @@ class StudyPlanService(BaseService[StudyPlan, StudyPlanCreate, StudyPlanUpdate])
                  .where(PlanTaskUser.purchase_id.in_(pur_ids),PlanTaskUser.plantask_id==plantask_id ))
         await session.execute(query)
         await session.commit()
+    
+    def get_ca_minutes_for_cycle_type(self, cycle_type: str = None) -> int:
+        """
+        Calculate CA minutes based on cycle type.
+        Cycle types: C2/C3 = 20 mins, C4/C5 = 60 mins, C6 = 30 mins, others = 0
+        If no cycle_type provided, returns default of 30 minutes.
+        """
+        if cycle_type is None:
+            return 30  # default
+        
+        cycle_map = {
+            "C2": 20,
+            "C3": 20,
+            "C4": 60,
+            "C5": 60,
+            "C6": 30
+        }
+        return cycle_map.get(cycle_type.upper(), 0)
+    
+    async def generate_ca_tasks_for_studyplan(
+        self,
+        studyplan_id: int,
+        start_date: date,
+        end_date: date,
+        daily_ca_minutes: int,
+        created_by_id: int,
+        created_by_info: dict,
+        exclude_weekdays: list[int] = None,  # 0=Monday, 6=Sunday
+        db_session: AsyncSession = None
+    ) -> list[PlanTask]:
+        """
+        Generate daily current affairs reading tasks for a study plan.
+        
+        Args:
+            studyplan_id: ID of the study plan
+            start_date: Start date for CA tasks
+            end_date: End date for CA tasks
+            daily_ca_minutes: Minutes per day for CA reading
+            created_by_id: User ID creating the tasks
+            created_by_info: User info dict {"id": int, "name": str, "photo": str}
+            exclude_weekdays: List of weekdays to exclude (0=Monday, 6=Sunday)
+            db_session: Database session
+        
+        Returns:
+            List of created PlanTask objects
+        """
+        from datetime import timedelta
+        
+        session = db_session
+        exclude_weekdays = exclude_weekdays or []
+        
+        # Get the highest task_seq_id for this studyplan
+        max_seq_query = select(func.coalesce(func.max(PlanTask.task_seq_id), 0)).where(
+            PlanTask.studyplan_id == studyplan_id
+        )
+        result = await session.execute(max_seq_query)
+        max_seq_id = result.scalar()
+        
+        ca_tasks = []
+        current_date = start_date
+        task_seq_id = max_seq_id + 1
+        
+        while current_date <= end_date:
+            # Skip excluded weekdays (e.g., test days, catchup days)
+            if current_date.weekday() not in exclude_weekdays:
+                task_data = {
+                    "name": "Current Affairs - Daily Reading",
+                    "task_type": TASK_TYPE.reading.value,
+                    "task_seq_id": task_seq_id,
+                    "studyplan_id": studyplan_id,
+                    "papers": [],
+                    "subjects": [],
+                    "topics": [],
+                    "subject_area": SubjectArea.gs_currentaffairs.value,
+                    "test_id": None,
+                    "study_materials": [],
+                    "planned_time": daily_ca_minutes,
+                    "planned_completion_date": datetime.combine(current_date, datetime.min.time(), tzinfo=timezone.utc),
+                    "actual_completion_date": None,
+                    "target_marks": 0,
+                    "links": [],
+                    "mentorship_meetings": [],
+                    "reference_materials": [],
+                    "current_affairs_type": {"type": "CAReading"},
+                    "created_by_id": created_by_id,
+                    "created_by": created_by_info,
+                    "last_updated_by": None,
+                    "remarks": "Auto-generated current affairs task",
+                    "status": TASK_STATUS.open.value,
+                    "is_deleted": False
+                }
+                
+                # Create the task
+                task = PlanTask(**task_data)
+                session.add(task)
+                ca_tasks.append(task)
+                task_seq_id += 1
+            
+            current_date += timedelta(days=1)
+        
+        await session.commit()
+        
+        # Refresh to get IDs
+        for task in ca_tasks:
+            await session.refresh(task)
+        
+        return ca_tasks
 
