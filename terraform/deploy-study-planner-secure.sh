@@ -8,7 +8,7 @@ set -e
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENCRYPTED_ENV_FILE="${ENCRYPTED_ENV_FILE:-$SCRIPT_DIR/.env.local.enc}"
+ENCRYPTED_ENV_FILE="${ENCRYPTED_ENV_FILE:-$SCRIPT_DIR/env.local.enc}"
 DEPLOY_SCRIPT="$SCRIPT_DIR/deploy-study-planner.sh"
 
 # Colors for output
