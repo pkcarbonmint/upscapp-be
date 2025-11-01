@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { StepProps } from '@/types';
-import { downloadPlan, downloadPlanWithoutWeeklyViews, downloadMonthPlan, getAvailableMonths } from './util/download';
+import { downloadPlan, downloadPlanWithoutWeeklyViews, downloadMonthPlan, getAvailableMonths, downloadGoogleCalendar } from './util/download';
 
 const CompleteStep: React.FC<StepProps> = (stepProps) => {
   const { formData } = stepProps;
   const downloadHandler = async () => downloadPlan(stepProps);
   const downloadMonthlyHandler = async () => downloadPlanWithoutWeeklyViews(stepProps);
+  const downloadGoogleCalendarHandler = async () => downloadGoogleCalendar(stepProps);
   
   const [availableMonths, setAvailableMonths] = useState<Array<{ index: number; label: string; date: Date }>>([]);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState<number>(0);
@@ -121,6 +122,19 @@ const CompleteStep: React.FC<StepProps> = (stepProps) => {
             >
               📅 Download Monthly Calendar
             </button>
+          </div>
+          
+          <div style={{ marginTop: '8px' }}>
+            <button 
+              className="ms-button ms-button-primary"
+              onClick={downloadGoogleCalendarHandler}
+              style={{ width: '100%', backgroundColor: '#4285F4' }}
+            >
+              📆 Export to Google Calendar (.ics)
+            </button>
+            <p style={{ marginTop: '8px', fontSize: '12px', color: '#666', textAlign: 'center' }}>
+              Download an .ics file that can be imported into Google Calendar, Apple Calendar, or Outlook
+            </p>
           </div>
           
           <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e0e0e0' }}>
