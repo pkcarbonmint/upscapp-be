@@ -16,6 +16,7 @@ export {
 export {  generatePlan, generateInitialPlan } from './engine/NewEngine-generate-plan';
 
 export { CalendarDocxService } from './services/CalendarDocxService';
+export { CalendarIcsService } from './services/CalendarIcsService';
 
 // Configuration and Types
 export type { Config } from './engine/engine-types';

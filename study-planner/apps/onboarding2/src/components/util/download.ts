@@ -1,5 +1,5 @@
 import { StepProps } from '@/types';
-import { CalendarDocxService } from 'helios-ts';
+import { CalendarDocxService, CalendarIcsService } from 'helios-ts';
 import { map2StudentIntake, map2UserId } from './intake-mapper';
 
 export async function downloadPlan(stepProps: StepProps) {
@@ -118,4 +118,21 @@ export async function getAvailableMonths(stepProps: StepProps): Promise<Array<{ 
         console.error('Error getting available months:', error);
         return [];
     }
+}
+
+export async function downloadGoogleCalendar(stepProps: StepProps) {
+    const { generatePlan } = await import('helios-ts');
+    const intake = map2StudentIntake(stepProps);
+    const plan = await generatePlan(map2UserId(stepProps), intake);
+    const blob = await CalendarIcsService.generateStudyPlanIcsBlob(plan, intake);
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `study-plan-${stepProps.formData.targetYear.targetYear}-google-calendar.ics`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+
+    setTimeout(() => URL.revokeObjectURL(url), 100);
 }
