@@ -1,59 +1,6 @@
 import type { Dayjs } from "dayjs";
 import { BlockAllocConstraints, BlockSlot, S2Subject, S2WeekDay } from "./types";
-/*
- * PSEUDO CODE FOR TIME DISTRIBUTION AMONG SUBJECTS
- * 
- * 1. CALCULATE PROPORTIONAL TIME ALLOCATION
- *    - For each subject, calculate its proportional share based on relativeAllocation
- *    - Normalize relativeAllocation values to ensure they sum to 1.0
- *    - Allocate time proportionally: subjectTime = availableMinutes * normalizedRelativeAllocation[subjectCode]
- * 
- * 2. CREATE TIME BLOCKS WITH PARALLEL CONSTRAINT
- *    - Initialize activeBlocks array (max size = numParallel)
- *    - Initialize remainingTime map for each subject
- *    - Sort subjects by priority (order in input array)
- * 
- * 3. BLOCK ALLOCATION ALGORITHM:
- *    WHILE (any subject has remaining time > 0):
- *      a. Find next available time slot in calendar
- *      b. IF (activeBlocks.length < numParallel):
- *           - Start new block for highest priority subject with remaining time
- *           - Add to activeBlocks with start time and estimated end time
- *      c. ELSE:
- *           - Find earliest ending block in activeBlocks
- *           - Complete that block and remove from activeBlocks
- *           - Start new block for next priority subject
- * 
- * 4. TIME SCALING BASED ON AVAILABLE CALENDAR TIME:
- *    - Calculate total baseline time needed = sum of all subjects' baselineMinutes
- *    - Calculate scaling factor = availableMinutes / totalBaselineTime
- *    - IF (scaling factor >= 1.0):
- *        - Use full allocated time for each subject
- *        - Distribute extra time proportionally among subjects
- *    - ELSE (scaling factor < 1.0):
- *        - Scale down each subject's time proportionally
- *        - Prioritize essential topics/subtopics when scaling down
- * 
- * 5. BLOCK DURATION CALCULATION:
- *    - Calculate optimal block duration per subject based on:
- *      * Subject complexity (more complex = longer blocks)
- *      * Available calendar time (more time = longer blocks)
- *      * Working hours per day constraint
- *    - Ensure no single block exceeds dayMaxMinutes
- *    - Ensure minimum block duration >= dayMinMinutes
- * 
- * 6. SCHEDULE OPTIMIZATION:
- *    - Avoid scheduling blocks on catchupDay and testDay
- *    - Distribute blocks evenly across available days
- *    - Ensure no day exceeds workingHoursPerDay limit
- *    - Balance workload across the time period
- * 
- * 7. OUTPUT GENERATION:
- *    - Create BlockSlot objects with from/to times
- *    - Associate each block with its subject
- *    - Return ordered list of blocks respecting parallel constraint
- * 
- */
+
 export function planBlocks(
   cycleFrom: Dayjs,
   cycleTo: Dayjs,

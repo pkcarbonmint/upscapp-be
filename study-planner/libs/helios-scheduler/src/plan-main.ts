@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { planBlocks } from './plan-blocks';
 import { planCycles } from './plan-cycles';
 import { BlockAllocConstraints, BlockSlot, CycleSchedule, CycleType, PlanningContext, S2Constraints, S2ExamFocus, S2SlotType, S2Subject, S2Task, ScenarioResult } from "./types";
-import { planSubjectTasks } from './plan-subject';
+import { planSubjectTasks } from './plan-tasks';
 
 // import { writeFileSync } from "fs";
 
@@ -124,68 +124,6 @@ function cycleType2ExamFocus(cycleType: CycleType): S2ExamFocus {
     default:
       throw new Error(`Unknown cycle type: ${cycleType}`);
   }
-}
-
-/**
- * Adjusts task effort split for excess time blocks by removing STUDY tasks and redistributing
- * the STUDY share proportionally to REVISION and PRACTICE tasks.
- * 
- * For excess time blocks (second pass after all baseline time is allocated), we exclude STUDY
- * tasks since the material has already been studied. The STUDY time is redistributed to reinforce
- * learning through REVISION and PRACTICE.
- * 
- * Redistribution strategy:
- * - If both REVISION and PRACTICE exist: redistribute STUDY proportionally maintaining their relative ratios
- * - If only REVISION exists: allocate all STUDY time to REVISION
- * - If only PRACTICE exists: allocate all STUDY time to PRACTICE
- * - If neither exists: allocate all STUDY time to REVISION (default)
- * 
- * @param taskEffortSplit - Original task effort split from cycle type (e.g., {STUDY: 0.7, REVISION: 0.2, PRACTICE: 0.1})
- * @returns Modified task effort split with STUDY set to 0 and STUDY share redistributed to REVISION/PRACTICE
- */
-function adjustTaskEffortSplit(taskEffortSplit: Record<S2SlotType, number>): Record<S2SlotType, number> {
-  const studyShare = taskEffortSplit[S2SlotType.STUDY];
-  const revisionShare = taskEffortSplit[S2SlotType.REVISION];
-  const practiceShare = taskEffortSplit[S2SlotType.PRACTICE];
-  const totalNonStudy = revisionShare + practiceShare;
-
-  // Early return if no STUDY to redistribute
-  if (studyShare === 0) {
-    return taskEffortSplit;
-  }
-
-
-  // Calculate new REVISION share:
-  // - If both REVISION and PRACTICE exist: redistribute STUDY proportionally maintaining their ratio
-  //   (REVISION gets: revisionShare + (studyShare * revisionShare / totalNonStudy))
-  // - Else if only REVISION exists: give all STUDY to REVISION
-  // - Else if only PRACTICE exists: REVISION becomes 0
-  // - Else (neither exists): give all STUDY to REVISION
-  const newRevisionShare = totalNonStudy > 0
-    ? revisionShare + (studyShare * revisionShare / totalNonStudy)
-    : revisionShare > 0
-      ? revisionShare + studyShare
-      : practiceShare > 0
-        ? 0
-        : studyShare;
-
-  // Calculate new PRACTICE share:
-  // - If both REVISION and PRACTICE exist: redistribute STUDY proportionally maintaining their ratio
-  //   (PRACTICE gets: practiceShare + (studyShare * practiceShare / totalNonStudy))
-  // - Else if only PRACTICE exists: give all STUDY to PRACTICE
-  // - Else: PRACTICE remains at its original value (0)
-  const newPracticeShare = totalNonStudy > 0
-    ? practiceShare + (studyShare * practiceShare / totalNonStudy)
-    : practiceShare > 0
-      ? practiceShare + studyShare
-      : 0;
-
-  return {
-    ...taskEffortSplit,
-    [S2SlotType.STUDY]: 0,  // Remove STUDY tasks for excess time blocks
-    [S2SlotType.REVISION]: newRevisionShare,
-    [S2SlotType.PRACTICE]: newPracticeShare,
-  };
 }
 
 function planOneBlock(context: PlanningContext, block: BlockSlot, index: number): S2Task[] {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { planSubjectTasks } from '../plan-subject';
+import { planSubjectTasks } from '../plan-tasks';
 import { S2Subject, S2Constraints, S2SlotType, S2WeekDay, CycleType } from '../types';
 import dayjs from 'dayjs';
 import * as fs from 'fs';

@@ -407,7 +407,7 @@ async function createWordDocumentWithoutWeeklyViews(studyPlan: StudyPlan, studen
     }
 
     // Month title with cycle name
-    const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
+    const cycleName = getCycleName(cycle?.cycleType || '');
     const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
 
     mainContentElements.push(new Table({
@@ -1385,6 +1385,26 @@ async function generateCoverPage(studentIntake: StudentIntake, studyPlan: StudyP
   return elements;
 }
 
+
+function getDurationText(duration: number): string {
+  const years = Math.floor(duration / 365);
+  const months = Math.floor((duration % 365) / 30);
+  const days = Math.floor((duration % 365) % 30);
+  
+  if (duration >= 365) {
+    const parts = [];
+    parts.push(`${years} year${years !== 1 ? 's' : ''}`);
+    if (months > 0) parts.push(`${months} month${months !== 1 ? 's' : ''}`);
+    if (days > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+    return parts.join(' ');
+  } else if (duration >= 30) {
+    const parts = [];
+    parts.push(`${months} month${months !== 1 ? 's' : ''}`);
+    if (days > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+    return parts.join(' ');
+  }
+  return `${days} day${days !== 1 ? 's' : ''}`;
+}
 /**
  * Generate birds eye view timeline showing cycle progression
  */
@@ -1395,7 +1415,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
   // Title
   elements.push(new Paragraph({
     children: [new TextRun({
-      text: 'Birds Eye View - Cycle Timeline'
+      text: 'Birds Eye View - Study Phases'
     })],
     style: 'SectionHeading1'
   }));
@@ -1431,7 +1451,7 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
     const cycleStart = dayjs(cycle.cycleStartDate);
     const cycleEnd = dayjs(cycle.cycleEndDate);
     const duration = cycleEnd.diff(cycleStart, 'day') + 1;
-    const durationText = duration === 1 ? '1 day' : `${duration} days`;
+    const durationText = getDurationText(duration);
     const cycleDescription = getCycleDescription(cycle.cycleType);
     // Single cell with all cycle information
     const cycleCell = new TableCell({
@@ -1478,6 +1498,21 @@ function generateBirdsEyeView(studyPlan: StudyPlan): (Paragraph | Table)[] {
   }));
 
   return elements;
+}
+
+function getCycleName(cycleType: string): string {
+  const names: { [key: string]: string } = {
+    'C1': 'NCERT Foundation',
+    'C2': 'Comprehensive Foundation',
+    'C3': 'Mains Revision Pre-Prelims',
+    'C4': 'Prelims Reading',
+    'C5': 'Prelims Revision',
+    'C5.b': 'Prelims Rapid Revision',
+    'C6': 'Mains Revision',
+    'C7': 'Mains Rapid Revision',
+    'C8': 'Mains Foundation'
+  };
+  return names[cycleType] || '-';
 }
 
 /**
@@ -1544,7 +1579,7 @@ async function generateMonthViewWithDailyPages(studyPlan: StudyPlan, studentInta
     }
 
     // Month title with cycle name using table for proper alignment
-    const cycleName = cycle ? cycle.cycleName.replace(/ Cycle$/, '') : '';
+    const cycleName = getCycleName(cycle?.cycleType || '');
     const cycleColor = cycle ? CYCLE_TYPE_COLORS[cycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
 
     elements.push(new Table({
@@ -1783,7 +1818,7 @@ async function generateWeeklyViews(studyPlan: StudyPlan, studentIntake: StudentI
     }));
 
     // Week title with cycle name - same layout as month view
-    const cycleName = weekCycle ? weekCycle.cycleName.replace(/ Cycle$/, '') : '';
+    const cycleName = getCycleName(weekCycle?.cycleType || '');
     const cycleColor = weekCycle ? CYCLE_TYPE_COLORS[weekCycle.cycleType as keyof typeof CYCLE_TYPE_COLORS]?.fg || DOCUMENT_STYLES.colors.primary : DOCUMENT_STYLES.colors.primary;
 
     // Week title with cycle name using table for proper alignment
