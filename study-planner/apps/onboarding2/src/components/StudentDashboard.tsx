@@ -27,7 +27,57 @@ const StudentDashboard: React.FC<Props> = (stepProps) => {
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<'birds-eye' | 'months' | 'weeks'>('birds-eye');
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
+  const [selectedWeekIndex, setSelectedWeekIndex] = useState(0);
   const [availableMonths, setAvailableMonths] = useState<Array<{ index: number; label: string; date: Date }>>([]);
+
+  // Helper function to get all months in the plan
+  const getMonthsInPlan = () => {
+    if (!studyPlan) return [];
+    const startDate = new Date(studyPlan.start_date);
+    const endDate = new Date(`${studyPlan.targeted_year}-08-31`);
+    const months: Array<{ date: Date; label: string }> = [];
+    
+    const current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+    const end = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+    
+    while (current <= end) {
+      months.push({
+        date: new Date(current),
+        label: current.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      });
+      current.setMonth(current.getMonth() + 1);
+    }
+    
+    return months;
+  };
+
+  // Helper function to get all weeks in the plan
+  const getWeeksInPlan = () => {
+    if (!studyPlan) return [];
+    const startDate = new Date(studyPlan.start_date);
+    const endDate = new Date(`${studyPlan.targeted_year}-08-31`);
+    const weeks: Array<{ startDate: Date; endDate: Date; label: string }> = [];
+    
+    // Start from the beginning of the week containing the start date
+    const current = new Date(startDate);
+    current.setDate(current.getDate() - current.getDay());
+    
+    while (current <= endDate) {
+      const weekStart = new Date(current);
+      const weekEnd = new Date(current);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      
+      weeks.push({
+        startDate: new Date(weekStart),
+        endDate: new Date(weekEnd),
+        label: `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+      });
+      
+      current.setDate(current.getDate() + 7);
+    }
+    
+    return weeks;
+  };
 
   useEffect(() => {
     const loadPlan = async () => {
@@ -182,9 +232,49 @@ const StudentDashboard: React.FC<Props> = (stepProps) => {
         </div>
 
         {/* Content Area */}
-        {activeView === 'birds-eye' && <BirdsEyeView studyPlan={studyPlan} />}
-        {activeView === 'months' && <MonthViews studyPlan={studyPlan} />}
-        {activeView === 'weeks' && <WeekViews studyPlan={studyPlan} studentIntake={studentIntake} />}
+        {activeView === 'birds-eye' && (
+          <BirdsEyeView 
+            studyPlan={studyPlan} 
+            onCycleClick={(date) => {
+              // Find the month index for this cycle start date
+              const months = getMonthsInPlan();
+              const monthIndex = months.findIndex(m => 
+                m.date.getFullYear() === date.getFullYear() && 
+                m.date.getMonth() === date.getMonth()
+              );
+              if (monthIndex >= 0) {
+                setSelectedMonthIndex(monthIndex);
+              }
+              setActiveView('months');
+            }}
+          />
+        )}
+        {activeView === 'months' && (
+          <MonthViews 
+            studyPlan={studyPlan} 
+            selectedMonth={selectedMonthIndex}
+            setSelectedMonth={setSelectedMonthIndex}
+            onDayClick={(date) => {
+              // Find the week index for this date
+              const weeks = getWeeksInPlan();
+              const weekIndex = weeks.findIndex(w => 
+                date >= w.startDate && date <= w.endDate
+              );
+              if (weekIndex >= 0) {
+                setSelectedWeekIndex(weekIndex);
+              }
+              setActiveView('weeks');
+            }}
+          />
+        )}
+        {activeView === 'weeks' && (
+          <WeekViews 
+            studyPlan={studyPlan} 
+            studentIntake={studentIntake}
+            selectedWeek={selectedWeekIndex}
+            setSelectedWeek={setSelectedWeekIndex}
+          />
+        )}
       </div>
       <Footer />
     </>
@@ -192,7 +282,7 @@ const StudentDashboard: React.FC<Props> = (stepProps) => {
 };
 
 // Bird's Eye View Component
-const BirdsEyeView: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
+const BirdsEyeView: React.FC<{ studyPlan: any; onCycleClick: (cycleStartDate: Date) => void }> = ({ studyPlan, onCycleClick }) => {
   const cycles = studyPlan.cycles || [];
   
   const getCycleDescription = (cycleType: string): string => {
@@ -216,7 +306,7 @@ const BirdsEyeView: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
         🦅 Bird's Eye View - Cycle Timeline
       </h2>
       <p style={{ marginBottom: '24px', color: 'var(--ms-gray-90)' }}>
-        A chronological overview of your study cycles from start to finish
+        A chronological overview of your study cycles from start to finish. Click on any cycle to view its schedule.
       </p>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -234,8 +324,10 @@ const BirdsEyeView: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
                 border: `2px solid ${colors.border}`,
                 borderRadius: '12px',
                 padding: '20px',
-                transition: 'transform 0.2s, box-shadow 0.2s'
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                cursor: 'pointer'
               }}
+              onClick={() => onCycleClick(new Date(cycle.cycleStartDate))}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateX(8px)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
@@ -275,9 +367,13 @@ const BirdsEyeView: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
 };
 
 // Month Views Component
-const MonthViews: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
+const MonthViews: React.FC<{ 
+  studyPlan: any; 
+  selectedMonth: number;
+  setSelectedMonth: (index: number) => void;
+  onDayClick: (date: Date) => void;
+}> = ({ studyPlan, selectedMonth, setSelectedMonth, onDayClick }) => {
   const cycles = studyPlan.cycles || [];
-  const [selectedMonth, setSelectedMonth] = useState(0);
   
   // Get all months in the study plan
   const getMonthsInPlan = () => {
@@ -315,33 +411,69 @@ const MonthViews: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
     }
     return null;
   };
+
+  // Get tasks for a specific date
+  const getTasksForDate = (date: Date) => {
+    const tasks: any[] = [];
+    const dateStr = date.toISOString().split('T')[0];
+    
+    for (const cycle of cycles) {
+      const cycleStart = new Date(cycle.cycleStartDate);
+      const cycleEnd = new Date(cycle.cycleEndDate);
+      
+      if (date >= cycleStart && date <= cycleEnd) {
+        // Look through blocks in this cycle
+        for (const block of cycle.cycleBlocks || []) {
+          // Look through weekly plans in this block
+          for (const weeklyPlan of block.weekly_plan || []) {
+            // Look through daily plans in this week
+            for (const dailyPlan of weeklyPlan.daily_plans || []) {
+              const planDate = new Date(dailyPlan.date);
+              if (planDate.toISOString().split('T')[0] === dateStr) {
+                tasks.push(...(dailyPlan.tasks || []));
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    return tasks;
+  };
   
   const cycle = getCycleForMonth(currentMonth.date);
   const colors = cycle ? CYCLE_COLORS[cycle.cycleType] || { bg: '#F5F5F5', fg: '#333', border: '#999' } : { bg: '#F5F5F5', fg: '#333', border: '#999' };
   
-  // Generate calendar grid for the month
+  // Generate calendar grid for the month with tasks
   const generateCalendar = () => {
     const year = currentMonth.date.getFullYear();
     const month = currentMonth.date.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    const weeks: number[][] = [];
-    let week: number[] = new Array(firstDay).fill(0);
+    const days: Array<{ day: number; date: Date | null; tasks: any[] }> = [];
     
-    for (let day = 1; day <= daysInMonth; day++) {
-      week.push(day);
-      if (week.length === 7 || day === daysInMonth) {
-        while (week.length < 7) week.push(0);
-        weeks.push(week);
-        week = [];
-      }
+    // Add empty cells for days before the month starts
+    for (let i = 0; i < firstDay; i++) {
+      days.push({ day: 0, date: null, tasks: [] });
     }
     
-    return weeks;
+    // Add cells for each day of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const tasks = getTasksForDate(date);
+      days.push({ day, date, tasks });
+    }
+    
+    // Add empty cells to complete the last week
+    while (days.length % 7 !== 0) {
+      days.push({ day: 0, date: null, tasks: [] });
+    }
+    
+    return days;
   };
   
-  const calendar = generateCalendar();
+  const calendarDays = generateCalendar();
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
   return (
@@ -350,6 +482,9 @@ const MonthViews: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
         <h2 style={{ marginBottom: '16px', fontSize: '24px', fontWeight: 'bold', color: 'var(--ms-blue)' }}>
           📅 Month Views
         </h2>
+        <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--ms-gray-90)' }}>
+          Click on any day to view detailed weekly schedule
+        </p>
         
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           <button 
@@ -426,23 +561,88 @@ const MonthViews: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
             </div>
           ))}
           
-          {calendar.flat().map((day, idx) => (
+          {calendarDays.map((dayInfo, idx) => (
             <div 
               key={idx} 
+              onClick={() => dayInfo.date && onDayClick(dayInfo.date)}
               style={{
-                aspectRatio: '1',
+                minHeight: '80px',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: day ? 'white' : 'transparent',
+                flexDirection: 'column',
+                backgroundColor: dayInfo.day ? 'white' : 'transparent',
                 borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: day ? '600' : 'normal',
-                color: day ? colors.fg : 'transparent',
-                border: day ? `1px solid ${colors.border}` : 'none'
+                padding: dayInfo.day ? '8px' : '0',
+                color: dayInfo.day ? colors.fg : 'transparent',
+                border: dayInfo.day ? `1px solid ${colors.border}` : 'none',
+                cursor: dayInfo.day ? 'pointer' : 'default',
+                transition: 'transform 0.1s, box-shadow 0.1s'
+              }}
+              onMouseEnter={(e) => {
+                if (dayInfo.day) {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (dayInfo.day) {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }
               }}
             >
-              {day || ''}
+              {dayInfo.day && (
+                <>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    fontWeight: 'bold',
+                    marginBottom: '4px'
+                  }}>
+                    {dayInfo.day}
+                  </div>
+                  {dayInfo.tasks.length > 0 && (
+                    <div style={{ 
+                      fontSize: '11px',
+                      color: colors.fg,
+                      opacity: 0.8
+                    }}>
+                      {dayInfo.tasks.length} task{dayInfo.tasks.length !== 1 ? 's' : ''}
+                    </div>
+                  )}
+                  <div style={{ 
+                    marginTop: '4px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px'
+                  }}>
+                    {dayInfo.tasks.slice(0, 2).map((task: any, taskIdx: number) => (
+                      <div 
+                        key={taskIdx}
+                        style={{
+                          fontSize: '9px',
+                          padding: '2px 4px',
+                          backgroundColor: colors.border + '40',
+                          borderRadius: '3px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {task.title}
+                      </div>
+                    ))}
+                    {dayInfo.tasks.length > 2 && (
+                      <div style={{ 
+                        fontSize: '9px',
+                        fontStyle: 'italic',
+                        color: colors.fg,
+                        opacity: 0.7
+                      }}>
+                        +{dayInfo.tasks.length - 2} more
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -452,8 +652,12 @@ const MonthViews: React.FC<{ studyPlan: any }> = ({ studyPlan }) => {
 };
 
 // Week Views Component
-const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan, studentIntake }) => {
-  const [selectedWeekIndex, setSelectedWeekIndex] = useState(0);
+const WeekViews: React.FC<{ 
+  studyPlan: any; 
+  studentIntake: any;
+  selectedWeek: number;
+  setSelectedWeek: (index: number) => void;
+}> = ({ studyPlan, studentIntake, selectedWeek, setSelectedWeek }) => {
   
   // Get all weeks in the study plan
   const getWeeksInPlan = () => {
@@ -483,7 +687,7 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
   };
   
   const weeks = getWeeksInPlan();
-  const currentWeek = weeks[selectedWeekIndex];
+  const currentWeek = weeks[selectedWeek];
   
   if (!currentWeek) return null;
   
@@ -498,21 +702,54 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
     }
     return null;
   };
+
+  // Get tasks for a specific date
+  const getTasksForDate = (date: Date) => {
+    const tasks: any[] = [];
+    const dateStr = date.toISOString().split('T')[0];
+    
+    for (const cycle of studyPlan.cycles || []) {
+      const cycleStart = new Date(cycle.cycleStartDate);
+      const cycleEnd = new Date(cycle.cycleEndDate);
+      
+      if (date >= cycleStart && date <= cycleEnd) {
+        // Look through blocks in this cycle
+        for (const block of cycle.cycleBlocks || []) {
+          // Look through weekly plans in this block
+          for (const weeklyPlan of block.weekly_plan || []) {
+            // Look through daily plans in this week
+            for (const dailyPlan of weeklyPlan.daily_plans || []) {
+              const planDate = new Date(dailyPlan.date);
+              if (planDate.toISOString().split('T')[0] === dateStr) {
+                tasks.push(...(dailyPlan.tasks || []));
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    return tasks;
+  };
   
   const cycle = getCycleForWeek(currentWeek.startDate);
   const colors = cycle ? CYCLE_COLORS[cycle.cycleType] || { bg: '#F5F5F5', fg: '#333', border: '#999' } : { bg: '#F5F5F5', fg: '#333', border: '#999' };
   
-  // Generate 7 days for the week
+  // Generate 7 days for the week with tasks
   const generateWeekDays = () => {
     const days = [];
     const current = new Date(currentWeek.startDate);
     
     for (let i = 0; i < 7; i++) {
+      const date = new Date(current);
+      const tasks = getTasksForDate(date);
+      
       days.push({
-        date: new Date(current),
+        date,
         dayName: current.toLocaleDateString('en-US', { weekday: 'short' }),
         dayNumber: current.getDate(),
-        monthDay: current.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        monthDay: current.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        tasks
       });
       current.setDate(current.getDate() + 1);
     }
@@ -532,8 +769,8 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           <button 
             className="ms-button ms-button-secondary"
-            onClick={() => setSelectedWeekIndex(Math.max(0, selectedWeekIndex - 1))}
-            disabled={selectedWeekIndex === 0}
+            onClick={() => setSelectedWeek(Math.max(0, selectedWeek - 1))}
+            disabled={selectedWeek === 0}
             style={{ padding: '8px 16px' }}
           >
             ← Previous Week
@@ -541,8 +778,8 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
           
           <select 
             className="ms-input"
-            value={selectedWeekIndex}
-            onChange={(e) => setSelectedWeekIndex(parseInt(e.target.value))}
+            value={selectedWeek}
+            onChange={(e) => setSelectedWeek(parseInt(e.target.value))}
             style={{ flex: 1, maxWidth: '400px' }}
           >
             {weeks.map((w, idx) => (
@@ -552,8 +789,8 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
           
           <button 
             className="ms-button ms-button-secondary"
-            onClick={() => setSelectedWeekIndex(Math.min(weeks.length - 1, selectedWeekIndex + 1))}
-            disabled={selectedWeekIndex === weeks.length - 1}
+            onClick={() => setSelectedWeek(Math.min(weeks.length - 1, selectedWeek + 1))}
+            disabled={selectedWeek === weeks.length - 1}
             style={{ padding: '8px 16px' }}
           >
             Next Week →
@@ -587,7 +824,7 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
         
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
           gap: '12px' 
         }}>
           {weekDays.map((day, idx) => (
@@ -597,9 +834,10 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
                 backgroundColor: 'white',
                 border: `2px solid ${colors.border}`,
                 borderRadius: '8px',
-                padding: '16px',
-                textAlign: 'center',
-                minHeight: '100px'
+                padding: '12px',
+                minHeight: '200px',
+                display: 'flex',
+                flexDirection: 'column'
               }}
             >
               <div style={{ 
@@ -619,27 +857,83 @@ const WeekViews: React.FC<{ studyPlan: any; studentIntake: any }> = ({ studyPlan
                 {day.dayNumber}
               </div>
               <div style={{ 
-                fontSize: '12px', 
+                fontSize: '11px', 
                 color: colors.fg,
-                opacity: 0.8
+                opacity: 0.8,
+                marginBottom: '12px',
+                paddingBottom: '8px',
+                borderBottom: `1px solid ${colors.border}`
               }}>
                 {day.monthDay}
               </div>
+              
+              {/* Tasks list */}
+              <div style={{ 
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+                overflowY: 'auto'
+              }}>
+                {day.tasks.length > 0 ? (
+                  <>
+                    <div style={{ 
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      color: colors.fg,
+                      marginBottom: '4px'
+                    }}>
+                      {day.tasks.length} Task{day.tasks.length !== 1 ? 's' : ''}:
+                    </div>
+                    {day.tasks.map((task: any, taskIdx: number) => {
+                      const durationHours = task.duration_minutes ? (task.duration_minutes / 60).toFixed(1) : '0';
+                      
+                      return (
+                        <div 
+                          key={taskIdx}
+                          style={{
+                            fontSize: '11px',
+                            padding: '6px 8px',
+                            backgroundColor: colors.bg,
+                            border: `1px solid ${colors.border}`,
+                            borderRadius: '4px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '2px'
+                          }}
+                        >
+                          <div style={{ fontWeight: '600', color: colors.fg }}>
+                            {task.title}
+                          </div>
+                          <div style={{ 
+                            fontSize: '10px', 
+                            color: colors.fg,
+                            opacity: 0.7,
+                            display: 'flex',
+                            justifyContent: 'space-between'
+                          }}>
+                            <span>{task.taskType}</span>
+                            <span>{durationHours}h</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <div style={{ 
+                    fontSize: '11px',
+                    color: colors.fg,
+                    opacity: 0.5,
+                    fontStyle: 'italic',
+                    textAlign: 'center',
+                    marginTop: '20px'
+                  }}>
+                    No tasks scheduled
+                  </div>
+                )}
+              </div>
             </div>
           ))}
-        </div>
-        
-        <div style={{ 
-          marginTop: '20px', 
-          padding: '16px', 
-          backgroundColor: 'white', 
-          borderRadius: '8px',
-          border: `1px solid ${colors.border}`
-        }}>
-          <p style={{ margin: 0, fontSize: '14px', color: colors.fg }}>
-            💡 <strong>Note:</strong> Detailed daily tasks and schedules are available in the downloaded documents. 
-            Use the download buttons above to get your complete weekly plan with all task details.
-          </p>
         </div>
       </div>
     </div>
